@@ -856,6 +856,9 @@ namespace UROVConfig
             highBorder = 0;
 
             controllerGUID = "";
+
+            relayDelay = 0;
+            acsDelay = 0;
         }
 
         private int motoresourceCurrent1 = 0;
@@ -896,6 +899,11 @@ namespace UROVConfig
         public int LowBorder { get { return lowBorder; } set { lowBorder = value; } }
         public int HighBorder { get { return highBorder; } set { highBorder = value; } }
 
+        private int relayDelay = 0;
+        public int RelayDelay { get { return relayDelay; } set { relayDelay = value; } }
+
+        private int acsDelay = 0;
+        public int ACSDelay { get { return acsDelay; } set { acsDelay = value; } }
 
         private string controllerGUID = "";
         public string ControllerGUID { get { return controllerGUID; } set { controllerGUID = value; } }

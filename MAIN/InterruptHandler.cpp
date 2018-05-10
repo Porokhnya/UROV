@@ -6,6 +6,7 @@
 #include "FileUtils.h"
 #include "Logger.h"
 #include "Settings.h"
+#include "DelayedEvents.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -77,6 +78,10 @@ void RelayTriggered()
   onRelayTriggeredTimer = true;
   hasRelayTriggeredTime = true;
   timeBeforeInterruptsBegin = 0;
+
+  // взводим отложенное событие
+  uint32_t raiseDelay = Settings.getACSDelay()*1000;
+  CoreDelayedEvent.raise(raiseDelay,CoreDelayedEventClass::CoreDelayedEventPinChange,(void*) new CoreDelayedEventPinChangeArg(out_asu_tp1,ACS_SIGNAL_LEVEL));
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
@@ -145,7 +150,7 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   workBuff[1] = channelNumber;
   Logger.write(workBuff,2);
   
-  // пишем положение штанги №1
+  // пишем положение штанги
   writeRodPositionToLog(channelNumber);
 
   // пишем время движения штанги  
@@ -276,7 +281,7 @@ void InterruptHandlerClass::update()
   if(thisOnRelayTriggeredTimer)
   {
     // было прерывание срабатывания защиты - проверяем время
-    if(micros() - thisRelayTriggeredTime >= RELAY_WANT_DATA_AFTER)
+    if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
     {      
       // время ожидания прошло
       // проверяем - если данные в одном из списков есть - ничего не делаем.

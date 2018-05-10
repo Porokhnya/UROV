@@ -5,6 +5,7 @@
 #include "ConfigPin.h"
 #include "AT24CX.h"
 #include "InterruptHandler.h"
+#include "DelayedEvents.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // подключаем наши экраны
 #include "Screen1.h"              // Главный экран
@@ -105,6 +106,7 @@ void setup()
 void loop() 
 {
 
+  CoreDelayedEvent.update();
   Settings.update();
   
   // обновляем кнопки
@@ -147,7 +149,8 @@ void yield()
  
    // обновляем прерывания
    InterruptHandler.update();
-   
+
+   CoreDelayedEvent.update();
    Buttons.update();
 
  nestedYield = false;

@@ -362,7 +362,7 @@ void InterruptScreen::drawTimeBeforeInterrupt(TFTMenu* menu)
   String tmCaption;
   tmCaption = tm;
 
-  bool isGood = timeBeforeInterrupts <= (RELAY_WANT_DATA_AFTER + RELAY_DATA_GAP);
+  bool isGood = timeBeforeInterrupts <= (Settings.getRelayDelay() + RELAY_DATA_GAP);
 
   if(!hasRelayTriggeredTime)
   {

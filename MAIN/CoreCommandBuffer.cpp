@@ -28,6 +28,7 @@ const char UUID_COMMAND[] PROGMEM = "UUID"; // получить уникальн
 const char TBORDERMAX_COMMAND[] PROGMEM = "TBORDERMAX"; // верхний порог токового трансформатора
 const char TBORDERMIN_COMMAND[] PROGMEM = "TBORDERMIN"; // нижний порог токового трансформатора
 const char TBORDERS_COMMAND[] PROGMEM = "TBORDERS"; // пороги токового трансформатора
+const char RDELAY_COMMAND[] PROGMEM = "RDELAY"; // время задержки после срабатывания реле до начала импульсов
 //--------------------------------------------------------------------------------------------------------------------------------------
 CoreCommandBuffer Commands(&Serial);
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -245,6 +246,19 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // PULSES_COMMAND               
         else
+        if(!strcmp_P(commandName, RDELAY_COMMAND))
+        {
+            if(cParser.argsCount() > 2)
+            {
+              commandHandled = setRDELAY(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // RDELAY_COMMAND               
+        else
         if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
         {
             if(cParser.argsCount() > 1)
@@ -356,6 +370,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             commandHandled = getPULSES(commandName,cParser,pStream);                    
           
         } // PULSES_COMMAND       
+        else
+        if(!strcmp_P(commandName, RDELAY_COMMAND))
+        {
+            commandHandled = getRDELAY(commandName,cParser,pStream);                    
+          
+        } // RDELAY_COMMAND       
         else
         if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
         {
@@ -701,6 +721,45 @@ bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
   pStream->println(Settings.getUUID(parser.getArg(1)));
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+    return false;  
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->print(Settings.getRelayDelay()/1000);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getACSDelay());
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 3)
+    return false;
+  
+  uint32_t curBorder = atoi(parser.getArg(1))*1000;
+  uint16_t curAcsDelay = atoi(parser.getArg(2));
+
+  Settings.setRelayDelay(curBorder);
+  Settings.setACSDelay(curAcsDelay);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
 
   return true;
 }

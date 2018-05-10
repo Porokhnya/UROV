@@ -1008,6 +1008,11 @@ namespace UROVConfig
             nudPulses2.Value = 0;
             nudPulses3.Value = 0;
 
+            nudACSDelay.Value = 0;
+            nudRelayDelay.Value = 0;
+            nudHighBorder.Value = 0;
+            nudLowBorder.Value = 0;
+
             nudHighBorder.Value = 0;
             nudLowBorder.Value = 0;
 
@@ -1043,6 +1048,7 @@ namespace UROVConfig
             inSetMotoresourceMaxToController = true;
             inSetPulsesToController = true;
             inSetBordersToController = true;
+            inSetRelayDelayToController = true;
             inSetDeltaToController = true;
 
             uuidRequested = false;
@@ -1067,6 +1073,7 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "PULSES", ParseAskPulses, BeforeAskPulses);
                 PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "TBORDERS", ParseAskBorders, BeforeAskBorders);
+                PushCommandToQueue(GET_PREFIX + "RDELAY", ParseAskRelayDelay, BeforeAskRelayDelay);
                 GetInductiveSensors();
                 GetVoltage();
                 RequestEthalons();
@@ -1154,6 +1161,10 @@ namespace UROVConfig
         {
             this.inSetBordersToController = true;
         }
+        private void BeforeAskRelayDelay()
+        {
+            this.inSetRelayDelayToController = true;
+        }
 
         private void BeforeAskMotoresourceCurrent()
         {
@@ -1234,6 +1245,25 @@ namespace UROVConfig
             nudLowBorder.Value = Config.Instance.LowBorder;
             nudHighBorder.Value = Config.Instance.HighBorder;
         }
+
+        private void ParseAskRelayDelay(Answer a)
+        {
+            this.inSetRelayDelayToController = false;
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.RelayDelay = Convert.ToInt32(a.Params[1]); } catch { }
+                try { Config.Instance.ACSDelay = Convert.ToInt32(a.Params[2]); } catch { }
+            }
+            else
+            {
+                Config.Instance.RelayDelay = 0;
+                Config.Instance.ACSDelay = 0;
+            }
+
+            nudRelayDelay.Value = Config.Instance.RelayDelay;
+            nudACSDelay.Value = Config.Instance.ACSDelay;
+        }
+
         private void ParseAskMotoresurceCurrent(Answer a)
         {
             this.inSetMotoresourceCurrentToController = false;
@@ -1479,6 +1509,7 @@ namespace UROVConfig
             this.btnSetPulses.Enabled = bConnected && !inSetPulsesToController;
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
+            this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
 
             if (!bConnected) // порт закрыт
             {
@@ -1893,6 +1924,27 @@ namespace UROVConfig
                 nudHighBorder.Value = Config.Instance.HighBorder;
 
                 MessageBox.Show("Ошибка обновления порогов трансформатора!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ParseSetRelayDelay(Answer a)
+        {
+            inSetRelayDelayToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.RelayDelay = Convert.ToInt32(nudRelayDelay.Value);
+                Config.Instance.ACSDelay = Convert.ToInt32(nudACSDelay.Value);
+
+                MessageBox.Show("Настройки обновлены.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                nudRelayDelay.Value = Config.Instance.RelayDelay;
+                nudACSDelay.Value = Config.Instance.ACSDelay;
+
+                MessageBox.Show("Ошибка обновления настроек!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -3485,6 +3537,19 @@ namespace UROVConfig
             s += Convert.ToString(nudHighBorder.Value);
 
             PushCommandToQueue(SET_PREFIX + "TBORDERS" + PARAM_DELIMITER + s, ParseSetBorders);
+        }
+
+        private bool inSetRelayDelayToController = true;
+        private void btnSetRelayDelay_Click(object sender, EventArgs e)
+        {
+            inSetRelayDelayToController = true;
+            ShowWaitCursor(true);
+
+            string s = "";
+            s += Convert.ToString(nudRelayDelay.Value);
+            s += PARAM_DELIMITER + Convert.ToString(nudACSDelay.Value);
+
+            PushCommandToQueue(SET_PREFIX + "RDELAY" + PARAM_DELIMITER + s, ParseSetRelayDelay);
         }
     }
 

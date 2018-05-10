@@ -57,6 +57,12 @@ class SettingsClass
 
     uint32_t getTransformerHighBorder();
     void setTransformerHighBorder(uint32_t val);
+
+    uint32_t getRelayDelay();
+    void setRelayDelay(uint32_t rDelay);
+
+    uint16_t getACSDelay();
+    void setACSDelay(uint16_t rDelay);
     
   private:
 
@@ -68,6 +74,9 @@ class SettingsClass
     uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
 
     VoltageData voltage3V3, voltage5V, voltage200V;
+
+    uint32_t relayDelay;
+    uint16_t acsDelay;
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -94,6 +94,8 @@ class CommandHandlerClass
   bool setTBORDERS(CommandParser& parser, Stream* pStream);
   bool getTBORDERS(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool setRDELAY(CommandParser& parser, Stream* pStream);
+  bool getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
   bool printBackSETResult(bool isOK, const char* command, Stream* pStream);
     

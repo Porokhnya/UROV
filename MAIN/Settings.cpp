@@ -16,6 +16,9 @@ SettingsClass::SettingsClass()
   voltage3V3.voltage = voltage5V.voltage = voltage200V.voltage = 0;
 
   inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = HIGH;
+
+  relayDelay = RELAY_WANT_DATA_AFTER;
+  acsDelay = ACS_SIGNAL_DELAY;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String SettingsClass::getUUID(const char* passedUUID)
@@ -81,6 +84,19 @@ uint8_t SettingsClass::getInductiveSensorState(uint8_t channelNum)
 void SettingsClass::begin()
 {
   eeprom = new AT24C64();
+
+  uint8_t* writePtr = (uint8_t*)&relayDelay;
+  eeprom->read(RELAY_DELAY_STORE_ADDRESS,writePtr,sizeof(uint32_t));
+  
+  if(relayDelay == 0xFFFFFFFF)
+    relayDelay = RELAY_WANT_DATA_AFTER;
+
+  writePtr = (uint8_t*)&acsDelay;
+  eeprom->read(ACS_DELAY_STORE_ADDRESS,writePtr,sizeof(uint16_t));
+  
+  if(acsDelay == 0xFFFF)
+    acsDelay = ACS_SIGNAL_DELAY;    
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set3V3RawVoltage(uint16_t raw)
@@ -124,6 +140,30 @@ void SettingsClass::updateInductiveSensors()
   inductiveSensorState1 = digitalRead(inductive_sensor1);
   inductiveSensorState2 = digitalRead(inductive_sensor2);
   inductiveSensorState3 = digitalRead(inductive_sensor3);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::getRelayDelay()
+{
+  return relayDelay;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setRelayDelay(uint32_t val)
+{
+  relayDelay = val;
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(RELAY_DELAY_STORE_ADDRESS,writePtr,sizeof(uint32_t)); 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint16_t SettingsClass::getACSDelay()
+{
+  return acsDelay;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setACSDelay(uint16_t val)
+{
+  acsDelay = val;
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(ACS_DELAY_STORE_ADDRESS,writePtr,sizeof(uint16_t)); 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getTransformerLowBorder()
