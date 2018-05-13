@@ -352,7 +352,7 @@ protected:
 private:
       TransformerScreen();
 
-      int borderMaxButton, borderMinButton, backButton;
+      int borderMaxButton, borderMinButton, acsDelayButton, backButton;
   
   
 };
@@ -409,6 +409,34 @@ private:
 
       int channel1Button, backButton, resetButton;
       String channel1BorderVal;
+      int currentEditedButton;
+  
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class AcsDelayScreen : public AbstractTFTScreen, public KeyboardInputTarget
+{
+  public:
+
+  static AbstractTFTScreen* create()
+  {
+    return new AcsDelayScreen();
+  }
+
+  virtual void onKeyboardInput(bool enterPressed, const String& enteredValue);
+    
+protected:
+
+    virtual void doSetup(TFTMenu* menu);
+    virtual void doUpdate(TFTMenu* menu);
+    virtual void doDraw(TFTMenu* menu);
+    virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+    virtual void onActivate();
+
+private:
+      AcsDelayScreen();
+
+      int channel1Button, backButton, resetButton;
+      String channel1AcsDelayVal;
       int currentEditedButton;
   
 };
