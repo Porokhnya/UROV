@@ -173,6 +173,11 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   workBuff[0] = recordEthalonNumber;
   workBuff[1] = num;
   Logger.write(workBuff,2);
+
+  // пишем состояние индуктивного датчика для канала
+  workBuff[0] = recordChannelInductiveSensorState;
+  workBuff[1] = Settings.getInductiveSensorState(channelNumber);
+  Logger.write(workBuff,2);
   
   // пишем результат сравнения с эталоном для канала
   workBuff[0] = recordCompareResult;

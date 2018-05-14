@@ -15,7 +15,7 @@ SettingsClass::SettingsClass()
   voltage3V3.raw = voltage5V.raw = voltage200V.raw = 0;
   voltage3V3.voltage = voltage5V.voltage = voltage200V.voltage = 0;
 
-  inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = HIGH;
+  inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 1;
 
   relayDelay = RELAY_WANT_DATA_AFTER;
   acsDelay = ACS_SIGNAL_DELAY;
@@ -137,9 +137,9 @@ void SettingsClass::update()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::updateInductiveSensors()
 {
-  inductiveSensorState1 = digitalRead(inductive_sensor1);
-  inductiveSensorState2 = digitalRead(inductive_sensor2);
-  inductiveSensorState3 = digitalRead(inductive_sensor3);
+  inductiveSensorState1 = digitalRead(inductive_sensor1); //analogRead(inductive_sensor1) >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0;
+  inductiveSensorState2 = digitalRead(inductive_sensor2); //analogRead(inductive_sensor2) >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0;
+  inductiveSensorState3 = digitalRead(inductive_sensor3); //analogRead(inductive_sensor3) >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getRelayDelay()

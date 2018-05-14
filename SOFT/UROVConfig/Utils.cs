@@ -68,6 +68,7 @@ namespace UROVConfig
 
         InterruptInfoEnd,    // конец записи по прерыванию
         RelayTriggeredTime, // время срабатывания защиты
+        ChannelInductiveSensorState, // состояние индуктивного датчика канала
     }
 
     public enum EthalonCompareNumber
@@ -122,6 +123,14 @@ namespace UROVConfig
         Down // в нижней позиции
     }
 
+    public enum InductiveSensorState
+    {
+        [Description("неисправен")]
+        Broken,
+        [Description("исправен")]
+        Good
+    }
+
     public class InterruptInfo
     {
         public DateTime InterruptTime;
@@ -132,6 +141,7 @@ namespace UROVConfig
     {
         public InterruptInfo InterruptInfo;
         public byte ChannelNumber;
+        public InductiveSensorState InductiveSensorState;
         public RodPosition RodPosition;
         public int MoveTime;
         public int Motoresource;

@@ -321,6 +321,15 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.ChannelInductiveSensorState:
+                            {
+                                System.Diagnostics.Debug.Assert(curRecord != null);
+
+                                // далее идёт байт номера канала
+                                curRecord.InductiveSensorState = (InductiveSensorState) content[readed]; readed++;
+                            }
+                            break;
+
                         case LogRecordType.RodPosition:
                             {
                                 System.Diagnostics.Debug.Assert(curRecord != null);
@@ -477,14 +486,20 @@ namespace UROVConfig
             row.Cells["Rod" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.RodPosition);
             row.Cells["Compare" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareResult);
             row.Cells["Etl" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareNumber);
+            row.Cells["Ind" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.InductiveSensorState);
 
             if (record.EthalonCompareResult == EthalonCompareResult.MatchEthalon)
                 row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightGreen;
             else
                 row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightSalmon;
 
+            if (record.InductiveSensorState == InductiveSensorState.Good)
+                row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightGreen;
+            else
+                row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightSalmon;
 
-            if(record.RodPosition == RodPosition.Broken)
+
+            if (record.RodPosition == RodPosition.Broken)
                 row.Cells["Rod" + addToColumnName].Style.BackColor = Color.LightSalmon;
             else
                 row.Cells["Rod" + addToColumnName].Style.BackColor = Color.White;
