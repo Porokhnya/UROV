@@ -52,6 +52,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(MotoresourceMaxScreen::create());
   Screen.addScreen(BorderMaxScreen::create());
   Screen.addScreen(BorderMinScreen::create());
+  Screen.addScreen(AcsDelayScreen::create());
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -783,7 +784,7 @@ void TransformerScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   borderMaxButton = screenButtons->addButton(5, 2, 210, 30, "Порог макс.");
   borderMinButton = screenButtons->addButton(5, 37, 210, 30, "Порог мин.");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
+  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
 //  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
@@ -807,6 +808,8 @@ void TransformerScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     menu->switchToScreen("BorderMaxScreen");
   else if(pressedButton == borderMinButton)
     menu->switchToScreen("BorderMinScreen");
+  else if(pressedButton == acsDelayButton)
+    menu->switchToScreen("AcsDelayScreen");
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -974,6 +977,90 @@ void BorderMinScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     currentEditedButton = pressedButton;
     String strValToEdit = screenButtons->getLabel(currentEditedButton);
     ScreenKeyboard->show(ktDigits,strValToEdit,this,this, 8);
+  }
+    
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// AcsDelayScreen
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+AcsDelayScreen::AcsDelayScreen() : AbstractTFTScreen("AcsDelayScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::onActivate()
+{
+  channel1AcsDelayVal = Settings.getACSDelay();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::doSetup(TFTMenu* menu)
+{
+  screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
+  
+  currentEditedButton = -1;
+  onActivate();
+  
+  // тут настраиваемся, например, можем добавлять кнопки
+  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1AcsDelayVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+
+  screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
+{
+  if(!enterPressed)
+    return;
+
+    if(currentEditedButton == channel1Button)
+    {
+      channel1AcsDelayVal = enteredValue;
+      screenButtons->relabelButton(channel1Button,channel1AcsDelayVal.c_str());
+      Settings.setACSDelay(channel1AcsDelayVal.toInt());
+    }
+   
+  currentEditedButton = -1;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::doUpdate(TFTMenu* menu)
+{
+    // тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::doDraw(TFTMenu* menu)
+{
+  UTFT* dc = menu->getDC();
+  uint8_t* oldFont = dc->getFont();
+
+  dc->setFont(BigRusFont);
+  dc->setColor(VGA_WHITE);
+
+  menu->print("Задержка АСУ",2,2);
+  menu->print("Сигнал:", 2, 37);
+  
+  dc->setFont(oldFont);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void AcsDelayScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+  if(pressedButton == backButton)
+    menu->switchToScreen("TransformerScreen");
+  else if(pressedButton == resetButton)
+  {
+      channel1AcsDelayVal = ACS_SIGNAL_DELAY;
+      
+      screenButtons->relabelButton(channel1Button,channel1AcsDelayVal.c_str(),true);
+      
+      Settings.setACSDelay(channel1AcsDelayVal.toInt());    
+  }  
+  else
+  {
+    currentEditedButton = pressedButton;
+    String strValToEdit = screenButtons->getLabel(currentEditedButton);
+    ScreenKeyboard->show(ktDigits,strValToEdit,this,this, 4);
   }
     
 }
