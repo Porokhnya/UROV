@@ -71,6 +71,104 @@ void Interrupt3Handler()
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+void MakeAcsSignalDecision(void* param)
+{
+  // принимаем решение - выдавать ли сигнал на АСУ ТП.
+  // сигнал НЕ выдаётся, если:
+  // положение штанги - поломана
+  // неисправность индуктивных датчиков
+  // неисправность параметров питания
+  // нет ни одного импульса прерываний
+
+  // проверяем положение штанги
+  for(uint8_t i=0;i<3;i++)
+  {
+    if(ConfigPin::getRodPosition(i) == rpBroken)
+    {
+      // одна из штанг поломана
+      return;
+    }
+  }
+
+  // проверяем исправность индуктивных датчиков
+  for(uint8_t i=0;i<3;i++)
+  {
+    if(Settings.getInductiveSensorState(i) != 1)
+    {
+      // один из индуктивных датчиков неисправен
+      return;
+    }
+  }
+
+
+  // проверяем параметры питания
+  
+  // Контроль источника питания +3.3в
+  VoltageData vData = Settings.get3V3Voltage();
+  
+  float threshold = (3.3/100)*VOLTAGE_THRESHOLD;
+  float lowBorder = 3.3 - threshold;
+  float highBorder = 3.3 + threshold;
+  
+  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+  {
+  }
+  else
+  {
+    // неисправность питания +3.3в
+    return;
+  }
+  
+  // Контроль источника питания +5.0в
+  vData = Settings.get5Vvoltage();        
+  threshold = (5.0/100)*VOLTAGE_THRESHOLD;
+  lowBorder = 5.0 - threshold;
+  highBorder = 5.0 + threshold;
+  
+  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+  {
+  }
+  else
+  {
+    // неисправность питания +5.0в
+    return;
+  }    
+  
+  // Контроль источника питания 200в 
+  vData = Settings.get200Vvoltage();      
+  threshold = (200.0/100)*VOLTAGE_THRESHOLD;
+  lowBorder = 200.0 - threshold;
+  highBorder = 200.0 + threshold;
+  
+  
+  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+  {      
+  }
+  else
+  {
+    // неисправность питания 200в
+    return;
+    
+  }
+
+  // проверяем наличие данных в списке
+  noInterrupts();
+  bool hasData = list1.size() || list2.size() || list3.size();
+  interrupts();
+
+  if(!hasData)
+  {
+    // нет ни одного импульса прерываний
+    return;
+  }
+
+
+
+  // все условия выполнены, можем подавать сигнал на АСУ ТП
+  digitalWrite(out_asu_tp1,ACS_SIGNAL_LEVEL);
+    
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 void RelayTriggered()
 {
   // запоминаем время срабатывания защиты
@@ -81,7 +179,8 @@ void RelayTriggered()
 
   // взводим отложенное событие
   uint32_t raiseDelay = Settings.getACSDelay()*1000;
-  CoreDelayedEvent.raise(raiseDelay,CoreDelayedEventClass::CoreDelayedEventPinChange,(void*) new CoreDelayedEventPinChangeArg(out_asu_tp1,ACS_SIGNAL_LEVEL));
+//  CoreDelayedEvent.raise(raiseDelay,CoreDelayedEventClass::CoreDelayedEventPinChange,(void*) new CoreDelayedEventPinChangeArg(out_asu_tp1,ACS_SIGNAL_LEVEL));
+  CoreDelayedEvent.raise(raiseDelay,MakeAcsSignalDecision,NULL);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
