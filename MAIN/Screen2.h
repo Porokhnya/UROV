@@ -194,7 +194,7 @@ protected:
 private:
       ParamsScreen();
 
-      int inductiveSensorButton, transformerButton, backButton;
+      int inductiveSensorButton, transformerButton, acsDelayButton, relayDelayButton, backButton;
   
   
 };
@@ -437,6 +437,34 @@ private:
 
       int channel1Button, backButton, resetButton;
       String channel1AcsDelayVal;
+      int currentEditedButton;
+  
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class RelayDelayScreen : public AbstractTFTScreen, public KeyboardInputTarget
+{
+  public:
+
+  static AbstractTFTScreen* create()
+  {
+    return new RelayDelayScreen();
+  }
+
+  virtual void onKeyboardInput(bool enterPressed, const String& enteredValue);
+    
+protected:
+
+    virtual void doSetup(TFTMenu* menu);
+    virtual void doUpdate(TFTMenu* menu);
+    virtual void doDraw(TFTMenu* menu);
+    virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+    virtual void onActivate();
+
+private:
+      RelayDelayScreen();
+
+      int channel1Button, backButton, resetButton;
+      String channel1RelayDelayVal;
       int currentEditedButton;
   
 };
