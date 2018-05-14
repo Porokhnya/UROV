@@ -65,25 +65,27 @@ void ConfigPin::setup()
   
 	pinMode(ROD_POSITION1_PIN1, INPUT);                  
 	digitalWrite(ROD_POSITION1_PIN1, INPUT_PULLUP);      
-  pinMode(ROD_POSITION1_PIN2, INPUT);                  
-  digitalWrite(ROD_POSITION1_PIN2, INPUT_PULLUP);      
+	pinMode(ROD_POSITION1_PIN2, INPUT);                  
+	digitalWrite(ROD_POSITION1_PIN2, INPUT_PULLUP);      
 
-  pinMode(ROD_POSITION2_PIN1, INPUT);                  
-  digitalWrite(ROD_POSITION2_PIN1, INPUT_PULLUP);      
-  pinMode(ROD_POSITION2_PIN2, INPUT);                  
-  digitalWrite(ROD_POSITION2_PIN2, INPUT_PULLUP);      
+	pinMode(ROD_POSITION2_PIN1, INPUT);                  
+	digitalWrite(ROD_POSITION2_PIN1, INPUT_PULLUP);      
+	pinMode(ROD_POSITION2_PIN2, INPUT);                  
+	digitalWrite(ROD_POSITION2_PIN2, INPUT_PULLUP);      
 
-  pinMode(ROD_POSITION3_PIN1, INPUT);                  
-  digitalWrite(ROD_POSITION3_PIN1, INPUT_PULLUP);      
-  pinMode(ROD_POSITION3_PIN2, INPUT);                  
-  digitalWrite(ROD_POSITION3_PIN2, INPUT_PULLUP);
+	pinMode(ROD_POSITION3_PIN1, INPUT);                  
+	digitalWrite(ROD_POSITION3_PIN1, INPUT_PULLUP);      
+	pinMode(ROD_POSITION3_PIN2, INPUT);                  
+	digitalWrite(ROD_POSITION3_PIN2, INPUT_PULLUP);
 
-	pinMode(inductive_sensor1, INPUT);                  // Вход индуктивного датчика №1
-	digitalWrite(inductive_sensor1, INPUT_PULLUP);      // Вход индуктивного датчика №1, подключить резисторы
-	pinMode(inductive_sensor2, INPUT);                  // Вход индуктивного датчика №2
-	digitalWrite(inductive_sensor2, INPUT_PULLUP);      // Вход индуктивного датчика №2, подключить резисторы
-	pinMode(inductive_sensor3, INPUT);                  // Вход индуктивного датчика №3
-	digitalWrite(inductive_sensor3, INPUT_PULLUP);      // Вход индуктивного датчика №3, подключить резисторы
+	// Измерение по АЦП
+
+	//pinMode(inductive_sensor1, INPUT);                  // Вход индуктивного датчика №1
+	//digitalWrite(inductive_sensor1, INPUT_PULLUP);      // Вход индуктивного датчика №1, подключить резисторы
+	//pinMode(inductive_sensor2, INPUT);                  // Вход индуктивного датчика №2
+	//digitalWrite(inductive_sensor2, INPUT_PULLUP);      // Вход индуктивного датчика №2, подключить резисторы
+	//pinMode(inductive_sensor3, INPUT);                  // Вход индуктивного датчика №3
+	//digitalWrite(inductive_sensor3, INPUT_PULLUP);      // Вход индуктивного датчика №3, подключить резисторы
 
 	pinMode(out_asu_tp1, OUTPUT);                       // Выход на АСУ ТП №1
 	digitalWrite(out_asu_tp1, LOW);                     // Выход на АСУ ТП №1
@@ -98,7 +100,7 @@ void ConfigPin::setup()
 	pinMode(Upr_RS485, OUTPUT);                         // Выход управлениея шиной RS485  
 	digitalWrite(Upr_RS485, LOW);                       // Выход управлениея шиной RS485  
 
-														// CAN шина
+													// CAN шина
 	pinMode(ID0_Out, OUTPUT);                           // Выход управлениея CAN шиной   
 	digitalWrite(ID0_Out, LOW);                         // Выход управлениея CAN шиной   
 	pinMode(ID1_Out, OUTPUT);                           // Выход управлениея CAN шиной   

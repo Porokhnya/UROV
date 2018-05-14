@@ -137,9 +137,9 @@ void SettingsClass::update()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::updateInductiveSensors()
 {
-  inductiveSensorState1 = digitalRead(inductive_sensor1); //analogRead(inductive_sensor1) >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0;
-  inductiveSensorState2 = digitalRead(inductive_sensor2); //analogRead(inductive_sensor2) >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0;
-  inductiveSensorState3 = digitalRead(inductive_sensor3); //analogRead(inductive_sensor3) >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0;
+	inductiveSensorState1 = 1; // digitalRead(inductive_sensor1); //analogRead(inductive_sensor1) >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0;
+	inductiveSensorState2 = 1; // digitalRead(inductive_sensor2); //analogRead(inductive_sensor2) >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0;
+	inductiveSensorState3 = 1; // digitalRead(inductive_sensor3); //analogRead(inductive_sensor3) >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getRelayDelay()

@@ -30,7 +30,7 @@ void loopADC()
     static uint16_t* serie2 = NULL;
     static uint16_t* serie3 = NULL;
     
-    uint16_t currentCountOfPoints = bufferLength/6;
+    uint16_t currentCountOfPoints = bufferLength/9;
 
     if(currentCountOfPoints != countOfPoints)
     {
@@ -58,7 +58,7 @@ void loopADC()
     uint32_t raw5V = 0;
     uint32_t raw3V3 = 0;
     
-    for (int i = 0; i < bufferLength; i = i + 6, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
+    for (int i = 0; i < bufferLength; i = i + 9, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
     {
    // if (sampler.dataHigh == true) break; // sampler.dataHigh == false;      // Если поступил сигнал превышения порога - прекратить вывод !! Не работает
       serie1[serieWriteIterator] = cBuf[i];          // Данные 1 графика
@@ -68,6 +68,15 @@ void loopADC()
       raw200V += cBuf[i+3];        // Данные Измерение =200В
       raw3V3 += cBuf[i+4];         // Данные Измерение 3V3 
       raw5V += cBuf[i+5];          // Данные Измерение +5V 
+
+
+	  //raw200V += cBuf[i + 3];        // Данные Измерение =200В
+	  //raw3V3 += cBuf[i + 4];         // Данные Измерение 3V3 
+	  //raw5V += cBuf[i + 5];          // Данные Измерение +5V 
+
+
+
+
       
 	  } // for
 

@@ -30,6 +30,10 @@ void ADCSampler::begin(unsigned int samplingRate)
   // Configure ADC pin A7
   //  the below code is taken from adc_init(ADC, SystemCoreClock, ADC_FREQ_MAX, ADC_STARTUP_FAST);
 
+
+
+
+
   ADC->ADC_CR = ADC_CR_SWRST;                            // Reset the controller.
   ADC->ADC_MR = 0;                                       // Reset Mode Register.
   ADC->ADC_PTCR = (ADC_PTCR_RXTDIS | ADC_PTCR_TXTDIS);   // Reset PDC transfer.
@@ -40,10 +44,13 @@ void ADCSampler::begin(unsigned int samplingRate)
   ADC->ADC_MR |= ADC_MR_TRGEN_EN;                         // Hardware trigger selected by TRGSEL field is enabled. Включен аппаратный триггер, выбранный по полю TRGSEL.
   ADC->ADC_MR |= ADC_MR_TRGSEL_ADC_TRIG1;                 // selecting TIOA0 as trigger.
   ADC->ADC_MR |= ADC_MR_LOWRES_BITS_12;                   // brief (ADC_MR) 12-bit resolution 
-  //ADC->ADC_ACR |= ADC_ACR_TSON;                         // Включить датчик температуры    
- 
+  ADC->ADC_ACR |= ADC_ACR_TSON;                           // Включить датчик температуры    
+  //ADC->ADC_SEQR1 = 0x76543210;                            // использовать A0 до A7 в порядке в массив
+  //ADC->ADC_SEQR1 = 0x01234567;                            // использовать A0 до A7 в порядке в массив
+  //ADC->ADC_SEQR2 = 0x00abcd00;                            // использовать для А8 А11 следующие действия по порядку в массив  13,12,11,10
+
   ADC->ADC_CHER = ADC_CHANNELS;                           // Записать контролируемые входа
-  ADC->ADC_CHDR = ADC_CHANNELS_DIS;                       // Отключить не используемые входа
+//  ADC->ADC_CHDR = ADC_CHANNELS_DIS;                       // Отключить не используемые входа
   ADC->ADC_EMR = ADC_EMR_CMPMODE_IN                       // Генерирует событие, когда преобразованные данные пересекают окно сравнения.
 	//  | ADC_EMR_CMPSEL(4)                               // Compare channel 4 = A3
 	  | ADC_EMR_CMPALL                                    // Compare ALL channel
@@ -52,8 +59,8 @@ void ADCSampler::begin(unsigned int samplingRate)
 
   ADC->ADC_CWR = ADC_CWR_LOWTHRES(_compare_Low) | ADC_CWR_HIGHTHRES(_compare_High); // Установить высокий и низкий порог компаратора АЦП
 
-  //ADC->ADC_SEQR1 = 0x01234567;                            // использовать A0 до A7 в порядке в массив
-  //ADC->ADC_SEQR2 = 0x00dcba00;                            // использовать для А8 А11 следующие действия по порядку в массив  
+
+
 
   /* Interupts */
   ADC->ADC_IDR = ~ADC_IDR_ENDRX;                        // сбросить регистры прерывания по готовности данных.
