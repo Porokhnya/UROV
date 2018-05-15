@@ -20,6 +20,7 @@
 #include "FileUtils.h"
 #include "Settings.h"
 #include "CoreCommandBuffer.h"
+#include <Wire.h>
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -36,17 +37,31 @@ void setup()
   Serial.begin(SERIAL_SPEED);
   while(!Serial);
 
+  DBGLN(F("Init I2C..."));
+  // на первом I2C у нас память висит
+  Wire.begin();
+  Wire.setClock(I2C_SPEED);
+
+  // на втором I2C могут висеть часы
+  #if DS3231_WIRE_NUMBER == 1
+  Wire1.begin();
+  Wire1.setClock(I2C_SPEED);
+  #endif
+  
+  ConfigPin::setI2CPriority(5);
+  DBGLN(F("I2C inited."));
+
   NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
   Serial.setInterruptPriority(2);
 
   ConfigPin::setup();
   
-  DBGLN(F("INIT settings..."));
+  DBGLN(F("Init settings..."));
   Settings.begin();
   DBGLN(F("Settings inited."));
   
   DBGLN(F("Init RTC..."));
-  RealtimeClock.begin(1);           // запускаем их на шине I2C 1 (SDA1, SCL1);
+  RealtimeClock.begin(DS3231_WIRE_NUMBER);           // запускаем их на шине I2C 1 (SDA1, SCL1);
  // RealtimeClock.setTime(0,1,11,1,7,2,2018);
 
   DBGLN(F("INIT SD..."));

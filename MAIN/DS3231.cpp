@@ -305,10 +305,7 @@ void DS3231Clock::begin(uint8_t wireNumber)
 #endif 
   wire = &Wire;
      
-  wire->begin();
-  
-  ConfigPin::setI2CPriority(5);
-  
+ // wire->begin();  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 
