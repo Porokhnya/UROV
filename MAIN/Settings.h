@@ -49,6 +49,7 @@ class SettingsClass
 
     // состояние индуктивных датчиков
     uint8_t getInductiveSensorState(uint8_t channelNum);
+    void setInductiveSensorState(uint8_t channelNum, uint8_t val);
 
     String getUUID(const char* passedUUID);
 
@@ -68,9 +69,8 @@ class SettingsClass
 
     AT24C64* eeprom;
     DS3231Temperature coreTemp;
-    uint32_t timer, inductiveSensorsTimer;
+    uint32_t timer;
 
-    void updateInductiveSensors();
     uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
 
     VoltageData voltage3V3, voltage5V, voltage200V;

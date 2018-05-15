@@ -52,6 +52,10 @@ void loopADC()
     uint32_t raw200V = 0;
     uint32_t raw5V = 0;
     uint32_t raw3V3 = 0;
+
+    uint32_t inductiveSensorState1 = 0;
+    uint32_t inductiveSensorState2 = 0;
+    uint32_t inductiveSensorState3 = 0;
     
     for (int i = 0; i < bufferLength; i = i + 9, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
     {
@@ -64,10 +68,10 @@ void loopADC()
 	  raw200V += cBuf[i + 6];                          // Данные Измерение =200В
 
 	  //Вычислить данные измерения по среднему значению как в источниках питания.
-	  //inductiveSensorState1  += cBuf[i + 1];                              // Вход индуктивного датчика №1 тест исправности датчика (1)
-	  //inductiveSensorState2  += cBuf[i + 0];                              // Вход индуктивного датчика №2 тест исправности датчика (0)
-	  //inductiveSensorState3  += cBuf[i + 5];                              // Вход индуктивного датчика №3 тест исправности датчика (5)
-	  // !!Исправить переменные inductiveSensorState
+     
+	  inductiveSensorState1  += cBuf[i + 1];                              // Вход индуктивного датчика №1 тест исправности датчика (1)
+	  inductiveSensorState2  += cBuf[i + 0];                              // Вход индуктивного датчика №2 тест исправности датчика (0)
+	  inductiveSensorState3  += cBuf[i + 5];                              // Вход индуктивного датчика №3 тест исправности датчика (5)
 
 	  } // for
 
@@ -75,10 +79,13 @@ void loopADC()
     raw3V3 /= countOfPoints;
     raw5V /= countOfPoints;
 
-	// !!Исправить переменные inductiveSensorState
-	//inductiveSensorState1 /= countOfPoints;
-	//inductiveSensorState2 /= countOfPoints;
-	//inductiveSensorState3 /= countOfPoints;
+  	inductiveSensorState1 /= countOfPoints;
+  	inductiveSensorState2 /= countOfPoints;
+  	inductiveSensorState3 /= countOfPoints;
+
+    Settings.setInductiveSensorState(0, inductiveSensorState1 >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0);
+    Settings.setInductiveSensorState(1, inductiveSensorState2 >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0);
+    Settings.setInductiveSensorState(2, inductiveSensorState3 >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0);
 
     Settings.set3V3RawVoltage(raw3V3);
     Settings.set5VRawVoltage(raw5V);

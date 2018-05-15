@@ -10,7 +10,6 @@ SettingsClass::SettingsClass()
 {
   eeprom = NULL;
   timer = DATA_MEASURE_THRESHOLD;
-  inductiveSensorsTimer = INDUCTIVE_SENSORS_UPDATE_INTERVAL;
   
   voltage3V3.raw = voltage5V.raw = voltage200V.raw = 0;
   voltage3V3.voltage = voltage5V.voltage = voltage200V.voltage = 0;
@@ -62,6 +61,21 @@ String SettingsClass::getUUID(const char* passedUUID)
     }
 
     return savedUUID;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setInductiveSensorState(uint8_t channelNum, uint8_t val)
+{
+  switch(channelNum)
+  {
+    case 0:
+      inductiveSensorState1 = val ? 1 : 0;
+    
+    case 1:
+      inductiveSensorState2 = val ? 1 : 0;
+
+    case 2:
+      inductiveSensorState3 = val ? 1 : 0;
+  }  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint8_t SettingsClass::getInductiveSensorState(uint8_t channelNum)
@@ -128,18 +142,6 @@ void SettingsClass::update()
     coreTemp = RealtimeClock.getTemperature();  
   }
   
-  if(now - inductiveSensorsTimer > INDUCTIVE_SENSORS_UPDATE_INTERVAL)
-  {
-    timer = now;
-    updateInductiveSensors();
-  }
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::updateInductiveSensors()
-{
-	inductiveSensorState1 = 1; // digitalRead(inductive_sensor1); //analogRead(inductive_sensor1) >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0;
-	inductiveSensorState2 = 1; // digitalRead(inductive_sensor2); //analogRead(inductive_sensor2) >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0;
-	inductiveSensorState3 = 1; // digitalRead(inductive_sensor3); //analogRead(inductive_sensor3) >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getRelayDelay()
