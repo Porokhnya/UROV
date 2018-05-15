@@ -45,12 +45,14 @@ void ADCSampler::begin(unsigned int samplingRate)
   ADC->ADC_MR |= ADC_MR_TRGSEL_ADC_TRIG1;                 // selecting TIOA0 as trigger.
   ADC->ADC_MR |= ADC_MR_LOWRES_BITS_12;                   // brief (ADC_MR) 12-bit resolution 
   ADC->ADC_ACR |= ADC_ACR_TSON;                           // Включить датчик температуры    
-  //ADC->ADC_SEQR1 = 0x76543210;                            // использовать A0 до A7 в порядке в массив
-  //ADC->ADC_SEQR1 = 0x01234567;                            // использовать A0 до A7 в порядке в массив
-  //ADC->ADC_SEQR2 = 0x00abcd00;                            // использовать для А8 А11 следующие действия по порядку в массив  13,12,11,10
+
 
   ADC->ADC_CHER = ADC_CHANNELS;                           // Записать контролируемые входа
-//  ADC->ADC_CHDR = ADC_CHANNELS_DIS;                       // Отключить не используемые входа
+  ADC->ADC_CHDR = ADC_CHANNELS_DIS;                       // Отключить не используемые входа
+
+  ADC->ADC_SEQR1 = 0x01234567;                            // use A0 to A7 in order into array Упорядочить аналоговые каналы как у Ардуино
+  ADC->ADC_SEQR2 = 0x00dcba00;                            //use A8 to A11 following in order into array
+
   ADC->ADC_EMR = ADC_EMR_CMPMODE_IN                       // Генерирует событие, когда преобразованные данные пересекают окно сравнения.
 	//  | ADC_EMR_CMPSEL(4)                               // Compare channel 4 = A3
 	  | ADC_EMR_CMPALL                                    // Compare ALL channel
