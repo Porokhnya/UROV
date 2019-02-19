@@ -11,7 +11,8 @@
 /MAIN/libraries/OneWire
 /MAIN/libraries/SdFat
 /MAIN/libraries/SdFatTestSuite
-/MAIN/libraries
+/MAIN/libraries/URTouch
+/MAIN/libraries/UTFT
 /DOC/Схемы модуля/UROV_4_2R.pdsprj.SUPER.Александр.workspace
 /DOC/Схемы модуля/UROV_display_ LGDP4524_1R.pdsprj.SUPER.Александр.workspace
 /DOC/Схемы модуля/Backup Of UROV_4_2R.pdsbak

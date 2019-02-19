@@ -14,9 +14,9 @@ ADCSampler::ADCSampler()
     memset((void *)adcBuffer[i], 0, BUFFER_SIZE);
   }
 }
-void ADCSampler::begin(unsigned int samplingRate)
+void ADCSampler::begin(unsigned int _sr)
 {
-  this->sampleingRate = sampleingRate;
+  this->samplingRate = _sr;
   // Turning devices Timer on.
   pmc_enable_periph_clk(ID_TC0); 
 
@@ -159,7 +159,7 @@ bool ADCSampler::available_compare()
 }
 unsigned int ADCSampler::getSamplingRate()
 {
-  return sampleingRate;
+  return samplingRate;
 }
 
 uint16_t* ADCSampler::getFilledBuffer(int *bufferLength)

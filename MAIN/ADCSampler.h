@@ -57,7 +57,7 @@ class ADCSampler {
 	volatile bool dataHigh;                                    // Признак превышения порога компаратора АЦП
 //	unsigned int samplingRate = 3000;                          // Частота вызова (стробирования) АЦП 50мс
   private:
-    unsigned int sampleingRate;
+    unsigned int samplingRate;
     volatile bool dataReady;
     uint16_t adcBuffer[NUMBER_OF_BUFFERS][BUFFER_SIZE];
     unsigned int adcDMAIndex;                                  //!< This hold the index of the next DMA buffer
