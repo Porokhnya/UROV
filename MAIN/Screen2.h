@@ -244,8 +244,9 @@ protected:
 private:
       PulsesCountScreen();
 
-      int channel1Button, channel2Button, channel3Button, backButton;
-      String channel1PulsesVal, channel2PulsesVal, channel3PulsesVal;
+	  int channel1Button;//DEPRECATED:  , channel2Button, channel3Button, 
+	  int backButton;
+	  String channel1PulsesVal;//DEPRECATED:  , channel2PulsesVal, channel3PulsesVal;
       int currentEditedButton;
   
 };
@@ -271,8 +272,9 @@ protected:
 private:
       PulsesDeltaScreen();
 
-      int channel1Button, channel2Button, channel3Button, backButton;
-      String channel1DeltaVal, channel2DeltaVal, channel3DeltaVal;
+	  int channel1Button;//DEPRECATED:  , channel2Button, channel3Button, 
+	  int backButton;
+	  String channel1DeltaVal;//DEPRECATED:  , channel2DeltaVal, channel3DeltaVal;
       int currentEditedButton;
   
 };
@@ -299,8 +301,9 @@ protected:
 private:
       MotoresourceScreen();
 
-      int channel1Button, channel2Button, channel3Button, backButton, resetButton;
-      String channel1MotoresourceVal, channel2MotoresourceVal, channel3MotoresourceVal;
+	  int channel1Button;//DEPRECATED:  , channel2Button, channel3Button, 
+	  int backButton, resetButton;
+	  String channel1MotoresourceVal;//DEPRECATED:  , channel2MotoresourceVal, channel3MotoresourceVal;
       int currentEditedButton;
   
 };
@@ -327,8 +330,9 @@ protected:
 private:
       MotoresourceMaxScreen();
 
-      int channel1Button, channel2Button, channel3Button, backButton, resetButton;
-      String channel1MotoresourceVal, channel2MotoresourceVal, channel3MotoresourceVal;
+	  int channel1Button;//DEPRECATED:  , channel2Button, channel3Button, 
+	  int backButton, resetButton;
+	  String channel1MotoresourceVal;//DEPRECATED:  , channel2MotoresourceVal, channel3MotoresourceVal;
       int currentEditedButton;
   
 };
@@ -543,19 +547,19 @@ private:
       void saveEthalons();
       void saveEthalon(int selChannel, int saveChannel);
 
-      int backButton, saveButton, channel1Button, channel2Button, channel3Button, channel1SaveButton, channel2SaveButton, channel3SaveButton, directionButton;
-      int channel1SelectedChannel, channel2SelectedChannel, channel3SelectedChannel;
-      int channel1SaveChannel, channel2SaveChannel, channel3SaveChannel;
+      int backButton, saveButton, channel1Button, /*channel2Button, channel3Button,*/ channel1SaveButton, /*channel2SaveButton, channel3SaveButton,*/ directionButton;
+	  int channel1SelectedChannel;//DEPRECATED:  , channel2SelectedChannel, channel3SelectedChannel;
+	  int channel1SaveChannel;//DEPRECATED:  , channel2SaveChannel, channel3SaveChannel;
       void rotateSelectedChannel(int button, int& val);
       void showButtons(bool bShow);
   
       InterruptTimeList list1;
-      InterruptTimeList list2;
-      InterruptTimeList list3;
+	  //DEPRECATED: InterruptTimeList list2;
+	  //DEPRECATED: InterruptTimeList list3;
     
       Points serie1;
-      Points serie2;
-      Points serie3;
+	  //DEPRECATED: Points serie2;
+	  //DEPRECATED: Points serie3;
   
   
 };

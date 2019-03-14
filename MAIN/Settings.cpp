@@ -213,10 +213,13 @@ uint32_t SettingsClass::getMotoresource(uint8_t channelNum)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = MOTORESOURCE_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = MOTORESOURCE_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = MOTORESOURCE_STORE_ADDRESS2;
     break;
@@ -224,6 +227,7 @@ uint32_t SettingsClass::getMotoresource(uint8_t channelNum)
     case 2:
     addr = MOTORESOURCE_STORE_ADDRESS3;
     break;
+	*/
   }
 
   uint32_t result = 0;
@@ -244,10 +248,13 @@ void SettingsClass::setMotoresource(uint8_t channelNum, uint32_t val)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = MOTORESOURCE_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = MOTORESOURCE_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = MOTORESOURCE_STORE_ADDRESS2;
     break;
@@ -255,6 +262,7 @@ void SettingsClass::setMotoresource(uint8_t channelNum, uint32_t val)
     case 2:
     addr = MOTORESOURCE_STORE_ADDRESS3;
     break;
+	*/
   }
 
     uint8_t* writePtr = (uint8_t*)&val;
@@ -266,10 +274,13 @@ uint32_t SettingsClass::getMotoresourceMax(uint8_t channelNum)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = MOTORESOURCE_MAX_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = MOTORESOURCE_MAX_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = MOTORESOURCE_MAX_STORE_ADDRESS2;
     break;
@@ -277,6 +288,7 @@ uint32_t SettingsClass::getMotoresourceMax(uint8_t channelNum)
     case 2:
     addr = MOTORESOURCE_MAX_STORE_ADDRESS3;
     break;
+	*/
   }
 
   uint32_t result = 0;
@@ -297,10 +309,13 @@ void SettingsClass::setMotoresourceMax(uint8_t channelNum, uint32_t val)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = MOTORESOURCE_MAX_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = MOTORESOURCE_MAX_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = MOTORESOURCE_MAX_STORE_ADDRESS2;
     break;
@@ -308,6 +323,7 @@ void SettingsClass::setMotoresourceMax(uint8_t channelNum, uint32_t val)
     case 2:
     addr = MOTORESOURCE_MAX_STORE_ADDRESS3;
     break;
+	*/
   }
 
     uint8_t* writePtr = (uint8_t*)&val;
@@ -319,10 +335,13 @@ uint16_t SettingsClass::getChannelPulses(uint8_t channelNum)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = COUNT_PULSES_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = COUNT_PULSES_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = COUNT_PULSES_STORE_ADDRESS2;
     break;
@@ -330,6 +349,7 @@ uint16_t SettingsClass::getChannelPulses(uint8_t channelNum)
     case 2:
     addr = COUNT_PULSES_STORE_ADDRESS3;
     break;
+	*/
   }
 
   uint16_t result = 0;
@@ -350,10 +370,13 @@ void SettingsClass::setChannelPulses(uint8_t channelNum, uint16_t val)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = COUNT_PULSES_STORE_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = COUNT_PULSES_STORE_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = COUNT_PULSES_STORE_ADDRESS2;
     break;
@@ -361,6 +384,7 @@ void SettingsClass::setChannelPulses(uint8_t channelNum, uint16_t val)
     case 2:
     addr = COUNT_PULSES_STORE_ADDRESS3;
     break;
+	*/
   }
 
     uint8_t* writePtr = (uint8_t*)&val;
@@ -372,10 +396,13 @@ uint8_t SettingsClass::getChannelDelta(uint8_t channelNum)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = CHANNEL_PULSES_DELTA_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = CHANNEL_PULSES_DELTA_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = CHANNEL_PULSES_DELTA_ADDRESS2;
     break;
@@ -383,6 +410,7 @@ uint8_t SettingsClass::getChannelDelta(uint8_t channelNum)
     case 2:
     addr = CHANNEL_PULSES_DELTA_ADDRESS3;
     break;
+	*/
   }
 
   uint8_t result = eeprom->read(addr);
@@ -401,10 +429,13 @@ void SettingsClass::setChannelDelta(uint8_t channelNum, uint8_t val)
   uint16_t addr = 0;
   switch(channelNum)
   {
-    case 0:
-    addr = CHANNEL_PULSES_DELTA_ADDRESS1;
+	  //DEPRECATED: case 0:
+	default:
+		addr = CHANNEL_PULSES_DELTA_ADDRESS1;
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
     addr = CHANNEL_PULSES_DELTA_ADDRESS2;
     break;
@@ -412,6 +443,7 @@ void SettingsClass::setChannelDelta(uint8_t channelNum, uint8_t val)
     case 2:
     addr = CHANNEL_PULSES_DELTA_ADDRESS3;
     break;
+	*/
   }
 
   eeprom->write(addr,val);

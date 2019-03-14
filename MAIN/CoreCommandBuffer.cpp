@@ -235,7 +235,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         else
         if(!strcmp_P(commandName, PULSES_COMMAND))
         {
-            if(cParser.argsCount() > 3)
+            if(cParser.argsCount() > 1)
             {
               commandHandled = setPULSES(cParser, pStream);
             }
@@ -300,7 +300,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         else
         if(!strcmp_P(commandName, DELTA_COMMAND))
         {
-            if(cParser.argsCount() > 3)
+            if(cParser.argsCount() > 1)
             {
               commandHandled = setDELTA(cParser, pStream);
             }
@@ -313,8 +313,8 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
         {
-            // запросили установить текущий моторесурс SET=RES_CUR|0|1|2
-            if(cParser.argsCount() > 3)
+            // запросили установить текущий моторесурс SET=RES_CUR|0
+            if(cParser.argsCount() > 1)
             {
               commandHandled = setMOTORESOURCE_CURRENT(cParser, pStream);
             }
@@ -327,8 +327,8 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         else
         if(!strcmp_P(commandName, MOTORESOURCE_MAX_COMMAND))
         {
-            // запросили установить текущий моторесурс SET=RES_CUR|0|1|2
-            if(cParser.argsCount() > 3)
+            // запросили установить текущий моторесурс SET=RES_CUR|0
+            if(cParser.argsCount() > 1)
             {
               commandHandled = setMOTORESOURCE_MAX(cParser, pStream);
             }
@@ -884,13 +884,13 @@ bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParse
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->print(Settings.getChannelDelta(0));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getChannelDelta(0));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->print(Settings.getChannelDelta(1));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  //DEPRECATED: pStream->print(Settings.getChannelDelta(1));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->println(Settings.getChannelDelta(2));
+  //DEPRECATED: pStream->println(Settings.getChannelDelta(2));
 
   return true;
 }
@@ -898,16 +898,16 @@ bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParse
 bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
 {
 
-  if(parser.argsCount() < 4)
+  if(parser.argsCount() < 2)
     return false;
   
   uint8_t resCurrent1 = atoi(parser.getArg(1));
-  uint8_t resCurrent2 = atoi(parser.getArg(2));
-  uint8_t resCurrent3 = atoi(parser.getArg(3));
+  //DEPRECATED: uint8_t resCurrent2 = atoi(parser.getArg(2));
+  //DEPRECATED: uint8_t resCurrent3 = atoi(parser.getArg(3));
 
   Settings.setChannelDelta(0,resCurrent1);
-  Settings.setChannelDelta(1,resCurrent2);
-  Settings.setChannelDelta(2,resCurrent3);
+  //DEPRECATED: Settings.setChannelDelta(1,resCurrent2);
+  //DEPRECATED: Settings.setChannelDelta(2,resCurrent3);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -930,13 +930,13 @@ bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandPars
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->print(Settings.getChannelPulses(0));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getChannelPulses(0));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->print(Settings.getChannelPulses(1));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  //DEPRECATED: pStream->print(Settings.getChannelPulses(1));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->println(Settings.getChannelPulses(2));
+  //DEPRECATED: pStream->println(Settings.getChannelPulses(2));
 
   return true;
 }
@@ -944,16 +944,16 @@ bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandPars
 bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream)
 {
 
-  if(parser.argsCount() < 4)
+  if(parser.argsCount() < 2)
     return false;
   
   uint16_t resCurrent1 = atoi(parser.getArg(1));
-  uint16_t resCurrent2 = atoi(parser.getArg(2));
-  uint16_t resCurrent3 = atoi(parser.getArg(3));
+  //DEPRECATED: uint16_t resCurrent2 = atoi(parser.getArg(2));
+  //DEPRECATED: uint16_t resCurrent3 = atoi(parser.getArg(3));
 
   Settings.setChannelPulses(0,resCurrent1);
-  Settings.setChannelPulses(1,resCurrent2);
-  Settings.setChannelPulses(2,resCurrent3);
+  //DEPRECATED: Settings.setChannelPulses(1,resCurrent2);
+  //DEPRECATED: Settings.setChannelPulses(2,resCurrent3);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -976,13 +976,13 @@ bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const C
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->print(Settings.getMotoresourceMax(0));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getMotoresourceMax(0));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->print(Settings.getMotoresourceMax(1));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  //DEPRECATED: pStream->print(Settings.getMotoresourceMax(1));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->println(Settings.getMotoresourceMax(2));
+  //DEPRECATED: pStream->println(Settings.getMotoresourceMax(2));
 
   return true;
 }
@@ -990,16 +990,16 @@ bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const C
 bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pStream)
 {
 
-  if(parser.argsCount() < 4)
+  if(parser.argsCount() < 2)
     return false;
   
   uint32_t resCurrent1 = atoi(parser.getArg(1));
-  uint32_t resCurrent2 = atoi(parser.getArg(2));
-  uint32_t resCurrent3 = atoi(parser.getArg(3));
+  //DEPRECATED: uint32_t resCurrent2 = atoi(parser.getArg(2));
+  //DEPRECATED: uint32_t resCurrent3 = atoi(parser.getArg(3));
 
   Settings.setMotoresourceMax(0,resCurrent1);
-  Settings.setMotoresourceMax(1,resCurrent2);
-  Settings.setMotoresourceMax(2,resCurrent3);
+  //DEPRECATED: Settings.setMotoresourceMax(1,resCurrent2);
+  //DEPRECATED: Settings.setMotoresourceMax(2,resCurrent3);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1022,13 +1022,13 @@ bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, con
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->print(Settings.getMotoresource(0));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getMotoresource(0));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->print(Settings.getMotoresource(1));
-  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  //DEPRECATED: pStream->print(Settings.getMotoresource(1));
+  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
-  pStream->println(Settings.getMotoresource(2));
+  //DEPRECATED: pStream->println(Settings.getMotoresource(2));
 
   return true;
 }
@@ -1036,16 +1036,16 @@ bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, con
 bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream* pStream)
 {
 
-  if(parser.argsCount() < 4)
+  if(parser.argsCount() < 2)
     return false;
   
   uint32_t resCurrent1 = atoi(parser.getArg(1));
-  uint32_t resCurrent2 = atoi(parser.getArg(2));
-  uint32_t resCurrent3 = atoi(parser.getArg(3));
+  //DEPRECATED: uint32_t resCurrent2 = atoi(parser.getArg(2));
+  //DEPRECATED: uint32_t resCurrent3 = atoi(parser.getArg(3));
 
   Settings.setMotoresource(0,resCurrent1);
-  Settings.setMotoresource(1,resCurrent2);
-  Settings.setMotoresource(2,resCurrent3);
+  //DEPRECATED: Settings.setMotoresource(1,resCurrent2);
+  //DEPRECATED: Settings.setMotoresource(2,resCurrent3);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

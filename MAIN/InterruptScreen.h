@@ -43,16 +43,16 @@ private:
 
     void drawTime(TFTMenu* menu);
 
-    uint32_t channelMotoresourcePercents1, channelMotoresourcePercents2, channelMotoresourcePercents3;
-    word motoresourceLastFontColor1, motoresourceLastFontColor2, motoresourceLastFontColor3;
-    uint32_t motoresourceBlinkTimer1, motoresourceBlinkTimer2, motoresourceBlinkTimer3;
+	uint32_t channelMotoresourcePercents1;//DEPRECATED:  , channelMotoresourcePercents2, channelMotoresourcePercents3;
+	word motoresourceLastFontColor1;//DEPRECATED:  , motoresourceLastFontColor2, motoresourceLastFontColor3;
+	uint32_t motoresourceBlinkTimer1;//DEPRECATED:  , motoresourceBlinkTimer2, motoresourceBlinkTimer3;
     void computeMotoresource();
     void drawMotoresource(TFTMenu* menu);
     void drawTimeBeforeInterrupt(TFTMenu* menu);
 
     InterruptTimeList list1;
-    InterruptTimeList list2;
-    InterruptTimeList list3;
+	//DEPRECATED: InterruptTimeList list2;
+	//DEPRECATED: InterruptTimeList list3;
 
     unsigned long startSeenTime;
     uint32_t timeBeforeInterrupts;
@@ -64,8 +64,8 @@ private:
     void drawCompareResult(TFTMenu* menu);
 
     Points serie1;
-    Points serie2;
-    Points serie3;
+	//DEPRECATED: Points serie2;
+	//DEPRECATED: Points serie3;
 
     uint32_t timerDelta;  
   

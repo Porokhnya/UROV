@@ -12,8 +12,8 @@ InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
 // списки времён срабатываний прерываний на наших портах
 InterruptTimeList list1;
-InterruptTimeList list2;
-InterruptTimeList list3;
+//DEPRECATED: InterruptTimeList list2;
+//DEPRECATED: InterruptTimeList list3;
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool onInterruptSeriesTimer = false;
 volatile uint32_t lastInterruptTime = 0;
@@ -45,6 +45,8 @@ void Interrupt1Handler()
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
+//DEPRECATED:
 void Interrupt2Handler()
 {
     uint32_t now = micros();
@@ -70,6 +72,7 @@ void Interrupt3Handler()
   }  
     
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void MakeAcsSignalDecision(void* param)
 {
@@ -81,7 +84,7 @@ void MakeAcsSignalDecision(void* param)
   // нет ни одного импульса прерываний
 
   // проверяем положение штанги
-  for(uint8_t i=0;i<3;i++)
+  for(uint8_t i=0;i<NUM_RODS;i++)
   {
     if(ConfigPin::getRodPosition(i) == rpBroken)
     {
@@ -91,7 +94,7 @@ void MakeAcsSignalDecision(void* param)
   }
 
   // проверяем исправность индуктивных датчиков
-  for(uint8_t i=0;i<3;i++)
+  for(uint8_t i=0;i<NUM_RODS;i++)
   {
     if(Settings.getInductiveSensorState(i) != 1)
     {
@@ -153,7 +156,7 @@ void MakeAcsSignalDecision(void* param)
 
   // проверяем наличие данных в списке
   noInterrupts();
-  bool hasData = list1.size() || list2.size() || list3.size();
+  bool hasData = list1.size();//DEPRECATED: || list2.size() || list3.size();
   interrupts();
 
   if(!hasData)
@@ -179,7 +182,6 @@ void RelayTriggered()
 
   // взводим отложенное событие
   uint32_t raiseDelay = Settings.getACSDelay()*1000;
-//  CoreDelayedEvent.raise(raiseDelay,CoreDelayedEventClass::CoreDelayedEventPinChange,(void*) new CoreDelayedEventPinChangeArg(out_asu_tp1,ACS_SIGNAL_LEVEL));
   CoreDelayedEvent.raise(raiseDelay,MakeAcsSignalDecision,NULL);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -193,16 +195,16 @@ void InterruptHandlerClass::begin()
 {
   // резервируем память
   list1.reserve(INTERRUPT_RESERVE_RECORDS);
-  list2.reserve(INTERRUPT_RESERVE_RECORDS);
-  list3.reserve(INTERRUPT_RESERVE_RECORDS);
+  //DEPRECATED:list2.reserve(INTERRUPT_RESERVE_RECORDS);
+  //DEPRECATED:list3.reserve(INTERRUPT_RESERVE_RECORDS);
 
   NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
 
   attachInterrupt(digitalPinToInterrupt(RELAY_PIN),RelayTriggered, RISING);
   
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT1_PIN),Interrupt1Handler, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT2_PIN),Interrupt2Handler, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT3_PIN),Interrupt3Handler, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN),Interrupt1Handler, CHANGE);
+  //DEPRECATED:attachInterrupt(digitalPinToInterrupt(INTERRUPT2_PIN),Interrupt2Handler, CHANGE);
+  //DEPRECATED:attachInterrupt(digitalPinToInterrupt(INTERRUPT3_PIN),Interrupt3Handler, CHANGE);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
@@ -314,8 +316,12 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::writeToLog(InterruptTimeList& lst1, InterruptTimeList& lst2, InterruptTimeList& lst3, EthalonCompareResult res1, EthalonCompareResult res2, EthalonCompareResult res3
-,EthalonCompareNumber num1,EthalonCompareNumber num2, EthalonCompareNumber num3, InterruptTimeList& ethalonData1, InterruptTimeList& ethalonData2, InterruptTimeList& ethalonData3)
+void InterruptHandlerClass::writeToLog(
+	InterruptTimeList& lst1, /*InterruptTimeList& lst2, InterruptTimeList& lst3, */
+	EthalonCompareResult res1, /*EthalonCompareResult res2, EthalonCompareResult res3,*/
+	EthalonCompareNumber num1,/*EthalonCompareNumber num2, EthalonCompareNumber num3, */
+	InterruptTimeList& ethalonData1/*, InterruptTimeList& ethalonData2, InterruptTimeList& ethalonData3*/
+)
 {
 
   uint8_t workBuff[10] = {0};
@@ -351,7 +357,7 @@ void InterruptHandlerClass::writeToLog(InterruptTimeList& lst1, InterruptTimeLis
   {
     writeLogRecord(0,lst1,res1,num1, ethalonData1); 
   } // if
-
+  /*
   if(lst2.size() > 1)
   {
     writeLogRecord(1,lst2,res2,num2, ethalonData2); 
@@ -361,7 +367,7 @@ void InterruptHandlerClass::writeToLog(InterruptTimeList& lst1, InterruptTimeLis
   {
     writeLogRecord(2,lst3,res3,num3, ethalonData3);
   } // if
-
+  */
 
     workBuff[0] = recordInterruptInfoEnd;
     Logger.write(workBuff,1);
@@ -396,7 +402,7 @@ void InterruptHandlerClass::update()
       noInterrupts();
        onRelayTriggeredTimer = false;
        relayTriggeredTime = micros();
-       hasAlarm = !(list1.size() || list2.size() || list3.size());
+	   hasAlarm = !(list1.size());//DEPRECATED: || list2.size() || list3.size());
        
        if(hasAlarm)
        {
@@ -439,26 +445,26 @@ void InterruptHandlerClass::update()
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
       list1.empty();
   
-      InterruptTimeList copyList2 = list2;      
+	  //DEPRECATED:InterruptTimeList copyList2 = list2;      
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
-      list2.empty();
+	  //DEPRECATED:list2.empty();
       
-      InterruptTimeList copyList3 = list3;      
+	  //DEPRECATED:InterruptTimeList copyList3 = list3;      
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
-      list3.empty();
+	  //DEPRECATED:list3.empty();
           
     interrupts();
 
      InterruptHandlerClass::normalizeList(copyList1);
-     InterruptHandlerClass::normalizeList(copyList2);
-     InterruptHandlerClass::normalizeList(copyList3);
+	 //DEPRECATED:InterruptHandlerClass::normalizeList(copyList2);
+	 //DEPRECATED:InterruptHandlerClass::normalizeList(copyList3);
 
      EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
-     EthalonCompareResult compareRes2 = COMPARE_RESULT_NoSourcePulses;
-     EthalonCompareResult compareRes3 = COMPARE_RESULT_NoSourcePulses;
+	 //DEPRECATED:EthalonCompareResult compareRes2 = COMPARE_RESULT_NoSourcePulses;
+	 //DEPRECATED:EthalonCompareResult compareRes3 = COMPARE_RESULT_NoSourcePulses;
 
-     EthalonCompareNumber compareNumber1,compareNumber2,compareNumber3;
-     InterruptTimeList ethalonData1, ethalonData2, ethalonData3;
+	 EthalonCompareNumber compareNumber1;//DEPRECATED: , compareNumber2, compareNumber3;
+	 InterruptTimeList ethalonData1;//DEPRECATED: , ethalonData2, ethalonData3;
      
     bool needToLog = false;
 
@@ -484,7 +490,8 @@ void InterruptHandlerClass::update()
           Feedback.alarm();
        }
     }
-    
+    /*
+	//DEPRECATED:
     if(copyList2.size() > 1)
     {
       DBG("INTERRUPT #2 HAS SERIES OF DATA: ");
@@ -529,11 +536,12 @@ void InterruptHandlerClass::update()
        }
        
     }
+	*/
 
     if(needToLog)
     {
       // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(copyList1, copyList2, copyList3, compareRes1, compareRes2, compareRes3,compareNumber1,compareNumber2,compareNumber3, ethalonData1, ethalonData2, ethalonData3);     
+      InterruptHandlerClass::writeToLog(copyList1, /*copyList2, copyList3,*/ compareRes1, /*compareRes2, compareRes3,*/compareNumber1,/*compareNumber2,compareNumber3,*/ ethalonData1/*, ethalonData2, ethalonData3*/);     
     } // needToLog
     
 
@@ -542,7 +550,7 @@ void InterruptHandlerClass::update()
     // не в ответе за то, что делает сейчас обработчик - пускай сам разруливает ситуацию
     // так, как нужно ему.
 
-    bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1) || (copyList2.size() > 1) || (copyList3.size() > 1) );
+    bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1) /*|| (copyList2.size() > 1) || (copyList3.size() > 1)*/ );
 
     if(wantToInformSubscriber)
     {       
@@ -560,8 +568,8 @@ void InterruptHandlerClass::update()
         subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
                 
         subscriber->OnInterruptRaised(copyList1, 0, compareRes1);
-        subscriber->OnInterruptRaised(copyList2, 1, compareRes2);      
-        subscriber->OnInterruptRaised(copyList3, 2, compareRes3);
+		//DEPRECATED:subscriber->OnInterruptRaised(copyList2, 1, compareRes2);      
+		//DEPRECATED:subscriber->OnInterruptRaised(copyList3, 2, compareRes3);
         
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();

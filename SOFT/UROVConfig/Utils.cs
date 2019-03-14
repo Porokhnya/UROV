@@ -753,19 +753,19 @@ namespace UROVConfig
             Config c = Config.Instance;
 
             this.motoresourceMax1 = c.MotoresourceMax1;
-            this.motoresourceMax2 = c.MotoresourceMax2;
-            this.motoresourceMax3 = c.MotoresourceMax3;
+            //DEPRECATED: this.motoresourceMax2 = c.MotoresourceMax2;
+            //DEPRECATED: this.motoresourceMax3 = c.MotoresourceMax3;
 
             this.lowBorder = c.LowBorder;
             this.highBorder = c.HighBorder;
 
             this.pulses1 = c.Pulses1;
-            this.pulses2 = c.Pulses2;
-            this.pulses3 = c.Pulses3;
+            //DEPRECATED: this.pulses2 = c.Pulses2;
+            //DEPRECATED: this.pulses3 = c.Pulses3;
 
             this.delta1 = c.Delta1;
-            this.delta2 = c.Delta2;
-            this.delta3 = c.Delta3;
+            //DEPRECATED: this.delta2 = c.Delta2;
+            //DEPRECATED: this.delta3 = c.Delta3;
         }
 
         public ArchiveSettings Load(string filename)
@@ -847,20 +847,20 @@ namespace UROVConfig
         public void Clear()
         {
             motoresourceCurrent1 = 0;
-            motoresourceCurrent2 = 0;
-            motoresourceCurrent3 = 0;
+            //DEPRECATED: motoresourceCurrent2 = 0;
+            //DEPRECATED: motoresourceCurrent3 = 0;
 
             motoresourceMax1 = 0;
-            motoresourceMax2 = 0;
-            motoresourceMax3 = 0;
+            //DEPRECATED: motoresourceMax2 = 0;
+            //DEPRECATED: motoresourceMax3 = 0;
 
             pulses1 = 0;
-            pulses2 = 0;
-            pulses3 = 0;
+            //DEPRECATED: pulses2 = 0;
+            //DEPRECATED: pulses3 = 0;
 
             delta1 = 0;
-            delta2 = 0;
-            delta3 = 0;
+            //DEPRECATED: delta2 = 0;
+            //DEPRECATED: delta3 = 0;
 
             lowBorder = 0;
             highBorder = 0;
@@ -872,36 +872,36 @@ namespace UROVConfig
         }
 
         private int motoresourceCurrent1 = 0;
-        private int motoresourceCurrent2 = 0;
-        private int motoresourceCurrent3 = 0;
+        //DEPRECATED: private int motoresourceCurrent2 = 0;
+        //DEPRECATED: private int motoresourceCurrent3 = 0;
 
         public int MotoresourceCurrent1 { get { return motoresourceCurrent1; } set { motoresourceCurrent1 = value; } }
-        public int MotoresourceCurrent2 { get { return motoresourceCurrent2; } set { motoresourceCurrent2 = value; } }
-        public int MotoresourceCurrent3 { get { return motoresourceCurrent3; } set { motoresourceCurrent3 = value; } }
+        //DEPRECATED: public int MotoresourceCurrent2 { get { return motoresourceCurrent2; } set { motoresourceCurrent2 = value; } }
+        //DEPRECATED: public int MotoresourceCurrent3 { get { return motoresourceCurrent3; } set { motoresourceCurrent3 = value; } }
 
         private int motoresourceMax1 = 0;
-        private int motoresourceMax2 = 0;
-        private int motoresourceMax3 = 0;
+        //DEPRECATED: private int motoresourceMax2 = 0;
+        //DEPRECATED: private int motoresourceMax3 = 0;
 
         public int MotoresourceMax1 { get { return motoresourceMax1; } set { motoresourceMax1 = value; } }
-        public int MotoresourceMax2 { get { return motoresourceMax2; } set { motoresourceMax2 = value; } }
-        public int MotoresourceMax3 { get { return motoresourceMax3; } set { motoresourceMax3 = value; } }
+        //DEPRECATED: public int MotoresourceMax2 { get { return motoresourceMax2; } set { motoresourceMax2 = value; } }
+        //DEPRECATED: public int MotoresourceMax3 { get { return motoresourceMax3; } set { motoresourceMax3 = value; } }
 
         private int pulses1 = 0;
-        private int pulses2 = 0;
-        private int pulses3 = 0;
+        //DEPRECATED: private int pulses2 = 0;
+        //DEPRECATED: private int pulses3 = 0;
 
         public int Pulses1 { get { return pulses1; } set { pulses1 = value; } }
-        public int Pulses2 { get { return pulses2; } set { pulses2 = value; } }
-        public int Pulses3 { get { return pulses3; } set { pulses3 = value; } }
+        //DEPRECATED: public int Pulses2 { get { return pulses2; } set { pulses2 = value; } }
+        //DEPRECATED: public int Pulses3 { get { return pulses3; } set { pulses3 = value; } }
 
         private int delta1 = 0;
-        private int delta2 = 0;
-        private int delta3 = 0;
+        //DEPRECATED: private int delta2 = 0;
+        //DEPRECATED: private int delta3 = 0;
 
         public int Delta1 { get { return delta1; } set { delta1 = value; } }
-        public int Delta2 { get { return delta2; } set { delta2 = value; } }
-        public int Delta3 { get { return delta3; } set { delta3 = value; } }
+        //DEPRECATED: public int Delta2 { get { return delta2; } set { delta2 = value; } }
+        //DEPRECATED: public int Delta3 { get { return delta3; } set { delta3 = value; } }
 
         private int lowBorder = 0;
         private int highBorder = 0;
