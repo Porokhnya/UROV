@@ -14,7 +14,7 @@ SettingsClass::SettingsClass()
   voltage3V3.raw = voltage5V.raw = voltage200V.raw = 0;
   voltage3V3.voltage = voltage5V.voltage = voltage200V.voltage = 0;
 
-  inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 1;
+  //DEPRECATED: inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 1;
 
   relayDelay = RELAY_WANT_DATA_AFTER;
   acsDelay = ACS_SIGNAL_DELAY;
@@ -63,6 +63,8 @@ String SettingsClass::getUUID(const char* passedUUID)
     return savedUUID;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+//DEPRECATED:
 void SettingsClass::setInductiveSensorState(uint8_t channelNum, uint8_t val)
 {
   switch(channelNum)
@@ -94,6 +96,7 @@ uint8_t SettingsClass::getInductiveSensorState(uint8_t channelNum)
 
   return LOW;
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::begin()
 {

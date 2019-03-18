@@ -141,7 +141,7 @@ namespace UROVConfig
     {
         public InterruptInfo InterruptInfo;
         public byte ChannelNumber;
-        public InductiveSensorState InductiveSensorState;
+        //DEPRECATED: public InductiveSensorState InductiveSensorState;
         public RodPosition RodPosition;
         public int MoveTime;
         public int Motoresource;

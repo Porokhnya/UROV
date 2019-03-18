@@ -80,7 +80,7 @@ class CommandHandlerClass
   bool setDELTA(CommandParser& parser, Stream* pStream);
   bool getDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
-  bool getINDUCTIVE(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+  //DEPRECATED: bool getINDUCTIVE(const char* commandPassed, const CommandParser& parser, Stream* pStream);
   bool getVOLTAGE(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
   bool getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream);

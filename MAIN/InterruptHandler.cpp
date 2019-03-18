@@ -7,36 +7,39 @@
 #include "Logger.h"
 #include "Settings.h"
 #include "DelayedEvents.h"
+#include "ADCSampler.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
-// списки времён срабатываний прерываний на наших портах
+// список времён срабатываний прерываний на энкодере штанги
 InterruptTimeList list1;
-//DEPRECATED: InterruptTimeList list2;
-//DEPRECATED: InterruptTimeList list3;
 //--------------------------------------------------------------------------------------------------------------------------------------
-volatile bool onInterruptSeriesTimer = false;
-volatile uint32_t lastInterruptTime = 0;
+volatile bool hasEncoderInterrupt = false;
+volatile uint32_t lastEncoderInterruptTime = 0;
 
-volatile uint32_t relayTriggeredTime = 0;
-volatile bool onRelayTriggeredTimer = false;
+volatile uint32_t relayTriggeredTime = 0; // время, когда защита сработала
+volatile bool hasRelayTriggered = false;
 
 volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабатывания реле защиты до первого прерывания
 volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
+
+volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
+volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL;
 //--------------------------------------------------------------------------------------------------------------------------------------
-void setInterruptFlag()
+void setEncoderInterruptFlag()
 {
-  onInterruptSeriesTimer = true;
-  lastInterruptTime = micros();
+	hasEncoderInterrupt = true;
+	lastEncoderInterruptTime = micros();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void Interrupt1Handler()
+void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
     uint32_t now = micros();
-    list1.push_back(now);    
-    setInterruptFlag();
+    list1.push_back(now);
+
+	setEncoderInterruptFlag();
 
   if(list1.size() < 2)
   {
@@ -45,35 +48,24 @@ void Interrupt1Handler()
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+void computeRMS()
+{
+	// считаем РМС
+	adcSampler.startComputeRMS();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void checkRMS()
+{
+	// получаем подсчитанное РМС
+	uint32_t rmsComputed1, rmsComputed2, rmsComputed3;
+	adcSampler.getComputedRMS(rmsComputed1, rmsComputed2, rmsComputed3);
+
+	//TODO: тут проверяем РМС
+
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 /*
 //DEPRECATED:
-void Interrupt2Handler()
-{
-    uint32_t now = micros();
-    list2.push_back(now);
-    setInterruptFlag();
-
-  if(list2.size() < 2)
-  {
-    timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
-  }  
-    
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void Interrupt3Handler()
-{
-    uint32_t now = micros();
-    list3.push_back(now);
-    setInterruptFlag();
-
-  if(list3.size() < 2)
-  {
-    timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
-  }  
-    
-}
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
 void MakeAcsSignalDecision(void* param)
 {
   // принимаем решение - выдавать ли сигнал на АСУ ТП.
@@ -171,18 +163,20 @@ void MakeAcsSignalDecision(void* param)
   digitalWrite(out_asu_tp1,ACS_SIGNAL_LEVEL);
     
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void RelayTriggered()
 {
   // запоминаем время срабатывания защиты
   relayTriggeredTime = micros();
-  onRelayTriggeredTimer = true;
+  hasRelayTriggered = true;
   hasRelayTriggeredTime = true;
-  timeBeforeInterruptsBegin = 0;
+  timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
 
   // взводим отложенное событие
-  uint32_t raiseDelay = Settings.getACSDelay()*1000;
-  CoreDelayedEvent.raise(raiseDelay,MakeAcsSignalDecision,NULL);
+  //DEPRECATED: 
+  //uint32_t raiseDelay = Settings.getACSDelay()*1000;
+  //CoreDelayedEvent.raise(raiseDelay,MakeAcsSignalDecision,NULL);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
@@ -195,16 +189,14 @@ void InterruptHandlerClass::begin()
 {
   // резервируем память
   list1.reserve(INTERRUPT_RESERVE_RECORDS);
-  //DEPRECATED:list2.reserve(INTERRUPT_RESERVE_RECORDS);
-  //DEPRECATED:list3.reserve(INTERRUPT_RESERVE_RECORDS);
 
   NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
 
-  attachInterrupt(digitalPinToInterrupt(RELAY_PIN),RelayTriggered, RISING);
-  
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN),Interrupt1Handler, CHANGE);
-  //DEPRECATED:attachInterrupt(digitalPinToInterrupt(INTERRUPT2_PIN),Interrupt2Handler, CHANGE);
-  //DEPRECATED:attachInterrupt(digitalPinToInterrupt(INTERRUPT3_PIN),Interrupt3Handler, CHANGE);
+  // взводим прерывание на входе срабатывания защиты
+  attachInterrupt(digitalPinToInterrupt(RELAY_PIN),RelayTriggered, RELAY_INTERRUPT_LEVEL);
+
+  // считаем импульсы на штанге по прерыванию
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, CHANGE);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
@@ -274,11 +266,6 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   workBuff[0] = recordEthalonNumber;
   workBuff[1] = num;
   Logger.write(workBuff,2);
-
-  // пишем состояние индуктивного датчика для канала
-  workBuff[0] = recordChannelInductiveSensorState;
-  workBuff[1] = Settings.getInductiveSensorState(channelNumber);
-  Logger.write(workBuff,2);
   
   // пишем результат сравнения с эталоном для канала
   workBuff[0] = recordCompareResult;
@@ -317,16 +304,15 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
-	InterruptTimeList& lst1, /*InterruptTimeList& lst2, InterruptTimeList& lst3, */
-	EthalonCompareResult res1, /*EthalonCompareResult res2, EthalonCompareResult res3,*/
-	EthalonCompareNumber num1,/*EthalonCompareNumber num2, EthalonCompareNumber num3, */
-	InterruptTimeList& ethalonData1/*, InterruptTimeList& ethalonData2, InterruptTimeList& ethalonData3*/
+	InterruptTimeList& lst1, 
+	EthalonCompareResult res1, 
+	EthalonCompareNumber num1,
+	InterruptTimeList& ethalonData1
 )
 {
 
   uint8_t workBuff[10] = {0};
 
-  //Logger.writeLine(F("[INTERRUPT_INFO_BEGIN]"));
   workBuff[0] = recordInterruptInfoBegin;
   Logger.write(workBuff,1);
   
@@ -357,17 +343,7 @@ void InterruptHandlerClass::writeToLog(
   {
     writeLogRecord(0,lst1,res1,num1, ethalonData1); 
   } // if
-  /*
-  if(lst2.size() > 1)
-  {
-    writeLogRecord(1,lst2,res2,num2, ethalonData2); 
-  } // if
 
-  if(lst3.size() > 1)
-  {
-    writeLogRecord(2,lst3,res3,num3, ethalonData3);
-  } // if
-  */
 
     workBuff[0] = recordInterruptInfoEnd;
     Logger.write(workBuff,1);
@@ -380,17 +356,39 @@ void InterruptHandlerClass::update()
   static bool inProcess = false;
 
   noInterrupts();
-    bool thisOnInterruptSeriesTimer = onInterruptSeriesTimer;
-    uint32_t thisLastInterruptTime = lastInterruptTime;
+    bool thisHasEncoderInterrupt = hasEncoderInterrupt;
+    uint32_t thisLastEncoderInterruptTime = lastEncoderInterruptTime;
     
-    bool thisOnRelayTriggeredTimer  = onRelayTriggeredTimer;
+    bool thisHasRelayTriggered = hasRelayTriggered;
     uint32_t thisRelayTriggeredTime = relayTriggeredTime;
   interrupts();
 
-  // проверяем факт срабатывания защиты
-  if(thisOnRelayTriggeredTimer)
+  if (wantComputeRMS) // надо считать РМС
   {
-    // было прерывание срабатывания защиты - проверяем время
+	  // считаем РМС
+	  computeRMS();
+
+	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
+	  {
+		  // время подсчёта РМС вышло, надо проверять
+		  wantComputeRMS = false;
+		  rmsStartComputeTime = 0;
+
+		  checkRMS(); // проверяем РМС
+	  }
+  } // if(wantComputeRMS)
+
+  // проверяем факт срабатывания защиты
+  if(thisHasRelayTriggered)
+  {
+
+	// защита сработала, надо считать РМС !!!
+	wantComputeRMS = true;
+
+	if (!rmsStartComputeTime)
+		rmsStartComputeTime = millis();
+
+    // было прерывание срабатывания защиты - проверяем время c момента срабатывания
     if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
     {      
       // время ожидания прошло
@@ -400,21 +398,23 @@ void InterruptHandlerClass::update()
       // о том, что пачки импульсов закончились.
       
       noInterrupts();
-       onRelayTriggeredTimer = false;
+
+       hasRelayTriggered = false;
        relayTriggeredTime = micros();
-	   hasAlarm = !(list1.size());//DEPRECATED: || list2.size() || list3.size());
+	   hasAlarm = !(list1.size());
        
        if(hasAlarm)
        {
-        // есть тревога, надо подождать окончания прерываний
-        thisOnInterruptSeriesTimer = true;
-        thisLastInterruptTime = micros();
+        // есть тревога, надо подождать окончания прерываний c энкодера
+        thisHasEncoderInterrupt = true;
+        thisLastEncoderInterruptTime = micros();
 
-        onInterruptSeriesTimer = true;
-        lastInterruptTime = micros();
+		hasEncoderInterrupt = true;
+		lastEncoderInterruptTime = micros();
 
         timeBeforeInterruptsBegin = micros() - thisRelayTriggeredTime;
        }
+
       interrupts();
       
 
@@ -429,42 +429,33 @@ void InterruptHandlerClass::update()
   } // if
 
 
-    if(!thisOnInterruptSeriesTimer || inProcess)
+  // работаем с энкодером, а именно - ожидаем окончание сбора с него данных
+
+    if(!thisHasEncoderInterrupt || inProcess)
       return;
   
-      if(!(micros() - thisLastInterruptTime > INTERRUPT_MAX_IDLE_TIME))
+      if(!(micros() - thisLastEncoderInterruptTime > INTERRUPT_MAX_IDLE_TIME)) // ещё не вышло максимальное время ожидания окончания прерываний на энкодере
       {
         return;
       }
+
     noInterrupts();
 
       inProcess = true;
-      onInterruptSeriesTimer = false;
+	  hasEncoderInterrupt = false;
       
       InterruptTimeList copyList1 = list1;
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
       list1.empty();
-  
-	  //DEPRECATED:InterruptTimeList copyList2 = list2;      
-      // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
-	  //DEPRECATED:list2.empty();
-      
-	  //DEPRECATED:InterruptTimeList copyList3 = list3;      
-      // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
-	  //DEPRECATED:list3.empty();
           
     interrupts();
 
+	// здесь мы получили список прерываний, и можно с ним что-то делать
      InterruptHandlerClass::normalizeList(copyList1);
-	 //DEPRECATED:InterruptHandlerClass::normalizeList(copyList2);
-	 //DEPRECATED:InterruptHandlerClass::normalizeList(copyList3);
-
      EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
-	 //DEPRECATED:EthalonCompareResult compareRes2 = COMPARE_RESULT_NoSourcePulses;
-	 //DEPRECATED:EthalonCompareResult compareRes3 = COMPARE_RESULT_NoSourcePulses;
 
-	 EthalonCompareNumber compareNumber1;//DEPRECATED: , compareNumber2, compareNumber3;
-	 InterruptTimeList ethalonData1;//DEPRECATED: , ethalonData2, ethalonData3;
+	 EthalonCompareNumber compareNumber1;
+	 InterruptTimeList ethalonData1;
      
     bool needToLog = false;
 
@@ -490,58 +481,12 @@ void InterruptHandlerClass::update()
           Feedback.alarm();
        }
     }
-    /*
-	//DEPRECATED:
-    if(copyList2.size() > 1)
-    {
-      DBG("INTERRUPT #2 HAS SERIES OF DATA: ");
-      DBGLN(copyList2.size());
-
-      // зажигаем светодиод "ТЕСТ"
-      Feedback.testDiode();
-
-      needToLog = true;
-       
-       // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-       compareRes2 = EthalonComparer::Compare(copyList2, 1,compareNumber2, ethalonData2);
-       
-       if(compareRes2 == COMPARE_RESULT_MatchEthalon)
-        {}
-       else if(compareRes2 == COMPARE_RESULT_MismatchEthalon || compareRes2 == COMPARE_RESULT_RodBroken)
-       {
-        Feedback.failureDiode();
-        Feedback.alarm();
-       }
-    }
     
-    if(copyList3.size() > 1)
-    {
-      DBG("INTERRUPT #3 HAS SERIES OF DATA: ");
-      DBGLN(copyList3.size());
-
-      // зажигаем светодиод "ТЕСТ"
-      Feedback.testDiode();
-
-      needToLog = true;
-       
-       // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-       compareRes3 = EthalonComparer::Compare(copyList3, 2,compareNumber3, ethalonData3);
-
-       if(compareRes3 == COMPARE_RESULT_MatchEthalon)
-        {}
-       else if(compareRes3 == COMPARE_RESULT_MismatchEthalon || compareRes3 == COMPARE_RESULT_RodBroken)
-       {
-        Feedback.failureDiode();
-        Feedback.alarm();
-       }
-       
-    }
-	*/
 
     if(needToLog)
     {
       // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(copyList1, /*copyList2, copyList3,*/ compareRes1, /*compareRes2, compareRes3,*/compareNumber1,/*compareNumber2,compareNumber3,*/ ethalonData1/*, ethalonData2, ethalonData3*/);     
+      InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);     
     } // needToLog
     
 
@@ -550,7 +495,7 @@ void InterruptHandlerClass::update()
     // не в ответе за то, что делает сейчас обработчик - пускай сам разруливает ситуацию
     // так, как нужно ему.
 
-    bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1) /*|| (copyList2.size() > 1) || (copyList3.size() > 1)*/ );
+    bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1));
 
     if(wantToInformSubscriber)
     {       
@@ -567,15 +512,13 @@ void InterruptHandlerClass::update()
 
         subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
                 
-        subscriber->OnInterruptRaised(copyList1, 0, compareRes1);
-		//DEPRECATED:subscriber->OnInterruptRaised(copyList2, 1, compareRes2);      
-		//DEPRECATED:subscriber->OnInterruptRaised(copyList3, 2, compareRes3);
-        
+        subscriber->OnInterruptRaised(copyList1, 0, compareRes1);        
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();
       }
       else
       {
+		// подписчика нет, просто очищаем переменные
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();
@@ -584,6 +527,7 @@ void InterruptHandlerClass::update()
       
     }    
 
+	// всё обработали
     inProcess = false;
 
 }

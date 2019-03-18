@@ -10,11 +10,6 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Screen1* mainScreen = NULL;        
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADC_Handler()
-{
-  adcSampler.handleInterrupt();
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loopADC()
 {
   static bool dataHigh_old = false;
@@ -30,7 +25,7 @@ void loopADC()
     static uint16_t* serie2 = NULL;
     static uint16_t* serie3 = NULL;
     
-    uint16_t currentCountOfPoints = bufferLength/9;
+    uint16_t currentCountOfPoints = bufferLength/ NUM_CHANNELS;
 
     if(currentCountOfPoints != countOfPoints)
     {
@@ -53,11 +48,11 @@ void loopADC()
     uint32_t raw5V = 0;
     uint32_t raw3V3 = 0;
 
-    uint32_t inductiveSensorState1 = 0;
-    uint32_t inductiveSensorState2 = 0;
-    uint32_t inductiveSensorState3 = 0;
+	//DEPRECATED: uint32_t inductiveSensorState1 = 0;
+	//DEPRECATED: uint32_t inductiveSensorState2 = 0;
+	//DEPRECATED: uint32_t inductiveSensorState3 = 0;
     
-    for (int i = 0; i < bufferLength; i = i + 9, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
+    for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
     {
 	  serie1[serieWriteIterator] = cBuf[i + 4];        // Данные 1 графика  (красный)
 	  serie2[serieWriteIterator] = cBuf[i + 3];        // Данные 2 графика  (синий)
@@ -69,9 +64,9 @@ void loopADC()
 
 	  //Вычислить данные измерения по среднему значению как в источниках питания.
      
-	  inductiveSensorState1  += cBuf[i + 1];                              // Вход индуктивного датчика №1 тест исправности датчика (1)
-	  inductiveSensorState2  += cBuf[i + 0];                              // Вход индуктивного датчика №2 тест исправности датчика (0)
-	  inductiveSensorState3  += cBuf[i + 5];                              // Вход индуктивного датчика №3 тест исправности датчика (5)
+	  //DEPRECATED: inductiveSensorState1  += cBuf[i + 1];                              // Вход индуктивного датчика №1 тест исправности датчика (1)
+	  //DEPRECATED: inductiveSensorState2  += cBuf[i + 0];                              // Вход индуктивного датчика №2 тест исправности датчика (0)
+	  //DEPRECATED: inductiveSensorState3  += cBuf[i + 5];                              // Вход индуктивного датчика №3 тест исправности датчика (5)
 
 	  } // for
 
@@ -79,19 +74,19 @@ void loopADC()
     raw3V3 /= countOfPoints;
     raw5V /= countOfPoints;
 
-  	inductiveSensorState1 /= countOfPoints;
-  	inductiveSensorState2 /= countOfPoints;
-  	inductiveSensorState3 /= countOfPoints;
+	//DEPRECATED: inductiveSensorState1 /= countOfPoints;
+	//DEPRECATED: inductiveSensorState2 /= countOfPoints;
+	//DEPRECATED: inductiveSensorState3 /= countOfPoints;
 
-    Settings.setInductiveSensorState(0, inductiveSensorState1 >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0);
-    Settings.setInductiveSensorState(1, inductiveSensorState2 >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0);
-    Settings.setInductiveSensorState(2, inductiveSensorState3 >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0);
+	//DEPRECATED: Settings.setInductiveSensorState(0, inductiveSensorState1 >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0);
+	//DEPRECATED: Settings.setInductiveSensorState(1, inductiveSensorState2 >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0);
+	//DEPRECATED: Settings.setInductiveSensorState(2, inductiveSensorState3 >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0);
 
     Settings.set3V3RawVoltage(raw3V3);
     Settings.set5VRawVoltage(raw5V);
     Settings.set200VRawVoltage(raw200V);
       
-    adcSampler.readBufferDone();                                  // все данные переданы в ком
+    adcSampler.reset();                                  // все данные переданы в ком
 
     if(mainScreen && mainScreen->isActive())
     {
@@ -124,9 +119,11 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
   canLoopADC = false;
 
-  inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
+  //DEPRECATED:   inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+//DEPRECATED:
 void Screen1::drawInductiveSensors(TFTMenu* menu)
 {
   if(!isActive())
@@ -205,6 +202,7 @@ void Screen1::drawInductiveSensors(TFTMenu* menu)
   dc->setColor(oldColor);
   dc->setFont(oldFont);
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawVoltage(TFTMenu* menu)
 {
@@ -307,7 +305,7 @@ void Screen1::onDeactivate()
   
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
 
-  inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
+  //DEPRECATED:   inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
   
   // прекращаем отрисовку графика
   chart.stopDraw();
@@ -384,7 +382,7 @@ void Screen1::doUpdate(TFTMenu* menu)
 	
   drawTime(menu);
   drawVoltage(menu);
-  drawInductiveSensors(menu);
+  //DEPRECATED:   drawInductiveSensors(menu);
   drawChart();
 
   if(canLoopADC)

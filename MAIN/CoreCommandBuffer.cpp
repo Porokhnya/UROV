@@ -393,13 +393,16 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         {
             commandHandled = getTBORDERS(commandName,cParser,pStream);                    
           
-        } // TBORDERS_COMMAND       
+        } // TBORDERS_COMMAND
+		/*
+		//DEPRECATED:
         else
         if(!strcmp_P(commandName, INDUCTIVE_COMMAND))
         {
             commandHandled = getINDUCTIVE(commandName,cParser,pStream);                    
           
         } // INDUCTIVE_COMMAND       
+		*/
         else
         if(!strcmp_P(commandName, VOLTAGE_COMMAND))
         {
@@ -688,6 +691,8 @@ bool CommandHandlerClass::getVOLTAGE(const char* commandPassed, const CommandPar
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
+//DEPRECATED:
 bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
@@ -709,6 +714,7 @@ bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandP
 
   return true;
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {

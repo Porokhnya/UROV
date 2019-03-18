@@ -326,7 +326,8 @@ namespace UROVConfig
                                 System.Diagnostics.Debug.Assert(curRecord != null);
 
                                 // далее идёт байт номера канала
-                                curRecord.InductiveSensorState = (InductiveSensorState) content[readed]; readed++;
+                                //DEPRECATED: curRecord.InductiveSensorState = (InductiveSensorState) content[readed]; readed++;
+                                readed++;
                             }
                             break;
 
@@ -486,18 +487,20 @@ namespace UROVConfig
             row.Cells["Rod" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.RodPosition);
             row.Cells["Compare" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareResult);
             row.Cells["Etl" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareNumber);
-            row.Cells["Ind" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.InductiveSensorState);
+            //DEPRECATED: row.Cells["Ind" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.InductiveSensorState);
 
             if (record.EthalonCompareResult == EthalonCompareResult.MatchEthalon)
                 row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightGreen;
             else
                 row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightSalmon;
 
-            if (record.InductiveSensorState == InductiveSensorState.Good)
-                row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightGreen;
-            else
-                row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightSalmon;
-
+            /*
+             //DEPRECATED: 
+             if (record.InductiveSensorState == InductiveSensorState.Good)
+                 row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightGreen;
+             else
+                 row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightSalmon;
+             */
 
             if (record.RodPosition == RodPosition.Broken)
                 row.Cells["Rod" + addToColumnName].Style.BackColor = Color.LightSalmon;
@@ -1039,7 +1042,7 @@ namespace UROVConfig
             tbFirmwareVersion.Text = "";
             tbFREERAM.Text = "";
 
-            ResetInductiveSensors();
+            //DEPRECATED: ResetInductiveSensors();
             ResetVoltage();
 
             ClearEthalons();
@@ -1093,7 +1096,7 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "TBORDERS", ParseAskBorders, BeforeAskBorders);
                 PushCommandToQueue(GET_PREFIX + "RDELAY", ParseAskRelayDelay, BeforeAskRelayDelay);
-                GetInductiveSensors();
+                //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
                 RequestEthalons();
                 RescanSD();
@@ -2912,10 +2915,13 @@ namespace UROVConfig
             PushCommandToQueue(SET_PREFIX + "DELTA" + PARAM_DELIMITER + s, ParseSetDelta);
         }
 
+        /*
+         //DEPRECATED: 
         private void GetInductiveSensors()
         {
             PushCommandToQueue(GET_PREFIX + "IND", ParseInductiveSensors);
         }
+        */
 
         private void GetVoltage()
         {
@@ -2934,7 +2940,7 @@ namespace UROVConfig
 
         private void tmInductiveTimer_Tick(object sender, EventArgs e)
         {
-            GetInductiveSensors();
+            //DEPRECATED: GetInductiveSensors();
             GetVoltage();
             GetMotoresourceCurrent();
         }
@@ -2951,16 +2957,18 @@ namespace UROVConfig
             lblVoltage3.Text = "-";
         }
 
+        /*
+        //DEPRECATED:
         private void ResetInductiveSensors()
         {
             lblInductive1.BackColor = Color.LightGray;
             lblInductive1.Text = "-";
 
-            //DEPRECATED: lblInductive2.BackColor = Color.LightGray;
-            //DEPRECATED: lblInductive2.Text = "-";
+            lblInductive2.BackColor = Color.LightGray;
+            lblInductive2.Text = "-";
 
-            //DEPRECATED: lblInductive3.BackColor = Color.LightGray;
-            //DEPRECATED: lblInductive3.Text = "-";
+            lblInductive3.BackColor = Color.LightGray;
+            lblInductive3.Text = "-";
         }
 
         private void ParseInductiveSensors(Answer a)
@@ -2985,8 +2993,6 @@ namespace UROVConfig
                 }
                 catch { }
 
-                /*
-                //DEPRECATED: 
                 try
                 {
 
@@ -3022,7 +3028,6 @@ namespace UROVConfig
                     }
                 }
                 catch { }
-                */
 
             }
             else
@@ -3030,6 +3035,7 @@ namespace UROVConfig
                 ResetInductiveSensors();
             }
         }
+        */
 
         private void ParseVoltage(Answer a)
         {
@@ -3236,6 +3242,9 @@ namespace UROVConfig
 
             endStop = Math.Min(endStop, record.EthalonData.Count);
 
+            if (record.EthalonData.Count < 1)
+                endStop = timeList.Count;
+
 
             double xCoord = 0;
 
@@ -3263,7 +3272,7 @@ namespace UROVConfig
                 xCoord = 0;
 
                 // считаем график эталона
-                for (int i = 1; i < endStop; i++)
+                for (int i = 1; i < record.EthalonData.Count; i++)
                 {
                     int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
                     pulseTime *= 100;

@@ -354,6 +354,8 @@ void InterruptScreen::OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime)
   hasRelayTriggeredTime = hasTime;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+//DEPRECATED:
 void InterruptScreen::drawTimeBeforeInterrupt(TFTMenu* menu)
 {
 
@@ -411,6 +413,7 @@ void InterruptScreen::drawTimeBeforeInterrupt(TFTMenu* menu)
   dc->setFont(oldFont); 
   
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::drawCompareResult(TFTMenu* menu)
 {
@@ -465,7 +468,7 @@ void InterruptScreen::doDraw(TFTMenu* menu)
   Drawing::DrawChart(this,serie1, emptySerie, emptySerie);
   drawMotoresource(menu);
   drawCompareResult(menu);
-  drawTimeBeforeInterrupt(menu);
+  //DEPRECATED: drawTimeBeforeInterrupt(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)

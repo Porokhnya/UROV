@@ -48,7 +48,7 @@ private:
 	uint32_t motoresourceBlinkTimer1;//DEPRECATED:  , motoresourceBlinkTimer2, motoresourceBlinkTimer3;
     void computeMotoresource();
     void drawMotoresource(TFTMenu* menu);
-    void drawTimeBeforeInterrupt(TFTMenu* menu);
+    //void drawTimeBeforeInterrupt(TFTMenu* menu);
 
     InterruptTimeList list1;
 	//DEPRECATED: InterruptTimeList list2;

@@ -8,6 +8,16 @@ ConfigPin::ConfigPin()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ConfigPin::RodUpEndstopTriggered()
+{
+	return digitalRead(ROD_ENDSTOP_UP) == ROD_ENDSTOP_TRIGGERED;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ConfigPin::RodDownEndstopTriggered()
+{
+	return digitalRead(ROD_ENDSTOP_DOWN) == ROD_ENDSTOP_TRIGGERED;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
 {
   uint8_t rodPinState1 = LOW;
@@ -16,10 +26,12 @@ RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
   switch(channelNumber)
   {
     case 0:
-      rodPinState1 = digitalRead(ROD_POSITION1_PIN1);
-      rodPinState2 = digitalRead(ROD_POSITION1_PIN2);
+      rodPinState1 = digitalRead(ROD_ENDSTOP_UP);
+      rodPinState2 = digitalRead(ROD_ENDSTOP_DOWN);
     break;
     
+	/*
+	//DEPRECATED:
     case 1:
       rodPinState1 = digitalRead(ROD_POSITION2_PIN1);
       rodPinState2 = digitalRead(ROD_POSITION2_PIN2);
@@ -29,14 +41,15 @@ RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
       rodPinState1 = digitalRead(ROD_POSITION3_PIN1);
       rodPinState2 = digitalRead(ROD_POSITION3_PIN2);
     break;
+	*/
   }
 
   // если на обеих датчиках одинаковое состояние - поломка штанги
   if(rodPinState1 == rodPinState2)
     return rpBroken;
 
-  // если сработал датчик на пине 11 и не сработал на пине 12 - штанга вверху
-  if(ROD_POSITION_TRIGGERED == rodPinState1 && ROD_POSITION_TRIGGERED == !rodPinState2)
+  // если сработал датчик на пине вверху и не сработал на пине внизу - штанга вверху
+  if(ROD_ENDSTOP_TRIGGERED == rodPinState1 && ROD_ENDSTOP_TRIGGERED == !rodPinState2)
     return rpUp;
 
   // иначе - штанга внизу
@@ -63,20 +76,25 @@ void ConfigPin::setI2CPriority(uint8_t priority)
 void ConfigPin::setup()
 {
   
-	pinMode(ROD_POSITION1_PIN1, INPUT);                  
-	digitalWrite(ROD_POSITION1_PIN1, INPUT_PULLUP);      
-	pinMode(ROD_POSITION1_PIN2, INPUT);                  
-	digitalWrite(ROD_POSITION1_PIN2, INPUT_PULLUP);      
+	pinMode(ROD_ENDSTOP_UP, INPUT);
 
-	pinMode(ROD_POSITION2_PIN1, INPUT);                  
-	digitalWrite(ROD_POSITION2_PIN1, INPUT_PULLUP);      
-	pinMode(ROD_POSITION2_PIN2, INPUT);                  
-	digitalWrite(ROD_POSITION2_PIN2, INPUT_PULLUP);      
+	if(ROD_ENDSTOP_TRIGGERED == LOW)
+		digitalWrite(ROD_ENDSTOP_UP, INPUT_PULLUP);
 
-	pinMode(ROD_POSITION3_PIN1, INPUT);                  
-	digitalWrite(ROD_POSITION3_PIN1, INPUT_PULLUP);      
-	pinMode(ROD_POSITION3_PIN2, INPUT);                  
-	digitalWrite(ROD_POSITION3_PIN2, INPUT_PULLUP);
+	pinMode(ROD_ENDSTOP_DOWN, INPUT);
+
+	if (ROD_ENDSTOP_TRIGGERED == LOW)
+		digitalWrite(ROD_ENDSTOP_DOWN, INPUT_PULLUP);
+
+	//DEPRECATED: pinMode(ROD_POSITION2_PIN1, INPUT);                  
+	//DEPRECATED: digitalWrite(ROD_POSITION2_PIN1, INPUT_PULLUP);      
+	//DEPRECATED: pinMode(ROD_POSITION2_PIN2, INPUT);                  
+	//DEPRECATED: digitalWrite(ROD_POSITION2_PIN2, INPUT_PULLUP);      
+
+	//DEPRECATED: pinMode(ROD_POSITION3_PIN1, INPUT);                  
+	//DEPRECATED: digitalWrite(ROD_POSITION3_PIN1, INPUT_PULLUP);      
+	//DEPRECATED: pinMode(ROD_POSITION3_PIN2, INPUT);                  
+	//DEPRECATED: digitalWrite(ROD_POSITION3_PIN2, INPUT_PULLUP);
 
 	// Измерение по АЦП
 

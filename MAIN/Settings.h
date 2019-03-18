@@ -48,8 +48,8 @@ class SettingsClass
     VoltageData get200Vvoltage() {return voltage200V; }
 
     // состояние индуктивных датчиков
-    uint8_t getInductiveSensorState(uint8_t channelNum);
-    void setInductiveSensorState(uint8_t channelNum, uint8_t val);
+	//DEPRECATED: uint8_t getInductiveSensorState(uint8_t channelNum);
+	//DEPRECATED: void setInductiveSensorState(uint8_t channelNum, uint8_t val);
 
     String getUUID(const char* passedUUID);
 
@@ -71,7 +71,7 @@ class SettingsClass
     DS3231Temperature coreTemp;
     uint32_t timer;
 
-    uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
+	//DEPRECATED: uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
 
     VoltageData voltage3V3, voltage5V, voltage200V;
 

@@ -1,11 +1,18 @@
 
 #include "ADCSampler.h"
 #include "CONFIG.h"
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler adcSampler;
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADC_Handler()
+{
+	adcSampler.handleInterrupt();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler::ADCSampler()
 {
+	rmsComputeMode = false;
+	rmsStartComputedTime = 0;
   dataReady = false;
   adcDMAIndex = 0;
   adcTransferIndex = 0;
@@ -120,11 +127,29 @@ void ADCSampler::begin(unsigned int _sr)
   TC0->TC_CHANNEL[0].TC_CCR = TC_CCR_CLKEN;
   TC_Start(TC0, 0);
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::startComputeRMS()
+{
+	rmsData1 = 0;
+	rmsData2 = 0;
+	rmsData3 = 0;
+	rmsStartComputeTime = millis();
+	rmsComputeMode = true;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::getComputedRMS(uint32_t& result1, uint32_t& result2, uint32_t& result3)
+{
+	rmsComputeMode = false;
+	result1 = rmsData1;
+	result1 = rmsData2;
+	result1 = rmsData3;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::end()
 {
 
 }
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::handleInterrupt()
 {
   unsigned long status = ADC->ADC_ISR;
@@ -134,7 +159,64 @@ void ADCSampler::handleInterrupt()
     adcDMAIndex = (adcDMAIndex + 1) % NUMBER_OF_BUFFERS;
     ADC->ADC_RNPR  = (unsigned long) adcBuffer[(adcDMAIndex + 1) % NUMBER_OF_BUFFERS];
     ADC->ADC_RNCR  = BUFFER_SIZE;
-	dataReady = true;                               // Данные сформированы  
+	dataReady = true;                               // Данные сформированы
+
+	if (rmsComputeMode)
+	{
+		// нас попросили считать РМС, считаем
+
+		int bufferLength = 0;
+		uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);
+		uint16_t serieWriteIterator = 0;
+		uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
+
+		uint32_t serie1, serie2, serie3;
+
+		for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++) // получить результат измерения поканально, с интервалом 3
+		{
+			serie1 += cBuf[i + 4];        // Данные 1 графика  (красный)
+			serie2 += cBuf[i + 3];        // Данные 2 графика  (синий)
+			serie3 += cBuf[i + 2];        // Данные 3 графика  (желтый)
+		}
+
+		// получаем средние значения за серию
+		serie1 /= countOfPoints;
+		serie2 /= countOfPoints;
+		serie3 /= countOfPoints;
+
+		// складываем полученные средние с ранее высчитанными, и делим на 2, поскольку в высчитанном значении у нас тоже хранится среднее
+		if (rmsData1)
+		{
+			rmsData1 += serie1;
+			rmsData1 /= 2;
+		}
+		else
+			rmsData1 = serie1;
+
+		if (rmsData2)
+		{
+			rmsData2 += serie2;
+			rmsData2 /= 2;
+		}
+		else
+			rmsData2 = serie2;
+
+		if (rmsData3)
+		{
+			rmsData3 += serie3;
+			rmsData3 /= 2;
+		}
+		else
+			rmsData3 = serie3;
+
+		if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
+		{
+			// время подсчёта вышло, больше не считаем
+			rmsComputeMode = false;
+			rmsStartComputeTime = 0;
+		}
+
+	} // if(rmsComputeMode)
   }
 
   if (status & ADC_ISR_COMPE)                       // Проверить регистр АЦП компаратора порога
@@ -148,29 +230,33 @@ void ADCSampler::handleInterrupt()
 	  dataHigh = false;
   }
 }
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::available()
 {
   return dataReady;
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::available_compare()
 {
 	return dataHigh;
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 unsigned int ADCSampler::getSamplingRate()
 {
   return samplingRate;
 }
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t* ADCSampler::getFilledBuffer(int *bufferLength)
 {
   *bufferLength = BUFFER_SIZE;
   return adcBuffer[adcTransferIndex];
 }
-
-void ADCSampler::readBufferDone()
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::reset()
 {
   dataReady = false;
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
