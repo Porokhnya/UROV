@@ -25,6 +25,7 @@ volatile bool hasRelayTriggeredTime = false; // флаг, что было сра
 
 volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
+volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -50,6 +51,10 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 //--------------------------------------------------------------------------------------------------------------------------------------
 void computeRMS()
 {
+	if (computeRMSCalled)
+		return;
+
+	computeRMSCalled = true;
 	// считаем РМС
 	adcSampler.startComputeRMS();
 }
@@ -59,6 +64,8 @@ void checkRMS()
 	// получаем подсчитанное РМС
 	uint32_t rmsComputed1, rmsComputed2, rmsComputed3;
 	adcSampler.getComputedRMS(rmsComputed1, rmsComputed2, rmsComputed3);
+
+	computeRMSCalled = false;
 
 	//TODO: тут проверяем РМС
 

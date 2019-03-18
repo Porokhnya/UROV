@@ -39,7 +39,7 @@ class ADCSampler {
 
 	volatile bool rmsComputeMode;
 	volatile uint32_t rmsData1, rmsData2, rmsData3;
-	volatile uint32_t rmsStartComputedTime;
+	volatile uint32_t rmsStartComputeTime;
 };
 
 extern ADCSampler adcSampler;
