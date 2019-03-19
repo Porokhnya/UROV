@@ -24,6 +24,7 @@ volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабат
 volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
 
 volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
+volatile bool inComputeRMSMode = false; // флаг, что мы считаем РМС
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -178,6 +179,7 @@ void RelayTriggered()
   relayTriggeredTime = micros();
   hasRelayTriggered = true;
   hasRelayTriggeredTime = true;
+  wantComputeRMS = true; // говорим, что надо посчитать РМС
   timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
 
   // взводим отложенное событие
@@ -368,22 +370,35 @@ void InterruptHandlerClass::update()
     
     bool thisHasRelayTriggered = hasRelayTriggered;
     uint32_t thisRelayTriggeredTime = relayTriggeredTime;
+
+	bool thisWantComputeRMS = wantComputeRMS;
+	wantComputeRMS = false;
+
   interrupts();
 
-  if (wantComputeRMS) // надо считать РМС
+  if (thisWantComputeRMS) // надо считать РМС
   {
+	  thisWantComputeRMS = false;
+	  inComputeRMSMode = true;
+
+	  rmsStartComputeTime = 0;
 	  // считаем РМС
 	  computeRMS();
 
+  } // if(wantComputeRMS)
+
+  if (inComputeRMSMode)
+  {
 	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
 	  {
+		  inComputeRMSMode = false;
 		  // время подсчёта РМС вышло, надо проверять
-		  wantComputeRMS = false;
-		  rmsStartComputeTime = 0;
-
 		  checkRMS(); // проверяем РМС
 	  }
-  } // if(wantComputeRMS)
+
+  }
+
+
 
   // проверяем факт срабатывания защиты
   if(thisHasRelayTriggered)

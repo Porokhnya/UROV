@@ -12,7 +12,7 @@ void ADC_Handler()
 ADCSampler::ADCSampler()
 {
 	rmsComputeMode = false;
-	rmsStartComputedTime = 0;
+	rmsStartComputeTime = 0;
   dataReady = false;
   adcDMAIndex = 0;
   adcTransferIndex = 0;
