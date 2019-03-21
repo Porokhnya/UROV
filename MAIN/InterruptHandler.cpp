@@ -27,6 +27,7 @@ volatile bool wantComputeRMS = false; // флаг, что мы должны по
 volatile bool inComputeRMSMode = false; // флаг, что мы считаем РМС
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
+volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +69,32 @@ void checkRMS()
 
 	computeRMSCalled = false;
 
-	//TODO: тут проверяем РМС
+	// получаем текущее состояние нижнего концевика, оно должно измениться.
+	bool thiDownEndstopTriggered = ConfigPin::RodDownEndstopTriggered();
+
+	//тут проверяем РМС
+
+	uint32_t rmsEthalonVal = RMS_ETHALON_VAL; // 100% значение РМС
+	float hist = ((1.0f*RMS_ETHALON_VAL) / 100)*RMS_HISTERESIS_PERCENTS;
+	uint32_t rmsHisteresis = hist; // гистерезис РМС
+
+	bool hasAlarm = abs(rmsComputed1 - rmsEthalonVal) >= rmsHisteresis ||
+		abs(rmsComputed2 - rmsEthalonVal) >= rmsHisteresis ||
+		abs(rmsComputed3 - rmsEthalonVal) >= rmsHisteresis;
+
+
+	if (hasAlarm)
+	{
+		// если нижний концевик не изменил положения - это авария!
+		bool hasEndstopAlarm = (!thiDownEndstopTriggered && thiDownEndstopTriggered == downEndstopTriggered) ||
+			(downEndstopTriggered && thiDownEndstopTriggered == downEndstopTriggered);
+
+		if (hasEndstopAlarm)
+		{
+			// авария
+			Feedback.alarm(true);
+		}
+	}
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -181,6 +207,9 @@ void RelayTriggered()
   hasRelayTriggeredTime = true;
   wantComputeRMS = true; // говорим, что надо посчитать РМС
   timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
+
+  // сохраняем состояние нижнего концевика 
+  downEndstopTriggered = ConfigPin::RodDownEndstopTriggered();
 
   // взводим отложенное событие
   //DEPRECATED: 
