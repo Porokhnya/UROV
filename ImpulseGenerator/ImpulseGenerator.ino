@@ -16,6 +16,10 @@
 
 #define INDUCTIVE_DURATION 1100 // сколько микросекунд между состояниями дадут нам импульсы частотой 400-460 Гц для индуктивных датчиков
 
+#define INDUCTIVE_SENSOR_BOTTOM_HALT_TIME  2000 // на сколько микросекунд прекращать генерацию импульсов нижнего индуктивного датчика при старте цикла
+#define INDUCTIVE_SENSOR_TOP_HALT_TIME  2000 // на сколько микросекунд прекращать генерацию импульсов верхнего индуктивного датчика при окончании цикла
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Формирователь сигнала срабатывания защиты
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,10 +57,17 @@ CorePinScenario meander;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // сценарии для генерации импульсов индуктивных датчиков
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CorePinScenario inductiveScene1;
-CorePinScenario inductiveScene2;
+CorePinScenario topInductive;
+CorePinScenario bottomInductive;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t signalTimer = 0; // таймер срабатывания защиты
+
+uint32_t inductiveBottomHaltTimer = 0;
+bool inductiveBottomHaltEnabled = false;
+
+uint32_t inductiveTopHaltTimer = 0;
+bool inductiveTopHaltEnabled = false;
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 typedef enum
 {
@@ -64,6 +75,7 @@ typedef enum
   msStartSimulate, // начало симулирования срабатывания защиты
   msGenerateEncoderPulses, // генерируем импульсы энкодера
   msWaitForSwitchReleased, // ждём переключения в исходное состояние
+  msHaltGenerateTopInductive, // прекращаем генерацию с верхнего индуктивного датчика
   
 } MachineState;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,11 +122,11 @@ void setup()
   pinMode(PULSE_PIN2,OUTPUT);
 
   // формируем сценарии импульсов индуктивных датчиков
-  inductiveScene1.add({PULSE_PIN1,HIGH,INDUCTIVE_DURATION});
-  inductiveScene1.add({PULSE_PIN1,LOW,INDUCTIVE_DURATION});
+  topInductive.add({PULSE_PIN1,HIGH,INDUCTIVE_DURATION});
+  topInductive.add({PULSE_PIN1,LOW,INDUCTIVE_DURATION});
 
-  inductiveScene2.add({PULSE_PIN2,HIGH,INDUCTIVE_DURATION});
-  inductiveScene2.add({PULSE_PIN2,LOW,INDUCTIVE_DURATION});
+  bottomInductive.add({PULSE_PIN2,HIGH,INDUCTIVE_DURATION});
+  bottomInductive.add({PULSE_PIN2,LOW,INDUCTIVE_DURATION});
 
 
   // настраиваем вход переключателя имитации защиты
@@ -191,24 +203,41 @@ void setup()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loop()
 {
+  // обновляем меандры
+  meander.update();
+
+  // обновляем индуктивные датчики
+  topInductive.update();
+  bottomInductive.update();
+
+
+  // проверяем, не надо ли возобновить генерацию импульсов с нижнего индуктивного датчика
+  if(inductiveBottomHaltEnabled && micros() - inductiveBottomHaltTimer > INDUCTIVE_SENSOR_BOTTOM_HALT_TIME)
+  {
+    inductiveBottomHaltTimer = 0;
+    inductiveBottomHaltEnabled = false;
+    // начинаем генерацию сигналов нижнего индуктивного датчика с начала
+    bottomInductive.begin();
+    bottomInductive.enable();
+  }  
+        
   switch(state)
   {
     case msNormal:
     {
       // нормальное состояние системы - генерируем меандры и импульсы индуктивных датчиков
 
-      // обновляем меандры
-      meander.update();
-
-      // обновляем индуктивные датчики
-      inductiveScene1.update();
-      inductiveScene2.update();
-
       // проверяем, не включили ли симуляцию?
       if(isStartTriggered())
       {
         digitalWrite(SIGNAL_PIN,SIGNAL_LEVEL); // выдаём импульс на реле защиты
-        signalTimer = micros(); // запоминаем время начала выдачи импульса на реле защиты        
+        signalTimer = micros(); // запоминаем время начала выдачи импульса на реле защиты
+
+        // прекращаем генерацию импульсов нижнего индуктивного датчика
+        bottomInductive.disable();
+        digitalWrite(PULSE_PIN2,LOW);
+        inductiveBottomHaltEnabled = true;
+        inductiveBottomHaltTimer = micros();
 
         state = msStartSimulate; // переключаемся на начало симулирования срабатывания защиты        
       }
@@ -217,20 +246,11 @@ void loop()
 
     case msStartSimulate: // мы в режиме начала симуляции
     {
-      // обновляем меандры
-      meander.update();
-
-      // обновляем только верхний индуктивный датчик
-      inductiveScene1.update();
       
-      // проверяем, не настало ли время возобновить генерирование импульсов второго индуктивного датчика?
       if(micros() - signalTimer > SIGNAL_DURATION)
       {
         // всё, не надо выдавать импульс на реле защиты
         digitalWrite(SIGNAL_PIN,!SIGNAL_LEVEL); // снимаем импульс с реле защиты
-
-        // и начинаем генерацию сигналов нижнего индуктивного датчика с начала
-        inductiveScene2.begin();
 
         makeEncoderPhaseShift(); // сдвигаем фазы импульсов энкодера
         
@@ -243,13 +263,7 @@ void loop()
 
     case msGenerateEncoderPulses: // генерируем импульсы энкодера
     {
-      // обновляем меандры
-      meander.update();
-
-      // обновляем индуктивные датчики
-      inductiveScene1.update();
-      inductiveScene2.update();
-      
+  
       // генерируем импульсы энкодера
       encoderScene.update();
       encoderScene2.update();
@@ -258,27 +272,45 @@ void loop()
       // поскольку у нас второй сценарий импульсов сдвинут по фазе вперёд, то мы ждём именно его
       if(encoderScene2.isDone())
       {
+        // прекращаем генерацию импульсов верхнего индуктивного датчика
+        topInductive.disable();
+        digitalWrite(PULSE_PIN1,LOW);
+        inductiveTopHaltTimer = micros();
+        inductiveTopHaltEnabled = true;
+        
         // генерация импульсов закончена, переключаемся на ветку ожидания переключения тумблера в исходное состояние
-        state = msWaitForSwitchReleased;
+        state = msHaltGenerateTopInductive;
       }
       
     }
     break; // msGenerateEncoderPulses
 
+    case msHaltGenerateTopInductive:
+    {
+                  
+      if(inductiveTopHaltEnabled && micros() - inductiveTopHaltTimer > INDUCTIVE_SENSOR_TOP_HALT_TIME)
+      {
+        inductiveTopHaltTimer = 0;
+        inductiveTopHaltEnabled = false;
+        
+        topInductive.begin();
+        topInductive.enable();
+
+        // генерация импульсов закончена, переключаемся на ветку ожидания переключения тумблера в исходное состояние
+        state = msWaitForSwitchReleased;
+        
+      }
+    }
+    break;
+
     case msWaitForSwitchReleased: // ждём, когда кнопку "Старт" переведут в нормальное состояние
     {
-      // обновляем меандры
-      meander.update();
-
-      // обновляем только нижний индуктивный датчик
-      inductiveScene2.update();
-
+      
       if(!isStartTriggered())
       {
         // кнопку "Старт" перевели в исходное состояние, возвращаемся в режим ожидания начала симуляции
         state = msNormal;
       }
-
     }
     break; // msWaitForSwitchReleased
     
