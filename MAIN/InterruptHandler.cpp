@@ -563,7 +563,7 @@ void InterruptHandlerClass::update()
 
         subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
                 
-        subscriber->OnInterruptRaised(copyList1, 0, compareRes1);        
+        subscriber->OnInterruptRaised(copyList1, compareRes1);        
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();
       }

@@ -43,7 +43,7 @@ typedef enum
 struct InterruptEventSubscriber
 {
   // вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
-  virtual void OnInterruptRaised(const InterruptTimeList& list, uint8_t interruptNumber, EthalonCompareResult result) = 0;
+  virtual void OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult result) = 0;
 
   // вызывается, когда есть хотя бы один список с прерываниями - закончен
   virtual void OnHaveInterruptData() = 0;

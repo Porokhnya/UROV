@@ -1760,20 +1760,20 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Drawing::DrawChart(this, serie1, emptySerie, emptySerie,VGA_RED);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t listNum, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
   // пришли результаты серии прерываний с одного из списков.
   // мы запоминаем результаты в локальный список.
+  list1 = list;
 
+  /*
+  //DEPRECATED:
   switch(listNum)
   {
     case 0:
-      list1 = list;
     break;      
-	/*
-	//DEPRECATED:
     case 1:
       list2 = list;
     break;      
@@ -1781,11 +1781,11 @@ void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, uint8
     case 2:
       list3 = list;
     break;      
-	*/
     
   } // switch
+  */
 
-/*  
+  
   // для теста - печатаем в Serial
   #ifdef _DEBUG
 
@@ -1802,7 +1802,7 @@ void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, uint8
     DBGLN("<< END OF INTERRUPT DATA");
     
   #endif // _DEBUG  
-*/  
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FileEntry

@@ -24,11 +24,13 @@ InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
   timerDelta = 0;
   canAcceptInterruptData = true;
 
-  for(int i=0;i<3;i++)
+  //DEPRECATED
+  /*for(int i=0;i<3;i++)
   {
     EthalonCompareBox box;
     compareBoxes.push_back(box);
   }
+  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onDeactivate()
@@ -56,7 +58,10 @@ void InterruptScreen::OnHaveInterruptData()
   // сначала делаем пересчёт точек на график, т.к. у нас ограниченное кол-во точек - это раз.
   // два - когда в списках прерываний точек заведомо меньше, чем точек на графике (например, 20 вместо 150) - без пересчёта получим
   // куцый график, в этом случае нам надо его растянуть по-максимуму.
-  Drawing::ComputeChart(list1, serie1, list1, serie1, list1, serie1);
+  InterruptTimeList dummyList;
+  Points dummySerie;
+
+  Drawing::ComputeChart(list1, serie1, dummyList, dummySerie, dummyList, dummySerie);
 
   // вычисляем моторесурс
   computeMotoresource();
@@ -66,7 +71,7 @@ void InterruptScreen::OnHaveInterruptData()
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t listNum, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -78,7 +83,11 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t l
   // пришли результаты серии прерываний с одного из списков.
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
+  list1 = list;
+  box.chartColor = VGA_WHITE;
 
+  /*
+  //DEPRECATED:
   switch(listNum)
   {
     case 0:
@@ -86,8 +95,6 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t l
       box.chartColor = VGA_WHITE;
     break;      
 
-	/*
-	//DEPRECATED:
     case 1:
       list2 = list;
       box.chartColor = VGA_BLUE;
@@ -97,12 +104,12 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t l
       list3 = list;
       box.chartColor = VGA_YELLOW;
     break;      
-	*/
     
   } // switch
+  */
 
 
-  box.channelNum = listNum;
+//  box.channelNum = listNum;
   
   switch(compareResult)
   {
@@ -127,7 +134,8 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t l
     break;
   }
 
-  compareBoxes[listNum] = box;  
+ // compareBoxes[listNum] = box;  
+ compareBox = box;
   
   
   // для теста - печатаем в Serial
@@ -135,8 +143,8 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, uint8_t l
 
     if(list.size() > 1)
     {
-      DBG("INTERRUPT #")
-      DBG(listNum);
+		DBG("INTERRUPT");
+      //DBG(listNum);
       DBGLN(" DATA >>");
       
       for(size_t i=0;i<list.size();i++)
@@ -432,6 +440,24 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
   uint8_t spacing = 4;
 
 
+    dc->setBackColor(VGA_BLACK);
+    dc->setColor(compareBox.chartColor);
+	String channelNum = "1"; /////// String(compareBox.channelNum + 1);
+    uint8_t captionLen = menu->print(channelNum.c_str(),0,0,0,true);
+    menu->print(channelNum.c_str(), curX, curY + (boxHeight - fontHeight)/2 );
+
+    dc->setBackColor(compareBox.compareColor);
+    dc->setColor(compareBox.compareColor);
+
+    uint16_t boxLeft = curX + captionLen*fontWidth + spacing;
+    dc->fillRoundRect(boxLeft, curY, boxLeft + boxWidth, curY + boxHeight);
+
+    dc->setColor(compareBox.foreCompareColor);
+    captionLen = menu->print(compareBox.compareCaption,0,0,0,true);
+    menu->print(compareBox.compareCaption, boxLeft + (boxWidth - captionLen*fontWidth)/2, curY + (boxHeight - fontHeight)/2 );  
+
+//DEPRECATED: 
+/*
   for(size_t i=0;i<compareBoxes.size();i++)
   {
 
@@ -455,6 +481,7 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
     curY += boxHeight + spacing;
 
   } // for
+*/  
 
   dc->setBackColor(oldBackColor);
   dc->setColor(oldColor);

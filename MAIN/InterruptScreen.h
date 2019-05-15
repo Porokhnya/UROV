@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct
 {
-  uint8_t channelNum;
+//  uint8_t channelNum;
   uint16_t chartColor;
   uint16_t compareColor;
   uint16_t foreCompareColor;
@@ -15,7 +15,7 @@ typedef struct
   
 } EthalonCompareBox;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-typedef Vector<EthalonCompareBox> EthalonCompareBoxes;
+//typedef Vector<EthalonCompareBox> EthalonCompareBoxes;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // экран с графиком прерываний
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
 
   static AbstractTFTScreen* create();  
 
-  void OnInterruptRaised(const InterruptTimeList& list, uint8_t listNum, EthalonCompareResult result);
+  void OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult result);
   void OnHaveInterruptData();
   void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasRelayTime);
     
@@ -54,13 +54,15 @@ private:
 	//DEPRECATED: InterruptTimeList list2;
 	//DEPRECATED: InterruptTimeList list3;
 
+  EthalonCompareBox compareBox;
+
     unsigned long startSeenTime;
     uint32_t timeBeforeInterrupts;
     bool hasRelayTriggeredTime;
 
     bool canAcceptInterruptData;
 
-    EthalonCompareBoxes compareBoxes;
+    //EthalonCompareBoxes compareBoxes;
     void drawCompareResult(TFTMenu* menu);
 
     Points serie1;
