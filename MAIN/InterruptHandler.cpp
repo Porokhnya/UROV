@@ -47,7 +47,23 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
   if(list1.size() < 2)
   {
     timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
-  }  
+  }
+
+  // определяем направление вращения энкодера. Поскольку прерывание у нас установлено на CHANGE - читаем только тогда, когда первый вход - в высоком
+  if (digitalRead(ENCODER_PIN1))
+  {
+	  // в высоком, читаем второй вход
+	  if (digitalRead(ENCODER_PIN2))
+	  {
+		  // по часовой
+		  Settings.setRodDirection(rpUp);
+	  }
+	  else
+	  {
+		  // против часовой
+		  Settings.setRodDirection(rpDown);
+	  }
+  }
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -233,8 +249,15 @@ void InterruptHandlerClass::begin()
   // взводим прерывание на входе срабатывания защиты
   attachInterrupt(digitalPinToInterrupt(RELAY_PIN),RelayTriggered, RELAY_INTERRUPT_LEVEL);
 
+  // настраиваем первый выход энкодера на чтение
+  pinMode(ENCODER_PIN1, INPUT);
+
+  // настраиваем второй выход энкодера на чтение
+  pinMode(ENCODER_PIN2, INPUT);
+
   // считаем импульсы на штанге по прерыванию
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, CHANGE);
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
@@ -257,7 +280,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
 void InterruptHandlerClass::writeRodPositionToLog(uint8_t channelNumber)
 {
  // пишем положение штанги
-  RodPosition rodPos = ConfigPin::getRodPosition(channelNumber);
+	RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
 
   uint8_t workBuff[2] = {0};
   workBuff[0] = recordRodPosition;

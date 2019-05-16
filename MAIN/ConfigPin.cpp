@@ -18,6 +18,7 @@ bool ConfigPin::RodDownEndstopTriggered()
 	return digitalRead(ROD_ENDSTOP_DOWN) == ROD_ENDSTOP_TRIGGERED;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
 {
   uint8_t rodPinState1 = LOW;
@@ -30,18 +31,18 @@ RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
       rodPinState2 = digitalRead(ROD_ENDSTOP_DOWN);
     break;
     
-	/*
+	
 	//DEPRECATED:
-    case 1:
-      rodPinState1 = digitalRead(ROD_POSITION2_PIN1);
-      rodPinState2 = digitalRead(ROD_POSITION2_PIN2);
-    break;
+    //case 1:
+//      rodPinState1 = digitalRead(ROD_POSITION2_PIN1);
+      //rodPinState2 = digitalRead(ROD_POSITION2_PIN2);
+    //break;
 
-    case 2:
-      rodPinState1 = digitalRead(ROD_POSITION3_PIN1);
-      rodPinState2 = digitalRead(ROD_POSITION3_PIN2);
-    break;
-	*/
+    //case 2:
+//      rodPinState1 = digitalRead(ROD_POSITION3_PIN1);
+//      rodPinState2 = digitalRead(ROD_POSITION3_PIN2);
+//    break;
+	
   }
 
   // если на обеих датчиках одинаковое состояние - поломка штанги
@@ -55,6 +56,7 @@ RodPosition ConfigPin::getRodPosition(uint8_t channelNumber)
   // иначе - штанга внизу
   return rpDown;
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ConfigPin::setI2CPriority(uint8_t priority)
 {
