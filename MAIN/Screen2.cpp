@@ -1442,7 +1442,7 @@ void EthalonRecordScreen::rotateSelectedChannel(int button, int& val)
 {
   val++;
   
-  if(val > 2)
+  if(val > 1)
      val = -1;
 
   word color = VGA_BLACK;
@@ -1459,7 +1459,7 @@ void EthalonRecordScreen::rotateSelectedChannel(int button, int& val)
       color = VGA_RED;
       capt = "1";
     break;
-    
+/*    
     case 1:
       color = VGA_BLUE;
       capt = "2";
@@ -1470,6 +1470,7 @@ void EthalonRecordScreen::rotateSelectedChannel(int button, int& val)
       fontColor = VGA_BLACK;
       capt = "3";
     break;
+*/
   }
 
   screenButtons->setButtonBackColor(button,color);
