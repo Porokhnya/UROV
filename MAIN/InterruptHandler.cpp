@@ -1,6 +1,6 @@
 #include "InterruptHandler.h"
 #include "InterruptScreen.h"
-#include "ConfigPin.h"
+#include "Endstops.h"
 #include "Feedback.h"
 #include "DS3231.h"
 #include "FileUtils.h"
@@ -86,7 +86,7 @@ void checkRMS()
 	computeRMSCalled = false;
 
 	// получаем текущее состояние нижнего концевика, оно должно измениться.
-	bool thiDownEndstopTriggered = ConfigPin::RodDownEndstopTriggered();
+	bool thiDownEndstopTriggered = RodDownEndstopTriggered();
 
 	//тут проверяем РМС
 
@@ -225,7 +225,7 @@ void RelayTriggered()
   timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
 
   // сохраняем состояние нижнего концевика 
-  downEndstopTriggered = ConfigPin::RodDownEndstopTriggered();
+  downEndstopTriggered = RodDownEndstopTriggered();
 
   // взводим отложенное событие
   //DEPRECATED: 

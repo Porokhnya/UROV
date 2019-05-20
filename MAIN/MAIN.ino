@@ -21,6 +21,7 @@
 #include "Settings.h"
 #include "CoreCommandBuffer.h"
 #include <Wire.h>
+#include "Endstops.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -63,6 +64,10 @@ void setup()
   DBGLN(F("Init RTC..."));
   RealtimeClock.begin(DS3231_WIRE_NUMBER);           // запускаем их на шине I2C 1 (SDA1, SCL1);
  // RealtimeClock.setTime(0,1,11,1,7,2,2018);
+
+
+  DBGLN(F("Init endstops..."));
+  SetupEndstops();
 
   DBGLN(F("INIT SD..."));
   SDInit::InitSD();

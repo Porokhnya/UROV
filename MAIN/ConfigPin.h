@@ -12,12 +12,7 @@ public:
   ConfigPin();
   static void setup();
 
-  // возвращает true, если штанга в верхнем положении, false - если штанга в нижнем положении
-//  static RodPosition getRodPosition(uint8_t channelNumber);
-  static bool RodUpEndstopTriggered();
-  static bool RodDownEndstopTriggered();
   static void setI2CPriority(uint8_t priority);
-
  
 private:
 
