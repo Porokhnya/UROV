@@ -430,6 +430,7 @@ void InterruptHandlerClass::update()
 
   if (thisWantComputeRMS) // надо считать РМС
   {
+	  DBGLN(F("Want to compute RMS!"));
 	  thisWantComputeRMS = false;
 	  inComputeRMSMode = true;
 
@@ -443,6 +444,7 @@ void InterruptHandlerClass::update()
   {
 	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
 	  {
+		  DBGLN(F("RMS compute done, check RMS!"));
 		  inComputeRMSMode = false;
 		  // время подсчёта РМС вышло, надо проверять
 		  checkRMS(); // проверяем РМС
@@ -457,6 +459,8 @@ void InterruptHandlerClass::update()
   {
 
 	// защита сработала, надо считать РМС !!!
+	DBGLN(F("RELAY TRIGGERED!"));
+
 	wantComputeRMS = true;
 
 	if (!rmsStartComputeTime)
@@ -466,6 +470,7 @@ void InterruptHandlerClass::update()
     if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
     {      
       // время ожидания прошло
+		DBGLN(F("Relay delay check..."));
       // проверяем - если данные в одном из списков есть - ничего не делаем.
       // если ни в одном из списков нет данных - значит, это авария.
       // в любом другом случае флаг аварии выставится после того, как будет принято решение
@@ -479,6 +484,8 @@ void InterruptHandlerClass::update()
        
        if(hasAlarm)
        {
+		   DBGLN(F("HAS ALARM FLAG!"));
+
         // есть тревога, надо подождать окончания прерываний c энкодера
         thisHasEncoderInterrupt = true;
         thisLastEncoderInterruptTime = micros();
@@ -505,8 +512,10 @@ void InterruptHandlerClass::update()
 
   // работаем с энкодером, а именно - ожидаем окончание сбора с него данных
 
-    if(!thisHasEncoderInterrupt || inProcess)
-      return;
+  if (!thisHasEncoderInterrupt || inProcess)
+  {
+	  return;
+  }
   
       if(!(micros() - thisLastEncoderInterruptTime > INTERRUPT_MAX_IDLE_TIME)) // ещё не вышло максимальное время ожидания окончания прерываний на энкодере
       {
@@ -555,10 +564,15 @@ void InterruptHandlerClass::update()
           Feedback.alarm();
        }
     }
+	else
+	{
+		DBGLN(F("INTERRUPT LIST HAS NO DATA!!!"));
+	}
     
 
     if(needToLog)
     {
+		DBGLN(F("Want to log, write to SD!"));
       // надо записать в лог дату срабатывания системы
       InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);     
     } // needToLog
@@ -572,9 +586,11 @@ void InterruptHandlerClass::update()
     bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1));
 
     if(wantToInformSubscriber)
-    {       
+    { 
+		DBGLN(F("Want to inform subscriber!"));
       if(subscriber)
       {
+		  DBGLN(F("Subscriber exists!"));
         noInterrupts();
         uint32_t thisTm = timeBeforeInterruptsBegin;
         bool thisHasRelayTriggeredTime = hasRelayTriggeredTime;
@@ -589,10 +605,13 @@ void InterruptHandlerClass::update()
         subscriber->OnInterruptRaised(copyList1, compareRes1);        
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();
+
+		 DBGLN(F("Subscriber call done."));
       }
       else
       {
 		// подписчика нет, просто очищаем переменные
+		  DBGLN(F("NO SUBSCRIBER FOUND!!!"));
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();
