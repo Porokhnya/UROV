@@ -39,31 +39,34 @@ void setEncoderInterruptFlag()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
-    uint32_t now = micros();
-    list1.push_back(now);
+	// поскольку у нас прерывание на CHANGE - работаем только тогда, когда вход, на котором поставлено прерывание, в высоком
+	bool hasWantedLevel = digitalRead(ENCODER_PIN1);
 
-	setEncoderInterruptFlag();
+	if (hasWantedLevel)
+	{
+		uint32_t now = micros();
+		list1.push_back(now);
 
-  if(list1.size() < 2)
-  {
-    timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
-  }
+		setEncoderInterruptFlag();
 
-  // определяем направление вращения энкодера. Поскольку прерывание у нас установлено на CHANGE - читаем только тогда, когда первый вход - в высоком
-  if (digitalRead(ENCODER_PIN1))
-  {
-	  // в высоком, читаем второй вход
-	  if (digitalRead(ENCODER_PIN2))
-	  {
+		if(list1.size() < 2)
+		{
+			timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
+		}
+
+		// определяем направление вращения энкодера. Поскольку прерывание у нас установлено на CHANGE - читаем только тогда, когда первый вход - в высоком
+		if (digitalRead(ENCODER_PIN2))
+		{
 		  // по часовой
 		  Settings.setRodDirection(rpUp);
-	  }
-	  else
-	  {
+		}
+		else
+		{
 		  // против часовой
 		  Settings.setRodDirection(rpDown);
-	  }
-  }
+		}
+
+  } // hasWantedLevel
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
