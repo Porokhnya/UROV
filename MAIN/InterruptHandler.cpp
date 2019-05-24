@@ -39,34 +39,27 @@ void setEncoderInterruptFlag()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
-	// поскольку у нас прерывание на CHANGE - работаем только тогда, когда вход, на котором поставлено прерывание, в высоком
-	bool hasWantedLevel = digitalRead(ENCODER_PIN1);
+    uint32_t now = micros();
+    list1.push_back(now);
 
-	if (hasWantedLevel)
-	{
-		uint32_t now = micros();
-		list1.push_back(now);
+	setEncoderInterruptFlag();
 
-		setEncoderInterruptFlag();
+  if(list1.size() < 2)
+  {
+    timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
+  }
 
-		if(list1.size() < 2)
-		{
-			timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
-		}
-
-		// определяем направление вращения энкодера. Поскольку прерывание у нас установлено на CHANGE - читаем только тогда, когда первый вход - в высоком
-		if (digitalRead(ENCODER_PIN2))
-		{
+		// определяем направление вращения энкодера.
+	  if (digitalRead(ENCODER_PIN2))
+	  {
 		  // по часовой
 		  Settings.setRodDirection(rpUp);
-		}
-		else
-		{
+	  }
+	  else
+	  {
 		  // против часовой
 		  Settings.setRodDirection(rpDown);
-		}
-
-  } // hasWantedLevel
+	  }
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -259,7 +252,7 @@ void InterruptHandlerClass::begin()
   pinMode(ENCODER_PIN2, INPUT);
 
   // считаем импульсы на штанге по прерыванию
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, RISING);
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -614,7 +607,7 @@ void InterruptHandlerClass::update()
       else
       {
 		// подписчика нет, просто очищаем переменные
-		  DBGLN(F("NO SUBSCRIBER FOUND!!!"));
+		  DBGLN(F("NO SUBSСRIBER FOUND!!!"));
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();
