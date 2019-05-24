@@ -3,7 +3,7 @@
 #include <Arduino.h>
 //--------------------------------------------------------------------------------------------------------------------------------
 extern void SetupEndstops();
-extern bool RodUpEndstopTriggered();
-extern bool RodDownEndstopTriggered();
+extern bool RodUpEndstopTriggered(bool noInt);
+extern bool RodDownEndstopTriggered(bool noInt);
 //--------------------------------------------------------------------------------------------------------------------------------
 

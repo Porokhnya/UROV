@@ -82,7 +82,7 @@ void checkRMS()
 	computeRMSCalled = false;
 
 	// получаем текущее состояние нижнего концевика, оно должно измениться.
-	bool thiDownEndstopTriggered = RodDownEndstopTriggered();
+	bool thiDownEndstopTriggered = RodDownEndstopTriggered(true);
 
 	//тут проверяем РМС
 
@@ -221,7 +221,7 @@ void RelayTriggered()
   timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
 
   // сохраняем состояние нижнего концевика 
-  downEndstopTriggered = RodDownEndstopTriggered();
+  downEndstopTriggered = RodDownEndstopTriggered(false);
 
   // взводим отложенное событие
   //DEPRECATED: 

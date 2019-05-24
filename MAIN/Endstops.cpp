@@ -36,22 +36,30 @@ bool checkInterval(uint32_t interval)
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------
-bool RodUpEndstopTriggered()
+bool RodUpEndstopTriggered(bool noInt)
 {
 	// атомарное чтение
-	noInterrupts();
+	if(noInt)
+		noInterrupts();
+
 	uint32_t lastIntTime = upEndstopLastInterrupt;
-	interrupts();
+
+	if(noInt)
+		interrupts();
 
 	return checkInterval(micros() - lastIntTime);
 }
 //--------------------------------------------------------------------------------------------------------------------------------
-bool RodDownEndstopTriggered()
+bool RodDownEndstopTriggered(bool noInt)
 {
 	// атомарное чтение
-	noInterrupts();
+	if(noInt)
+		noInterrupts();
+
 	uint32_t lastIntTime = downEndstopLastInterrupt;
-	interrupts();
+
+	if(noInt)
+		interrupts();
 
 	return checkInterval(micros() - lastIntTime);
 
