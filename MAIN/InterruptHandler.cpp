@@ -242,17 +242,31 @@ void InterruptHandlerClass::begin()
 
   NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
 
-  // взводим прерывание на входе срабатывания защиты
-  attachInterrupt(digitalPinToInterrupt(RELAY_PIN),RelayTriggered, RELAY_INTERRUPT_LEVEL);
+#if (RELAY_INTERRUPT_LEVEL == RISING)
+  pinMode(RELAY_PIN, INPUT_PULLUP);
+#else
+  pinMode(RELAY_PIN, INPUT);
+#endif
+
 
   // настраиваем первый выход энкодера на чтение
+#if (ENCODER_INTERRUPT_LEVEL == RISING)
+  pinMode(ENCODER_PIN1, INPUT_PULLUP);
+#else
   pinMode(ENCODER_PIN1, INPUT);
+#endif
 
   // настраиваем второй выход энкодера на чтение
   pinMode(ENCODER_PIN2, INPUT);
 
+  // ждём, пока устаканится питание
+  delay(10);
+
+  // взводим прерывание на входе срабатывания защиты
+  attachInterrupt(digitalPinToInterrupt(RELAY_PIN), RelayTriggered, RELAY_INTERRUPT_LEVEL);
+
   // считаем импульсы на штанге по прерыванию
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, RISING);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
