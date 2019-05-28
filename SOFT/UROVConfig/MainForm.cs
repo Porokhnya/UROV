@@ -3555,6 +3555,7 @@ namespace UROVConfig
         private void ShowArchiveEthalon(ArchiveTreeEthalonItemRecord atei)
         {
             string fname = atei.FileName;
+
             try
             {
                 List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
@@ -3763,6 +3764,9 @@ namespace UROVConfig
 
         private void btnExportEthalonToImage_Click(object sender, EventArgs e)
         {
+            string fn = DateTime.Now.ToString("yyyy-MM-dd");
+            saveFileDialog.FileName = fn;
+
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 bool errors = false;
