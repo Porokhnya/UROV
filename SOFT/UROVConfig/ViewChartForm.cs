@@ -18,7 +18,7 @@ namespace UROVConfig
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            string fn = DateTime.Now.ToString("yyyy-MM-dd");
+            string fn = DateTime.Now.ToString("yyyy-MM-dd HH.mm");
             saveFileDialog.FileName = fn;
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
