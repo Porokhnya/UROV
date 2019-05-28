@@ -3248,6 +3248,8 @@ namespace UROVConfig
 
             ViewChartForm vcf = new ViewChartForm();
 
+            vcf.setDefaultFileName(record.InterruptInfo.InterruptTime.ToString("yyyy-MM-dd HH.mm"));
+
             vcf.lblCaption.Text = "Срабатывание от " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
 
             System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
@@ -3552,9 +3554,13 @@ namespace UROVConfig
             af.ShowDialog();
         }
 
+        private string archiveEthalonChartExportFileName;
+
         private void ShowArchiveEthalon(ArchiveTreeEthalonItemRecord atei)
         {
             string fname = atei.FileName;
+            DateTime modification = System.IO.File.GetLastWriteTime(fname);
+            archiveEthalonChartExportFileName = modification.ToString("yyyy-MM-dd HH.mm");
 
             try
             {
@@ -3763,9 +3769,8 @@ namespace UROVConfig
         }
 
         private void btnExportEthalonToImage_Click(object sender, EventArgs e)
-        {
-            string fn = DateTime.Now.ToString("yyyy-MM-dd HH.mm");
-            saveFileDialog.FileName = fn;
+        {            
+            saveFileDialog.FileName = archiveEthalonChartExportFileName;
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {

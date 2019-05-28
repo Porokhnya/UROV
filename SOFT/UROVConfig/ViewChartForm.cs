@@ -16,10 +16,13 @@ namespace UROVConfig
             InitializeComponent();
         }
 
+        public void setDefaultFileName(string fname)
+        {
+            saveFileDialog.FileName = fname;
+        }
+
         private void btnExport_Click(object sender, EventArgs e)
         {
-            string fn = DateTime.Now.ToString("yyyy-MM-dd HH.mm");
-            saveFileDialog.FileName = fn;
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
