@@ -11,6 +11,7 @@ using System.Globalization;
 
 namespace UROVConfig
 {
+
     public partial class MainForm : Form
     {
 
@@ -123,7 +124,16 @@ namespace UROVConfig
 
         }
 
-//        private FileDownloadFlags fileDownloadFlags = FileDownloadFlags.View;
+        //        private FileDownloadFlags fileDownloadFlags = FileDownloadFlags.View;
+
+        private List<byte> logContentToShow = null;
+        private void DoShowLogFile(ConnectForm frm)
+        {
+            System.Diagnostics.Debug.Assert(logContentToShow != null);
+            ShowLogFile(logContentToShow, this.logDataGrid, "", true,frm);
+
+            frm.DialogResult = DialogResult.OK;
+        }
 
         private void ViewFile(List<byte> content)
         {
@@ -140,7 +150,11 @@ namespace UROVConfig
 
             if (upStr.EndsWith(".LOG"))
             {
-                ShowLogFile(content, this.logDataGrid,"",true);
+                ConnectForm cn = new ConnectForm(true);
+                cn.OnConnectFormShown = this.DoShowLogFile;
+                cn.lblCurrentAction.Text = "Загружаем лог...";
+                logContentToShow = content;
+                cn.ShowDialog();                
 
             }
             else if (upStr.EndsWith(".ETL"))
@@ -236,16 +250,20 @@ namespace UROVConfig
             return result;
         }
 
-        private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents)
+        public class LogInfo
         {
-            /*
-            ASCIIEncoding encoding = new ASCIIEncoding();
-            string combindedString = encoding.GetString(content.ToArray());
-            this.richTextBoxFileView.Text = combindedString;
-            this.richTextBoxFileView.BringToFront();
-            */
+            public List<InterruptRecord> list = new List<InterruptRecord>();
+            public string addToColumnName;
+            public bool computeMotoresurcePercents;
+        }
+
+        private Dictionary<DataGridView, LogInfo> gridToListCollection = new Dictionary<DataGridView, LogInfo>();
+
+        private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm)
+        {
 
             ClearInterruptsList(targetGrid);
+
             // парсим лог-файл
             int readed = 0;
             InterruptInfo currentInterruptInfo = null;
@@ -256,6 +274,15 @@ namespace UROVConfig
 
                 while (readed < content.Count)
                 {
+                    if (frm != null)
+                    {
+                        string message = "Загружаем лог: {0}% из {1} байт...";
+                        int percents = (readed * 100) / content.Count;
+                        frm.lblCurrentAction.Text = String.Format(message, percents, content.Count);
+                    }
+
+                    Application.DoEvents();
+
                     byte curByte = content[readed];
                     readed++;
 
@@ -351,7 +378,7 @@ namespace UROVConfig
                             break;
 
                         case LogRecordType.RelayTriggeredTime: // время срабатывания защиты
-                            {                                
+                            {
                                 // далее идут 7 байт времени
                                 byte dayOfMonth = content[readed]; readed++;
                                 byte month = content[readed]; readed++;
@@ -454,16 +481,20 @@ namespace UROVConfig
                     } // switch
                 } // while                
             }
-            
+
             catch
             {
                 this.plEmptySDWorkspace.BringToFront();
                 MessageBox.Show("Ошибка разбора лог-файла!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
 
-            targetGrid.BringToFront();
+            if (gridToListCollection.ContainsKey(targetGrid))
+            {
+                targetGrid.RowCount = gridToListCollection[targetGrid].list.Count;
+            }
+
+              targetGrid.BringToFront();
         }
 
         private void AddInterruptRecordToList(InterruptRecord record, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents)
@@ -471,7 +502,20 @@ namespace UROVConfig
             if (record == null)
                 return;
 
+            if(!gridToListCollection.ContainsKey(targetGrid))
+            {
+                //List<InterruptRecord> lst = new List<InterruptRecord>();
+                LogInfo linf = new LogInfo();
+                linf.addToColumnName = addToColumnName;
+                linf.computeMotoresurcePercents = computeMotoresurcePercents;
+                gridToListCollection[targetGrid] = linf;
+            }
+
             //Тут добавление в список в таблицу
+
+            gridToListCollection[targetGrid].list.Add(record);
+            /*
+
             int rowNumber = targetGrid.Rows.Add();
 
             DataGridViewRow row = targetGrid.Rows[rowNumber];
@@ -494,13 +538,7 @@ namespace UROVConfig
             else
                 row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightSalmon;
 
-            /*
-             //DEPRECATED: 
-             if (record.InductiveSensorState == InductiveSensorState.Good)
-                 row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightGreen;
-             else
-                 row.Cells["Ind" + addToColumnName].Style.BackColor = Color.LightSalmon;
-             */
+
 
             if (record.RodPosition == RodPosition.Broken)
                 row.Cells["Rod" + addToColumnName].Style.BackColor = Color.LightSalmon;
@@ -516,15 +554,7 @@ namespace UROVConfig
                     default:
                         resMax = Config.Instance.MotoresourceMax1;
                         break;
-                        /*
-                         //DEPRECATED: 
-                    case 1:
-                        resMax = Config.Instance.MotoresourceMax2;
-                        break;
-                    case 2:
-                        resMax = Config.Instance.MotoresourceMax3;
-                        break;
-                        */
+
                 }
 
                 if (resMax < 1)
@@ -541,14 +571,19 @@ namespace UROVConfig
             row.Cells["Pulses" + addToColumnName].Value = record.InterruptData.Count.ToString();
 
             row.Cells["Btn" + addToColumnName].Value = "Просмотр";
-
+            */
 
         }
 
         private void ClearInterruptsList(DataGridView targetGrid)
         {
             // Тут очистка таблицы
-            targetGrid.Rows.Clear();
+            // targetGrid.Rows.Clear();
+            targetGrid.RowCount = 0;
+            if (gridToListCollection.ContainsKey(targetGrid))
+            {
+                gridToListCollection[targetGrid].list.Clear();
+            }
         }
 
         private void SaveEthalon(string fname, List<byte> content)
@@ -3530,16 +3565,55 @@ namespace UROVConfig
             
         }
 
-        private void ShowArchiveLog(ArchiveTreeLogItemRecord atlir)
+        private async void DoReadArchiveLog(ConnectForm frm, string fname)
         {
-            string fname = atlir.FileName;
+
+            byte[] result;
+            using (System.IO.FileStream SourceStream = System.IO.File.Open(fname, System.IO.FileMode.Open))
+            {
+                result = new byte[SourceStream.Length];
+                await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
+            }
+
+            //List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
+            List<byte> content = new List<byte>(result);
+            ShowLogFile(content, this.archiveLogDataGrid, "1", false,frm);
+            this.archiveLogDataGrid.BringToFront();
+
+            frm.DialogResult = DialogResult.OK;
+
+        }
+
+        private ArchiveTreeLogItemRecord archiveWorkRecord = null;
+        private void DoShowArchiveLog(ConnectForm frm)
+        {
+            System.Diagnostics.Debug.Assert(archiveWorkRecord != null);
+            string fname = archiveWorkRecord.FileName;
+            frm.Update();
             try
             {
+                /*
                 List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
-                ShowLogFile(content, this.archiveLogDataGrid, "1",false);
+                ShowLogFile(content, this.archiveLogDataGrid, "1", false);
                 this.archiveLogDataGrid.BringToFront();
+                */
+                DoReadArchiveLog(frm, fname);
             }
-            catch { }
+            catch {
+                frm.DialogResult = DialogResult.OK;
+            }
+
+            
+        }
+
+        private void ShowArchiveLog(ArchiveTreeLogItemRecord atlir)
+        {
+            ConnectForm cn = new ConnectForm(true);
+            cn.OnConnectFormShown = this.DoShowArchiveLog;
+            cn.lblCurrentAction.Text = "Загружаем лог...";
+            archiveWorkRecord = atlir;
+            cn.ShowDialog();
+            
         }
 
         private void treeView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -3585,6 +3659,153 @@ namespace UROVConfig
             s += PARAM_DELIMITER + Convert.ToString(nudACSDelay.Value);
 
             PushCommandToQueue(SET_PREFIX + "RDELAY" + PARAM_DELIMITER + s, ParseSetRelayDelay);
+        }
+
+        private void archiveLogDataGrid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        {
+            DataGridView targetGrid = sender as DataGridView;
+
+            int rowNumber = e.RowIndex;
+
+            if (rowNumber >= targetGrid.RowCount)
+                return;
+
+            if (!gridToListCollection.ContainsKey(targetGrid))
+                return;
+
+            LogInfo linf = gridToListCollection[targetGrid];
+
+            if (rowNumber >= linf.list.Count)
+                return;
+
+            InterruptRecord record = linf.list[rowNumber];
+
+            DataGridViewRow row = targetGrid.Rows[rowNumber];
+            row.Tag = record;
+
+            row.DefaultCellStyle.BackColor = rowNumber % 2 == 0 ? Color.LightGray : Color.White;
+
+            if(targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Num"))
+            {
+                e.Value = (rowNumber + 1).ToString();
+            } 
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Time"))
+            {
+                e.Value = record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Temp"))
+            {
+                e.Value = record.InterruptInfo.SystemTemperature.ToString("0.00") + " °C";
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Channel"))
+            {
+                e.Value = (1 + record.ChannelNumber).ToString();
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Rod"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.RodPosition);
+
+                if (record.RodPosition == RodPosition.Broken)
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightSalmon;
+                else
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.White;
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Compare"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.EthalonCompareResult);
+
+                if (record.EthalonCompareResult == EthalonCompareResult.MatchEthalon)
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightGreen;
+                else
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightSalmon;
+
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Etl"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.EthalonCompareNumber);
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Motoresource"))
+            {
+                if(linf.computeMotoresurcePercents)
+                {
+                    int resMax = 1;
+                    switch (record.ChannelNumber)
+                    {
+                        //DEPRECATED: case 0:
+                        default:
+                            resMax = Config.Instance.MotoresourceMax1;
+                            break;
+
+                    }
+
+                    if (resMax < 1)
+                        resMax = 1;
+
+                    float motoPercents = (record.Motoresource * 100.0f) / resMax;
+                    e.Value = record.Motoresource.ToString() + " (" + motoPercents.ToString("0.00") + "%)";
+                }
+                else
+                {
+                    e.Value = record.Motoresource.ToString(); ;
+                }
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Pulses"))
+            {
+                e.Value = record.InterruptData.Count.ToString();
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Btn"))
+            {
+                e.Value = "Просмотр";
+            }
+
+
+        }
+
+        private void btnExportEthalonToImage_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                bool errors = false;
+                string fname = saveFileDialog.FileName;
+                switch (saveFileDialog.FilterIndex)
+                {
+                    case 1: // png
+                        {
+                            try
+                            {
+                                this.archiveAthalonChart.SaveImage(fname, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+                            }
+                            catch
+                            {
+                                errors = true;
+                            }
+                        }
+                        break;
+
+                    case 2: // jpeg
+                        {
+                            try
+                            {
+                                this.archiveAthalonChart.SaveImage(fname, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Jpeg);
+                            }
+                            catch
+                            {
+                                errors = true;
+                            }
+
+                        }
+                        break;
+                } // switch
+
+                if (errors)
+                {
+                    MessageBox.Show("Ошибка экспорта!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Картинка экспортирована.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
         }
     }
 

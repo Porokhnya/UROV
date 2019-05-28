@@ -9,6 +9,8 @@ using System.Windows.Forms;
 
 namespace UROVConfig
 {
+    public delegate void ConnectFormShown(ConnectForm frm);
+
     public partial class ConnectForm : Form
     {
         private bool hasNoActions = false;
@@ -23,6 +25,8 @@ namespace UROVConfig
         private MainForm mainForm = null;
         private string portToConnect;
 
+        public ConnectFormShown OnConnectFormShown = null;
+
         private void ConnectForm_Activated(object sender, EventArgs e)
         {
             if (!firstTimeActivate)
@@ -31,6 +35,11 @@ namespace UROVConfig
 
             if(!hasNoActions)
                 this.mainForm.StartConnectToPort(this.portToConnect);
+
+            if(OnConnectFormShown != null)
+            {
+                OnConnectFormShown(this);
+            }
         }
 
         public void SetMainFormAndPort(MainForm fm, string port)

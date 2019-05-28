@@ -21,7 +21,6 @@ D:\JOB\UROV\UROV\SOFT\UROVConfig\bin\Debug\UROVConfig.exe
 D:\JOB\UROV\UROV\SOFT\UROVConfig\bin\Debug\UROVConfig.pdb
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.AboutForm.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.ConnectForm.resources
-D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.MainForm.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.Properties.Resources.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.UploadFileDialog.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.ViewChartForm.resources
@@ -33,3 +32,4 @@ D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.pdb
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.ControllerNameForm.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.ArchiveImportForm.resources
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.csprojResolveAssemblyReference.cache
+D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.MainForm.resources
