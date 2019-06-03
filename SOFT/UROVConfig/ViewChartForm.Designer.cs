@@ -28,21 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblCaption = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.btnExport = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.btnExportToCSV = new System.Windows.Forms.Button();
+            this.exportToCSVDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -79,45 +81,46 @@
             this.panel2.Size = new System.Drawing.Size(870, 548);
             this.panel2.TabIndex = 1;
             // 
+            // chart
+            // 
+            chartArea1.Name = "ethalonChartArea";
+            this.chart.ChartAreas.Add(chartArea1);
+            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
+            legend1.Name = "Legend1";
+            this.chart.Legends.Add(legend1);
+            this.chart.Location = new System.Drawing.Point(0, 0);
+            this.chart.Name = "chart";
+            series1.BorderWidth = 6;
+            series1.ChartArea = "ethalonChartArea";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Color = System.Drawing.Color.LightGreen;
+            series1.Legend = "Legend1";
+            series1.LegendText = "Эталон";
+            series1.Name = "serie1";
+            series2.BorderWidth = 2;
+            series2.ChartArea = "ethalonChartArea";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Color = System.Drawing.Color.SteelBlue;
+            series2.Legend = "Legend1";
+            series2.LegendText = "Прерывание";
+            series2.Name = "serie2";
+            this.chart.Series.Add(series1);
+            this.chart.Series.Add(series2);
+            this.chart.Size = new System.Drawing.Size(870, 484);
+            this.chart.TabIndex = 3;
+            this.chart.Text = "chart1";
+            // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.btnExportToCSV);
             this.panel3.Controls.Add(this.btnExport);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(0, 484);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(870, 64);
             this.panel3.TabIndex = 2;
-            // 
-            // chart
-            // 
-            chartArea4.Name = "ethalonChartArea";
-            this.chart.ChartAreas.Add(chartArea4);
-            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend4.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
-            legend4.Name = "Legend1";
-            this.chart.Legends.Add(legend4);
-            this.chart.Location = new System.Drawing.Point(0, 0);
-            this.chart.Name = "chart";
-            series7.BorderWidth = 6;
-            series7.ChartArea = "ethalonChartArea";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series7.Color = System.Drawing.Color.LightGreen;
-            series7.Legend = "Legend1";
-            series7.LegendText = "Эталон";
-            series7.Name = "serie1";
-            series8.BorderWidth = 2;
-            series8.ChartArea = "ethalonChartArea";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series8.Color = System.Drawing.Color.SteelBlue;
-            series8.Legend = "Legend1";
-            series8.LegendText = "Прерывание";
-            series8.Name = "serie2";
-            this.chart.Series.Add(series7);
-            this.chart.Series.Add(series8);
-            this.chart.Size = new System.Drawing.Size(870, 484);
-            this.chart.TabIndex = 3;
-            this.chart.Text = "chart1";
             // 
             // btnExport
             // 
@@ -128,7 +131,7 @@
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(167, 40);
             this.btnExport.TabIndex = 9;
-            this.btnExport.Text = "Экспорт";
+            this.btnExport.Text = "Экспорт рисунка";
             this.btnExport.UseVisualStyleBackColor = false;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
@@ -136,6 +139,24 @@
             // 
             this.saveFileDialog.Filter = "Рисунок PNG|*.png|Рисунок JPEG|*.jpg";
             this.saveFileDialog.RestoreDirectory = true;
+            // 
+            // btnExportToCSV
+            // 
+            this.btnExportToCSV.BackColor = System.Drawing.Color.LightGreen;
+            this.btnExportToCSV.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportToCSV.ForeColor = System.Drawing.Color.Black;
+            this.btnExportToCSV.Location = new System.Drawing.Point(185, 12);
+            this.btnExportToCSV.Name = "btnExportToCSV";
+            this.btnExportToCSV.Size = new System.Drawing.Size(167, 40);
+            this.btnExportToCSV.TabIndex = 10;
+            this.btnExportToCSV.Text = "Экспорт в CSV";
+            this.btnExportToCSV.UseVisualStyleBackColor = false;
+            this.btnExportToCSV.Click += new System.EventHandler(this.btnExportToCSV_Click);
+            // 
+            // exportToCSVDialog
+            // 
+            this.exportToCSVDialog.Filter = "Файл CSV|*.csv";
+            this.exportToCSVDialog.RestoreDirectory = true;
             // 
             // ViewChartForm
             // 
@@ -152,8 +173,8 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -168,5 +189,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.Button btnExportToCSV;
+        private System.Windows.Forms.SaveFileDialog exportToCSVDialog;
     }
 }

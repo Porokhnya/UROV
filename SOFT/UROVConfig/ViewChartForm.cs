@@ -19,6 +19,46 @@ namespace UROVConfig
         public void setDefaultFileName(string fname)
         {
             saveFileDialog.FileName = fname;
+            exportToCSVDialog.FileName = fname;
+        }
+
+        private bool SaveToCSV(string fname)
+        {
+            // серия эталона - у нас 0, прерывания - 1. При наличии прерывания - экспортируем прерывание, иначе - эталон
+            System.Windows.Forms.DataVisualization.Charting.Series serieToExport = null;
+            if(this.chart.Series.Count < 1)
+            {
+                MessageBox.Show("К экспорту не найдено ни одного графика с данными!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else
+            {
+                if(this.chart.Series.Count > 1)
+                {
+                    serieToExport = this.chart.Series[1]; // прерывание
+                }
+                else
+                {
+                    serieToExport = this.chart.Series[0]; // эталон
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var pt in serieToExport.Points)
+            {
+                sb.AppendLine(pt.YValues[0].ToString());
+            }
+
+            try
+            {
+                System.IO.File.WriteAllText(fname, sb.ToString());
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void btnExport_Click(object sender, EventArgs e)
@@ -35,6 +75,7 @@ namespace UROVConfig
                             try
                             {
                                 this.chart.SaveImage(fname, System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+                               
                             }
                             catch
                             {
@@ -65,6 +106,26 @@ namespace UROVConfig
                 else
                 {
                     MessageBox.Show("Картинка экспортирована.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void btnExportToCSV_Click(object sender, EventArgs e)
+        {
+            if (exportToCSVDialog.ShowDialog() == DialogResult.OK)
+            {
+                bool errors = false;
+                string fname = exportToCSVDialog.FileName;
+
+                errors = !SaveToCSV(fname);
+               
+                if (errors)
+                {
+                    MessageBox.Show("Ошибка экспорта!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Данные экспортированы.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
