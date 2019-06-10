@@ -51,7 +51,7 @@ namespace Drawing
     
       // теперь вычисляем положение по X для каждой точки импульсов
       uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
-      uint16_t xStep = pointsAvailable/(totalPulses-1);
+      float xStep = (1.*pointsAvailable)/(totalPulses-1);
     
       // сначала добавляем первую точку, у неё координаты по X - это 0, по Y - та же длительность импульса, что будет во второй точке
       uint32_t firstPulseTime = timeList[1] - timeList[0];
@@ -65,7 +65,7 @@ namespace Drawing
       DBGLN(firstPointPercents);
     
       // теперь можем высчитать абсолютное значение по Y для первой точки  
-      uint16_t yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+      float yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
       // здесь мы получили значение в пикселях, соответствующее проценту от максимального значения Y.
       // от этого значения надо отнять сдвиг по Y
       yCoord -= yOffset;
@@ -78,7 +78,8 @@ namespace Drawing
       DBGLN(yCoord);
     
       // добавляем первую точку
-      uint16_t xCoord = INTERRUPT_CHART_X_COORD;
+      float xCoord = INTERRUPT_CHART_X_COORD;
+
       Point pt = {xCoord,yCoord};
       serie.push_back(pt);
     
