@@ -37,9 +37,9 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnExportToCSV = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.btnExportToCSV = new System.Windows.Forms.Button();
             this.exportToCSVDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -122,6 +122,19 @@
             this.panel3.Size = new System.Drawing.Size(870, 64);
             this.panel3.TabIndex = 2;
             // 
+            // btnExportToCSV
+            // 
+            this.btnExportToCSV.BackColor = System.Drawing.Color.LightGreen;
+            this.btnExportToCSV.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportToCSV.ForeColor = System.Drawing.Color.Black;
+            this.btnExportToCSV.Location = new System.Drawing.Point(185, 12);
+            this.btnExportToCSV.Name = "btnExportToCSV";
+            this.btnExportToCSV.Size = new System.Drawing.Size(167, 40);
+            this.btnExportToCSV.TabIndex = 10;
+            this.btnExportToCSV.Text = "Экспорт в CSV";
+            this.btnExportToCSV.UseVisualStyleBackColor = false;
+            this.btnExportToCSV.Click += new System.EventHandler(this.btnExportToCSV_Click);
+            // 
             // btnExport
             // 
             this.btnExport.BackColor = System.Drawing.Color.LightGreen;
@@ -139,19 +152,6 @@
             // 
             this.saveFileDialog.Filter = "Рисунок PNG|*.png|Рисунок JPEG|*.jpg";
             this.saveFileDialog.RestoreDirectory = true;
-            // 
-            // btnExportToCSV
-            // 
-            this.btnExportToCSV.BackColor = System.Drawing.Color.LightGreen;
-            this.btnExportToCSV.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportToCSV.ForeColor = System.Drawing.Color.Black;
-            this.btnExportToCSV.Location = new System.Drawing.Point(185, 12);
-            this.btnExportToCSV.Name = "btnExportToCSV";
-            this.btnExportToCSV.Size = new System.Drawing.Size(167, 40);
-            this.btnExportToCSV.TabIndex = 10;
-            this.btnExportToCSV.Text = "Экспорт в CSV";
-            this.btnExportToCSV.UseVisualStyleBackColor = false;
-            this.btnExportToCSV.Click += new System.EventHandler(this.btnExportToCSV_Click);
             // 
             // exportToCSVDialog
             // 

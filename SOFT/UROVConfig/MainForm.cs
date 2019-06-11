@@ -97,7 +97,7 @@ namespace UROVConfig
         /// <summary>
         /// Буфер под ответ с COM-порта
         /// </summary>
-        string COMBuffer = "";
+        //string COMBuffer = "";
 
         private void ProcessAnswerLine(string line)
         {
@@ -704,7 +704,8 @@ namespace UROVConfig
         /// обрабатываем ответ от контроллера
         /// </summary>
         /// <param name="dt">строка, которая пришла из порта</param>
-        //private void ProcessPortAnswer(string dt)
+        private List<byte> COMAnswer = new List<byte>();
+
         private void ProcessPortAnswer(byte[] dt)
         {
             EnsureCloseConnectionForm(); // закрываем форму коннекта, если она ещё не закрыта
@@ -715,8 +716,35 @@ namespace UROVConfig
                     {
 
                         // нормальный режим работы
+
+                        ///////////////////////////////////////////////////////////
+                        // НОВЫЙ КОД
+                        ///////////////////////////////////////////////////////////
+                        COMAnswer.AddRange(dt);
+
+                        while(true)
+                        {
+                            int idx = Array.IndexOf(COMAnswer.ToArray(), (byte)'\n');
+                            if (idx != -1)
+                            {
+                                string line = System.Text.Encoding.UTF8.GetString(COMAnswer.ToArray(), 0, idx);
+                                COMAnswer.RemoveRange(0, idx+1);
+                                line = line.Trim();
+                                ProcessAnswerLine(line);
+
+                            }
+                            else
+                                break;
+                        }
+
+                        ///////////////////////////////////////////////////////////
+                        // НОВЫЙ КОД КОНЕЦ
+                        ///////////////////////////////////////////////////////////
+
+                        /*
                         for (int i = 0; i < dt.Length; i++)
                             COMBuffer += (char)dt[i];
+
 
                         while (true)
                         {
@@ -733,6 +761,7 @@ namespace UROVConfig
                             else
                                 break;
                         }
+                        */
                     }
                     break;
 
@@ -992,6 +1021,7 @@ namespace UROVConfig
                 prefix = "<= ";
 
             li.BackColor = currentLogItemColor;
+
             li.SubItems.Add(prefix + line);
             li.EnsureVisible();
 

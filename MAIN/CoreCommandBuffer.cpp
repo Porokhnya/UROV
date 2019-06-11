@@ -35,6 +35,7 @@ CoreCommandBuffer Commands(&Serial);
 CoreCommandBuffer::CoreCommandBuffer(Stream* s) : pStream(s)
 {
     strBuff = new String();
+	strBuff->reserve(201);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CoreCommandBuffer::hasCommand()
