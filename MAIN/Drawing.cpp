@@ -148,26 +148,44 @@ namespace Drawing
 
 	  size_t to = serie.size();
 
+	  DBG(F("Точек к отрисовке: "));
+	  DBGLN(to);
+
+	  Point ptStart, ptEnd;
 
       for (size_t i=1;i<to;i++)
       {
-          Point ptStart = serie[i-1];
-          Point ptEnd = serie[i];
-		  DBG(F("Линия: x1="));
-		  DBG(ptStart.X);
-		  DBG(F(";y1="));
-		  DBG(ptStart.Y);
-		  DBG(F(";x2="));
-		  DBG(ptEnd.X);
-		  DBG(F(";y2="));
-		  DBGLN(ptEnd.Y);
+          ptStart = serie[i-1];
+          ptEnd = serie[i];
 
-		  dc->drawLine(ptStart.X , ptStart.Y, ptEnd.X , ptEnd.Y);
-//		  dc->drawLine(154, 119, 154, 120);
+		  /*
+		  ptStart.X = 5;
+		  ptStart.Y = 5;
+		  ptEnd.X = 154;
+		  ptEnd.Y = 120;
+		  */
+
+		  int x1 = ptStart.X;
+		  int y1 = ptStart.Y;
+		  int x2 = ptEnd.X;
+		  int y2 = ptEnd.Y;
+
+		  DBG(F("Линия: x1="));
+		  DBG(x1);
+		  DBG(F(";y1="));
+		  DBG(y1);
+		  DBG(F(";x2="));
+		  DBG(x2);
+		  DBG(F(";y2="));
+		  DBGLN(y2);
+
+//		  dc->drawLine(x1 , y1, x2 , y2);
+		  dc->fillRect(x1, y1, x2, y2);
           yield();
 
       } 
 
+	  DBGLN(F("ВСЕ ЛИНИИ НА ГРАФИКЕ ОТРИСОВАНЫ."));
 
   }
 

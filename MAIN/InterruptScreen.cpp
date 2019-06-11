@@ -106,14 +106,14 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
   // для теста - печатаем в Serial
   #ifdef _DEBUG
 
-    if(list.size() > 1)
+    if(list1.size() > 1)
     {
 		DBG("INTERRUPT");
       DBGLN(" DATA >>");
       
-      for(size_t i=0;i<list.size();i++)
+      for(size_t i=0;i<list1.size();i++)
       {
-        DBGLN(list[i]);
+        DBGLN(list1[i]);
       }
     }
 
@@ -346,11 +346,11 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
-  drawTime(menu);
-  Drawing::DrawChart(this,serie1);
-  drawMotoresource(menu);
-  drawCompareResult(menu);
+	drawTime(menu);
+	drawMotoresource(menu);
+	drawCompareResult(menu);
   //DEPRECATED: drawTimeBeforeInterrupt(menu);
+	Drawing::DrawChart(this, serie1);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
