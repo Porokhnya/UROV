@@ -253,8 +253,8 @@ ch13:A11 Измерение +5V   (8)
 
 
 #ifdef _DEBUG
-  #define DBG(s) { Serial << (s); }
-  #define DBGLN(s) { Serial << (s) << ENDL; }
+#define DBG(s) { Serial << (s); Serial.flush(); }
+  #define DBGLN(s) { Serial << (s) << ENDL; Serial.flush(); }
 #else
   #define DBG(s) (void) 0
   #define DBGLN(s) (void) 0

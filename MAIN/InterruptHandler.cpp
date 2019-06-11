@@ -494,8 +494,6 @@ void InterruptHandlerClass::update()
        
        if(hasAlarm)
        {
-		   DBGLN(F("HAS ALARM FLAG!"));
-
         // есть тревога, надо подождать окончания прерываний c энкодера
         thisHasEncoderInterrupt = true;
         thisLastEncoderInterruptTime = micros();
@@ -506,13 +504,13 @@ void InterruptHandlerClass::update()
         timeBeforeInterruptsBegin = micros() - thisRelayTriggeredTime;
        }
 
-      interrupts();
-      
+      interrupts();      
 
       // выставляем флаг аварии, в зависимости от наличия данных в списках
       if(hasAlarm)
       {
-        // сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
+		  DBGLN(F("HAS ALARM FLAG!"));
+		  // сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
         Feedback.alarm(true);
       }
     } // if

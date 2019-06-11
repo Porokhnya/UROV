@@ -35,7 +35,7 @@ namespace Drawing
     
       if(totalPulses < 2) // нет ничего к отрисовке, т.к. для графика нужны хотя бы две точки
       {
-        DBGLN(F("NOT ENOUGH POINTS TO DRAW!"));
+       // DBGLN(F("NOT ENOUGH POINTS TO DRAW!"));
         return;
       }
     
@@ -61,8 +61,8 @@ namespace Drawing
       // получили значение в процентах от максимального значения Y для первой точки. Инвертируем это значение
       firstPointPercents = 100 - firstPointPercents;
     
-      DBG("firstPointPercents=");
-      DBGLN(firstPointPercents);
+  //    DBG("firstPointPercents=");
+   //   DBGLN(firstPointPercents);
     
       // теперь можем высчитать абсолютное значение по Y для первой точки  
       float yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
@@ -75,10 +75,14 @@ namespace Drawing
         yCoord = INTERRUPT_CHART_GRID_Y_START;
     
       DBG("yCoord=");
-      DBGLN(yCoord);
-    
+      DBG(yCoord);
+
+
       // добавляем первую точку
       float xCoord = INTERRUPT_CHART_X_COORD;
+
+	  DBG("; xCoord=");
+	  DBGLN(xCoord);
 
       Point pt = {xCoord,yCoord};
       serie.push_back(pt);
@@ -106,8 +110,11 @@ namespace Drawing
         yCoord = INTERRUPT_CHART_GRID_Y_START;
     
         DBG("yCoord=");
-        DBGLN(yCoord);
+        DBG(yCoord);
     
+		DBG("; xCoord=");
+		DBGLN(xCoord);
+
         Point ptNext = {xCoord,yCoord};
         serie.push_back(ptNext);
         
@@ -121,7 +128,6 @@ namespace Drawing
 
   void doDrawSerie(UTFT* dc,Points& serie)
   {
-	  DBGLN(F("doDrawSerie BEGIN"));
 
       for (size_t i=1;i<serie.size();i++)
       {
@@ -131,15 +137,15 @@ namespace Drawing
           yield();
       } 
 
-	  DBGLN(F("doDrawSerie END"));
   }
 
   void DrawSerie(AbstractTFTScreen* caller, Points& serie, uint16_t color)
   {
 	  DBGLN(F("DrawSerie BEGIN"));
+
 	  if (serie.size() < 2 || !caller->isActive()) // низзя рисовать
 	  {
-		  DBGLN(F("DrawSerie - can't draw..."));
+		  DBGLN(F("DrawSerie END 1"));
 		  return;
 	  }
      
@@ -150,7 +156,7 @@ namespace Drawing
       doDrawSerie(dc,serie);        
       dc->setColor(oldColor);  
 
-	  DBGLN(F("DrawSerie END"));
+	  DBGLN(F("DrawSerie END 2"));
   }
   
   void DrawSerie(AbstractTFTScreen* caller, Points& serie, RGBColor color)
@@ -159,7 +165,7 @@ namespace Drawing
 
 	  if (serie.size() < 2 || !caller->isActive()) // низзя рисовать
 	  {
-		  DBGLN(F("DrawSerie - can't draw..."));
+		  DBGLN(F("DrawSerie END 1"));
 		  return;
 	  }
      
@@ -170,7 +176,7 @@ namespace Drawing
       doDrawSerie(dc,serie);        
       dc->setColor(oldColor);  
 
-	  DBGLN(F("DrawSerie END"));
+	  DBGLN(F("DrawSerie END 2"));
   }
 
   void DrawChart(AbstractTFTScreen* caller, Points& serie1, Points& serie2, Points& serie3, uint16_t serie1Color, uint16_t serie2Color, uint16_t serie3Color)
