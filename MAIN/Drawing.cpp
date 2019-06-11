@@ -75,16 +75,16 @@ namespace Drawing
         yCoord = INTERRUPT_CHART_GRID_Y_START;
     
       DBG("yCoord=");
-      DBG(yCoord);
+      DBG(round(yCoord));
 
 
       // добавляем первую точку
       float xCoord = INTERRUPT_CHART_X_COORD;
 
 	  DBG("; xCoord=");
-	  DBGLN(xCoord);
+	  DBGLN(round(xCoord));
 
-      Point pt = {xCoord,yCoord};
+      Point pt = {round(xCoord),round(yCoord)};
       serie.push_back(pt);
     
       xCoord += xOffset;
@@ -110,12 +110,12 @@ namespace Drawing
         yCoord = INTERRUPT_CHART_GRID_Y_START;
     
         DBG("yCoord=");
-        DBG(yCoord);
+        DBG(round(yCoord));
     
 		DBG("; xCoord=");
-		DBGLN(xCoord);
+		DBGLN(round(xCoord));
 
-        Point ptNext = {xCoord,yCoord};
+        Point ptNext = {round(xCoord),round(yCoord)};
         serie.push_back(ptNext);
         
         xCoord += xStep;
