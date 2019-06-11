@@ -233,7 +233,6 @@ namespace Drawing
   
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor)
   {
-	  DBGLN(F("DrawGrid BEGIN"));
 
     UTFT* dc = Screen.getDC();
     word color = dc->getColor();  
@@ -255,7 +254,6 @@ namespace Drawing
     
       dc->setColor(color);  
 
-	  DBGLN(F("DrawGrid END"));
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -293,8 +291,6 @@ void ChartSerie::drawLine(UTFT* dc, uint16_t xPoint)
   if(xPoint < 1 || xPoint >= pointsCount)
     return;
 
-  DBGLN(F("ChartSerie::drawLine BEGIN"));
-
   uint16_t startIdx = xPoint -1;
   uint16_t endIdx = xPoint;
 
@@ -329,7 +325,6 @@ void ChartSerie::drawLine(UTFT* dc, uint16_t xPoint)
   dc->setColor(initialColor);
   yield();
 
-  DBGLN(F("ChartSerie::drawLine END"));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -382,8 +377,6 @@ Chart::~Chart()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Chart::draw()
 {
-	DBGLN(F("Chart::draw BEGIN"));
-
   if(inDraw)
   {
     stopDraw();
@@ -420,7 +413,6 @@ void Chart::draw()
         inDraw = false;
         dc->setColor(oldColor);
 
-		DBGLN(F("Chart::draw END"));
         return;
       }
     }
@@ -434,7 +426,6 @@ void Chart::draw()
         inDraw = false;
         dc->setColor(oldColor);
 
-		DBGLN(F("Chart::draw END"));
         return;
       }
     }
@@ -443,7 +434,6 @@ void Chart::draw()
   dc->setColor(oldColor);
   inDraw = false;
 
-  DBGLN(F("Chart::draw END"));
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Chart::clearSeries()
