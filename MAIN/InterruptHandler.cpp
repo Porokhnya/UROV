@@ -260,7 +260,7 @@ void InterruptHandlerClass::begin()
   pinMode(ENCODER_PIN2, INPUT);
 
   // ждём, пока устаканится питание
-  delay(10);
+  delay(50);
 
   // взводим прерывание на входе срабатывания защиты
   attachInterrupt(digitalPinToInterrupt(RELAY_PIN), RelayTriggered, RELAY_INTERRUPT_LEVEL);
@@ -440,7 +440,7 @@ void InterruptHandlerClass::update()
 
   if (thisWantComputeRMS) // надо считать РМС
   {
-	  DBGLN(F("Want to compute RMS!"));
+	  DBGLN(F("Надо считать RMS!"));
 	  thisWantComputeRMS = false;
 	  inComputeRMSMode = true;
 
@@ -454,7 +454,7 @@ void InterruptHandlerClass::update()
   {
 	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
 	  {
-		  DBGLN(F("RMS compute done, check RMS!"));
+		  DBGLN(F("RMS собрано, проверяем!"));
 		  inComputeRMSMode = false;
 		  // время подсчёта РМС вышло, надо проверять
 		  checkRMS(); // проверяем РМС
@@ -469,7 +469,7 @@ void InterruptHandlerClass::update()
   {
 
 	// защита сработала, надо считать РМС !!!
-	DBGLN(F("RELAY TRIGGERED!"));
+	DBGLN(F("СРАБОТАЛО РЕЛЕ ЗАЩИТЫ!"));
 
 	wantComputeRMS = true;
 
@@ -480,7 +480,7 @@ void InterruptHandlerClass::update()
     if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
     {      
       // время ожидания прошло
-		DBGLN(F("Relay delay check..."));
+		DBGLN(F("Время ожидания после срабатывания реле вышло, продолжаем..."));
       // проверяем - если данные в одном из списков есть - ничего не делаем.
       // если ни в одном из списков нет данных - значит, это авария.
       // в любом другом случае флаг аварии выставится после того, как будет принято решение
@@ -509,7 +509,7 @@ void InterruptHandlerClass::update()
       // выставляем флаг аварии, в зависимости от наличия данных в списках
       if(hasAlarm)
       {
-		  DBGLN(F("HAS ALARM FLAG!"));
+		  DBGLN(F("Взведён флаг аварии!"));
 		  // сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
         Feedback.alarm(true);
       }
@@ -553,7 +553,7 @@ void InterruptHandlerClass::update()
     // теперь смотрим - надо ли нам самим чего-то обрабатывать?
     if(copyList1.size() > 1)
     {
-      DBG("INTERRUPT #1 HAS SERIES OF DATA: ");
+		DBG("Прерывание содержит данные: ");
       DBGLN(copyList1.size());
 
       // зажигаем светодиод "ТЕСТ"
@@ -574,13 +574,13 @@ void InterruptHandlerClass::update()
     }
 	else
 	{
-		DBGLN(F("INTERRUPT LIST HAS NO DATA!!!"));
+		DBGLN(F("Прерывание НЕ содержит данных!!!"));
 	}
     
 
     if(needToLog)
     {
-		DBGLN(F("Want to log, write to SD!"));
+		DBGLN(F("Надо сохранить в лог, пишем на SD!"));
       // надо записать в лог дату срабатывания системы
       InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);     
     } // needToLog
@@ -595,10 +595,10 @@ void InterruptHandlerClass::update()
 
     if(wantToInformSubscriber)
     { 
-		DBGLN(F("Want to inform subscriber!"));
+		DBGLN(F("Надо уведомить подписчика прерываний!"));
       if(subscriber)
       {
-		  DBGLN(F("Subscriber exists!"));
+		  DBGLN(F("Подписчик найден!"));
         noInterrupts();
         uint32_t thisTm = timeBeforeInterruptsBegin;
         bool thisHasRelayTriggeredTime = hasRelayTriggeredTime;
@@ -614,12 +614,12 @@ void InterruptHandlerClass::update()
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();
 
-		 DBGLN(F("Subscriber call done."));
+		 DBGLN(F("Подписчик уведомлен."));
       }
       else
       {
 		// подписчика нет, просто очищаем переменные
-		  DBGLN(F("NO SUBSСRIBER FOUND!!!"));
+		  DBGLN(F("Нет подписчика!!!"));
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();

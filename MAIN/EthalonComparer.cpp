@@ -8,16 +8,16 @@
 EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t channelNumber, EthalonCompareNumber& compareNumber, InterruptTimeList& ethalonData)
 {
     DBGLN("");
-    DBG(F("Compare pulses #"));
+    DBG(F("Сравниваем список импульсов #"));
     DBG(channelNumber);
-    DBGLN(F(" with ethalon..."));
+    DBGLN(F(" с эталоном..."));
 
     compareNumber = ecnNoEthalon;
     ethalonData.clear();
     
     if(list.size() < 2)
     {
-      DBGLN(F("COMPARE_RESULT_NoSourcePulses 1"));
+      DBGLN(F("пустой исходный список, нет ничего к сравлению"));
       return COMPARE_RESULT_NoSourcePulses; // нет исходных данных в списке
     }
 
@@ -31,7 +31,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
 
   if(!(list.size() >= minPulses && list.size() <= maxPulses))
   {
-    DBGLN(F("COMPARE_RESULT_NoSourcePulses 2"));
+    DBGLN(F("кол-во импульсов в списке выходит за границы допустимых - несовпадание с эталоном!"));
     return COMPARE_RESULT_MismatchEthalon; // результат не соответствует эталону, поскольку кол-во импульсов расходится с настройками
   }
 
@@ -41,7 +41,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
  #ifndef IGNORE_ROD_POSITION
     if(rpBroken == rodPos)
     {
-      DBGLN(F("COMPARE_RESULT_RodBroken"));
+      DBGLN(F("детектирована поломка штанги!"));
       return COMPARE_RESULT_RodBroken;      // штанга поломана
     }
  #endif
@@ -109,7 +109,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   
   if(!SD.exists(fileName.c_str()))
   {
-    DBGLN(F("COMPARE_RESULT_NoEthalonFound 1"));
+    DBGLN(F("не найден файл эталона!"));
 
     compareNumber = ecnNoEthalon;
     return COMPARE_RESULT_NoEthalonFound; // не найдено эталона для канала
@@ -133,7 +133,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   }
   else
   {
-    DBGLN(F("COMPARE_RESULT_NoEthalonFound 2"));
+    DBGLN(F("не удалось открыть файл эталона!"));
 
     compareNumber = ecnNoEthalon;
     return COMPARE_RESULT_NoEthalonFound; // не найдено эталона для канала
@@ -143,16 +143,16 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   // и нам надо сравнить импульсы, находящиеся в списке list, с импульсами, находящимися в списке ethalon.
 
 
-  DBG(F("Ethalon pulses: "));
+  DBG(F("Кол-во импульсов эталона: "));
   DBGLN(ethalonData.size());
 
-  DBG(F("Catched pulses: "));
+  DBG(F("Кол-во собранных импульсов: "));
   DBGLN(list.size());
 
   // для начала вычисляем, сколько импульсов сравнивать
   size_t toCompare = min(ethalonData.size(),list.size());
 
-  DBG(F("Pulses to compare: "));
+  DBG(F("Импульсов к сравнению: "));
   DBGLN(toCompare);
   
   // потом проходим по каждому импульсу
@@ -179,12 +179,12 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     // и если длительность между импульсами различается от эталонной больше, чем на нужную дельту - эталон не совпадает
     if(!(passedPulseDuration >= lowVal && passedPulseDuration <= highVal))
     {
-      DBGLN(F("COMPARE_RESULT_MismatchEthalon"));
+      DBGLN(F("найдено несовпадение с эталоном!"));
       return COMPARE_RESULT_MismatchEthalon;
     }
   }
 
-  DBGLN(F("PASSED!"));
+  DBGLN(F("полное сомпадение с эталоном!"));
   DBGLN("");
   return COMPARE_RESULT_MatchEthalon;    // результат соответствует эталону
 }
