@@ -388,6 +388,7 @@ void InterruptHandlerClass::writeToLog(
 	InterruptTimeList& ethalonData1
 )
 {
+	DBGLN(F("ПИШЕМ НА SD !!!"));
 
   uint8_t workBuff[10] = {0};
 
@@ -425,6 +426,8 @@ void InterruptHandlerClass::writeToLog(
 
     workBuff[0] = recordInterruptInfoEnd;
     Logger.write(workBuff,1);
+
+	DBGLN(F("Данные на SD записаны."));
   
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -622,7 +625,7 @@ void InterruptHandlerClass::update()
 		// тут тупо пытаемся сделать кучу данных в списке
 		////////////////////////////////////////////////////////////////////////////////////
 
-		const int TO_GENERATE = 199; // сколько тестовых точек генерировать?
+		const int TO_GENERATE = 200; // сколько тестовых точек генерировать?
 		copyList1.clear();
 		copyList1.reserve(TO_GENERATE);
 		uint32_t val = 0;

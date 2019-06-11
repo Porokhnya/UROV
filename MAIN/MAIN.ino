@@ -70,8 +70,14 @@ void setup()
   SetupEndstops();
 
   DBGLN(F("INIT SD..."));
-  SDInit::InitSD();
-  DBGLN(F("SD inited."));
+  if (SDInit::InitSD())
+  {
+	  DBGLN(F("SD inited."));
+  }
+  else
+  {
+	  DBGLN(F("ОШИБКА ИНИЦИАЛИЗАЦИИ SD!!"));
+  }
   
 
   DBGLN(F("Init screen..."));

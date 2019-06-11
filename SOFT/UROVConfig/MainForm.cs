@@ -1847,36 +1847,6 @@ namespace UROVConfig
             treeView.SelectedNode = treeView.Nodes[0].Nodes[0];
         }
 
-        private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            TreeNode selectedNode = e.Node;
-            if (selectedNode == null || selectedNode.Tag == null)
-            {
-                ShowStartPanel();
-                return;
-            }
-
-            if (selectedNode.Tag is TreeNodeType)
-            {
-                TreeNodeType tp = (TreeNodeType)selectedNode.Tag;
-                switch (tp)
-                {
-
-                    case TreeNodeType.MainSettingsNode:
-                        ShowMainSettings();
-                        break;
-
-                    //TODO: Тут другие панели!!!
-
-                    case TreeNodeType.SDSettingsNode:
-                        this.plSDSettings.BringToFront();
-                        break;
-
-
-                } // switch
-            }
-        }
-
 
 
         private void propertyGridSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)

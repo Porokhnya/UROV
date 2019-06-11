@@ -37,8 +37,8 @@ bool LoggerClass::openWorkFile()
 
   logFileName += F(".LOG");
 
-  //DBG(F("WRITE INFO TO: "));
-  //DBGLN(logFileName);
+  DBG(F("ТЕКУЩИЙ ЛОГ-ФАЙЛ: "));
+  DBGLN(logFileName);
 
   workFile.open(logFileName.c_str(),FILE_WRITE);  
   return workFile.isOpen();
@@ -52,8 +52,11 @@ void LoggerClass::closeWorkFile()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void LoggerClass::write(uint8_t* data,size_t dataLength)
 {
-  if(!openWorkFile())
-    return;
+	if (!openWorkFile())
+	{
+		DBGLN(F("ОШИБКА ОТКРЫТИЯ ФАЙЛА НА SD !!!"));
+		return;
+	}
 
   workFile.write(data,dataLength);
 }
