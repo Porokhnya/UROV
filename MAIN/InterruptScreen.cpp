@@ -23,14 +23,6 @@ InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
   startSeenTime = 0;
   timerDelta = 0;
   canAcceptInterruptData = true;
-
-  //DEPRECATED
-  /*for(int i=0;i<3;i++)
-  {
-    EthalonCompareBox box;
-    compareBoxes.push_back(box);
-  }
-  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onDeactivate()
@@ -58,10 +50,8 @@ void InterruptScreen::OnHaveInterruptData()
   // сначала делаем пересчёт точек на график, т.к. у нас ограниченное кол-во точек - это раз.
   // два - когда в списках прерываний точек заведомо меньше, чем точек на графике (например, 20 вместо 150) - без пересчёта получим
   // куцый график, в этом случае нам надо его растянуть по-максимуму.
-  InterruptTimeList dummyList;
-  Points dummySerie;
 
-  Drawing::ComputeChart(list1, serie1, dummyList, dummySerie, dummyList, dummySerie);
+  Drawing::ComputeChart(list1, serie1);
 
   // вычисляем моторесурс
   computeMotoresource();
@@ -86,30 +76,6 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
   list1 = list;
   box.chartColor = VGA_WHITE;
 
-  /*
-  //DEPRECATED:
-  switch(listNum)
-  {
-    case 0:
-      list1 = list;
-      box.chartColor = VGA_WHITE;
-    break;      
-
-    case 1:
-      list2 = list;
-      box.chartColor = VGA_BLUE;
-    break;      
-
-    case 2:
-      list3 = list;
-      box.chartColor = VGA_YELLOW;
-    break;      
-    
-  } // switch
-  */
-
-
-//  box.channelNum = listNum;
   
   switch(compareResult)
   {
@@ -134,7 +100,6 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
     break;
   }
 
- // compareBoxes[listNum] = box;  
  compareBox = box;
   
   
@@ -144,7 +109,6 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
     if(list.size() > 1)
     {
 		DBG("INTERRUPT");
-      //DBG(listNum);
       DBGLN(" DATA >>");
       
       for(size_t i=0;i<list.size();i++)
@@ -191,6 +155,8 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
     if(now - startSeenTime > INTERRUPT_SCREEN_SEE_TIME)
     {
       // время показа истекло, переключаемся на главный экран
+		DBGLN(F("График показан, переключаемся на главный экран!"));
+
       startSeenTime = 0;
       Screen.switchToScreen("Main");
       return;
@@ -216,44 +182,6 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
       }
     }
 
-	/*
-	//DEPRECATED:
-    if(channelMotoresourcePercents2 >= (100 - MOTORESOURCE_BLINK_PERCENTS) )
-    {
-      // ресурс по системе на канале 2 исчерпан, надо мигать надписью
-       motoresourceBlinkTimer2 += dT;
-      if(motoresourceBlinkTimer2 > MOTORESOURCE_BLINK_DURATION)
-      {
-        motoresourceBlinkTimer2 -= MOTORESOURCE_BLINK_DURATION;
-        
-        if(motoresourceLastFontColor2 == VGA_RED)
-          motoresourceLastFontColor2 = VGA_BLACK;
-        else
-          motoresourceLastFontColor2 = VGA_RED;
-
-          canRedrawMotoresource = true;
-      }
-    }
-	
-
-    if(channelMotoresourcePercents3 >= (100 - MOTORESOURCE_BLINK_PERCENTS) )
-    {
-      // ресурс по системе на канале 3 исчерпан, надо мигать надписью
-      motoresourceBlinkTimer3 += dT;
-      if(motoresourceBlinkTimer3 > MOTORESOURCE_BLINK_DURATION)
-      {
-        motoresourceBlinkTimer3 -= MOTORESOURCE_BLINK_DURATION;
-        
-        if(motoresourceLastFontColor3 == VGA_RED)
-          motoresourceLastFontColor3 = VGA_BLACK;
-        else
-          motoresourceLastFontColor3 = VGA_RED;
-
-          canRedrawMotoresource = true;
-      }
-    }
-	*/
-
     if(canRedrawMotoresource)
       drawMotoresource(menu);
       
@@ -262,6 +190,8 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::drawMotoresource(TFTMenu* menu)
 {
+	DBGLN("Рисуем моторесурс...");
+
   UTFT* dc = menu->getDC();
   uint8_t* oldFont = dc->getFont();
   dc->setFont(SmallRusFont);
@@ -270,13 +200,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   word oldBackColor = dc->getBackColor();
   dc->setBackColor(VGA_BLACK);
 
-  uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);
-  //DEPRECATED: uint32_t channelResourceCurrent2 = Settings.getMotoresource(1);
-  //DEPRECATED: uint32_t channelResourceCurrent3 = Settings.getMotoresource(2);
-
+  uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);  
   uint32_t channelResourceMax1 = Settings.getMotoresourceMax(0);
-  //DEPRECATED: uint32_t channelResourceMax2 = Settings.getMotoresourceMax(1);
-  //DEPRECATED: uint32_t channelResourceMax3 = Settings.getMotoresourceMax(2);
 
   // рисуем моторесурс системы по каналам
   uint16_t curX = 5;
@@ -296,34 +221,6 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   menu->print(str.c_str(),curX,curY);
   curY += fontHeight + 4;
 
-  /*
-  //DEPRECATED:
-  dc->setColor(motoresourceLastFontColor2);
-
-  str = F("Ресурс 2: ");
-  str += channelResourceCurrent2;
-  str += F("/");
-  str += channelResourceMax2;
-  str += F(" (");
-  str += channelMotoresourcePercents2;
-  str += F("%)");
-
-  menu->print(str.c_str(),curX,curY);
-  curY += fontHeight + 4;  
-
-  dc->setColor(motoresourceLastFontColor3);
-
-  str = F("Ресурс 3: ");
-  str += channelResourceCurrent3;
-  str += F("/");
-  str += channelResourceMax3;
-  str += F(" (");
-  str += channelMotoresourcePercents3;
-  str += F("%)");
-
-  menu->print(str.c_str(),curX,curY);
-  curY += fontHeight + 4;  
-  */
   
   dc->setFont(oldFont);
   dc->setColor(oldColor);
@@ -336,22 +233,8 @@ void InterruptScreen::computeMotoresource()
   uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);
   uint32_t channelResourceMax1 = Settings.getMotoresourceMax(0);
   channelMotoresourcePercents1 = (channelResourceCurrent1*100)/channelResourceMax1;
-
-  //DEPRECATED: uint32_t channelResourceCurrent2 = Settings.getMotoresource(1);
-  //DEPRECATED: uint32_t channelResourceMax2 = Settings.getMotoresourceMax(1);
-  //DEPRECATED: channelMotoresourcePercents2 = (channelResourceCurrent2*100)/channelResourceMax2;
-
-  //DEPRECATED: uint32_t channelResourceCurrent3 = Settings.getMotoresource(2);
-  //DEPRECATED: uint32_t channelResourceMax3 = Settings.getMotoresourceMax(2);
-  //DEPRECATED: channelMotoresourcePercents3 = (channelResourceCurrent3*100)/channelResourceMax3;
-
   motoresourceLastFontColor1 = channelMotoresourcePercents1 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? VGA_WHITE : VGA_RED;
-  //DEPRECATED: motoresourceLastFontColor2 = channelMotoresourcePercents2 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? VGA_BLUE : VGA_RED;
-  //DEPRECATED: motoresourceLastFontColor3 = channelMotoresourcePercents3 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? VGA_YELLOW : VGA_RED;
-
   timerDelta = millis();
-  //DEPRECATED: motoresourceBlinkTimer3 = 0;
-  //DEPRECATED: motoresourceBlinkTimer2 = MOTORESOURCE_BLINK_DURATION/3;
   motoresourceBlinkTimer1 = (MOTORESOURCE_BLINK_DURATION/3)*2;
 
 }
@@ -456,33 +339,6 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
     captionLen = menu->print(compareBox.compareCaption,0,0,0,true);
     menu->print(compareBox.compareCaption, boxLeft + (boxWidth - captionLen*fontWidth)/2, curY + (boxHeight - fontHeight)/2 );  
 
-//DEPRECATED: 
-/*
-  for(size_t i=0;i<compareBoxes.size();i++)
-  {
-
-    EthalonCompareBox box = compareBoxes[i];
-    dc->setBackColor(VGA_BLACK);
-    dc->setColor(box.chartColor);
-    String channelNum = String(box.channelNum+1);
-    uint8_t captionLen = menu->print(channelNum.c_str(),0,0,0,true);
-    menu->print(channelNum.c_str(), curX, curY + (boxHeight - fontHeight)/2 );
-
-    dc->setBackColor(box.compareColor);
-    dc->setColor(box.compareColor);
-
-    uint16_t boxLeft = curX + captionLen*fontWidth + spacing;
-    dc->fillRoundRect(boxLeft, curY, boxLeft + boxWidth, curY + boxHeight);
-
-    dc->setColor(box.foreCompareColor);
-    captionLen = menu->print(box.compareCaption,0,0,0,true);
-    menu->print(box.compareCaption, boxLeft + (boxWidth - captionLen*fontWidth)/2, curY + (boxHeight - fontHeight)/2 );  
-    
-    curY += boxHeight + spacing;
-
-  } // for
-*/  
-
   dc->setBackColor(oldBackColor);
   dc->setColor(oldColor);
   dc->setFont(oldFont);  
@@ -491,8 +347,7 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
   drawTime(menu);
-  Points emptySerie;
-  Drawing::DrawChart(this,serie1, emptySerie, emptySerie);
+  Drawing::DrawChart(this,serie1);
   drawMotoresource(menu);
   drawCompareResult(menu);
   //DEPRECATED: drawTimeBeforeInterrupt(menu);

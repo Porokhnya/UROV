@@ -24,8 +24,8 @@ class AbstractTFTScreen;
 namespace Drawing
 {
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor);
-  void ComputeChart(InterruptTimeList& list1, Points& serie1, InterruptTimeList& list2, Points& serie2, InterruptTimeList& list3, Points& serie3);
-  void DrawChart(AbstractTFTScreen* caller, Points& serie1, Points& serie2, Points& serie3, uint16_t serie1Color=VGA_WHITE, uint16_t serie2Color=VGA_BLUE, uint16_t serie3Color=VGA_YELLOW);
+  void ComputeChart(InterruptTimeList& list1, Points& serie1);
+  void DrawChart(AbstractTFTScreen* caller, Points& serie1,uint16_t serie1Color=VGA_WHITE);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct
@@ -108,6 +108,10 @@ class Chart
 
      // прекращает отрисовку
      void stopDraw() { stopped = true; }
+
+	 bool busy() {
+		 return inDraw;
+	 }
 
     protected:
     

@@ -211,8 +211,15 @@ void MakeAcsSignalDecision(void* param)
 }
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
+volatile bool relayTriggeredAtStart = true;
+//--------------------------------------------------------------------------------------------------------------------------------------
 void RelayTriggered()
 {
+	if (relayTriggeredAtStart) // убираем первое срабатывание при старте
+	{
+		relayTriggeredAtStart = false;
+		return;
+	}
   // запоминаем время срабатывания защиты
   relayTriggeredTime = micros();
   hasRelayTriggered = true;
@@ -535,7 +542,8 @@ void InterruptHandlerClass::update()
       inProcess = true;
 	  hasEncoderInterrupt = false;
       
-      InterruptTimeList copyList1 = list1;
+      InterruptTimeList copyList1 = list1; // копируем данные в локальный список
+
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
       list1.empty();
           
@@ -609,7 +617,25 @@ void InterruptHandlerClass::update()
         interrupts();
 
         subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
-                
+
+		////////////////////////////////////////////////////////////////////////////////////
+		// тут тупо пытаемся сделать кучу данных в списке
+		////////////////////////////////////////////////////////////////////////////////////
+
+		const int TO_GENERATE = 199; // сколько тестовых точек генерировать?
+		copyList1.clear();
+		copyList1.reserve(TO_GENERATE);
+		uint32_t val = 0;
+		uint32_t spacer = 0;
+
+		while (copyList1.size() < TO_GENERATE)
+		{
+			val += spacer;
+			spacer++;
+			copyList1.push_back(val);
+		}
+		////////////////////////////////////////////////////////////////////////////////////
+
         subscriber->OnInterruptRaised(copyList1, compareRes1);        
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();

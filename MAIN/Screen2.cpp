@@ -1274,8 +1274,7 @@ void EthalonChartScreen::show(const String& fName)
 {
     fileName = fName;
     serie.clear();
-    InterruptTimeList lst, emptyLst;
-    Points emptySerie;
+    InterruptTimeList lst;
 
     SdFile file;
     file.open(fileName.c_str(),FILE_READ);
@@ -1293,7 +1292,7 @@ void EthalonChartScreen::show(const String& fName)
       file.close();
     }
 
-    Drawing::ComputeChart(lst, serie, emptyLst, emptySerie, emptyLst, emptySerie);
+    Drawing::ComputeChart(lst, serie);
     Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1304,8 +1303,7 @@ void EthalonChartScreen::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonChartScreen::doDraw(TFTMenu* menu)
 {
-  Points emptySerie;
-  Drawing::DrawChart(this,serie, emptySerie, emptySerie);
+  Drawing::DrawChart(this,serie);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
@@ -1422,14 +1420,12 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
   else
   if(state == recDone)
   {
-	InterruptTimeList emptyList;
-	Points emptySerie;
-    Drawing::ComputeChart(list1, serie1, emptyList, emptySerie, emptyList, emptySerie);
+    Drawing::ComputeChart(list1, serie1);
     
     Screen.getDC()->fillScr(TFT_BACK_COLOR);
     showButtons(true);    
     
-    Drawing::DrawChart(this, serie1, emptySerie, emptySerie, VGA_RED);
+    Drawing::DrawChart(this, serie1, VGA_RED);
   }    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1751,14 +1747,12 @@ void EthalonRecordScreen::OnHaveInterruptData()
 
 
   state = recDone;
-  InterruptTimeList emptyList;
-  Points emptySerie;
 
-  Drawing::ComputeChart(list1, serie1, emptyList, emptySerie, emptyList, emptySerie);
+  Drawing::ComputeChart(list1, serie1);
   
   Screen.getDC()->fillScr(TFT_BACK_COLOR);
   showButtons(true);  
-  Drawing::DrawChart(this, serie1, emptySerie, emptySerie,VGA_RED);
+  Drawing::DrawChart(this, serie1, VGA_RED);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)

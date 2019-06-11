@@ -47,6 +47,7 @@ class CommandHandlerClass
     void handleCommands();
     void processCommand(const String& command,Stream* outStream);
 
+	int getFreeMemory();
 
  private:
   void onUnknownCommand(const String& command, Stream* outStream);
@@ -61,7 +62,6 @@ class CommandHandlerClass
   bool setPIN(CommandParser& parser, Stream* pStream);
   int16_t getPinState(uint8_t pin);
 
-  int getFreeMemory();
   bool getFREERAM(const char* commandPassed, Stream* pStream);
 
   bool setDATETIME(const char* param);

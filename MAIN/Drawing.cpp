@@ -27,15 +27,23 @@ namespace Drawing
 {
   void ComputeSerie(InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
   {
-     DBGLN(F("ComputeSerie"));
       // освобождаем серию
       serie.empty();
-    
+
+	  UTFT* dc = Screen.getDC();
+	  int screenWidth = dc->getDisplayXSize();
+	  int screenHeight = dc->getDisplayYSize();
+
+	  DBG(F("Screen width: "));
+	  DBGLN(screenWidth);
+
+	  DBG(F("Screen height: "));
+	  DBGLN(screenHeight);
+
       size_t totalPulses = timeList.size();
     
       if(totalPulses < 2) // нет ничего к отрисовке, т.к. для графика нужны хотя бы две точки
       {
-       // DBGLN(F("NOT ENOUGH POINTS TO DRAW!"));
         return;
       }
     
@@ -46,8 +54,8 @@ namespace Drawing
         maxPulseTime = max(maxPulseTime,(timeList[i] - timeList[i-1]));
       }
     
-      DBG("MAX PULSE TIME=");
-      DBGLN(maxPulseTime);  
+  //    DBG("MAX PULSE TIME=");
+  //    DBGLN(maxPulseTime);  
     
       // теперь вычисляем положение по X для каждой точки импульсов
       uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
@@ -74,17 +82,21 @@ namespace Drawing
       if(yCoord < INTERRUPT_CHART_GRID_Y_START)
         yCoord = INTERRUPT_CHART_GRID_Y_START;
     
-      DBG("yCoord=");
-      DBG(round(yCoord));
-
 
       // добавляем первую точку
       float xCoord = INTERRUPT_CHART_X_COORD;
 
-	  DBG("; xCoord=");
-	  DBGLN(round(xCoord));
 
-      Point pt = {round(xCoord),round(yCoord)};
+	  uint16_t iXCoord = constrain(round(xCoord), 0, screenWidth);
+	  uint16_t iYCoord = constrain(round(yCoord),0,screenHeight);
+
+	//  DBG("yCoord=");
+	//  DBG(iYCoord);
+
+	//  DBG("; xCoord=");
+	//  DBGLN(iXCoord);
+
+      Point pt = {iXCoord,iYCoord};
       serie.push_back(pt);
     
       xCoord += xOffset;
@@ -98,8 +110,8 @@ namespace Drawing
         uint16_t pulseTimePercents = pulseTime/maxPulseTime;
         pulseTimePercents = 100 - pulseTimePercents;
     
-        DBG("pulseTimePercents=");
-        DBGLN(pulseTimePercents);
+   //     DBG("pulseTimePercents=");
+   //     DBGLN(pulseTimePercents);
     
     
         yCoord = INTERRUPT_CHART_Y_COORD - (pulseTimePercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
@@ -108,14 +120,18 @@ namespace Drawing
       // чтобы за сетку не вылазило
       if(yCoord < INTERRUPT_CHART_GRID_Y_START)
         yCoord = INTERRUPT_CHART_GRID_Y_START;
-    
-        DBG("yCoord=");
-        DBG(round(yCoord));
-    
-		DBG("; xCoord=");
-		DBGLN(round(xCoord));
 
-        Point ptNext = {round(xCoord),round(yCoord)};
+	  iXCoord = constrain(round(xCoord), 0, screenWidth);
+	  iYCoord = constrain(round(yCoord), 0, screenHeight);
+
+    
+  //      DBG("yCoord=");
+  //      DBG(iYCoord);
+    
+//		DBG("; xCoord=");
+//		DBGLN(iXCoord);
+
+        Point ptNext = { iXCoord,iYCoord };
         serie.push_back(ptNext);
         
         xCoord += xStep;
@@ -123,19 +139,34 @@ namespace Drawing
       } // for
     
       // подсчёты завершены
-      DBGLN("Serie computed.");    
   }
 
   void doDrawSerie(UTFT* dc,Points& serie)
   {
+	  if (serie.size() < 2)
+		  return;
 
-      for (size_t i=1;i<serie.size();i++)
+	  size_t to = serie.size();
+
+
+      for (size_t i=1;i<to;i++)
       {
           Point ptStart = serie[i-1];
           Point ptEnd = serie[i];
-          dc->drawLine(ptStart.X , ptStart.Y, ptEnd.X , ptEnd.Y);
+		  DBG(F("Линия: x1="));
+		  DBG(ptStart.X);
+		  DBG(F(";y1="));
+		  DBG(ptStart.Y);
+		  DBG(F(";x2="));
+		  DBG(ptEnd.X);
+		  DBG(F(";y2="));
+		  DBGLN(ptEnd.Y);
+
+		  dc->drawLine(ptStart.X , ptStart.Y, ptEnd.X , ptEnd.Y);
+//		  dc->drawLine(154, 119, 154, 120);
           yield();
       } 
+
 
   }
 
@@ -179,7 +210,7 @@ namespace Drawing
 	  DBGLN(F("DrawSerie END 2"));
   }
 
-  void DrawChart(AbstractTFTScreen* caller, Points& serie1, Points& serie2, Points& serie3, uint16_t serie1Color, uint16_t serie2Color, uint16_t serie3Color)
+  void DrawChart(AbstractTFTScreen* caller, Points& serie1, uint16_t serie1Color)
   {
 	  DBGLN(F("DrawChart BEGIN"));
     
@@ -197,16 +228,13 @@ namespace Drawing
     Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
   
     Drawing::DrawSerie(caller, serie1,serie1Color);
-    yield();
-    Drawing::DrawSerie(caller, serie2,serie2Color);
-    yield();
-    Drawing::DrawSerie(caller, serie3,serie3Color);
+
     yield();
 
 	DBGLN(F("DrawChart END"));
   }
 
-  void ComputeChart(InterruptTimeList& list1, Points& serie1, InterruptTimeList& list2, Points& serie2, InterruptTimeList& list3, Points& serie3)
+  void ComputeChart(InterruptTimeList& list1, Points& serie1)
   {
 	  DBGLN(F("ComputeChart BEGIN"));
      /*
@@ -228,12 +256,6 @@ namespace Drawing
       yOffset += yOffsetStep;
       xOffset += xOffsetStep;
     
-      ComputeSerie(list2,serie2,xOffset, yOffset);
-      yOffset += yOffsetStep;
-      xOffset += xOffsetStep;
-    
-      ComputeSerie(list3,serie3,xOffset, yOffset); 
-
 	  DBGLN(F("ComputeChart END"));
   }
   
@@ -383,12 +405,20 @@ Chart::~Chart()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Chart::draw()
 {
+	if (stopped)
+	{
+		stopped = false;
+		return;
+	}
+
   if(inDraw)
   {
     stopDraw();
     
-    while(inDraw)
-      yield();
+	while (inDraw)
+	{
+		yield();
+	}
   }
   
   stopped = false;
@@ -416,9 +446,8 @@ void Chart::draw()
       
       if(stopped)
       {
-        inDraw = false;
         dc->setColor(oldColor);
-
+		inDraw = false;
         return;
       }
     }
@@ -429,9 +458,8 @@ void Chart::draw()
       
       if(stopped)
       {
-        inDraw = false;
         dc->setColor(oldColor);
-
+		inDraw = false;
         return;
       }
     }
