@@ -283,8 +283,8 @@ void Screen1::drawTime(TFTMenu* menu)
       String strTime = RealtimeClock.getTimeStr(tm);
   
       // печатаем их
-      dc->print(strDate, 5, 1);
-      dc->print(strTime, 90, 1);
+      dc->print(strDate.c_str(), 5, 1);
+      dc->print(strTime.c_str(), 90, 1);
   
 #ifndef _DISABLE_DRAW_RAM_ON_SCREEN
       String str = "RAM: ";

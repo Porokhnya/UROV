@@ -12,8 +12,10 @@ AbstractTFTScreen* InterruptScreen::create()
     
   ScreenInterrupt = new InterruptScreen();
 
+#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // назначаем обработчика прерываний по умолчанию - наш экран
   InterruptHandler.setSubscriber(ScreenInterrupt);
+#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   
   return ScreenInterrupt;
 }
@@ -84,21 +86,27 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
     case COMPARE_RESULT_NoSourcePulses:
     case COMPARE_RESULT_NoEthalonFound:
     case COMPARE_RESULT_RodBroken:
-      box.compareColor = VGA_GRAY;
-      box.foreCompareColor = VGA_BLACK;
-      box.compareCaption = "-";
+	{
+		box.compareColor = VGA_GRAY;
+		box.foreCompareColor = VGA_BLACK;
+		box.compareCaption = "-";
+	}
     break;
 
     case COMPARE_RESULT_MatchEthalon:
-      box.compareColor = VGA_LIME;
-      box.foreCompareColor = VGA_BLACK;
-      box.compareCaption = "OK";
+	{
+		box.compareColor = VGA_LIME;
+		box.foreCompareColor = VGA_BLACK;
+		box.compareCaption = "OK";
+	}
     break;
 
     case COMPARE_RESULT_MismatchEthalon:
-      box.compareColor = VGA_RED;
-      box.foreCompareColor = VGA_WHITE;
-      box.compareCaption = "ERR";
+	{
+		box.compareColor = VGA_RED;
+		box.foreCompareColor = VGA_WHITE;
+		box.compareCaption = "ERR";
+	}
     break;
   }
 
