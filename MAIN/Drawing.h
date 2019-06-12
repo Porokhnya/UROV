@@ -28,8 +28,8 @@ class AbstractTFTScreen;
 namespace Drawing
 {
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor);
-  void ComputeChart(InterruptTimeList& list1, Points& serie1);
-  void DrawChart(AbstractTFTScreen* caller, Points& serie1,uint16_t serie1Color=VGA_WHITE);
+  void ComputeChart(const InterruptTimeList& list1, Points& serie1);
+  void DrawChart(AbstractTFTScreen* caller, const Points& serie1,uint16_t serie1Color=VGA_WHITE);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)

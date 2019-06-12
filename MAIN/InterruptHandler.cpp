@@ -23,10 +23,13 @@ volatile bool hasRelayTriggered = false;
 volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабатывания реле защиты до первого прерывания
 volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
 
+#ifndef _RMS_OFF
 volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
 volatile bool inComputeRMSMode = false; // флаг, что мы считаем РМС
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
+#endif // _RMS_OFF
+
 volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL;
@@ -65,16 +68,20 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 //--------------------------------------------------------------------------------------------------------------------------------------
 void computeRMS()
 {
+#ifndef _RMS_OFF
 	if (computeRMSCalled)
 		return;
 
 	computeRMSCalled = true;
 	// считаем РМС
 	adcSampler.startComputeRMS();
+#endif // _RMS_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void checkRMS()
 {
+#ifndef _RMS_OFF
+
 	// получаем подсчитанное РМС
 	uint32_t rmsComputed1, rmsComputed2, rmsComputed3;
 	adcSampler.getComputedRMS(rmsComputed1, rmsComputed2, rmsComputed3);
@@ -108,108 +115,8 @@ void checkRMS()
 		}
 	}
 
+#endif // _RMS_OFF
 }
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-//DEPRECATED:
-void MakeAcsSignalDecision(void* param)
-{
-  // принимаем решение - выдавать ли сигнал на АСУ ТП.
-  // сигнал НЕ выдаётся, если:
-  // положение штанги - поломана
-  // неисправность индуктивных датчиков
-  // неисправность параметров питания
-  // нет ни одного импульса прерываний
-
-  // проверяем положение штанги
-  for(uint8_t i=0;i<NUM_RODS;i++)
-  {
-    if(ConfigPin::getRodPosition(i) == rpBroken)
-    {
-      // одна из штанг поломана
-      return;
-    }
-  }
-
-  // проверяем исправность индуктивных датчиков
-  for(uint8_t i=0;i<NUM_RODS;i++)
-  {
-    if(Settings.getInductiveSensorState(i) != 1)
-    {
-      // один из индуктивных датчиков неисправен
-      return;
-    }
-  }
-
-
-  // проверяем параметры питания
-  
-  // Контроль источника питания +3.3в
-  VoltageData vData = Settings.get3V3Voltage();
-  
-  float threshold = (3.3/100)*VOLTAGE_THRESHOLD;
-  float lowBorder = 3.3 - threshold;
-  float highBorder = 3.3 + threshold;
-  
-  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
-  {
-  }
-  else
-  {
-    // неисправность питания +3.3в
-    return;
-  }
-  
-  // Контроль источника питания +5.0в
-  vData = Settings.get5Vvoltage();        
-  threshold = (5.0/100)*VOLTAGE_THRESHOLD;
-  lowBorder = 5.0 - threshold;
-  highBorder = 5.0 + threshold;
-  
-  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
-  {
-  }
-  else
-  {
-    // неисправность питания +5.0в
-    return;
-  }    
-  
-  // Контроль источника питания 200в 
-  vData = Settings.get200Vvoltage();      
-  threshold = (200.0/100)*VOLTAGE_THRESHOLD;
-  lowBorder = 200.0 - threshold;
-  highBorder = 200.0 + threshold;
-  
-  
-  if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
-  {      
-  }
-  else
-  {
-    // неисправность питания 200в
-    return;
-    
-  }
-
-  // проверяем наличие данных в списке
-  noInterrupts();
-  bool hasData = list1.size();//DEPRECATED: || list2.size() || list3.size();
-  interrupts();
-
-  if(!hasData)
-  {
-    // нет ни одного импульса прерываний
-    return;
-  }
-
-
-
-  // все условия выполнены, можем подавать сигнал на АСУ ТП
-  digitalWrite(out_asu_tp1,ACS_SIGNAL_LEVEL);
-    
-}
-*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool relayTriggeredAtStart = true;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -224,16 +131,16 @@ void RelayTriggered()
   relayTriggeredTime = micros();
   hasRelayTriggered = true;
   hasRelayTriggeredTime = true;
+
+#ifndef _RMS_OFF
   wantComputeRMS = true; // говорим, что надо посчитать РМС
+#endif // _RMS_OFF
+
   timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
 
   // сохраняем состояние нижнего концевика 
   downEndstopTriggered = RodDownEndstopTriggered(false);
 
-  // взводим отложенное событие
-  //DEPRECATED: 
-  //uint32_t raiseDelay = Settings.getACSDelay()*1000;
-  //CoreDelayedEvent.raise(raiseDelay,MakeAcsSignalDecision,NULL);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
@@ -296,18 +203,22 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeRodPositionToLog(uint8_t channelNumber)
 {
+#ifndef _SD_OFF
  // пишем положение штанги
-	RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
+  RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
 
   uint8_t workBuff[2] = {0};
   workBuff[0] = recordRodPosition;
   workBuff[1] = rodPos;
   
   Logger.write(workBuff,2);
+#endif // _SD_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
 {
+#ifndef _SD_OFF
+
   if(_list.size() < 2) // ничего в списке прерываний нет
     return;
 
@@ -378,7 +289,8 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   // заканчиваем запись
   workBuff[0] = recordInterruptRecordEnd;
   Logger.write(workBuff,1);
-    
+
+#endif // _SD_OFF    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
@@ -388,6 +300,8 @@ void InterruptHandlerClass::writeToLog(
 	InterruptTimeList& ethalonData1
 )
 {
+#ifndef _SD_OFF
+
 	DBGLN(F("ПИШЕМ НА SD !!!"));
 
   uint8_t workBuff[10] = {0};
@@ -428,7 +342,7 @@ void InterruptHandlerClass::writeToLog(
     Logger.write(workBuff,1);
 
 	DBGLN(F("Данные на SD записаны."));
-  
+#endif // _SD_OFF  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
@@ -443,11 +357,14 @@ void InterruptHandlerClass::update()
     bool thisHasRelayTriggered = hasRelayTriggered;
     uint32_t thisRelayTriggeredTime = relayTriggeredTime;
 
+#ifndef _RMS_OFF
 	bool thisWantComputeRMS = wantComputeRMS;
 	wantComputeRMS = false;
+#endif // _RMS_OFF
 
   interrupts();
 
+#ifndef _RMS_OFF
   if (thisWantComputeRMS) // надо считать РМС
   {
 	  DBGLN(F("Надо считать RMS!"));
@@ -471,7 +388,7 @@ void InterruptHandlerClass::update()
 	  }
 
   }
-
+#endif // _RMS_OFF
 
 
   // проверяем факт срабатывания защиты
@@ -481,10 +398,12 @@ void InterruptHandlerClass::update()
 	// защита сработала, надо считать РМС !!!
 	DBGLN(F("СРАБОТАЛО РЕЛЕ ЗАЩИТЫ!"));
 
+#ifndef _RMS_OFF
 	wantComputeRMS = true;
 
 	if (!rmsStartComputeTime)
 		rmsStartComputeTime = millis();
+#endif // _RMS_OFF
 
     // было прерывание срабатывания защиты - проверяем время c момента срабатывания
     if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
@@ -591,9 +510,11 @@ void InterruptHandlerClass::update()
 
     if(needToLog)
     {
+#ifndef _SD_OFF
 		DBGLN(F("Надо сохранить в лог, пишем на SD!"));
       // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);     
+      InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);   
+#endif // !_SD_OFF
     } // needToLog
     
 
@@ -619,8 +540,7 @@ void InterruptHandlerClass::update()
         relayTriggeredTime = micros();
         interrupts();
 
-        subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
-
+#ifdef _FAKE_CHART_DRAW
 		////////////////////////////////////////////////////////////////////////////////////
 		// тут тупо пытаемся сделать кучу данных в списке
 		////////////////////////////////////////////////////////////////////////////////////
@@ -638,17 +558,19 @@ void InterruptHandlerClass::update()
 			copyList1.push_back(val);
 		}
 		////////////////////////////////////////////////////////////////////////////////////
+#endif // _FAKE_CHART_DRAW
 
-        subscriber->OnInterruptRaised(copyList1, compareRes1);        
+		subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
+		subscriber->OnInterruptRaised(copyList1, compareRes1);
          // сообщаем обработчику, что данные в каком-то из списков есть
          subscriber->OnHaveInterruptData();
 
 		 DBGLN(F("Подписчик уведомлен."));
-      }
+      } // if(subscriber)
       else
       {
 		// подписчика нет, просто очищаем переменные
-		  DBGLN(F("Нет подписчика!!!"));
+		  DBGLN(F("!!! ПОДПИСЧИКА НЕТ !!!"));
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();

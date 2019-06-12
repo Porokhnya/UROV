@@ -42,7 +42,7 @@ UTFT_Buttons_Rus::UTFT_Buttons_Rus(UTFT *ptrUTFT, URTouch *ptrURTouch, UTFTRus* 
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::setButtonBackColor(int buttonID, word color)
 {
-   if(buttonID < 0)
+   if(buttonID < 0 || buttonID >= MAX_BUTTONS)
     return;
 
     buttons[buttonID].backColor = color;
@@ -52,7 +52,7 @@ void UTFT_Buttons_Rus::setButtonBackColor(int buttonID, word color)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::selectButton(int buttonID, bool selected, boolean redraw)
 {
-   if(buttonID < 0)
+   if(buttonID < 0 || buttonID >= MAX_BUTTONS)
     return;
 
     if(selected)
@@ -66,7 +66,7 @@ void UTFT_Buttons_Rus::selectButton(int buttonID, bool selected, boolean redraw)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::setButtonFontColor(int buttonID, word color)
 {
-   if(buttonID < 0)
+   if(buttonID < 0 || buttonID >= MAX_BUTTONS)
     return;
 
     buttons[buttonID].fontColor = color;
@@ -98,6 +98,9 @@ int UTFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::hideButton(int buttonID, boolean redraw)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
     buttons[buttonID].flags = buttons[buttonID].flags & ~BUTTON_VISIBLE;
@@ -108,6 +111,9 @@ if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::showButton(int buttonID, boolean redraw)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
     buttons[buttonID].flags = buttons[buttonID].flags | BUTTON_VISIBLE;
@@ -156,6 +162,10 @@ void UTFT_Buttons_Rus::drawButtons(DrawButtonsUpdateFunc func)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::drawButton(int buttonID)
 {  
+
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
   
 	int		text_x, text_y;
 	uint8_t	*_font_current = _UTFT->getFont();
@@ -256,6 +266,9 @@ void UTFT_Buttons_Rus::drawButton(int buttonID)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::enableButton(int buttonID, boolean redraw)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].flags = buttons[buttonID].flags & ~BUTTON_DISABLED;
@@ -266,6 +279,9 @@ void UTFT_Buttons_Rus::enableButton(int buttonID, boolean redraw)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::disableButton(int buttonID, boolean redraw)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].flags = buttons[buttonID].flags | BUTTON_DISABLED;
@@ -276,6 +292,9 @@ void UTFT_Buttons_Rus::disableButton(int buttonID, boolean redraw)
 //--------------------------------------------------------------------------------------------------------------------------------------
 const char* UTFT_Buttons_Rus::getLabel(int buttonID)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return "";
+
   if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
     return buttons[buttonID].label;
@@ -285,6 +304,9 @@ const char* UTFT_Buttons_Rus::getLabel(int buttonID)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void UTFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean redraw)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].label = label;
@@ -295,11 +317,17 @@ void UTFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean re
 //--------------------------------------------------------------------------------------------------------------------------------------
 boolean UTFT_Buttons_Rus::buttonEnabled(int buttonID)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return false;
+
 	return !(buttons[buttonID].flags & BUTTON_DISABLED);
 }
 //-------------------------------------------------------------------------------------------------------------------------------------- 
 void UTFT_Buttons_Rus::deleteButton(int buttonID)
 {
+	if (buttonID < 0 || buttonID >= MAX_BUTTONS)
+		return;
+
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 		buttons[buttonID].flags = BUTTON_UNUSED;
 }

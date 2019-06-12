@@ -137,6 +137,8 @@ void SettingsClass::set200VRawVoltage(uint16_t raw)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::update()
 {
+#ifndef _CORE_TEMP_OFF
+
   uint32_t now = millis();
   
   if(now - timer > DATA_MEASURE_THRESHOLD)
@@ -144,7 +146,8 @@ void SettingsClass::update()
     timer = now;
     coreTemp = RealtimeClock.getTemperature();  
   }
-  
+
+#endif // !_CORE_TEMP_OFF  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getRelayDelay()

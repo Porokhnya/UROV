@@ -52,6 +52,12 @@ void LoggerClass::closeWorkFile()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void LoggerClass::write(uint8_t* data,size_t dataLength)
 {
+	if (!SDInit::sdInitResult)
+	{
+		DBGLN(F("SD не инициализировано!!!"));
+		return;
+	}
+
 	if (!openWorkFile())
 	{
 		DBGLN(F("ОШИБКА ОТКРЫТИЯ ФАЙЛА НА SD !!!"));

@@ -74,9 +74,11 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
   list1 = list;
-  box.chartColor = VGA_WHITE;
+  box.chartColor = VGA_GRAY;
+  box.compareColor = VGA_GRAY;
+  box.foreCompareColor = VGA_GRAY;
+  box.compareCaption = "-";
 
-  
   switch(compareResult)
   {
     case COMPARE_RESULT_NoSourcePulses:
@@ -101,10 +103,9 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
   }
 
  compareBox = box;
-  
-  
+   
   // для теста - печатаем в Serial
-  #ifdef _DEBUG
+  #ifdef _PRINT_INTERRUPT_DATA
 
     if(list1.size() > 1)
     {
@@ -119,7 +120,7 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
 
     DBGLN("<< END OF INTERRUPT DATA");
     
-  #endif // _DEBUG  
+  #endif // _PRINT_INTERRUPT_DATA  
  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -136,8 +137,8 @@ void InterruptScreen::drawTime(TFTMenu* menu)
     String strTime = RealtimeClock.getTimeStr(tm);
 
     // печатаем их
-    dc->print(strDate, 5, 1);
-    dc->print(strTime, 90, 1);
+    dc->print(strDate.c_str(), 5, 1);
+    dc->print(strTime.c_str(), 90, 1);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -232,7 +233,7 @@ void InterruptScreen::computeMotoresource()
   
   uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);
   uint32_t channelResourceMax1 = Settings.getMotoresourceMax(0);
-  channelMotoresourcePercents1 = (channelResourceCurrent1*100)/channelResourceMax1;
+  channelMotoresourcePercents1 = (channelResourceCurrent1*100)/(channelResourceMax1 ? channelResourceMax1 : 1);
   motoresourceLastFontColor1 = channelMotoresourcePercents1 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? VGA_WHITE : VGA_RED;
   timerDelta = millis();
   motoresourceBlinkTimer1 = (MOTORESOURCE_BLINK_DURATION/3)*2;
@@ -244,67 +245,6 @@ void InterruptScreen::OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime)
   timeBeforeInterrupts = tm;
   hasRelayTriggeredTime = hasTime;
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-//DEPRECATED:
-void InterruptScreen::drawTimeBeforeInterrupt(TFTMenu* menu)
-{
-
-  UTFT* dc = menu->getDC();
-  word oldBackColor = dc->getBackColor();  
-  word oldColor = dc->getColor();
-  uint8_t* oldFont = dc->getFont();
-  dc->setFont(SmallRusFont);
-  uint8_t fontWidth = dc->getFontXsize();
-  uint8_t fontHeight = dc->getFontYsize();
-  
-  uint16_t curX = 174;
-  uint16_t curY = 86; 
-
-  uint32_t tm = timeBeforeInterrupts/1000;
-  String tmCaption;
-  tmCaption = tm;
-
-  bool isGood = timeBeforeInterrupts <= (Settings.getRelayDelay() + RELAY_DATA_GAP);
-
-  if(!hasRelayTriggeredTime)
-  {
-    isGood = false;
-    tmCaption = "ERR";
-  }
-  
-  if(isGood)
-  {
-    dc->setColor(VGA_LIME);    
-    dc->setBackColor(VGA_LIME);
-  }
-  else
-  {
-    dc->setColor(VGA_RED);    
-    dc->setBackColor(VGA_RED);
-  }
-
-  
-  uint8_t boxWidth = 30;    
-  uint8_t boxHeight = 18;
-
-  dc->fillRoundRect(curX, curY, curX + boxWidth, curY + boxHeight);
-  
-  if(isGood)
-    dc->setColor(VGA_BLACK);
-  else
-    dc->setColor(VGA_WHITE);
-
-  uint8_t captionLen = menu->print(tmCaption.c_str(),0,0,0,true);
-  uint16_t boxLeft = curX;
-  menu->print(tmCaption.c_str(), boxLeft + (boxWidth - captionLen*fontWidth)/2, curY + (boxHeight - fontHeight)/2 );  
-    
-  dc->setBackColor(oldBackColor);
-  dc->setColor(oldColor);
-  dc->setFont(oldFont); 
-  
-}
-*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::drawCompareResult(TFTMenu* menu)
 {
@@ -346,11 +286,10 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
+	Drawing::DrawChart(this, serie1);
 	drawTime(menu);
 	drawMotoresource(menu);
 	drawCompareResult(menu);
-  //DEPRECATED: drawTimeBeforeInterrupt(menu);
-	Drawing::DrawChart(this, serie1);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)

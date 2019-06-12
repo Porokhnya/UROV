@@ -155,6 +155,8 @@ void FileUtils::printFilesNames(const String& dirName, bool recursive, Stream* o
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool SDInit::InitSD()
 {
+#ifndef _SD_OFF
+
   if(SDInit::sdInitFlag)
     return SDInit::sdInitResult;
 
@@ -163,6 +165,9 @@ bool SDInit::InitSD()
   SdFile::dateTimeCallback(setFileDateTime);
   
   return SDInit::sdInitResult;
+#else
+	return false;
+#endif;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

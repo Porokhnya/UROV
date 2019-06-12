@@ -12,6 +12,8 @@ Screen1* mainScreen = NULL;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loopADC()
 {
+#ifndef _ADC_OFF
+
   static bool dataHigh_old = false;
   
   if (adcSampler.available()) 
@@ -48,9 +50,6 @@ void loopADC()
     uint32_t raw5V = 0;
     uint32_t raw3V3 = 0;
 
-	//DEPRECATED: uint32_t inductiveSensorState1 = 0;
-	//DEPRECATED: uint32_t inductiveSensorState2 = 0;
-	//DEPRECATED: uint32_t inductiveSensorState3 = 0;
     
     for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
     {
@@ -62,25 +61,12 @@ void loopADC()
 	  raw5V   += cBuf[i + 8];                          // Данные Измерение +5V 
 	  raw200V += cBuf[i + 6];                          // Данные Измерение =200В
 
-	  //Вычислить данные измерения по среднему значению как в источниках питания.
-     
-	  //DEPRECATED: inductiveSensorState1  += cBuf[i + 1];                              // Вход индуктивного датчика №1 тест исправности датчика (1)
-	  //DEPRECATED: inductiveSensorState2  += cBuf[i + 0];                              // Вход индуктивного датчика №2 тест исправности датчика (0)
-	  //DEPRECATED: inductiveSensorState3  += cBuf[i + 5];                              // Вход индуктивного датчика №3 тест исправности датчика (5)
 
 	  } // for
 
     raw200V /= countOfPoints;
     raw3V3 /= countOfPoints;
     raw5V /= countOfPoints;
-
-	//DEPRECATED: inductiveSensorState1 /= countOfPoints;
-	//DEPRECATED: inductiveSensorState2 /= countOfPoints;
-	//DEPRECATED: inductiveSensorState3 /= countOfPoints;
-
-	//DEPRECATED: Settings.setInductiveSensorState(0, inductiveSensorState1 >= INDUCTIVE_CHANNEL1_GOOD_STATE ? 1 : 0);
-	//DEPRECATED: Settings.setInductiveSensorState(1, inductiveSensorState2 >= INDUCTIVE_CHANNEL2_GOOD_STATE ? 1 : 0);
-	//DEPRECATED: Settings.setInductiveSensorState(2, inductiveSensorState3 >= INDUCTIVE_CHANNEL3_GOOD_STATE ? 1 : 0);
 
     Settings.set3V3RawVoltage(raw3V3);
     Settings.set5VRawVoltage(raw5V);
@@ -92,19 +78,13 @@ void loopADC()
     {
       mainScreen->requestToDrawChart(serie1, serie2, serie3, countOfPoints);      
     }
-    /*
-    else
-    {
-      delete [] serie1;
-      delete [] serie2;
-      delete [] serie3;
-    }
-    */
+
   }
     if (dataHigh_old != adcSampler.dataHigh)
     {
       dataHigh_old = adcSampler.dataHigh;
     }
+#endif // !_ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Screen1::Screen1() : AbstractTFTScreen("Main")
@@ -118,94 +98,11 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   inDrawingChart = false;
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
   canLoopADC = false;
-
-  //DEPRECATED:   inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-//DEPRECATED:
-void Screen1::drawInductiveSensors(TFTMenu* menu)
-{
-  if(!isActive())
-    return; 
-
-  word color = VGA_RED;
-  UTFT* dc = menu->getDC();
-  
-  word oldBackColor = dc->getBackColor();  
-  word oldColor = dc->getColor();
-  uint8_t* oldFont = dc->getFont();
-  dc->setFont(SmallRusFont);
-
-  uint16_t curX = 162;
-  uint16_t curY = 20; 
-  uint8_t boxSize = 20;   
-
-  uint8_t curVal = Settings.getInductiveSensorState(0);
-  if(inductiveSensorState1 != curVal)
-  {
-
-    inductiveSensorState1 = curVal;
-    if(inductiveSensorState1)
-      color = VGA_LIME;
-    else
-      color = VGA_RED;
-
-    dc->setColor(color);
-    dc->setBackColor(color);
-    dc->fillRoundRect(curX, curY, curX + boxSize, curY + boxSize);
-    dc->setColor(VGA_BLACK);
-    menu->print("1", curX + 8, curY + 4);
-
-  }
-
-  curY += boxSize + 4;
-
-  curVal = Settings.getInductiveSensorState(1);
-  if(inductiveSensorState2 != curVal)
-  {
-    inductiveSensorState2 = curVal;
-    if(inductiveSensorState2)
-      color = VGA_LIME;
-    else
-      color = VGA_RED;
-
-    dc->setColor(color);
-    dc->setBackColor(color);
-    dc->fillRoundRect(curX, curY, curX + boxSize, curY + boxSize);
-    dc->setColor(VGA_BLACK);
-    menu->print("2", curX + 8, curY + 4);
-
-  }
-
-  curY += boxSize + 4;  
-
-  curVal = Settings.getInductiveSensorState(2);
-  if(inductiveSensorState3 != curVal)
-  {
-    inductiveSensorState3 = curVal;
-    if(inductiveSensorState3)
-      color = VGA_LIME;
-    else
-      color = VGA_RED;
-
-    dc->setColor(color);
-    dc->setBackColor(color);
-    dc->fillRoundRect(curX, curY, curX + boxSize, curY + boxSize);
-    dc->setColor(VGA_BLACK);
-    menu->print("3", curX + 8, curY + 4);
-
-  }
-
-
-  dc->setBackColor(oldBackColor);
-  dc->setColor(oldColor);
-  dc->setFont(oldFont);
-}
-*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawVoltage(TFTMenu* menu)
 {
+#ifndef _DISABLE_DRAW_VOLTAGE
   if(!isActive())
     return;
 
@@ -294,21 +191,23 @@ void Screen1::drawVoltage(TFTMenu* menu)
   }
 
   dc->setColor(oldColor);
-
+#endif // !_DISABLE_DRAW_VOLTAGE
    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onDeactivate()
 {
+#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // станем неактивными, надо выключить подписчика результатов прерываний
   InterruptHandler.setSubscriber(NULL);
+#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
-
-  //DEPRECATED:   inductiveSensorState1 = inductiveSensorState2 = inductiveSensorState3 = 0xFF;
   
+#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
   // прекращаем отрисовку графика
   chart.stopDraw();
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 
   inDrawingChart = false;
   canDrawChart = false;
@@ -321,8 +220,11 @@ void Screen1::onDeactivate()
 void Screen1::onActivate()
 {
   canLoopADC = true;
+
+#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // мы активизируемся, назначаем подписчика результатов прерываний
   InterruptHandler.setSubscriber(ScreenInterrupt);
+#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
 
   DBGLN(F("MainScreen::onActivate()"));
   
@@ -330,34 +232,40 @@ void Screen1::onActivate()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doSetup(TFTMenu* menu)
 {
+#ifndef _DISABLE_MAIN_SCREEN_BUTTONS
 	screenButtons->setSymbolFont(Various_Symbols_32x32);
 	// тут настраиваемся, например, можем добавлять кнопки
 	screenButtons->addButton(5, 140, 165, 30, "НАСТРОЙКИ");
 	screenButtons->addButton(179, 130, 35, 40, "z", BUTTON_SYMBOL); // кнопка Часы 
+#endif // !_DISABLE_MAIN_SCREEN_BUTTONS
 
+#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
 	// ТУТ НАСТРАИВАЕМ НАШ ГРАФИК
 	// устанавливаем ему начальные точки отсчёта координат
 
 	chart.setCoords(5, 120);
-  // говорим, какое у нас кол-во точек по X и по Y
-  chart.setPoints(CHART_POINTS_COUNT,100);
+	// говорим, какое у нас кол-во точек по X и по Y
+	chart.setPoints(CHART_POINTS_COUNT,100);
 	// добавляем наши тестовые графики, количеством 1
 
 	serie1 = chart.addSerie({ 255,0,0 });     // первый график - красного цвета
 	serie2 = chart.addSerie({ 0,0,255 });     // второй график - голубого цвета
 	serie3 = chart.addSerie({ 255,255,0 });   // третий график - желтого цвета
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 
-  unsigned int samplingRate = 2500;   // Частота вызова (стробирования) АЦП 50мс
+#ifndef _ADC_OFF
+	unsigned int samplingRate = 2500;   // Частота вызова (стробирования) АЦП 50мс  
+
+	adcSampler.setLowBorder(Settings.getTransformerLowBorder());
+	adcSampler.setHighBorder(Settings.getTransformerHighBorder());
   
-  adcSampler.setLowBorder(Settings.getTransformerLowBorder());
-  adcSampler.setHighBorder(Settings.getTransformerHighBorder());
-  
-  adcSampler.begin(samplingRate);  
+	adcSampler.begin(samplingRate);  
+#endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawTime(TFTMenu* menu)
 {
-
+#ifndef _DISABLE_DRAW_TIME
     DS3231Time tm = RealtimeClock.getTime();
     if (oldsecond != tm.second)
     {
@@ -374,11 +282,16 @@ void Screen1::drawTime(TFTMenu* menu)
       dc->print(strDate, 5, 1);
       dc->print(strTime, 90, 1);
   
+#ifndef _DISABLE_DRAW_RAM_ON_SCREEN
       String str = "RAM: ";
       str += getFreeMemory();
       Screen.print(str.c_str(), 10,123);
+#endif // !_DISABLE_DRAW_RAM_ON_SCREEN
       
     }
+
+#endif // !_DISABLE_DRAW_TIME
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doUpdate(TFTMenu* menu)
@@ -386,11 +299,12 @@ void Screen1::doUpdate(TFTMenu* menu)
 	
   drawTime(menu);
   drawVoltage(menu);
-  //DEPRECATED:   drawInductiveSensors(menu);
   drawChart();
 
+#ifndef _ADC_OFF
   if(canLoopADC)
     loopADC();
+#endif // !_ADC_OFF
 	// тут обновляем внутреннее состояние
 }
 
@@ -461,6 +375,7 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint16_t* _points3, uint16_t pointsCount)
 {
+#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
   if(inDrawingChart)
   {
     chart.stopDraw();
@@ -480,11 +395,13 @@ void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint
   serie2->setPoints(&(points2[shift]), totalPoints);
   serie3->setPoints(&(points3[shift]), totalPoints);
     
-    
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawChart()
 {
+#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
+
   if(!isActive() || !canDrawChart || inDrawingChart)
     return;
 
@@ -514,14 +431,14 @@ void Screen1::drawChart()
 
   inDrawingChart = false;
   canDrawChart = false;
-
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 }
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
 {
   drawTime(menu);
 
+#ifndef _DISABLE_DRAW_SOFTWARE_VERSION
   // рисуем версию ПО
   UTFT* dc = menu->getDC();
   dc->setColor(VGA_WHITE);
@@ -539,6 +456,7 @@ void Screen1::doDraw(TFTMenu* menu)
   int left = w - strW - 3;
 
   menu->print(str.c_str(),left,top);
+#endif // !_DISABLE_DRAW_SOFTWARE_VERSION
 
   DBGLN(F("MainScreen::draw()"));
     
@@ -546,15 +464,17 @@ void Screen1::doDraw(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
+#ifndef _DISABLE_MAIN_SCREEN_BUTTONS
   // обработчик нажатия на кнопку. Номера кнопок начинаются с 0 и идут в том порядке, в котором мы их добавляли
 	if (pressedButton == 0)
 	{
 		menu->switchToScreen("Settings"); // переключаемся на экран работы с SD
-  }
+	}
 	else if (pressedButton == 1)
 	{
 		menu->switchToScreen("SCREEN4"); // переключаемся на третий экран
 	}
+#endif // !_DISABLE_MAIN_SCREEN_BUTTONS
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 int Screen1::getFreeMemory()
@@ -566,4 +486,3 @@ int Screen1::getFreeMemory()
 	return (stack_ptr - heapend + mi.fordblks);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

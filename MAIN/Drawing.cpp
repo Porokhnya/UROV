@@ -25,7 +25,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 namespace Drawing
 {
-  void ComputeSerie(InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
+  void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
   {
       // освобождаем серию
       serie.empty();
@@ -44,6 +44,7 @@ namespace Drawing
     
       if(totalPulses < 2) // нет ничего к отрисовке, т.к. для графика нужны хотя бы две точки
       {
+		  DBGLN(F("НЕДОСТАТОЧНО ТОЧЕК ДЛЯ ОТРИСОВКИ!!!"));
         return;
       }
     
@@ -52,7 +53,10 @@ namespace Drawing
       for(size_t i=1;i<timeList.size();i++)
       {
         maxPulseTime = max(maxPulseTime,(timeList[i] - timeList[i-1]));
-      }
+      } // for
+
+	  if (!maxPulseTime) // на случай, если там 0
+		  maxPulseTime = 1;
     
   //    DBG("MAX PULSE TIME=");
   //    DBGLN(maxPulseTime);  
@@ -141,10 +145,16 @@ namespace Drawing
       // подсчёты завершены
   }
 
-  void doDrawSerie(UTFT* dc,Points& serie)
+  void doDrawSerie(UTFT* dc, const Points& serie)
   {
+	 // dc->drawLine(0, 0, 200, 200);
+	 // return;
+
 	  if (serie.size() < 2)
+	  {
+		  DBGLN(F("НЕ ХВАТАЕТ ТОЧЕК ДЛЯ ОТРИСОВКИ !!!"));
 		  return;
+	  }
 
 	  size_t to = serie.size();
 
@@ -152,50 +162,47 @@ namespace Drawing
 	  DBGLN(to);
 
 	  Point ptStart, ptEnd;
+	  int x1, x2, y1, y2;
 
       for (size_t i=1;i<to;i++)
       {
           ptStart = serie[i-1];
           ptEnd = serie[i];
 
-		  /*
-		  ptStart.X = 5;
-		  ptStart.Y = 5;
-		  ptEnd.X = 154;
-		  ptEnd.Y = 120;
-		  */
+		  x1 = ptStart.X;
+		  y1 = ptStart.Y;
+		  x2 = ptEnd.X;
+		  y2 = ptEnd.Y;
 
-		  int x1 = ptStart.X;
-		  int y1 = ptStart.Y;
-		  int x2 = ptEnd.X;
-		  int y2 = ptEnd.Y;
+//		  DBG(F("dc->drawLine("));
+//		  DBG(x1);
+//		  DBG(F(","));
+//		  DBG(y1);
+//		  DBG(F(","));
+//		  DBG(x2);
+//		  DBG(F(","));
+//		  DBG(y2);
+//		  DBGLN(F(");"));
 
-		  DBG(F("Линия: x1="));
-		  DBG(x1);
-		  DBG(F(";y1="));
-		  DBG(y1);
-		  DBG(F(";x2="));
-		  DBG(x2);
-		  DBG(F(";y2="));
-		  DBGLN(y2);
-
-//		  dc->drawLine(x1 , y1, x2 , y2);
-		  dc->fillRect(x1, y1, x2, y2);
+		  dc->drawLine(x1, y1, x2, y2);
+//		  dc->fillRect(x1, y1, x2, y2);
           yield();
 
-      } 
+      } // for 
+
+
 
 	  DBGLN(F("ВСЕ ЛИНИИ НА ГРАФИКЕ ОТРИСОВАНЫ."));
 
   }
 
-  void DrawSerie(AbstractTFTScreen* caller, Points& serie, uint16_t color)
+  void DrawSerie(AbstractTFTScreen* caller, const Points& serie, uint16_t color)
   {
 	  DBGLN(F("DrawSerie BEGIN"));
 
 	  if (serie.size() < 2 || !caller->isActive()) // низзя рисовать
 	  {
-		  DBGLN(F("DrawSerie END 1"));
+		  DBGLN(F("НЕЛЬЗЯ РИСОВАТЬ СЕРИЮ!!!"));
 		  return;
 	  }
      
@@ -206,16 +213,16 @@ namespace Drawing
       doDrawSerie(dc,serie);        
       dc->setColor(oldColor);  
 
-	  DBGLN(F("DrawSerie END 2"));
+	  DBGLN(F("СЕРИЯ ОТРИСОВАНА!"));
   }
   
-  void DrawSerie(AbstractTFTScreen* caller, Points& serie, RGBColor color)
+  void DrawSerie(AbstractTFTScreen* caller, const Points& serie, RGBColor color)
   {
 	  DBGLN(F("DrawSerie BEGIN"));
 
 	  if (serie.size() < 2 || !caller->isActive()) // низзя рисовать
 	  {
-		  DBGLN(F("DrawSerie END 1"));
+		  DBGLN(F("RGBColor: НЕЛЬЗЯ РИСОВАТЬ СЕРИЮ!!!"));
 		  return;
 	  }
      
@@ -226,20 +233,20 @@ namespace Drawing
       doDrawSerie(dc,serie);        
       dc->setColor(oldColor);  
 
-	  DBGLN(F("DrawSerie END 2"));
+	  DBGLN(F("RGBColor: СЕРИЯ ОТРИСОВАНА!"));
   }
 
-  void DrawChart(AbstractTFTScreen* caller, Points& serie1, uint16_t serie1Color)
+  void DrawChart(AbstractTFTScreen* caller, const Points& serie1, uint16_t serie1Color)
   {
 	  DBGLN(F("DrawChart BEGIN"));
     
     // рисуем сетку
-    int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
-    int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
-    int columnsCount = 6; // 5 столбцов
-    int rowsCount = 4; // 4 строки
-    int columnWidth = INTERRUPT_CHART_X_POINTS/columnsCount; // ширина столбца
-    int rowHeight = INTERRUPT_CHART_Y_POINTS/rowsCount; // высота строки 
+	const int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
+	const int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
+    const int columnsCount = 6; // 5 столбцов
+	const int rowsCount = 4; // 4 строки
+	const int columnWidth = INTERRUPT_CHART_X_POINTS/columnsCount; // ширина столбца
+	const int rowHeight = INTERRUPT_CHART_Y_POINTS/rowsCount; // высота строки 
     RGBColor gridColor = { 0,200,0 }; // цвет сетки
   
   
@@ -253,7 +260,7 @@ namespace Drawing
 	DBGLN(F("DrawChart END"));
   }
 
-  void ComputeChart(InterruptTimeList& list1, Points& serie1)
+  void ComputeChart(const InterruptTimeList& list1, Points& serie1)
   {
 	  DBGLN(F("ComputeChart BEGIN"));
      /*
@@ -265,22 +272,22 @@ namespace Drawing
       Минимальная длительность сформированных импульсов (в середине хода линейки) соответствует максимальным значениям по оси Y. 
       */
     
-      uint16_t yOffset = 0; // первоначальный сдвиг графиков по Y
-      uint16_t yOffsetStep = 5; // шаг сдвига графиков по Y, чтобы не пересекались
+      const uint16_t yOffset = 0; // первоначальный сдвиг графиков по Y
+//      uint16_t yOffsetStep = 5; // шаг сдвига графиков по Y, чтобы не пересекались
     
-      uint16_t xOffset = 5; // первоначальный сдвиг графиков по X, чтобы первый пик начинался не с начала координат
-      uint16_t xOffsetStep = 5; // шаг сдвига графиков по X, чтобы не пересекались
+      const uint16_t xOffset = 5; // первоначальный сдвиг графиков по X, чтобы первый пик начинался не с начала координат
+//      uint16_t xOffsetStep = 5; // шаг сдвига графиков по X, чтобы не пересекались
       
       ComputeSerie(list1,serie1,xOffset, yOffset);
-      yOffset += yOffsetStep;
-      xOffset += xOffsetStep;
+//      yOffset += yOffsetStep;
+//      xOffset += xOffsetStep;
     
 	  DBGLN(F("ComputeChart END"));
   }
   
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor)
   {
-
+#ifndef _DRAW_GRID_OFF
     UTFT* dc = Screen.getDC();
     word color = dc->getColor();  
   
@@ -299,7 +306,8 @@ namespace Drawing
         yield();
     }
     
-      dc->setColor(color);  
+      dc->setColor(color); 
+#endif // _DRAW_GRID_OFF
 
   }
 }
