@@ -207,11 +207,13 @@ void Screen1::onDeactivate()
 #ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
   // прекращаем отрисовку графика
   chart.stopDraw();
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
-
   inDrawingChart = false;
   canDrawChart = false;
-  canLoopADC = false;
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
+
+#ifndef _ADC_OFF
+	canLoopADC = false;
+#endif // !_ADC_OFF
 
   DBGLN(F("MainScreen::onDeactivate()"));
   
@@ -219,7 +221,9 @@ void Screen1::onDeactivate()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onActivate()
 {
+#ifndef _ADC_OFF
   canLoopADC = true;
+#endif // !_ADC_OFF
 
 #ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // мы активизируемся, назначаем подписчика результатов прерываний
@@ -311,6 +315,9 @@ void Screen1::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 {
+#ifdef _DISABLE_USING_CHART_IN_MAIN_SCREEN
+	return 0;
+#else
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
   const uint16_t lowBorder = 100; // нижняя граница, по которой ищем начало
   const uint16_t wantedBorder = 2048; // граница синхронизации
@@ -370,7 +377,8 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
   //DBGLN((&(points[iterator]) - points));
 
   // нужная граница синхронизации найдена - выводим график, начиная с этой точки
- return ( (&(points[iterator]) - points) );  
+ return ( (&(points[iterator]) - points) ); 
+#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint16_t* _points3, uint16_t pointsCount)
