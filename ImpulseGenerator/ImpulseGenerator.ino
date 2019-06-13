@@ -152,7 +152,7 @@ void setup()
   // поэтому надо вычислить начальную длительность импульса.
   const uint16_t pulses = 250; // сколько всего импульсов надо сделать
   const uint16_t halfPulses = pulses/2;
-  const uint32_t pulseTime = 100000; // за какое время, микросекунд
+  const uint32_t pulseTime = 200000; // за какое время, микросекунд
   const float maxPulseDuration = (1.*pulseTime)/pulses; // максимальная длительность импульса, микросекунд
   const float pulseDurationStep = maxPulseDuration/halfPulses; // шаг изменения длительности между импульсами
   uint8_t level = HIGH;
