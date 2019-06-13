@@ -145,7 +145,40 @@ void setup()
   encoderScene.setLoop(false);
   encoderScene2.setLoop(false);
 
-  unsigned long duration = 40000;
+
+  // формируем 250 импульсов разной длительности за 100 мс, или за 100 000 мкс
+  // если импульсы равномерны, то длительность одного импульса составляет 400 микросекунд.
+  // однако - мы до середины уменьшаем импульсы на определённый шаг, после середины - увеличиваем.
+  // поэтому надо вычислить начальную длительность импульса.
+  const uint16_t pulses = 250; // сколько всего импульсов надо сделать
+  const uint16_t halfPulses = pulses/2;
+  const uint32_t pulseTime = 100000; // за какое время, микросекунд
+  const float maxPulseDuration = (1.*pulseTime)/pulses; // максимальная длительность импульса, микросекунд
+  const float pulseDurationStep = maxPulseDuration/halfPulses; // шаг изменения длительности между импульсами
+  uint8_t level = HIGH;
+
+  // формируем половину импульсов по убыванию
+  float curDuration = maxPulseDuration;
+
+  for(uint16_t i=0;i<halfPulses;i++,curDuration -= pulseDurationStep)
+  {
+    uint32_t duration = round(curDuration);
+    encoderScene.add({PULSE_PIN3, level, duration});
+    encoderScene2.add({PULSE_PIN4, level, duration});
+    level = !level;    
+  }
+
+  // затем добавляем половину импульсов по возрастанию
+  for(uint16_t i=0;i<halfPulses;i++,curDuration += pulseDurationStep)
+  {
+    uint32_t duration = round(curDuration);
+    encoderScene.add({PULSE_PIN3, level, duration});
+    encoderScene2.add({PULSE_PIN4, level, duration});
+    level = !level;    
+  }
+
+  /*
+  unsigned long duration = 40000; // максимальная длительность импульса, микросекунд
   uint8_t level = HIGH;
 
   // Формируем 30 импульса первого графика прерывания. Желтый цвет графика.
@@ -192,6 +225,7 @@ void setup()
     encoderScene2.add({PULSE_PIN4, level, duration});
     level = !level;
   }
+  */
 
   // добавляем установку низкого уровня
   encoderScene.add({PULSE_PIN3, LOW, 10000});
