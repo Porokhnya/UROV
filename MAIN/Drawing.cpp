@@ -397,6 +397,9 @@ void ChartSerie::clearLine(UTFT* dc, uint16_t xPoint)
   if(endIdx >= savedPixels.size())
     return;
 
+  if (savedPixels[startIdx] == savedPixels[endIdx]) // обход гляка UTFT, когда ей срывает башню при вызове отрисовки линии с одинаковыми начальными и конечными точками
+	  return;
+
   drawLine(dc,savedPixels[startIdx].x,savedPixels[startIdx].y,savedPixels[endIdx].x,savedPixels[endIdx].y);
   yield();
     

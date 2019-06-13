@@ -41,10 +41,18 @@ namespace Drawing
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)
-typedef struct
+typedef struct _ChartSavedPixel
 {
   int x;
   int y;
+
+  bool operator==(const _ChartSavedPixel& rhs)
+  {
+	  if (this == &rhs)
+		  return true;
+
+	  return (x == rhs.x) && (y == rhs.y);
+  }
   
 } ChartSavedPixel;
 #pragma pack(pop)
