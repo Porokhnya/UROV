@@ -412,11 +412,6 @@ void InterruptHandlerClass::update()
       // если ни в одном из списков нет данных - значит, это авария.
       // в любом другом случае флаг аварии выставится после того, как будет принято решение
       // о том, что пачки импульсов закончились.
-
-		// обновляем моторесурс, т.к. было срабатывание защиты
-		uint32_t motoresource = Settings.getMotoresource(0);
-		motoresource++;
-		Settings.setMotoresource(0, motoresource);
       
       noInterrupts();
 
@@ -437,6 +432,11 @@ void InterruptHandlerClass::update()
        }
 
       interrupts();      
+
+	  // обновляем моторесурс, т.к. было срабатывание защиты
+	  uint32_t motoresource = Settings.getMotoresource(0);
+	  motoresource++;
+	  Settings.setMotoresource(0, motoresource);
 
       // выставляем флаг аварии, в зависимости от наличия данных в списках
       if(hasAlarm)
