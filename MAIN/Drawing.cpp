@@ -338,6 +338,10 @@ void ChartSerie::setPoints(uint16_t* pointsArray, uint16_t countOfPoints)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ChartSerie::drawLine(UTFT* dc,uint16_t x, uint16_t y, uint16_t x2, uint16_t y2)
 {
+	if (x == x2 && y == y2)
+	{
+		return; // UTFT drawLine bug detour
+	}
    dc->drawLine(x,y,x2,y2);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -396,9 +400,6 @@ void ChartSerie::clearLine(UTFT* dc, uint16_t xPoint)
 
   if(endIdx >= savedPixels.size())
     return;
-
-  if (savedPixels[startIdx] == savedPixels[endIdx]) // обход гляка UTFT, когда ей срывает башню при вызове отрисовки линии с одинаковыми начальными и конечными точками
-	  return;
 
   drawLine(dc,savedPixels[startIdx].x,savedPixels[startIdx].y,savedPixels[endIdx].x,savedPixels[endIdx].y);
   yield();
