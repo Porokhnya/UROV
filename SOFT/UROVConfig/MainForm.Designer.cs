@@ -624,7 +624,7 @@
             this.treeView.Size = new System.Drawing.Size(194, 533);
             this.treeView.TabIndex = 0;
             this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
-            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewSD_AfterSelect);
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDoubleClick);
             // 
             // smallImages
