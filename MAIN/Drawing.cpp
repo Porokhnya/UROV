@@ -147,9 +147,6 @@ namespace Drawing
 
   void doDrawSerie(UTFT* dc, const Points& serie)
   {
-	 // dc->drawLine(0, 0, 200, 200);
-	 // return;
-
 	  if (serie.size() < 2)
 	  {
 		  DBGLN(F("НЕ ХВАТАЕТ ТОЧЕК ДЛЯ ОТРИСОВКИ !!!"));
@@ -162,34 +159,40 @@ namespace Drawing
 	  DBGLN(to);
 
 	  Point ptStart, ptEnd;
-	  int x1, x2, y1, y2;
-
+	  
       for (size_t i=1;i<to;i++)
       {
           ptStart = serie[i-1];
           ptEnd = serie[i];
 
-		  x1 = ptStart.X;
-		  y1 = ptStart.Y;
-		  x2 = ptEnd.X;
-		  y2 = ptEnd.Y;
+		  if (ptStart == ptEnd) // одинаковые точки, UTFT сносит крышу
+		  {
+			  continue;
+		  }
 
-//		  DBG(F("dc->drawLine("));
-//		  DBG(x1);
-//		  DBG(F(","));
-//		  DBG(y1);
-//		  DBG(F(","));
-//		  DBG(x2);
-//		  DBG(F(","));
-//		  DBG(y2);
-//		  DBGLN(F(");"));
+		  /*
+		  DBG(F("dc->drawLine("));
+		  DBG(x1);
+		  DBG(F(","));
+		  DBG(y1);
+		  DBG(F(","));
+		  DBG(x2);
+		  DBG(F(","));
+		  DBG(y2);
+		  DBGLN(F(");"));
+		  */
 
-		  dc->drawLine(x1, y1, x2, y2);
-//		  dc->fillRect(x1, y1, x2, y2);
+		  dc->drawLine(ptStart.X, ptStart.Y, ptEnd.X, ptEnd.Y);
           yield();
+
+
+//		  delay(500);
 
       } // for 
 
+	  
+
+	  
 
 
 	  DBGLN(F("ВСЕ ЛИНИИ НА ГРАФИКЕ ОТРИСОВАНЫ."));

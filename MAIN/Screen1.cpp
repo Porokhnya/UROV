@@ -197,19 +197,15 @@ void Screen1::drawVoltage(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onDeactivate()
 {
-#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // станем неактивными, надо выключить подписчика результатов прерываний
   InterruptHandler.setSubscriber(NULL);
-#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
   
-#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
   // прекращаем отрисовку графика
   chart.stopDraw();
   inDrawingChart = false;
   canDrawChart = false;
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 
 #ifndef _ADC_OFF
 	canLoopADC = false;
@@ -225,10 +221,8 @@ void Screen1::onActivate()
   canLoopADC = true;
 #endif // !_ADC_OFF
 
-#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // мы активизируемся, назначаем подписчика результатов прерываний
   InterruptHandler.setSubscriber(ScreenInterrupt);
-#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
 
   DBGLN(F("MainScreen::onActivate()"));
   
@@ -243,7 +237,6 @@ void Screen1::doSetup(TFTMenu* menu)
 	screenButtons->addButton(179, 130, 35, 40, "z", BUTTON_SYMBOL); // кнопка Часы 
 #endif // !_DISABLE_MAIN_SCREEN_BUTTONS
 
-#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
 	// ТУТ НАСТРАИВАЕМ НАШ ГРАФИК
 	// устанавливаем ему начальные точки отсчёта координат
 
@@ -255,7 +248,6 @@ void Screen1::doSetup(TFTMenu* menu)
 	serie1 = chart.addSerie({ 255,0,0 });     // первый график - красного цвета
 	serie2 = chart.addSerie({ 0,0,255 });     // второй график - голубого цвета
 	serie3 = chart.addSerie({ 255,255,0 });   // третий график - желтого цвета
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 
 #ifndef _ADC_OFF
 	unsigned int samplingRate = 2500;   // Частота вызова (стробирования) АЦП 50мс  
@@ -315,9 +307,6 @@ void Screen1::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 {
-#ifdef _DISABLE_USING_CHART_IN_MAIN_SCREEN
-	return 0;
-#else
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
   const uint16_t lowBorder = 100; // нижняя граница, по которой ищем начало
   const uint16_t wantedBorder = 2048; // граница синхронизации
@@ -378,12 +367,10 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 
   // нужная граница синхронизации найдена - выводим график, начиная с этой точки
  return ( (&(points[iterator]) - points) ); 
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint16_t* _points3, uint16_t pointsCount)
 {
-#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
   if(inDrawingChart)
   {
     chart.stopDraw();
@@ -403,12 +390,10 @@ void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint
   serie2->setPoints(&(points2[shift]), totalPoints);
   serie3->setPoints(&(points3[shift]), totalPoints);
     
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawChart()
 {
-#ifndef _DISABLE_USING_CHART_IN_MAIN_SCREEN
 
   if(!isActive() || !canDrawChart || inDrawingChart)
     return;
@@ -439,7 +424,7 @@ void Screen1::drawChart()
 
   inDrawingChart = false;
   canDrawChart = false;
-#endif // !_DISABLE_USING_CHART_IN_MAIN_SCREEN
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)

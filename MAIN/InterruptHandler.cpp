@@ -244,8 +244,6 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
 
   // пишем кол-во срабатываний канала
   uint32_t motoresource = Settings.getMotoresource(channelNumber);
-  motoresource++;
-  Settings.setMotoresource(channelNumber,motoresource);
 
   workBuff[0] = recordMotoresource;
   memcpy(&(workBuff[1]),&motoresource,4);
@@ -414,6 +412,11 @@ void InterruptHandlerClass::update()
       // если ни в одном из списков нет данных - значит, это авария.
       // в любом другом случае флаг аварии выставится после того, как будет принято решение
       // о том, что пачки импульсов закончились.
+
+		// обновляем моторесурс, т.к. было срабатывание защиты
+		uint32_t motoresource = Settings.getMotoresource(0);
+		motoresource++;
+		Settings.setMotoresource(0, motoresource);
       
       noInterrupts();
 
@@ -545,7 +548,7 @@ void InterruptHandlerClass::update()
 		// тут тупо пытаемся сделать кучу данных в списке
 		////////////////////////////////////////////////////////////////////////////////////
 
-		const int TO_GENERATE = 200; // сколько тестовых точек генерировать?
+		const int TO_GENERATE = FAKE_POINTS_TO_GENERATE; // сколько тестовых точек генерировать?
 		copyList1.clear();
 		copyList1.reserve(TO_GENERATE);
 		uint32_t val = 0;

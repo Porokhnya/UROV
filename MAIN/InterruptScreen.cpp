@@ -12,10 +12,8 @@ AbstractTFTScreen* InterruptScreen::create()
     
   ScreenInterrupt = new InterruptScreen();
 
-#ifndef _REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   // назначаем обработчика прерываний по умолчанию - наш экран
   InterruptHandler.setSubscriber(ScreenInterrupt);
-#endif // !_REPLACE_INTERRUPT_HANDLER_WITH_FAKE_TRIGGER
   
   return ScreenInterrupt;
 }
