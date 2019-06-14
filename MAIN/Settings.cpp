@@ -18,6 +18,12 @@ SettingsClass::SettingsClass()
 
   relayDelay = RELAY_WANT_DATA_AFTER;
   acsDelay = ACS_SIGNAL_DELAY;
+
+#ifndef DISABLE_CATCH_ENCODER_DIRECTION
+  rodDirection = rpBroken;
+#else
+  rodDirection = rpUp;
+#endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String SettingsClass::getUUID(const char* passedUUID)

@@ -34,24 +34,20 @@ volatile bool downEndstopTriggered = false; // состояние нижнего
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL;
 //--------------------------------------------------------------------------------------------------------------------------------------
-void setEncoderInterruptFlag()
-{
-	hasEncoderInterrupt = true;
-	lastEncoderInterruptTime = micros();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
     uint32_t now = micros();
     list1.push_back(now);
 
-	setEncoderInterruptFlag();
+	hasEncoderInterrupt = true;
+	lastEncoderInterruptTime = now;
 
   if(list1.size() < 2)
   {
-    timeBeforeInterruptsBegin = (micros() - relayTriggeredTime);
+    timeBeforeInterruptsBegin = (now - relayTriggeredTime);
   }
 
+#ifndef DISABLE_CATCH_ENCODER_DIRECTION
 		// определяем направление вращения энкодера.
 	  if (digitalRead(ENCODER_PIN2))
 	  {
@@ -63,6 +59,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 		  // против часовой
 		  Settings.setRodDirection(rpDown);
 	  }
+#endif
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------

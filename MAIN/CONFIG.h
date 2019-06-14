@@ -23,6 +23,8 @@
 //#define _DISABLE_DRAW_VOLTAGE // не рисовать вольтаж на главном экране
 //#define _DISABLE_DRAW_SOFTWARE_VERSION // не рисовать версию ПО на главном экране
 
+#define DISABLE_CATCH_ENCODER_DIRECTION // не определять направление движения энкодера
+
 //#define _FAKE_CHART_DRAW // рисовать тестовый график из 200 линий вместо актуального, на время тестирования
 #define FAKE_POINTS_TO_GENERATE 200 // сколько точек фейкового графика генерировать
 
