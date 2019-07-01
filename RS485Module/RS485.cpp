@@ -203,21 +203,29 @@ bool RS485::processRS485Packet()
       }
     } // while
 
-    uint8_t dataCrc = crc8(dataReceived,rs485Packet.dataLength);
     bool isCrcGood = false;
     
-    if(dataCrc == rs485Packet.dataCrc)
+    if(rs485Packet.dataLength)
     {
-      isCrcGood = true;
-      DBG(F("RS485: DATA RECEIVED = "));
-      #ifdef _DEBUG
-        DEBUG_SERIAL.write(dataReceived,rs485Packet.dataLength);
-        DEBUG_SERIAL.println();
-      #endif        
-    }
+        uint8_t dataCrc = crc8(dataReceived,rs485Packet.dataLength);
+        
+        if(dataCrc == rs485Packet.dataCrc)
+        {
+          isCrcGood = true;
+          DBG(F("RS485: DATA RECEIVED = "));
+          #ifdef _DEBUG
+            DEBUG_SERIAL.write(dataReceived,rs485Packet.dataLength);
+            DEBUG_SERIAL.println();
+          #endif        
+        }
+        else
+        {
+          DBGLN(F("RS485: BAD DATA CRC!!!"));
+        }
+    } // if(rs485Packet.dataLength)
     else
     {
-      DBGLN(F("RS485: BAD DATA CRC!!!"));
+      isCrcGood = true; // нет данных в пакете 
     }
 
    receiveResult = isCrcGood && !hasTimeout;

@@ -1,5 +1,4 @@
-#ifndef _TINY_VECTOR_H
-#define _TINY_VECTOR_H
+#pragma once
 
 #include <Arduino.h>
 
@@ -95,5 +94,3 @@ private:
         d_data = newdata;
     };// Allocates double the old space
 };
-
-#endif
