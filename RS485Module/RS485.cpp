@@ -5,7 +5,7 @@ extern "C" {
 static void __nohandler(){}
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ON_RS485_INCOMING_DATA() __attribute__ ((weak, alias("__nohandler")));
+void ON_RS485_INCOMING_DATA(RS485* Sender) __attribute__ ((weak, alias("__nohandler")));
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485::RS485(Stream& s, uint8_t de,uint32_t tmout) : dePin(de), receiveTimeout(tmout)
 {
@@ -230,7 +230,7 @@ bool RS485::processRS485Packet()
 
    receiveResult = isCrcGood && !hasTimeout;
    if(receiveResult)
-      ON_RS485_INCOMING_DATA();
+      ON_RS485_INCOMING_DATA(this);
         
   return receiveResult;
 }
