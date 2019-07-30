@@ -47,9 +47,17 @@ typedef enum
 } RS485State;
 RS485State rs485State = rs485Normal;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ON_RS485_INCOMING_DATA(RS485* Sender)
+void OnRS485IncomingData(RS485* Sender)
 {
   rs485State =  rs485HandlePacket;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void waitRS485Release()
+{
+	while (rs485State != rs485Normal)
+	{
+		processRS485();
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void processRS485()
@@ -96,7 +104,7 @@ void processRS485()
         {
             case rs485Pong:
             {
-				DBGLN(F("[RS-485] RECEIVE PONT PACKET FROM MODULE!"));
+				DBGLN(F("[RS-485] RECEIVE PONG PACKET FROM MODULE!"));
 					
               // это ответ от модуля - есть ли прерывания?
 
@@ -231,6 +239,7 @@ void setup()
 
   // инициализируем RS-485
   RS485_SERIAL.begin(RS485_SPEED);
+  rs485.setHandler(OnRS485IncomingData);
   rs485.begin();
 
 #ifndef _SD_OFF

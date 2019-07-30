@@ -7,8 +7,10 @@ static void __nohandler(RS485* Sender){}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ON_RS485_INCOMING_DATA(RS485* Sender) __attribute__ ((weak, alias("__nohandler")));
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RS485::RS485(Stream& s, uint8_t de,uint32_t tmout) : dePin(de), receiveTimeout(tmout)
+RS485::RS485(Stream& s, uint8_t de, uint32_t tmout)
 {
+  dePin = de;
+  receiveTimeout = tmout;
   workStream = &s;
   writePtr = 0;
   rsPacketPtr = (uint8_t*) &rs485Packet;

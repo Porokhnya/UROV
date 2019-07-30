@@ -175,6 +175,49 @@ private:
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#include "RS485.h"
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+typedef enum
+{
+	rssNormal,
+	rssWaitAnswer,
+	rssHavePacket
+} RS485ScreenState;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class RS485Screen : public AbstractTFTScreen
+{
+public:
+
+	static AbstractTFTScreen* create()
+	{
+		return new RS485Screen();
+	}
+
+	void OnRS485Data(RS485* Sender);
+
+protected:
+
+	virtual void onActivate();
+	virtual void onDeactivate();
+
+	virtual void doSetup(TFTMenu* menu);
+	virtual void doUpdate(TFTMenu* menu);
+	virtual void doDraw(TFTMenu* menu);
+	virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+
+private:
+	RS485Screen();
+
+	int backButton;
+	RS485ScreenState screenState;
+	void releaseRS485();
+	void doRS485();
+	uint32_t rs485Timer;
+	uint32_t connectAttempt;
+	String connectMessage;
+
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ParamsScreen : public AbstractTFTScreen
 {
   public:

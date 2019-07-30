@@ -54,6 +54,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(BorderMinScreen::create());
   Screen.addScreen(AcsDelayScreen::create());
   Screen.addScreen(RelayDelayScreen::create());
+  Screen.addScreen(RS485Screen::create());
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -247,6 +248,150 @@ void SystemScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   else if(pressedButton == communicateButton)
     menu->switchToScreen("CommunicateScreen");
     
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//RS485Screen
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RS485Screen* rs485Screen = NULL;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void rs485ScreenDataHandler(RS485* Sender)
+{
+	if (rs485Screen)
+	{
+		rs485Screen->OnRS485Data(Sender);
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
+{
+	rs485Screen = this;
+	screenState = rssNormal;
+	rs485Timer = 0;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doRS485()
+{
+/*
+menu->print("Импульсы",2,2);
+menu->print("Канал 1:", 2, 37);
+
+*/
+	switch (screenState)
+	{
+		case rssNormal:
+		{
+			if (millis() - rs485Timer > 2000) // каждые 2 секунды попытка соединения с модулем
+			{
+				connectAttempt++;
+				connectMessage = F("Попытка #");
+				connectMessage += connectAttempt;
+				Screen.print(connectMessage.c_str(), 2, 2);
+
+				static uint32_t pingID = 0;
+				++pingID;
+
+				rs485.send(rs485Ping, (const uint8_t*)&pingID, sizeof(pingID));
+
+				screenState = rssWaitAnswer;
+				rs485Timer = millis();
+			}
+		}
+		break;
+
+		case rssWaitAnswer:
+		{
+			if (millis() - rs485Timer >= RS485_ANSWER_TIMEOUT)
+			{
+
+				Screen.print("НЕУДАЧА ", 2, 37);
+
+				screenState = rssNormal;
+				rs485Timer = millis();
+			}
+		}
+		break;
+
+		case rssHavePacket: // есть пакет по RS-485
+		{
+			Screen.print("СОЕДИНЕН", 2, 37);
+
+			// переключаемся на нормальный режим работы
+			rs485Timer = millis();
+			screenState = rssNormal;
+		}
+		break;
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::releaseRS485()
+{
+	while (screenState != rssNormal)
+		doRS485();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::OnRS485Data(RS485* Sender)
+{
+	screenState = rssHavePacket;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onActivate()
+{
+	connectAttempt = 0;
+	rs485Timer = millis();
+
+	DBGLN(F("Switch RS-485 to RS485Screen"));
+
+	waitRS485Release();
+	rs485.setHandler(rs485ScreenDataHandler);
+
+	DBGLN(F("RS-485 switched to screen handler"));
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onDeactivate()
+{
+	DBGLN(F("Switch RS-485 to main handler"));
+
+	releaseRS485();
+	rs485.setHandler(OnRS485IncomingData);
+
+	DBGLN(F("RS-485 switched to main handler"));
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doSetup(TFTMenu* menu)
+{
+
+	// тут настраиваемся, например, можем добавлять кнопки
+	//rs485Button = screenButtons->addButton(5, 2, 210, 30, "RS485");
+	//wiFiButton = screenButtons->addButton(5, 37, 210, 30, "WiFi");
+	//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
+	//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doUpdate(TFTMenu* menu)
+{
+	// тут обновляем внутреннее состояние
+	doRS485();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doDraw(TFTMenu* menu)
+{
+	menu->print("ТЕСТ RS485", 2, 2);
+	menu->print("ждите...", 2, 37);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+	if (pressedButton == backButton)
+		menu->switchToScreen("SystemScreen");
+	/*
+	else if (pressedButton == rs485Button)
+		menu->switchToScreen("RS485Screen");
+	else if (pressedButton == wiFiButton)
+		menu->switchToScreen("WiFiScreen");
+	*/
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // CommunicateScreen

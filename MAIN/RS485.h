@@ -4,9 +4,7 @@
 //--------------------------------------------------------------------------------------------------
 class RS485;
 //--------------------------------------------------------------------------------------------------
-extern "C" {
-  void ON_RS485_INCOMING_DATA(RS485* Sender);
-}
+typedef void(*OnRS485DataHandler)(RS485* Sender);
 //--------------------------------------------------------------------------------------------------
 #define STX1 0xAB
 #define STX2 0xBA
@@ -78,7 +76,14 @@ class RS485
     
     uint8_t crc8(const uint8_t *addr, uint16_t len);
 
+	void setHandler(OnRS485DataHandler h)
+	{
+		dataHandler = h;
+	}
+
   private:
+
+	  OnRS485DataHandler dataHandler;
     
     void waitTransmitComplete();
     uint8_t dePin;
