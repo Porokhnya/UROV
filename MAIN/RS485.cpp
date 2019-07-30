@@ -36,7 +36,7 @@ void RS485::switchToReceive()
 //--------------------------------------------------------------------------------------------------
 void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataLength)
 {
-  DBGLN(F("RS485: send data..."));
+ // DBGLN(F("RS485: send data..."));
   
   RS485Packet outPacket;
   outPacket.packetType = packetType;
@@ -55,7 +55,7 @@ void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataL
   
   switchToReceive();
 
-  DBGLN(F("RS485: data was sent."));
+ // DBGLN(F("RS485: data was sent."));
   
 }
 //--------------------------------------------------------------------------------------------------
@@ -173,8 +173,8 @@ bool RS485::processRS485Packet()
    bool receiveResult = false;
    
     // у нас в пакете лежит длина данных, надо их вычитать из потока
-    DBG(F("RS485: DATA TO READ: "));
-    DBGLN(rs485Packet.dataLength);
+//    DBG(F("RS485: DATA TO READ: "));
+ //   DBGLN(rs485Packet.dataLength);
 
     uint16_t readed = 0;
     delete [] dataReceived;
@@ -192,9 +192,9 @@ bool RS485::processRS485Packet()
         startReadingTime = millis();
       }
 
-      if(millis() - startReadingTime > receiveTimeout) // таймаут чтения
+      if(millis() - startReadingTime >= receiveTimeout) // таймаут чтения
       {
-        DBGLN(F("RS485: RECEIVE TIMEOUT!!!"));
+        //DBGLN(F("RS485: RECEIVE TIMEOUT!!!"));
         hasTimeout = true;
         break;
       }
@@ -209,11 +209,13 @@ bool RS485::processRS485Packet()
         if(dataCrc == rs485Packet.dataCrc)
         {
           isCrcGood = true;
+		  /*
           DBG(F("RS485: DATA RECEIVED = "));
           #ifdef _DEBUG
             DEBUG_SERIAL.write(dataReceived,rs485Packet.dataLength);
             DEBUG_SERIAL.println();
           #endif        
+		  */
         }
         else
         {

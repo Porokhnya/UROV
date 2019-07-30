@@ -97,6 +97,8 @@ void processRS485()
     case rs485HandlePacket:
     {
         // надо обработать пакет
+		DBGLN(F("[RS-485] HAS PACKET FROM MODULE!"));
+
         uint8_t* data;
         RS485Packet packet = rs485.getDataReceived(data);
 
