@@ -83,7 +83,7 @@ void processRS485()
 
     case rs485WaitAnswer: // ждём ответа
     {
-      if(millis() - rs485WaitTimer >= RS485_ANSWER_TIMEOUT)
+      if(millis() - rs485WaitTimer >= RS485_READING_TIMEOUT)
       {
           //TODO: ответа не получили !!!
           DBGLN(F("[RS-485] NO ANSWER FROM MODULE !!!"));

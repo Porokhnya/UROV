@@ -297,7 +297,7 @@ void RS485Screen::doRS485()
 
 		case rssWaitAnswer:
 		{
-			if (millis() - rs485Timer >= RS485_ANSWER_TIMEOUT)
+			if (millis() - rs485Timer >= RS485_READING_TIMEOUT)
 			{
 
 				Screen.print("НЕУДАЧА ", 2, 37);
