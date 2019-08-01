@@ -277,7 +277,7 @@ void RS485Screen::doRS485()
 	{
 		case rssNormal:
 		{
-			if (millis() - rs485Timer > 2000) // каждые 2 секунды попытка соединения с модулем
+			if (millis() - rs485Timer > 5000) // каждые 5 секунд попытка соединения с модулем
 			{
 				connectAttempt++;
 				connectMessage = F("Попытка #");
