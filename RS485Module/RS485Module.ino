@@ -152,7 +152,7 @@ void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обр
         }
         
         createRS485Packet(lst);
-        rs485.send(rs485TestInterrupt,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
+        rs485.send(rs485InterruptDataAnswer,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
       }
       break; // rs485TestInterrupt
     } // switch 

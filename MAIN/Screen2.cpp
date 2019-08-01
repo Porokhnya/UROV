@@ -287,7 +287,9 @@ void RS485Screen::doRS485()
 				static uint32_t pingID = 0;
 				++pingID;
 
-				rs485.send(rs485Ping, (const uint8_t*)&pingID, sizeof(pingID));
+				rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
+
+				delay(20); // дадим время растелиться
 
 				screenState = rssWaitAnswer;
 				rs485Timer = millis();
@@ -311,6 +313,69 @@ void RS485Screen::doRS485()
 		case rssHavePacket: // есть пакет по RS-485
 		{
 			Screen.print("СОЕДИНЕН", 2, 37);
+
+			uint8_t* data;
+			RS485Packet packet = rs485.getDataReceived(data);
+
+			switch (packet.packetType)
+			{
+				case rs485InterruptDataAnswer:
+				{
+					// пришёл ответ на запрос данных прерывания
+					DBGLN(F("[RS-485] RECEIVE TEST INTERRUPT DATA FROM MODULE!!!"));
+
+					// парсим пакет
+					// первый байт в пакете - признак того, что у нас срабатывала защита
+					bool hasGuardTriggered = *data++;
+					if (hasGuardTriggered)
+					{
+						// второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
+						bool endstopUpTriggered = *data++;
+
+						// третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
+						bool endstopDownTriggered = *data++;
+
+						// потом идёт список прерываний
+						// три байта - заголовок, потом N записей по 4 байта. Высчитываем это из длины пакета в байтах
+						uint16_t recordsCount = (packet.dataLength - 3) / sizeof(uint32_t);
+						uint32_t* rec = (uint32_t*)data;
+
+						DBG(F("[RS-485] INTERRUPTS COUNT: "));
+						DBGLN(recordsCount);
+
+						// сохраняем записи
+						Vector<uint32_t> interruptsList;
+						interruptsList.reserve(recordsCount);
+
+						for (uint16_t i = 0; i<recordsCount; i++)
+						{
+							interruptsList.push_back(*rec++);
+						}
+
+						// выводим их для теста
+	#ifdef _DEBUG
+						DBGLN(F("----- TEST INTERRUPTS LIST FROM MODULE -----"));
+						for (size_t i = 0; i<interruptsList.size(); i++)
+						{
+							DBGLN(interruptsList[i]);
+						}
+						DBGLN(F("----- TEST INTERRUPTS LIST END -----"));
+	#endif
+
+						//TODO: ТУТ ЧТО-ТО ДЕЛАЕМ СО СПИСКОМ ПРЕРЫВАНИЙ !!!
+
+					} // if(hasGuardTriggered)
+
+				}
+				break; // rs485InterruptDataAnswer
+
+				default:
+				{
+					DBG(F("[RS-485] UNKNOWN PACKET TYPE: "));
+					DBGLN(packet.packetType);
+				}
+				break;
+			} // switch
 
 			// переключаемся на нормальный режим работы
 			rs485Timer = millis();
