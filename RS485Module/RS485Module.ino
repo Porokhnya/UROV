@@ -15,7 +15,7 @@ typedef enum
 } MachineState;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485 rs485(RS485_SERIAL,RS485_DE_PIN,RS485_READING_TIMEOUT);
-bool hasIncomingRS475Data = false; // флаг, что мы получили входящий запрос по RS-485
+bool hasIncomingRS485Data = false; // флаг, что мы получили входящий запрос по RS-485
 bool hasGuardTriggered = false; // флаг, что у нас сработала защита
 MachineState machineState = msIdle; // состояние конечного автомата
 volatile uint32_t timer = 0; // служебный таймер
@@ -58,11 +58,11 @@ void createRS485Packet(InterruptTimeList& list)
   bool eDownTrig = endstopDown.isTriggered();
   rs485DataPacket.push_back(eDownTrig);
 
-  DBG(F("UP ENDSTOP STATE: "));
-  DBGLN(eUpTrig);
+  //DBG(F("UP ENDSTOP STATE: "));
+  //DBGLN(eUpTrig);
 
-  DBG(F("DOWN ENDSTOP STATE: "));
-  DBGLN(eDownTrig);
+  //DBG(F("DOWN ENDSTOP STATE: "));
+  //DBGLN(eDownTrig);
   
 
   // заполняем пакет данными по прерываниям, копируем их побайтово
@@ -96,7 +96,7 @@ void normalizeList(InterruptTimeList& list)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ON_RS485_INCOMING_DATA(RS485* Sender) // событие - получены входящие данные по RS-475
 {
-    hasIncomingRS475Data = true; // взводим флаг
+    hasIncomingRS485Data = true; // взводим флаг
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обрабатываем входящий пакет, в зависимости от его типа
@@ -292,10 +292,10 @@ void loop()
   
   rs485.update(); // обновляем RS-485
 
-  if(hasIncomingRS475Data)
+  if(hasIncomingRS485Data)
   {
     
-    hasIncomingRS475Data = false;
+    hasIncomingRS485Data = false;
     
     // получили входящий пакет по RS-485
     uint8_t* data;
@@ -308,7 +308,7 @@ void loop()
 
     handleRS485Packet(packet,data); // обрабатываем входящий пакет
     
-  } // hasIncomingRS475Data
+  } // hasIncomingRS485Data
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void yield()
