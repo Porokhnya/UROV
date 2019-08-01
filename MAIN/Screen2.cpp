@@ -332,8 +332,14 @@ void RS485Screen::doRS485()
 						// второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
 						bool endstopUpTriggered = *data++;
 
+						DBG(F("UP ENDSTOP STATE: "));
+						DBGLN(endstopUpTriggered);
+
 						// третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
 						bool endstopDownTriggered = *data++;
+
+						DBG(F("DOWN ENDSTOP STATE: "));
+						DBGLN(endstopDownTriggered);
 
 						// потом идёт список прерываний
 						// три байта - заголовок, потом N записей по 4 байта. Высчитываем это из длины пакета в байтах
