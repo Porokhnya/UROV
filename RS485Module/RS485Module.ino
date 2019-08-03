@@ -23,6 +23,10 @@ volatile bool canHandleEncoder = false; // флаг, что мы можем со
 typedef Vector<uint32_t> InterruptTimeList;
 InterruptTimeList encoderList; // список прерываний с энкодера
 Vector<uint8_t> rs485DataPacket; // список данных, который мы отправляем по RS-485
+  
+InterruptTimeList fakeList; // тестовый список прерываний
+Vector<uint8_t> fakePacket; // тестовый пакет для RS-485
+
 
 // наши концевики
 const uint32_t minInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY - ENDSTOP_HISTERESIS));
@@ -41,22 +45,23 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     timer = now; // обновляем значение таймера
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void createRS485Packet(InterruptTimeList& list)
+void createRS485Packet(InterruptTimeList& list, Vector<uint8_t>& resultPacket)
 {
-  rs485DataPacket.empty();
+  resultPacket.empty();
+  resultPacket.reserve(list.size()*sizeof(uint32_t) + 3);
 
   // первый байт в пакете - признак того, что у нас срабатывала защита
-  rs485DataPacket.push_back(hasGuardTriggered);
+  resultPacket.push_back(hasGuardTriggered);
 
   //тут заполняем пакет данными по концевикам
   
   // второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
   bool eUpTrig = endstopUp.isTriggered();
-  rs485DataPacket.push_back(eUpTrig);
+  resultPacket.push_back(eUpTrig);
 
   // третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
   bool eDownTrig = endstopDown.isTriggered();
-  rs485DataPacket.push_back(eDownTrig);
+  resultPacket.push_back(eDownTrig);
 
   //DBG(F("UP ENDSTOP STATE: "));
   //DBGLN(eUpTrig);
@@ -72,7 +77,7 @@ void createRS485Packet(InterruptTimeList& list)
     
     for(size_t k=0;k<sizeof(uint32_t);k++)
     {
-        rs485DataPacket.push_back(*dt++);
+        resultPacket.push_back(*dt++);
     }
   }
 }
@@ -142,17 +147,8 @@ void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обр
 
       case rs485TestInterrupt:
       {
-        // мастер попросил сгенерировать тестовый массив с данными
-        const int sz = 50;
-        InterruptTimeList lst;
-        lst.reserve(sz);
-        for(int k=0;k<sz;k++)
-        {
-          lst.push_back(k*10);
-        }
-        
-        createRS485Packet(lst);
-        rs485.send(rs485InterruptDataAnswer,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
+        // мастер попросил отправить тестовый массив с данными
+        rs485.send(rs485InterruptDataAnswer,(const uint8_t*)fakePacket.pData(),fakePacket.size());        
       }
       break; // rs485TestInterrupt
     } // switch 
@@ -200,6 +196,19 @@ void setup()
   // считаем импульсы на штанге по прерыванию
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
   
+
+  // создаём тестовый массив данных
+  
+  const int sz = 50;
+  fakeList.reserve(sz);
+  
+  for(int k=0;k<sz;k++)
+    fakeList.push_back(k*10);
+    
+  createRS485Packet(fakeList,fakePacket);
+  fakeList.clear();
+  
+  // конец создания тестового массива данных
 
   DBGLN(F("Ready."));
 }
@@ -258,7 +267,7 @@ void loop()
         normalizeList(encoderList);
 
         // готовим данные для отсыла по RS-475
-        createRS485Packet(encoderList);
+        createRS485Packet(encoderList,rs485DataPacket);
 
         DBG(F("CATCHED PULSES: "));
         DBGLN(encoderList.size());

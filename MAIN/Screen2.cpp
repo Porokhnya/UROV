@@ -289,7 +289,7 @@ void RS485Screen::doRS485()
 
 				rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
 
-				delay(20); // дадим время растелиться
+				//delay(20); // дадим время растелиться
 
 				screenState = rssWaitAnswer;
 				rs485Timer = millis();
