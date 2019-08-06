@@ -242,6 +242,10 @@ bool RS485::processRS485Packet()
 	   if(dataHandler)
 		   dataHandler(this);
    }
+   else
+   {
+	   clearReceivedData();
+   }
         
   return receiveResult;
 }

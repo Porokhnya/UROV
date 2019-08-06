@@ -15,7 +15,6 @@ typedef enum
 } MachineState;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485 rs485(RS485_SERIAL,RS485_DE_PIN,RS485_READING_TIMEOUT);
-bool hasIncomingRS485Data = false; // флаг, что мы получили входящий запрос по RS-485
 bool hasGuardTriggered = false; // флаг, что у нас сработала защита
 MachineState machineState = msIdle; // состояние конечного автомата
 volatile uint32_t timer = 0; // служебный таймер
@@ -99,11 +98,6 @@ void normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ON_RS485_INCOMING_DATA(RS485* Sender) // событие - получены входящие данные по RS-475
-{
-    hasIncomingRS485Data = true; // взводим флаг
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обрабатываем входящий пакет, в зависимости от его типа
 {
     // тут работаем с пакетом в зависимости от его типа
@@ -153,6 +147,24 @@ void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обр
       break; // rs485TestInterrupt
     } // switch 
   
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ON_RS485_INCOMING_DATA(RS485* Sender) // событие - получены входящие данные по RS-475
+{
+    // получили входящий пакет по RS-485
+    uint8_t* data;
+    RS485Packet packet = rs485.getDataReceived(data);
+
+/*
+    DBG(F("INCOMING RS-475 PACKET CATCHED, TYPE="));
+    DBG(packet.packetType);
+    DBG(F(", DATA LENGTH="));
+    DBGLN(packet.dataLength);
+*/
+    handleRS485Packet(packet,data); // обрабатываем входящий пакет
+
+    rs485.clearReceivedData(); // очищаем за собой
+    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
@@ -300,24 +312,7 @@ void loop()
 
   
   rs485.update(); // обновляем RS-485
-
-  if(hasIncomingRS485Data)
-  {
-    
-    hasIncomingRS485Data = false;
-    
-    // получили входящий пакет по RS-485
-    uint8_t* data;
-    RS485Packet packet = rs485.getDataReceived(data);
-
-    DBG(F("INCOMING RS-475 PACKET CATCHED, TYPE="));
-    DBG(packet.packetType);
-    DBG(F(", DATA LENGTH="));
-    DBGLN(packet.dataLength);
-
-    handleRS485Packet(packet,data); // обрабатываем входящий пакет
-    
-  } // hasIncomingRS485Data
+ 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void yield()
