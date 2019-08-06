@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
+bool rs485Breaked = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void screenAction(AbstractTFTScreen* screen)
 {
@@ -54,10 +55,14 @@ void OnRS485IncomingData(RS485* Sender)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void waitRS485Release()
 {
+	rs485Breaked = true;
 	while (rs485State != rs485Normal)
 	{
 		processRS485();
 	}
+
+	rs485.clearReceivedData();
+	rs485Breaked = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void processRS485()
@@ -68,16 +73,19 @@ void processRS485()
   {
     case rs485Normal: // нормальный режим работы, надо отослать пакет пинга
     {
-        if(millis() - rs485WaitTimer >= RS485_PING_FREQ)
-        {
-          static uint32_t pingID = 0;
-          ++pingID;
+		if (!rs485Breaked)
+		{
+			if (millis() - rs485WaitTimer >= RS485_PING_FREQ)
+			{
+				static uint32_t pingID = 0;
+				++pingID;
 
-          rs485.send(rs485Ping,(const uint8_t*)&pingID,sizeof(pingID));
-          
-          rs485State = rs485WaitAnswer;
-          rs485WaitTimer = millis();
-        }
+				rs485.send(rs485Ping, (const uint8_t*)&pingID, sizeof(pingID));
+
+				rs485State = rs485WaitAnswer;
+				rs485WaitTimer = millis();
+			}
+		}
     }
     break; // rs485Normal
 
@@ -112,7 +120,7 @@ void processRS485()
 
               RS485PongPacket* pp = (RS485PongPacket*) data;
 
-              if(pp->hasGuardTriggered)
+              if(!rs485Breaked && pp->hasGuardTriggered)
               {
                 DBGLN(F("[RS-485] GUARD TRIGGERED, WANT TO GET INTERRUPT DATA!!!!"));
 

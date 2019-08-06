@@ -70,6 +70,12 @@ RS485Packet RS485::getDataReceived(uint8_t* &data)
     return rs485Packet;
 }
 //--------------------------------------------------------------------------------------------------
+void RS485::clearReceivedData()
+{
+	delete[] dataReceived;
+	dataReceived = NULL;
+}
+//--------------------------------------------------------------------------------------------------
 void RS485::update()
 {
   switchToReceive();  

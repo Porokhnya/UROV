@@ -74,6 +74,7 @@ class RS485
     void send(RS485PacketType packetType, const uint8_t* data, uint16_t dataLength);
  
     RS485Packet getDataReceived(uint8_t* &data);
+	void clearReceivedData();
     
     uint8_t crc8(const uint8_t *addr, uint16_t len);
 

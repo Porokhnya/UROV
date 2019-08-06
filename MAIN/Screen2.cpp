@@ -267,6 +267,7 @@ RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
 	rs485Screen = this;
 	screenState = rssNormal;
 	rs485Timer = 0;
+	onBreakRS485 = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::doRS485()
@@ -277,20 +278,23 @@ void RS485Screen::doRS485()
 	{
 		case rssNormal:
 		{
-			if (millis() - rs485Timer >= 5000) // каждые 5 секунд попытка соединения с модулем
+			if (!onBreakRS485)
 			{
-				connectAttempt++;
-				connectMessage = F("Попытка #");
-				connectMessage += connectAttempt;
-				Screen.print(connectMessage.c_str(), 2, 2);
+				if (millis() - rs485Timer >= 5000) // каждые 5 секунд попытка соединения с модулем
+				{
+					connectAttempt++;
+					connectMessage = F("Попытка #");
+					connectMessage += connectAttempt;
+					Screen.print(connectMessage.c_str(), 2, 2);
 
-				static uint32_t pingID = 0;
-				++pingID;
+					static uint32_t pingID = 0;
+					++pingID;
 
-				rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
+					rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
 
-				screenState = rssWaitAnswer;
-				rs485Timer = millis();
+					screenState = rssWaitAnswer;
+					rs485Timer = millis();
+				}
 			}
 		}
 		break;
@@ -391,8 +395,13 @@ void RS485Screen::doRS485()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::releaseRS485()
 {
+	onBreakRS485 = true;
+
 	while (screenState != rssNormal)
 		doRS485();
+
+	rs485.clearReceivedData();
+	onBreakRS485 = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::OnRS485Data(RS485* Sender)
@@ -405,10 +414,12 @@ void RS485Screen::onActivate()
 	connectAttempt = 0;
 	screenState = rssNormal;
 	rs485Timer = millis();
+	onBreakRS485 = false;
 
 	DBGLN(F("Switch RS-485 to RS485Screen"));
 
 	waitRS485Release();
+
 	rs485.setHandler(rs485ScreenDataHandler);
 
 	DBGLN(F("RS-485 switched to screen handler"));
