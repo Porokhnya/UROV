@@ -74,6 +74,9 @@ void RS485::clearReceivedData()
 {
 	delete[] dataReceived;
 	dataReceived = NULL;
+	rsPacketPtr = (uint8_t*)&rs485Packet;
+	writePtr = 0;
+	memset(&rs485Packet, 0, sizeof(rs485Packet));
 }
 //--------------------------------------------------------------------------------------------------
 void RS485::update()
