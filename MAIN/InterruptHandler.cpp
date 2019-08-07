@@ -560,12 +560,9 @@ void InterruptHandlerClass::update()
 		////////////////////////////////////////////////////////////////////////////////////
 #endif // _FAKE_CHART_DRAW
 
-		subscriber->OnTimeBeforeInterruptsBegin(thisTm, thisHasRelayTriggeredTime);
-		subscriber->OnInterruptRaised(copyList1, compareRes1);
-         // сообщаем обработчику, что данные в каком-то из списков есть
-         subscriber->OnHaveInterruptData();
+		// уведомляем подписчика
+		informSubscriber(copyList1, compareRes1, thisTm, thisHasRelayTriggeredTime);
 
-		 DBGLN(F("Подписчик уведомлен."));
       } // if(subscriber)
       else
       {
@@ -590,3 +587,19 @@ void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
   subscriber = h;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+void InterruptHandlerClass::informSubscriber(InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime)
+{
+	if (subscriber)
+	{
+		DBGLN(F("Subscriber exists!"));
+
+		subscriber->OnTimeBeforeInterruptsBegin(timeBeforeInterruptsBegin, relayTriggeredTime);
+		subscriber->OnInterruptRaised(list, compareResult);
+		// сообщаем обработчику, что данные в каком-то из списков есть
+		subscriber->OnHaveInterruptData();
+
+		DBGLN(F("Subscriber informed!"));
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+

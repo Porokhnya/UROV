@@ -49,6 +49,81 @@ typedef enum
 } RS485State;
 RS485State rs485State = rs485Normal;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
+{
+	// тут обрабатываем результаты срабатывания защиты от модуля
+
+	// обновляем моторесурс, т.к. было срабатывание защиты
+	DBGLN(F("processInterruptFromModule: INC motoresource!"));
+	uint32_t motoresource = Settings.getMotoresource(0);
+	motoresource++;
+	Settings.setMotoresource(0, motoresource);
+
+	bool hasAlarm = !interruptsList.size(); // авария, если в списке нет данных
+	if (hasAlarm)
+	{
+		DBGLN(F("processInterruptFromModule: HAS ALARM FLAG!"));
+		// сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
+		Feedback.alarm(true);
+	}
+
+
+	// начинаем сравнивать с эталоном
+	EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
+
+	EthalonCompareNumber compareNumber1;
+	InterruptTimeList ethalonData1;
+
+	bool needToLog = false;
+
+	// теперь смотрим - надо ли нам самим чего-то обрабатывать?
+	if (interruptsList.size() > 1)
+	{
+		DBG("processInterruptFromModule: INTERRUPT HAS DATA COUNT: ");
+		DBGLN(interruptsList.size());
+
+		// зажигаем светодиод "ТЕСТ"
+		Feedback.testDiode();
+
+		needToLog = true;
+
+		// здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
+		compareRes1 = EthalonComparer::Compare(interruptsList, 0, compareNumber1, ethalonData1);
+
+		if (compareRes1 == COMPARE_RESULT_MatchEthalon)
+		{
+			DBGLN(F("processInterruptFromModule: MATCH ETHALON!"));
+		}
+		else if (compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
+		{
+			DBGLN(F("processInterruptFromModule: MISMATCH ETHALON!"));
+			Feedback.failureDiode();
+			Feedback.alarm();
+		}
+	}
+	else
+	{
+		DBGLN(F("processInterruptFromModule: INTERRUPT HAS NO DATA!!!"));
+	}
+
+	if (needToLog)
+	{
+#ifndef _SD_OFF
+		DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
+		// надо записать в лог дату срабатывания системы
+		InterruptHandlerClass::writeToLog(interruptsList, compareRes1, compareNumber1, ethalonData1);
+#endif // !_SD_OFF
+	} // needToLog
+
+	bool wantToInformSubscriber = (hasAlarm || (interruptsList.size() > 1));
+
+	if (wantToInformSubscriber)
+	{
+		DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
+		InterruptHandler.informSubscriber(interruptsList, compareRes1, millis(), millis());
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void OnRS485IncomingData(RS485* Sender)
 {
   rs485State =  rs485HandlePacket;
@@ -160,7 +235,7 @@ void processRS485()
                   DBGLN(recordsCount);
 
                   // сохраняем записи
-                  Vector<uint32_t> interruptsList;
+				  InterruptTimeList interruptsList;
                   interruptsList.reserve(recordsCount);
 
                   for(uint16_t i=0;i<recordsCount;i++)
@@ -178,7 +253,8 @@ void processRS485()
                     DBGLN(F("-----INTERRUPTS LIST END -----"));
                   #endif
 
-                  //TODO: ТУТ ЧТО-ТО ДЕЛАЕМ СО СПИСКОМ ПРЕРЫВАНИЙ !!!
+                // обрабатываем список прерываний  
+				processInterruptFromModule(interruptsList, endstopUpTriggered, endstopDownTriggered);
                 
                } // if(hasGuardTriggered)
 

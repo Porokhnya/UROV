@@ -60,6 +60,12 @@ class InterruptHandlerClass
    void update();
 
    void setSubscriber(InterruptEventSubscriber* h);
+   void informSubscriber(InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime);
+   
+   static void writeLogRecord(uint8_t channelNumber, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData);
+   static void writeToLog(InterruptTimeList& lst1, /*InterruptTimeList& lst2, InterruptTimeList& lst3, */EthalonCompareResult res1, /*EthalonCompareResult res2, EthalonCompareResult res3*/
+	   EthalonCompareNumber num1,/*EthalonCompareNumber num2, EthalonCompareNumber num3, */InterruptTimeList& ethalonData1/*, InterruptTimeList& ethalonData2, InterruptTimeList& ethalonData3*/);
+   static void writeRodPositionToLog(uint8_t channelNumber);
 
 private:
 
@@ -67,10 +73,7 @@ private:
 
   static void normalizeList(InterruptTimeList& list);
 
-  static void writeLogRecord(uint8_t channelNumber, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData);
-  static void writeToLog(InterruptTimeList& lst1, /*InterruptTimeList& lst2, InterruptTimeList& lst3, */EthalonCompareResult res1, /*EthalonCompareResult res2, EthalonCompareResult res3*/
-  EthalonCompareNumber num1,/*EthalonCompareNumber num2, EthalonCompareNumber num3, */InterruptTimeList& ethalonData1/*, InterruptTimeList& ethalonData2, InterruptTimeList& ethalonData3*/);
-  static void writeRodPositionToLog(uint8_t channelNumber);
+
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern InterruptHandlerClass InterruptHandler;
