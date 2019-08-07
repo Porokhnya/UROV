@@ -110,8 +110,10 @@ void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopU
 	{
 #ifndef _SD_OFF
 		DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
+
 		// надо записать в лог дату срабатывания системы
 		InterruptHandlerClass::writeToLog(interruptsList, compareRes1, compareNumber1, ethalonData1);
+
 #endif // !_SD_OFF
 	} // needToLog
 
