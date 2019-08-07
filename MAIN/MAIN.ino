@@ -27,6 +27,7 @@
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
 bool rs485Breaked = false;
+bool IS_RS485_ENABLED = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void screenAction(AbstractTFTScreen* screen)
 {
@@ -53,21 +54,11 @@ void OnRS485IncomingData(RS485* Sender)
   rs485State =  rs485HandlePacket;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void waitRS485Release()
-{
-	rs485Breaked = true;
-	while (rs485State != rs485Normal)
-	{
-		processRS485();
-	}
-
-	rs485.clearReceivedData();
-	rs485Breaked = false;
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void processRS485()
 {
-  rs485.update();
+
+	if (!IS_RS485_ENABLED) // нас выключили
+		return;
 
   switch(rs485State)
   {
@@ -77,12 +68,16 @@ void processRS485()
 		{
 			if (millis() - rs485WaitTimer >= RS485_PING_FREQ)
 			{
+				rs485State = rs485WaitAnswer;
+
 				static uint32_t pingID = 0;
 				++pingID;
 
+				DBGLN(F("[RS-485] Send PING packet."));
+
+
 				rs485.send(rs485Ping, (const uint8_t*)&pingID, sizeof(pingID));
 
-				rs485State = rs485WaitAnswer;
 				rs485WaitTimer = millis();
 			}
 		}
@@ -94,7 +89,7 @@ void processRS485()
       if(millis() - rs485WaitTimer >= RS485_READING_TIMEOUT)
       {
           //TODO: ответа не получили !!!
-          DBGLN(F("[RS-485] NO ANSWER FROM MODULE !!!"));
+          DBGLN(F("[RS-485] No PONG answer from module !!!"));
 
           rs485WaitTimer = millis();
           rs485State = rs485Normal;
@@ -105,7 +100,7 @@ void processRS485()
     case rs485HandlePacket:
     {
         // надо обработать пакет
-		DBGLN(F("[RS-485] HAS PACKET FROM MODULE!"));
+		DBGLN(F("[RS-485] Has answer from module!"));
 
         uint8_t* data;
         RS485Packet packet = rs485.getDataReceived(data);
@@ -114,7 +109,7 @@ void processRS485()
         {
             case rs485Pong:
             {
-				DBGLN(F("[RS-485] RECEIVE PONG PACKET FROM MODULE!"));
+				DBGLN(F("[RS-485] Received PONG packet!"));
 					
               // это ответ от модуля - есть ли прерывания?
 
@@ -122,13 +117,14 @@ void processRS485()
 
               if(!rs485Breaked && pp->hasGuardTriggered)
               {
-                DBGLN(F("[RS-485] GUARD TRIGGERED, WANT TO GET INTERRUPT DATA!!!!"));
+				  rs485State = rs485WaitAnswer;
+
+				  DBGLN(F("[RS-485] GUARD TRIGGERED, WANT TO GET INTERRUPT DATA!!!!"));
 
                 // посылаем запрос на данные прерывания
                 uint8_t dummy;
                 rs485.send(rs485InterruptDataRequest,(const uint8_t*)&dummy,sizeof(dummy));
                 rs485WaitTimer = millis();
-                rs485State = rs485WaitAnswer;
               }
 			  else
 			  {
@@ -142,7 +138,7 @@ void processRS485()
             case rs485InterruptDataAnswer:
             {
                 // пришёл ответ на запрос данных прерывания
-				DBGLN(F("[RS-485] RECEIVE INTERRUPT DATA FROM MODULE!!!"));
+				DBGLN(F("[RS-485] Received INTERRUPT data from module!!!"));
 
                // парсим пакет
                // первый байт в пакете - признак того, что у нас срабатывала защита
@@ -194,7 +190,7 @@ void processRS485()
 
 			default:
 			{
-				DBG(F("[RS-485] UNKNOWN PACKET TYPE: "));
+				DBG(F("[RS-485] MAIN HANDLER, UNKNOWN PACKET TYPE: "));
 				DBGLN(packet.packetType);
 
 				// переключаемся на нормальный режим работы
@@ -211,7 +207,34 @@ void processRS485()
   } // switch
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void setup() 
+void SwitchRS485MainHandler(bool on)
+{
+	if (!on) // нас выключили
+	{
+
+		DBGLN(F("Main handler, release RS-485..."));
+
+		rs485Breaked = true;
+		while (rs485State != rs485Normal)
+		{
+			processRS485();
+		}
+
+		rs485.setHandler(NULL);
+		rs485.clearReceivedData();
+		rs485Breaked = false;
+
+		DBGLN(F("Main handler, RS-485 released."));
+	}
+	else // включили
+	{
+		rs485.setHandler(OnRS485IncomingData);
+	}
+
+	IS_RS485_ENABLED = on;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void setup()
 {
   Serial.begin(SERIAL_SPEED);
   while(!Serial);
@@ -370,6 +393,7 @@ void loop()
 
 
   // обновляем RS-485
+  rs485.update();
   processRS485();
 
 

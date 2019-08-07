@@ -272,8 +272,6 @@ RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::doRS485()
 {
-	rs485.update();
-
 	switch (screenState)
 	{
 		case rssNormal:
@@ -282,6 +280,8 @@ void RS485Screen::doRS485()
 			{
 				if (millis() - rs485Timer >= 5000) // каждые 5 секунд попытка соединения с модулем
 				{
+					screenState = rssWaitAnswer;
+
 					connectAttempt++;
 					connectMessage = F("Попытка #");
 					connectMessage += connectAttempt;
@@ -290,9 +290,10 @@ void RS485Screen::doRS485()
 					static uint32_t pingID = 0;
 					++pingID;
 
+					DBGLN(F("RS485Screen: send TEST packet!"));
+
 					rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
 
-					screenState = rssWaitAnswer;
 					rs485Timer = millis();
 				}
 			}
@@ -303,6 +304,8 @@ void RS485Screen::doRS485()
 		{
 			if (millis() - rs485Timer >= RS485_READING_TIMEOUT)
 			{
+
+				DBGLN(F("RS485Screen: NO TEST answer from module!"));
 
 				Screen.print("НЕУДАЧА ", 2, 37);
 
@@ -316,6 +319,8 @@ void RS485Screen::doRS485()
 		{
 			Screen.print("СОЕДИНЕН", 2, 37);
 
+			DBGLN(F("RS485Screen: have packet from module!"));
+
 			uint8_t* data;
 			RS485Packet packet = rs485.getDataReceived(data);
 
@@ -324,7 +329,7 @@ void RS485Screen::doRS485()
 				case rs485InterruptDataAnswer:
 				{
 					// пришёл ответ на запрос данных прерывания
-					DBGLN(F("[RS-485] RECEIVE TEST INTERRUPT DATA FROM MODULE!!!"));
+					DBGLN(F("RS485Screen: received TEST answer from module!"));
 
 					// парсим пакет
 					// первый байт в пакете - признак того, что у нас срабатывала защита
@@ -348,7 +353,7 @@ void RS485Screen::doRS485()
 						uint16_t recordsCount = (packet.dataLength - 3) / sizeof(uint32_t);
 						uint32_t* rec = (uint32_t*)data;
 
-						DBG(F("[RS-485] INTERRUPTS COUNT: "));
+						DBG(F("INTERRUPTS COUNT: "));
 						DBGLN(recordsCount);
 
 						// сохраняем записи
@@ -379,7 +384,7 @@ void RS485Screen::doRS485()
 
 				default:
 				{
-					DBG(F("[RS-485] UNKNOWN PACKET TYPE: "));
+					DBG(F("RS485Screen: UNKNOWN PACKET TYPE: "));
 					DBGLN(packet.packetType);
 				}
 				break;
@@ -395,6 +400,8 @@ void RS485Screen::doRS485()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::releaseRS485()
 {
+	DBGLN(F("RS485Screen: release RS-485..."));
+
 	onBreakRS485 = true;
 
 	while (screenState != rssNormal)
@@ -402,6 +409,8 @@ void RS485Screen::releaseRS485()
 
 	rs485.clearReceivedData();
 	onBreakRS485 = false;
+
+	DBGLN(F("RS485Screen: RS-485 released."));
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::OnRS485Data(RS485* Sender)
@@ -411,28 +420,28 @@ void RS485Screen::OnRS485Data(RS485* Sender)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::onActivate()
 {
+	DBGLN(F("RS485Screen: Switch RS-485 to RS485Screen handler..."));
+
+	SwitchRS485MainHandler(false); // выключаем обработчик по умолчанию
+
 	connectAttempt = 0;
 	screenState = rssNormal;
 	rs485Timer = millis();
 	onBreakRS485 = false;
-
-	DBGLN(F("Switch RS-485 to RS485Screen"));
-
-	waitRS485Release();
-
 	rs485.setHandler(rs485ScreenDataHandler);
 
-	DBGLN(F("RS-485 switched to screen handler"));
+	DBGLN(F("RS485Screen: RS-485 switched to RS485Screen handler."));
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::onDeactivate()
 {
-	DBGLN(F("Switch RS-485 to main handler"));
+	DBGLN(F("RS485Screen: Switch RS-485 to main handler"));
 
 	releaseRS485();
-	rs485.setHandler(OnRS485IncomingData);
 
-	DBGLN(F("RS-485 switched to main handler"));
+	SwitchRS485MainHandler(true); // включаем обработчик по умолчанию
+
+	DBGLN(F("RS485Screen: RS-485 switched to main handler."));
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::doSetup(TFTMenu* menu)
