@@ -27,7 +27,7 @@
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
 bool rs485Breaked = false;
-bool IS_RS485_ENABLED = false;
+bool IS_RS485_ENABLED = true;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void screenAction(AbstractTFTScreen* screen)
 {
