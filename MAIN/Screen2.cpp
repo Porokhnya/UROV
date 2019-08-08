@@ -265,157 +265,33 @@ void rs485ScreenDataHandler(RS485* Sender)
 RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
 {
 	rs485Screen = this;
-	screenState = rssNormal;
-	rs485Timer = 0;
-	onBreakRS485 = false;
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RS485Screen::doRS485()
-{
-	switch (screenState)
-	{
-		case rssNormal:
-		{
-			if (!onBreakRS485)
-			{
-				if (millis() - rs485Timer >= 5000) // каждые 5 секунд попытка соединения с модулем
-				{
-					screenState = rssWaitAnswer;
-
-					connectAttempt++;
-					connectMessage = F("Попытка #");
-					connectMessage += connectAttempt;
-					Screen.print(connectMessage.c_str(), 2, 2);
-
-					static uint32_t pingID = 0;
-					++pingID;
-
-					DBGLN(F("RS485Screen: send TEST packet!"));
-
-					rs485.send(rs485TestInterrupt, (const uint8_t*)&pingID, sizeof(pingID));
-
-					rs485Timer = millis();
-				}
-			}
-		}
-		break;
-
-		case rssWaitAnswer:
-		{
-			if (millis() - rs485Timer >= RS485_READING_TIMEOUT)
-			{
-
-				DBGLN(F("RS485Screen: NO TEST answer from module!"));
-
-				Screen.print("НЕУДАЧА ", 2, 37);
-
-				screenState = rssNormal;
-				rs485Timer = millis();
-			}
-		}
-		break;
-
-		case rssHavePacket: // есть пакет по RS-485
-		{
-			Screen.print("СОЕДИНЕН", 2, 37);
-
-			DBGLN(F("RS485Screen: have packet from module!"));
-
-			uint8_t* data;
-			RS485Packet packet = rs485.getDataReceived(data);
-
-			switch (packet.packetType)
-			{
-				case rs485InterruptDataAnswer:
-				{
-					// пришёл ответ на запрос данных прерывания
-					DBGLN(F("RS485Screen: received TEST answer from module!"));
-
-					// парсим пакет
-					// первый байт в пакете - признак того, что у нас срабатывала защита
-					bool hasGuardTriggered = *data++;
-					if (hasGuardTriggered)
-					{
-						// второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
-						bool endstopUpTriggered = *data++;
-
-						DBG(F("UP ENDSTOP STATE: "));
-						DBGLN(endstopUpTriggered);
-
-						// третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
-						bool endstopDownTriggered = *data++;
-
-						DBG(F("DOWN ENDSTOP STATE: "));
-						DBGLN(endstopDownTriggered);
-
-						// потом идёт список прерываний
-						// три байта - заголовок, потом N записей по 4 байта. Высчитываем это из длины пакета в байтах
-						uint16_t recordsCount = (packet.dataLength - 3) / sizeof(uint32_t);
-						uint32_t* rec = (uint32_t*)data;
-
-						DBG(F("INTERRUPTS COUNT: "));
-						DBGLN(recordsCount);
-
-						// сохраняем записи
-						Vector<uint32_t> interruptsList;
-						interruptsList.reserve(recordsCount);
-
-						for (uint16_t i = 0; i<recordsCount; i++)
-						{
-							interruptsList.push_back(*rec++);
-						}
-
-						// выводим их для теста
-	#ifdef _DEBUG
-						DBGLN(F("----- TEST INTERRUPTS LIST FROM MODULE -----"));
-						for (size_t i = 0; i<interruptsList.size(); i++)
-						{
-							DBGLN(interruptsList[i]);
-						}
-						DBGLN(F("----- TEST INTERRUPTS LIST END -----"));
-	#endif
-
-						//TODO: ТУТ ЧТО-ТО ДЕЛАЕМ СО СПИСКОМ ПРЕРЫВАНИЙ !!!
-
-					} // if(hasGuardTriggered)
-
-				}
-				break; // rs485InterruptDataAnswer
-
-				default:
-				{
-					DBG(F("RS485Screen: UNKNOWN PACKET TYPE: "));
-					DBGLN(packet.packetType);
-				}
-				break;
-			} // switch
-
-			// переключаемся на нормальный режим работы
-			rs485Timer = millis();
-			screenState = rssNormal;
-		}
-		break;
-	}
+	lastPacketSeenAt = 0;
+	isModuleOnline = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::releaseRS485()
 {
 	DBGLN(F("RS485Screen: release RS-485..."));
 
-	onBreakRS485 = true;
-
-	while (screenState != rssNormal)
-		doRS485();
-
-	rs485.clearReceivedData();
-	onBreakRS485 = false;
+	rs485.clearReceivedData(); // очищаем принятые данные
+	SwitchRS485MainHandler(true); // включаем обработчик по умолчанию
 
 	DBGLN(F("RS485Screen: RS-485 released."));
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::OnRS485Data(RS485* Sender)
 {
-	screenState = rssHavePacket;
+	DBGLN(F("RS485Screen: HAS PACKET FROM MODULE!"));
+
+	if (!isModuleOnline) // если модуль был офлайн - пишем сообщение о том, что модуль стал на связи
+	{
+		Screen.print("ОНЛАЙН", 2, 37);
+	}
+
+	rs485.clearReceivedData(); // очищаем входящие данные
+
+	isModuleOnline = true;
+	lastPacketSeenAt = millis();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::onActivate()
@@ -423,12 +299,7 @@ void RS485Screen::onActivate()
 	DBGLN(F("RS485Screen: Switch RS-485 to RS485Screen handler..."));
 
 	SwitchRS485MainHandler(false); // выключаем обработчик по умолчанию
-
-	connectAttempt = 0;
-	screenState = rssNormal;
-	rs485Timer = millis();
-	onBreakRS485 = false;
-	rs485.setHandler(rs485ScreenDataHandler);
+	rs485.setHandler(rs485ScreenDataHandler); // назначаем наш обработчик для RS-485
 
 	DBGLN(F("RS485Screen: RS-485 switched to RS485Screen handler."));
 }
@@ -438,8 +309,6 @@ void RS485Screen::onDeactivate()
 	DBGLN(F("RS485Screen: Switch RS-485 to main handler"));
 
 	releaseRS485();
-
-	SwitchRS485MainHandler(true); // включаем обработчик по умолчанию
 
 	DBGLN(F("RS485Screen: RS-485 switched to main handler."));
 }
@@ -459,25 +328,30 @@ void RS485Screen::doSetup(TFTMenu* menu)
 void RS485Screen::doUpdate(TFTMenu* menu)
 {
 	// тут обновляем внутреннее состояние
-	doRS485();
+	if (millis() - lastPacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*2)
+	{
+		// очень давно не было тестового пакета, пишем "ОФЛАЙН" на экране
+
+		if (isModuleOnline) // только если до этого модуль был онлайн
+		{
+			menu->print("ОФЛАЙН", 2, 37);
+		}
+
+		lastPacketSeenAt = millis();
+		isModuleOnline = false;
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::doDraw(TFTMenu* menu)
 {
-	menu->print("ТЕСТ RS485", 2, 2);
-	menu->print("ждите...", 2, 37);
+	menu->print("RS-485:", 2, 2);
+	menu->print("ОФЛАЙН", 2, 37);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RS485Screen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
 	if (pressedButton == backButton)
 		menu->switchToScreen("SystemScreen");
-	/*
-	else if (pressedButton == rs485Button)
-		menu->switchToScreen("RS485Screen");
-	else if (pressedButton == wiFiButton)
-		menu->switchToScreen("WiFiScreen");
-	*/
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

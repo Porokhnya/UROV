@@ -14,19 +14,22 @@ typedef enum
   
 } MachineState;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RS485 rs485(RS485_SERIAL,RS485_DE_PIN,RS485_READING_TIMEOUT);
-bool hasGuardTriggered = false; // флаг, что у нас сработала защита
+typedef Vector<uint32_t> DWordVector;
+typedef Vector<uint8_t> ByteVector;
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RS485 rs485(RS485_SERIAL,RS485_DE_PIN,RS485_READING_TIMEOUT); // класс работы с RS-485
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MachineState machineState = msIdle; // состояние конечного автомата
 volatile uint32_t timer = 0; // служебный таймер
+
+uint32_t pingID = 0; // ID пакета пинга
+uint32_t lastPacketSentAt = 0; // когда был послан последний пакет?
+
 volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
-typedef Vector<uint32_t> InterruptTimeList;
-InterruptTimeList encoderList; // список прерываний с энкодера
-Vector<uint8_t> rs485DataPacket; // список данных, который мы отправляем по RS-485
+
+DWordVector encoderList; // список прерываний с энкодера
+ByteVector rs485DataPacket; // список данных, который мы отправляем по RS-485
   
-InterruptTimeList fakeList; // тестовый список прерываний
-Vector<uint8_t> fakePacket; // тестовый пакет для RS-485
-
-
 // наши концевики
 const uint32_t minInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY - ENDSTOP_HISTERESIS));
 const uint32_t maxInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY + ENDSTOP_HISTERESIS));  
@@ -44,21 +47,20 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     timer = now; // обновляем значение таймера
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void createRS485Packet(InterruptTimeList& list, Vector<uint8_t>& resultPacket)
+void createRS485Packet(DWordVector& list, ByteVector& resultPacket)
 {
   resultPacket.empty();
-  resultPacket.reserve(list.size()*sizeof(uint32_t) + 3);
 
-  // первый байт в пакете - признак того, что у нас срабатывала защита
-  resultPacket.push_back(hasGuardTriggered);
+  // у нас длина пакета в байтах - кол-во прерываний*4 + два байта под состояние верхнего и нижнего концевика
+  resultPacket.reserve(list.size()*sizeof(uint32_t) + 2);
 
   //тут заполняем пакет данными по концевикам
   
-  // второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
+  // первый байт в пакете - состояние верхнего концевика на момент окончания сбора данных
   bool eUpTrig = endstopUp.isTriggered();
   resultPacket.push_back(eUpTrig);
 
-  // третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
+  // второй байт в пакете - состояние нижнего концевика на момент окончания сбора данных
   bool eDownTrig = endstopDown.isTriggered();
   resultPacket.push_back(eDownTrig);
 
@@ -81,7 +83,7 @@ void createRS485Packet(InterruptTimeList& list, Vector<uint8_t>& resultPacket)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void normalizeList(InterruptTimeList& list)
+void normalizeList(DWordVector& list)
 {
   size_t sz = list.size();
   
@@ -98,72 +100,21 @@ void normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void handleRS485Packet(const RS485Packet& packet, const uint8_t* data) // обрабатываем входящий пакет, в зависимости от его типа
-{
-    // тут работаем с пакетом в зависимости от его типа
-    
-    switch(packet.packetType)
-    {
-      case rs485Ping: // пакет пинга
-      {
-        // запрос пинга, в data - 4 байта ID пакета пинга, отправляем их назад, плюс сообщаем, есть ли у нас данные по прерываниям
-        uint32_t pingID;
-        memcpy(&pingID,data,sizeof(pingID));
-
-     //   DBG(F("PING PACKET RECEIVED, ID="));
-     //   DBGLN(pingID);
-
-        RS485PongPacket answer;
-        answer.pingID = pingID;
-        answer.hasGuardTriggered = hasGuardTriggered;
-        rs485.send(rs485Pong,(const uint8_t*)&answer,sizeof(answer));
-
-    //    DBGLN(F("PING ANSWER WAS SENT."));
-
-        // данные отослали, в следующий раз мастер, если у нас есть данные по прерываниям - попросит нас отдать ему список прерываний
-      }
-      break; // rs485Ping
-
-      case rs485InterruptDataRequest: // мастер запросил данные по прерыванию
-      {
-       // DBGLN(F("MASTER ASKS FOR DATA..."));
-        
-          // отправляем пакет с данными по прерыванию
-          rs485.send(rs485InterruptDataAnswer,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
-
-          hasGuardTriggered = false; // сбрасываем флаг, что зажита сработала
-          // чистим локальный список после отсыла данных
-          rs485DataPacket.empty();
-
-         // DBGLN(F("INTERRUPT DATA WAS SENT."));
-      }
-      break; // rs485InterruptDataRequest
-
-      case rs485TestInterrupt:
-      {
-        // мастер попросил отправить тестовый массив с данными
-        rs485.send(rs485InterruptDataAnswer,(const uint8_t*)fakePacket.pData(),fakePacket.size());        
-      }
-      break; // rs485TestInterrupt
-    } // switch 
-  
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ON_RS485_INCOMING_DATA(RS485* Sender) // событие - получены входящие данные по RS-475
 {
     // получили входящий пакет по RS-485
+/*    
     uint8_t* data;
     RS485Packet packet = rs485.getDataReceived(data);
 
-/*
+
     DBG(F("INCOMING RS-475 PACKET CATCHED, TYPE="));
     DBG(packet.packetType);
     DBG(F(", DATA LENGTH="));
     DBGLN(packet.dataLength);
 */
-    handleRS485Packet(packet,data); // обрабатываем входящий пакет
 
-    rs485.clearReceivedData(); // очищаем за собой
+  rs485.clearReceivedData(); // очищаем за собой
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -206,21 +157,7 @@ void setup()
   rs485.begin();
 
   // считаем импульсы на штанге по прерыванию
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
-  
-
-  // создаём тестовый массив данных
-  
-  const int sz = 50;
-  fakeList.reserve(sz);
-  
-  for(int k=0;k<sz;k++)
-    fakeList.push_back(k*10);
-    
-  createRS485Packet(fakeList,fakePacket);
-  fakeList.clear();
-  
-  // конец создания тестового массива данных
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
 
   DBGLN(F("Ready."));
 }
@@ -232,13 +169,36 @@ void loop()
   {
     case msIdle:
     {
-      // в режиме ожидания, проверяем, не сработало ли реле?
+      // в режиме ожидания, проверяем, не сработало ли реле защиты?
       if(hasRelayTriggered())
       {
+
+        timer = micros(); // запоминаем время срабатывания реле защиты
+
         DBGLN(F("RELAY TRIGGERED, WAIT FOR PULSES BEGIN..."));
-        // реле защиты сработало, переключаемся на ветку сбора данных по прерываниям, с энкодера
-        timer = micros();
+        
+        // реле защиты сработало !!!
+        // посылаем пакет с сообщением "ЕСТЬ СРАБАТЫВАНИЕ ЗАЩИТЫ" контроллеру        
+        pingID++;
+        rs485.send(rs485HasInterrupt,(const uint8_t*)&pingID, sizeof(pingID));
+        lastPacketSentAt = millis();
+         
+        
+        //переключаемся на ветку сбора данных по прерываниям, с энкодера
         machineState = msWaitHandleInterrupts;
+      }
+      else
+      {
+        // реле защиты не сработало, тут можем проверять - как давно мы посылали пакет пинга контроллеру?
+        if(millis() - lastPacketSentAt >= RS485_PING_PACKET_FREQUENCY)
+        {
+          DBGLN(F("SEND PING PACKET!"));
+          
+          // пришла пора отсылать пакет пинга контроллеру
+          pingID++;
+          rs485.send(rs485Ping,(const uint8_t*)&pingID, sizeof(pingID));
+          lastPacketSentAt = millis();
+        }
       }
     }
     break; // msIdle
@@ -246,7 +206,7 @@ void loop()
     case msWaitHandleInterrupts:
     {
       // ждём начала импульсов с энкодера
-      if(micros() - timer > INTERRUPT_BEGIN_DELAY)
+      if(micros() - timer >= INTERRUPT_BEGIN_DELAY)
       {
         DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
                 
@@ -267,23 +227,19 @@ void loop()
       uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
       interrupts();
       
-      if(micros() - thisTimer > INTERRUPT_MAX_IDLE_TIME)
+      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME)
       {
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку испульсов энкодера
         interrupts();
 
-        DBGLN(F("INTERRUPT DONE!!!"));
-
+        DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
+        DBGLN(encoderList.size());
+        
         // нормализуем список
         normalizeList(encoderList);
 
-        // готовим данные для отсыла по RS-475
-        createRS485Packet(encoderList,rs485DataPacket);
-
-        DBG(F("CATCHED PULSES: "));
-        DBGLN(encoderList.size());
-
+        /*
         #ifdef _DEBUG
           // выводим для теста данные в Serial
           DBGLN(F("<<<< LIST BEGIN"));
@@ -293,9 +249,19 @@ void loop()
           }
           DBGLN(F("<<<< LIST END"));
         #endif
+        */
 
-        // взводим флаг, что сработала защита
-        hasGuardTriggered = true;
+        // готовим данные для отсыла по RS-475
+        createRS485Packet(encoderList,rs485DataPacket);
+
+        // отправляем пакет с данными по прерыванию
+        rs485.send(rs485InterruptData,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
+
+        // чистим локальный список после отсыла данных
+        rs485DataPacket.empty(); 
+
+        // не забываем обновить время отсыла крайнего пакета
+        lastPacketSentAt = millis();
 
         // переключаемся на ветку ожидания новых прерываний
         machineState = msIdle;
@@ -310,8 +276,9 @@ void loop()
   // обновляем концевики
   updateEndstops();
 
-  
-  rs485.update(); // обновляем RS-485
+
+  // обновляем RS-485
+  rs485.update();
  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

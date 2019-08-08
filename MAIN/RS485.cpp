@@ -49,7 +49,9 @@ void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataL
   switchToSend();
 
   workStream->write(p,sizeof(RS485Packet));
-  workStream->write(data,dataLength);
+
+  if (data && dataLength)
+	  workStream->write(data,dataLength);
 
   waitTransmitComplete();
   
@@ -253,6 +255,10 @@ bool RS485::processRS485Packet()
 uint8_t RS485::crc8(const uint8_t *addr, uint16_t len)
 {
   uint8_t crc = 0;
+
+  if (!len || !addr)
+	  return crc;
+
   while (len--) 
     {
     uint8_t inbyte = *addr++;
