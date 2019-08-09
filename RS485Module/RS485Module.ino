@@ -47,7 +47,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     timer = now; // обновляем значение таймера
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void createRS485Packet(DWordVector& list, ByteVector& resultPacket)
+void createRS485Packet(DWordVector& list, ByteVector& resultPacket) // создаём пакет для отправки по RS-485
 {
   resultPacket.empty();
 
@@ -70,7 +70,6 @@ void createRS485Packet(DWordVector& list, ByteVector& resultPacket)
   //DBG(F("DOWN ENDSTOP STATE: "));
   //DBGLN(eDownTrig);
   
-
   // заполняем пакет данными по прерываниям, копируем их побайтово
   for(size_t i=0;i<list.size();i++)
   {
