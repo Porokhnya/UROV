@@ -129,6 +129,19 @@ void updateEndstops()
   endstopDown.update();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void sendPingPacket()
+{
+    if(millis() - lastPacketSentAt >= RS485_PING_PACKET_FREQUENCY)
+    {
+      DBGLN(F("SEND PING PACKET!"));
+      
+      // пришла пора отсылать пакет пинга контроллеру
+      pingID++;
+      rs485.send(rs485Ping,(const uint8_t*)&pingID, sizeof(pingID));
+      lastPacketSentAt = millis();
+    }  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
 {
   #ifdef _DEBUG
@@ -189,16 +202,8 @@ void loop()
       }
       else
       {
-        // реле защиты не сработало, тут можем проверять - как давно мы посылали пакет пинга контроллеру?
-        if(millis() - lastPacketSentAt >= RS485_PING_PACKET_FREQUENCY)
-        {
-          DBGLN(F("SEND PING PACKET!"));
-          
-          // пришла пора отсылать пакет пинга контроллеру
-          pingID++;
-          rs485.send(rs485Ping,(const uint8_t*)&pingID, sizeof(pingID));
-          lastPacketSentAt = millis();
-        }
+        // реле защиты не сработало, отсылаем пакет пинга
+        sendPingPacket();
       }
     }
     break; // msIdle
@@ -277,6 +282,10 @@ void loop()
       {
          // концевик разомкнут, переходим в режим ожидания срабатывания защиты
          machineState = msIdle;
+      }
+      else
+      {
+        sendPingPacket(); // отсылаем пакет пинга
       }
       
     } // msWaitGuardRelease
