@@ -186,13 +186,12 @@ ch12:A10 Измерение 3V3   (7)
 ch13:A11 Измерение +5V   (8)
 */
 
+#define SAMPLING_RATE 2500   // Частота вызова (стробирования) АЦП 50мс  
+
 #define ADC_CHANNELS ADC_CHER_CH0 | ADC_CHER_CH1 | ADC_CHER_CH2 | ADC_CHER_CH3 | ADC_CHER_CH4 | ADC_CHER_CH10 | ADC_CHDR_CH11 | ADC_CHDR_CH12 | ADC_CHDR_CH13  //
 #define ADC_CHANNELS_DIS  ADC_CHDR_CH5 | ADC_CHDR_CH6 | ADC_CHDR_CH7  // Отключить не используемые входа
 #define BUFFER_SIZE 200*NUM_CHANNELS                                   // Определить размер буфера хранения измеряемого сигнала     
 #define NUMBER_OF_BUFFERS 6                                            // Установить количество буферов
-//#define VOLT_REF        (2400)                                       // Величина опорного напряжения
-/* The maximal digital value */
-//#define ADC_RESOLUTION		12                                // Разрядность АЦП (максимальная для DUE)
 
 
 
