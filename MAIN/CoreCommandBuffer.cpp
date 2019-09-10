@@ -212,7 +212,9 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         {
             if(cParser.argsCount() > 1)
             {
-              commandHandled = setDELFILE(cParser, pStream);
+				SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
+				commandHandled = setDELFILE(cParser, pStream);
+				SwitchRS485MainHandler(true); // включаем обработчик RS-485 по умолчанию
             }
             else
             {
@@ -225,7 +227,9 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         {
             if(cParser.argsCount() > 2)
             {
-              commandHandled = setUPLOADFILE(cParser, pStream);
+				SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
+				commandHandled = setUPLOADFILE(cParser, pStream);
+				SwitchRS485MainHandler(true); // включаем обработчик RS-485 по умолчанию
             }
             else
             {
@@ -443,19 +447,25 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         if(!strcmp_P(commandName, LS_COMMAND)) // LS
         {
             // запросили получить список файлов в папке, GET=LS|FolderName
+			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
             commandHandled = getLS(commandName,cParser,pStream);                    
+			SwitchRS485MainHandler(true); // включаем обработчик RS-485 по умолчанию
         } // LS        
         else
         if(!strcmp_P(commandName, FILE_COMMAND)) // FILE
         {
             // запросили получить файл, GET=FILE|FilePath
+			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
             commandHandled = getFILE(commandName,cParser,pStream);                    
+			SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
         } // LS        
         else
         if(!strcmp_P(commandName, FILESIZE_COMMAND)) // FILESIZE
         {
             // запросили размер файла, GET=FILESIZE|FilePath
-            commandHandled = getFILESIZE(commandName,cParser,pStream);                    
+			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
+            commandHandled = getFILESIZE(commandName,cParser,pStream); 
+			SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
         } // LS        
                 
         //TODO: тут разбор команды !!!
