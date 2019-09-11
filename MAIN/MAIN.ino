@@ -202,20 +202,20 @@ void SwitchRS485MainHandler(bool on)
 {
 	if (!on) // нас выключили
 	{
-		DBGLN(F("Main handler, release RS-485..."));
+	//	DBGLN(F("Main handler, release RS-485..."));
 
 		rs485.setHandler(NULL);
 		rs485.clearReceivedData();
 
-		DBGLN(F("Main handler, RS-485 released."));
+//		DBGLN(F("Main handler, RS-485 released."));
 	}
 	else // включили
 	{
-		DBGLN(F("Main handler, own RS-485..."));
+//		DBGLN(F("Main handler, own RS-485..."));
 
 		rs485.setHandler(OnRS485IncomingData);
 
-		DBGLN(F("Main handler, RS-485 owned."));
+//		DBGLN(F("Main handler, RS-485 owned."));
 	}
 
 }
