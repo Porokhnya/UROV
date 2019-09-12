@@ -28,8 +28,13 @@ uint32_t lastPacketSentAt = 0; // когда был послан последн�
 
 volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
 
+bool waitForACK = false;
+uint32_t ackStartTime = 0;
+uint8_t retransmitAttempts = 0;
+RS485PacketType queuePacketType;
+
 DWordVector encoderList; // список прерываний с энкодера
-ByteVector rs485DataPacket; // список данных, который мы отправляем по RS-485
+ByteVector rs485DataPacket, rs485QueuePacket; // список данных, который мы отправляем по RS-485
   
 // наши концевики
 const uint32_t minInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY - ENDSTOP_HISTERESIS));
@@ -103,16 +108,22 @@ void normalizeList(DWordVector& list)
 void ON_RS485_INCOMING_DATA(RS485* Sender) // событие - получены входящие данные по RS-475
 {
     // получили входящий пакет по RS-485
-/*    
     uint8_t* data;
     RS485Packet packet = rs485.getDataReceived(data);
 
+/*    
 
     DBG(F("INCOMING RS-475 PACKET CATCHED, TYPE="));
     DBG(packet.packetType);
     DBG(F(", DATA LENGTH="));
     DBGLN(packet.dataLength);
 */
+
+  if(packet.packetType == rs485ACK) // пришёл ответ о получении пакета
+  {
+    waitForACK = false;       // сбрасываем флаг ожидания ответа
+    rs485QueuePacket.empty();  // освобождаем пакет в очереди
+  }
 
   rs485.clearReceivedData(); // очищаем за собой
     
@@ -178,6 +189,37 @@ void setup()
 void loop() 
 {
 
+  // проверяем, пришёл ли пакет подтверждения?
+  if(waitForACK)
+  {
+      if(retransmitAttempts <= RETRANSMITS_COUNT)
+      {
+          if(millis() - ackStartTime >= ACK_PACKET_WAIT_TIME)
+          {
+              if(rs485QueuePacket.size()) // есть пакет к отсылу
+              {
+                retransmitAttempts++;
+                
+                rs485.send(queuePacketType,(const uint8_t*)rs485QueuePacket.pData(),rs485QueuePacket.size());
+                
+                ackStartTime = millis();    // запоминаем, когда мы отослали пакет, и через сколько максимум надо попробовать его переслать повторно
+                
+                lastPacketSentAt = millis(); // запоминаем время отсыла последнего пакета
+              }
+              else
+              {
+                waitForACK = false; // пустой пакет к отсылу
+              }
+          }
+      }
+      else
+      {
+        // закончились попытки переслать пакет
+        waitForACK = false;
+      }
+  }
+
+  // проверяем состояние конечного автомата
   switch(machineState)
   {
     case msIdle:
@@ -261,6 +303,17 @@ void loop()
 
         // отправляем пакет с данными по прерыванию
         rs485.send(rs485InterruptData,(const uint8_t*)rs485DataPacket.pData(),rs485DataPacket.size());
+
+        // говорим, что мы ждём подтверждения получения пакета с данными
+        waitForACK = true;
+
+        // копируем отсылаемый пакет в очередь
+        rs485QueuePacket = rs485DataPacket;
+        queuePacketType = rs485InterruptData;
+
+        // запоминаем, сколько у нас попыток ретрансмита, и когда мы его начали
+        ackStartTime = millis();
+        retransmitAttempts = 0;
 
         // чистим локальный список после отсыла данных
         rs485DataPacket.empty(); 

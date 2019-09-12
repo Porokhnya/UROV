@@ -1,6 +1,6 @@
 #include "RS485.h"
 #include "CONFIG.h"
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern "C" {
 static void __nohandler(RS485* Sender){}
 }
@@ -51,16 +51,19 @@ void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataL
   uint8_t* p = (uint8_t*)&outPacket;
   outPacket.packetCrc = crc8(p,sizeof(RS485Packet) - 1);
 
-  switchToSend();
-
-  workStream->write(p,sizeof(RS485Packet));
+  switchToSend();    
   
+  workStream->write(p,sizeof(RS485Packet));
+        
   if(data && dataLength)
+  {
     workStream->write(data,dataLength);
+  }
 
   waitTransmitComplete();
-  
+        
   switchToReceive();
+      
 
  // DBGLN(F("RS485: data was sent."));
   

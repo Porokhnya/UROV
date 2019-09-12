@@ -51,7 +51,9 @@ void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataL
   workStream->write(p,sizeof(RS485Packet));
 
   if (data && dataLength)
-	  workStream->write(data,dataLength);
+  {
+	  workStream->write(data, dataLength);
+  }
 
   waitTransmitComplete();
   
@@ -239,10 +241,19 @@ bool RS485::processRS485Packet()
     }
 
    receiveResult = isCrcGood && !hasTimeout;
+
    if (receiveResult)
    {
-	   if(dataHandler)
+	   if (wantACK(rs485Packet.packetType))
+	   {
+		   // на пакет этого типа надо отсылать подтверждение!!!
+		   send(rs485ACK, NULL, 0);
+	   }
+
+	   if (dataHandler)
+	   {
 		   dataHandler(this);
+	   }
    }
    else
    {
@@ -250,6 +261,11 @@ bool RS485::processRS485Packet()
    }
         
   return receiveResult;
+}
+//--------------------------------------------------------------------------------------------------
+bool RS485::wantACK(uint8_t type) // проверяем, надо ли отсылать подтверждение на получение пакета определённого типа
+{
+	return (type == rs485InterruptData);
 }
 //--------------------------------------------------------------------------------------------------
 uint8_t RS485::crc8(const uint8_t *addr, uint16_t len)
