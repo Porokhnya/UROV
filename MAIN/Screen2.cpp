@@ -1424,15 +1424,15 @@ EthalonRecordScreen::EthalonRecordScreen() : AbstractTFTScreen("EthalonRecordScr
 {
   state = recStarted;
   direction = dirUp;
-  channel1Button = /*channel2Button = channel3Button =*/ channel1SaveButton = /*channel2SaveButton = channel3SaveButton =*/ directionButton -1;
+  channel1Button =  channel1SaveButton =  directionButton = -1;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::doSetup(TFTMenu* menu)
 {
 
   screenButtons->setSymbolFont(Various_Symbols_32x32);
-  channel1SelectedChannel = /*channel2SelectedChannel = channel3SelectedChannel =*/ -1;
-  channel1SaveChannel = /*channel2SaveChannel = channel3SaveChannel =*/ -1;
+  channel1SelectedChannel =  -1;
+  channel1SaveChannel =  -1;
   currentDrawState = 0;
 
 //  reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
@@ -1485,7 +1485,7 @@ void EthalonRecordScreen::doSetup(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::resetButtons()
 {
-  int arr[] = {channel1Button, /*channel2Button, channel3Button,*/ channel1SaveButton, /*channel2SaveButton, channel3SaveButton,*/ -100};
+  int arr[] = {channel1Button, channel1SaveButton,  -100};
   int cntr = 0;
   while(arr[cntr] != -100)
   {
@@ -1798,8 +1798,8 @@ void EthalonRecordScreen::drawWelcome(TFTMenu* menu)
 void EthalonRecordScreen::onActivate()
 {
   state = recStarted;
-  channel1SelectedChannel = /*channel2SelectedChannel = channel3SelectedChannel =*/ -1;
-  channel1SaveChannel = /*channel2SaveChannel = channel3SaveChannel =*/ -1;
+  channel1SelectedChannel =  -1;
+  channel1SaveChannel =  -1;
   currentDrawState = 0;
   resetButtons();
   showButtons(false);

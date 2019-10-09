@@ -29,6 +29,8 @@ const char TBORDERMAX_COMMAND[] PROGMEM = "TBORDERMAX"; // верхний пор
 const char TBORDERMIN_COMMAND[] PROGMEM = "TBORDERMIN"; // нижний порог токового трансформатора
 const char TBORDERS_COMMAND[] PROGMEM = "TBORDERS"; // пороги токового трансформатора
 const char RDELAY_COMMAND[] PROGMEM = "RDELAY"; // время задержки после срабатывания реле до начала импульсов
+const char ETHALON_REC_COMMAND[] PROGMEM = "EREC"; // начать запись эталона
+const char DOWN_DIR_PARAM[] PROGMEM = "DOWN";
 //--------------------------------------------------------------------------------------------------------------------------------------
 CoreCommandBuffer Commands(&Serial);
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -173,40 +175,40 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
       // команда на установку свойств
 
       CommandParser cParser;
-      if(cParser.parse(command,true))
-      {
-        const char* commandName = cParser.getArg(0);
+	  if (cParser.parse(command, true))
+	  {
+		  const char* commandName = cParser.getArg(0);
 
-        if(!strcmp_P(commandName, PIN_COMMAND))
-        {
-            // запросили установить уровень на пине SET=PIN|13|ON, SET=PIN|13|1, SET=PIN|13|OFF, SET=PIN|13|0, SET=PIN|13|ON|2000 
-            if(cParser.argsCount() > 2)
-            {
-              commandHandled = setPIN(cParser, pStream);
-            }
-            else
-            {
-              // недостаточно параметров
-              commandHandled = printBackSETResult(false,commandName,pStream);
-            }
-        } // PIN_COMMAND        
+		  if (!strcmp_P(commandName, PIN_COMMAND))
+		  {
+			  // запросили установить уровень на пине SET=PIN|13|ON, SET=PIN|13|1, SET=PIN|13|OFF, SET=PIN|13|0, SET=PIN|13|ON|2000 
+			  if (cParser.argsCount() > 2)
+			  {
+				  commandHandled = setPIN(cParser, pStream);
+			  }
+			  else
+			  {
+				  // недостаточно параметров
+				  commandHandled = printBackSETResult(false, commandName, pStream);
+			  }
+		  } // PIN_COMMAND        
 
-        else
-        if(!strcmp_P(commandName, DATETIME_COMMAND)) // DATETIME
-        {
-          if(cParser.argsCount() > 1)
-          {
-          // запросили установку даты/времени, приходит строка вида 25.12.2017 12:23:49
-            const char* paramPtr = cParser.getArg(1);
-            commandHandled = printBackSETResult(setDATETIME(paramPtr),commandName,pStream);
-          }
-          else
-          {
-            // недостаточно параметров
-            commandHandled = printBackSETResult(false,commandName,pStream);
-          }
-                    
-        } // DATETIME
+		  else
+			  if (!strcmp_P(commandName, DATETIME_COMMAND)) // DATETIME
+			  {
+				  if (cParser.argsCount() > 1)
+				  {
+					  // запросили установку даты/времени, приходит строка вида 25.12.2017 12:23:49
+					  const char* paramPtr = cParser.getArg(1);
+					  commandHandled = printBackSETResult(setDATETIME(paramPtr), commandName, pStream);
+				  }
+				  else
+				  {
+					  // недостаточно параметров
+					  commandHandled = printBackSETResult(false, commandName, pStream);
+				  }
+
+			  } // DATETIME			 
         else
         if(!strcmp_P(commandName, DELFILE_COMMAND))
         {
@@ -358,12 +360,19 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
       if(cParser.parse(command,false))
       {
         const char* commandName = cParser.getArg(0);
+
         if(!strcmp_P(commandName, DATETIME_COMMAND))
         {
           commandHandled = getDATETIME(commandName,pStream);
                     
         } // DATETIME_COMMAND
-        else
+		else
+		if (!strcmp_P(commandName, ETHALON_REC_COMMAND)) // EREC, GET=EREC|UP, GET=EREC|DOWN
+		{
+			commandHandled = getEREC(cParser, pStream);
+
+		} // EREC
+		else
         if(!strcmp_P(commandName, PIN_COMMAND))
         {
             commandHandled = getPIN(commandName,cParser,pStream);                    
@@ -726,6 +735,48 @@ bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandP
   return true;
 }
 */
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
+{
+	if (parser.argsCount() < 2)
+		return false;
+
+	const char* dir = parser.getArg(1);
+
+	ExternalEthalonCommandHandler eint;
+	EthalonDirection ed = dirUp;
+	if (!strcmp_P(dir, DOWN_DIR_PARAM))
+	{
+		ed = dirDown;
+	}
+
+	bool result = eint.beginRecord(ETHALON_RECORD_TIMEOUT);
+	if (result)
+	{
+		eint.saveList(ed);
+	}
+
+	if (result)
+	{
+		pStream->print(CORE_COMMAND_ANSWER_OK);
+		pStream->print(parser.getArg(0));
+		pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+		pStream->print(parser.getArg(1));
+		pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+		pStream->println(F("SAVED"));
+	}
+	else
+	{
+		pStream->print(CORE_COMMAND_ANSWER_ERROR);
+		pStream->print(parser.getArg(0));
+		pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+		pStream->print(parser.getArg(1));
+		pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+		pStream->println(F("NOMOVE"));
+	}
+
+	return true;
+}
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
@@ -1294,6 +1345,88 @@ bool CommandHandlerClass::printBackSETResult(bool isOK, const char* command, Str
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+// ExternalEthalonCommandHandler
+//--------------------------------------------------------------------------------------------------------------------------------------
+ExternalEthalonCommandHandler::ExternalEthalonCommandHandler()
+{
+	timer = 0;
+	oldSubscriber = NULL;
+	done = false;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
+{
+	if (!list.size())
+	{
+		return;
+	}
+
+#ifndef _SD_OFF
+
+	SD.mkdir(ETHALONS_DIRECTORY);
+
+	String fileName = ETHALONS_DIRECTORY;
+	fileName += ETHALON_NAME_PREFIX;
+	fileName += 0;
+	if (direction == dirUp)
+		fileName += ETHALON_UP_POSTFIX;
+	else
+		fileName += ETHALON_DOWN_POSTFIX;
+
+	fileName += ETHALON_FILE_EXT;
+
+
+	SdFile file;
+	file.open(fileName.c_str(), FILE_WRITE | O_CREAT | O_TRUNC);
+
+	if (file.isOpen())
+	{
+		for (size_t i = 0; i<list.size(); i++)
+		{
+			uint32_t val = list[i];
+			file.write(&val, sizeof(val));
+		}
+
+		file.close();
+	}
+#endif 
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
+{
+	done = false;
+	list.empty();
+	timer = millis();
+	oldSubscriber = InterruptHandler.getSubscriber();
+	InterruptHandler.setSubscriber(this);
+
+	while (millis() - timer < timeout)
+	{
+		InterruptHandler.update();
+
+		if (done) // закончили запись
+		{
+			break;
+		}
+	}
+
+	InterruptHandler.setSubscriber(oldSubscriber);
+	return done && list.size();
+
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void ExternalEthalonCommandHandler::OnInterruptRaised(const InterruptTimeList& _list, EthalonCompareResult result)
+{
+	list = _list;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void ExternalEthalonCommandHandler::OnHaveInterruptData()
+{
+	done = true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
 

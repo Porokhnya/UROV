@@ -1547,6 +1547,8 @@ namespace UROVConfig
             this.btnDisconnect.ImageIndex = 6;
             this.btnControllerName.ImageIndex = 8;
             this.btnImportSettings.ImageIndex = 9;
+            this.btnRecordEthalonUp.ImageIndex = 10;
+            this.btnRecordEthalonDown.ImageIndex = 11;
 
 
             plMainSettings.Dock = DockStyle.Fill;
@@ -1600,6 +1602,9 @@ namespace UROVConfig
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
             this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
+
+            this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
+            this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
 
             if (!bConnected) // порт закрыт
             {
@@ -3844,6 +3849,38 @@ namespace UROVConfig
 
 
                 } // switch
+            }
+        }
+        private bool inSetEthalonRecordToController = false;
+        private void btnRecordEthalonUp_Click(object sender, EventArgs e)
+        {
+            recordEthalon("UP");
+        }
+
+        private void btnRecordEthalonDown_Click(object sender, EventArgs e)
+        {
+            recordEthalon("DOWN");
+        }
+
+        private void recordEthalon(string dir)
+        {
+            ShowWaitCursor(true);
+            inSetEthalonRecordToController = true;
+            PushCommandToQueue(GET_PREFIX + "EREC" + PARAM_DELIMITER + dir, ParseRecordEthalon);
+        }
+
+        private void ParseRecordEthalon(Answer a)
+        {
+            inSetEthalonRecordToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                MessageBox.Show("Эталон успешно записан.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Ошибка записи эталона!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

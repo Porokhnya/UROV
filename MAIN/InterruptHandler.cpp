@@ -297,7 +297,7 @@ void InterruptHandlerClass::writeToLog(
 {
 #ifndef _SD_OFF
 
-	DBGLN(F("ПИШЕМ НА SD !!!"));
+//	DBGLN(F("ПИШЕМ НА SD !!!"));
 
   uint8_t workBuff[10] = {0};
 
@@ -336,7 +336,7 @@ void InterruptHandlerClass::writeToLog(
     workBuff[0] = recordInterruptInfoEnd;
     Logger.write(workBuff,1);
 
-	DBGLN(F("Данные на SD записаны."));
+//	DBGLN(F("Данные на SD записаны."));
 #endif // _SD_OFF  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ void InterruptHandlerClass::update()
 #ifndef _RMS_OFF
   if (thisWantComputeRMS) // надо считать РМС
   {
-	  DBGLN(F("Надо считать RMS!"));
+	//  DBGLN(F("Надо считать RMS!"));
 	  thisWantComputeRMS = false;
 	  inComputeRMSMode = true;
 
@@ -376,7 +376,7 @@ void InterruptHandlerClass::update()
   {
 	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
 	  {
-		  DBGLN(F("RMS собрано, проверяем!"));
+	//	  DBGLN(F("RMS собрано, проверяем!"));
 		  inComputeRMSMode = false;
 		  // время подсчёта РМС вышло, надо проверять
 		  checkRMS(); // проверяем РМС
@@ -391,7 +391,7 @@ void InterruptHandlerClass::update()
   {
 
 	// защита сработала, надо считать РМС !!!
-	DBGLN(F("СРАБОТАЛО РЕЛЕ ЗАЩИТЫ!"));
+//	DBGLN(F("СРАБОТАЛО РЕЛЕ ЗАЩИТЫ!"));
 
 #ifndef _RMS_OFF
 	wantComputeRMS = true;
@@ -404,7 +404,7 @@ void InterruptHandlerClass::update()
     if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
     {      
       // время ожидания прошло
-		DBGLN(F("Время ожидания после срабатывания реле вышло, продолжаем..."));
+	//	DBGLN(F("Время ожидания после срабатывания реле вышло, продолжаем..."));
       // проверяем - если данные в одном из списков есть - ничего не делаем.
       // если ни в одном из списков нет данных - значит, это авария.
       // в любом другом случае флаг аварии выставится после того, как будет принято решение
@@ -438,7 +438,7 @@ void InterruptHandlerClass::update()
       // выставляем флаг аварии, в зависимости от наличия данных в списках
       if(hasAlarm)
       {
-		  DBGLN(F("Взведён флаг аварии!"));
+	//	  DBGLN(F("Взведён флаг аварии!"));
 		  // сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
         Feedback.alarm(true);
       }
@@ -483,8 +483,8 @@ void InterruptHandlerClass::update()
     // теперь смотрим - надо ли нам самим чего-то обрабатывать?
     if(copyList1.size() > 1)
     {
-		DBG("Прерывание содержит данные: ");
-      DBGLN(copyList1.size());
+	//	DBG("Прерывание содержит данные: ");
+  //    DBGLN(copyList1.size());
 
       // зажигаем светодиод "ТЕСТ"
       Feedback.testDiode();
@@ -504,14 +504,14 @@ void InterruptHandlerClass::update()
     }
 	else
 	{
-		DBGLN(F("Прерывание НЕ содержит данных!!!"));
+	//	DBGLN(F("Прерывание НЕ содержит данных!!!"));
 	}
     
 
     if(needToLog)
     {
 #ifndef _SD_OFF
-		DBGLN(F("Надо сохранить в лог, пишем на SD!"));
+	//	DBGLN(F("Надо сохранить в лог, пишем на SD!"));
       // надо записать в лог дату срабатывания системы
       InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);   
 #endif // !_SD_OFF
@@ -527,10 +527,10 @@ void InterruptHandlerClass::update()
 
     if(wantToInformSubscriber)
     { 
-		DBGLN(F("Надо уведомить подписчика прерываний!"));
+	//	DBGLN(F("Надо уведомить подписчика прерываний!"));
       if(subscriber)
       {
-		  DBGLN(F("Подписчик найден!"));
+		//  DBGLN(F("Подписчик найден!"));
         noInterrupts();
         uint32_t thisTm = timeBeforeInterruptsBegin;
         bool thisHasRelayTriggeredTime = hasRelayTriggeredTime;
@@ -567,7 +567,7 @@ void InterruptHandlerClass::update()
       else
       {
 		// подписчика нет, просто очищаем переменные
-		  DBGLN(F("!!! ПОДПИСЧИКА НЕТ !!!"));
+	//	  DBGLN(F("!!! ПОДПИСЧИКА НЕТ !!!"));
         noInterrupts();
         timeBeforeInterruptsBegin = 0;
         relayTriggeredTime = micros();
@@ -581,6 +581,11 @@ void InterruptHandlerClass::update()
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+InterruptEventSubscriber* InterruptHandlerClass::getSubscriber()
+{
+	return subscriber;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
 {  
   // устанавливаем подписчика результатов прерываний.
@@ -591,14 +596,14 @@ void InterruptHandlerClass::informSubscriber(InterruptTimeList& list, EthalonCom
 {
 	if (subscriber)
 	{
-		DBGLN(F("Subscriber exists!"));
+		//DBGLN(F("Subscriber exists!"));
 
 		subscriber->OnTimeBeforeInterruptsBegin(timeBeforeInterruptsBegin, relayTriggeredTime);
 		subscriber->OnInterruptRaised(list, compareResult);
 		// сообщаем обработчику, что данные в каком-то из списков есть
 		subscriber->OnHaveInterruptData();
 
-		DBGLN(F("Subscriber informed!"));
+		//DBGLN(F("Subscriber informed!"));
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------

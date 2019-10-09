@@ -40,6 +40,12 @@ typedef enum
   
 } EthalonCompareNumber;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+typedef enum
+{
+	dirUp,
+	dirDown
+} EthalonDirection;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 struct InterruptEventSubscriber
 {
   // вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
@@ -60,6 +66,7 @@ class InterruptHandlerClass
    void update();
 
    void setSubscriber(InterruptEventSubscriber* h);
+   InterruptEventSubscriber* getSubscriber();
    void informSubscriber(InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime);
    
    static void writeLogRecord(uint8_t channelNumber, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData);
