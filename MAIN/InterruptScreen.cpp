@@ -322,7 +322,7 @@ void InterruptScreen::doDraw(TFTMenu* menu)
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 	#endif // CURRENT_OSCILL_OFF
 
-	oscillData.erase();
+	oscillData.erase(); // чистим память за собой
 
 	drawTime(menu);
 	drawMotoresource(menu);
