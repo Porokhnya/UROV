@@ -1861,7 +1861,7 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Drawing::DrawChart(this, serie1, VGA_RED);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 

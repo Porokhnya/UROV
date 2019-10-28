@@ -61,7 +61,7 @@ void InterruptScreen::OnHaveInterruptData()
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -74,6 +74,7 @@ void InterruptScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCo
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
   list1 = list;
+  oscillData = oscData; // копируем данные по току себе
   box.chartColor = VGA_GRAY;
   box.compareColor = VGA_GRAY;
   box.foreCompareColor = VGA_GRAY;
@@ -246,11 +247,13 @@ void InterruptScreen::computeMotoresource()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 void InterruptScreen::OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime)
 {
   timeBeforeInterrupts = tm;
   hasRelayTriggeredTime = hasTime;
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::drawCompareResult(TFTMenu* menu)
 {
@@ -293,6 +296,34 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
 	Drawing::DrawChart(this, serie1);
+
+	#ifndef CURRENT_OSCILL_OFF
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	// тут отрисовываем графики тока
+	const uint8_t xOffsetStep = 5;
+	const uint8_t yOffsetStep = 5;
+	uint16_t xOffset = 10;
+	uint16_t yOffset = 10;
+
+	Points serie;
+
+	Drawing::ComputeSerie(oscillData.data1, serie, xOffset, yOffset);
+	Drawing::DrawSerie(this, serie, VGA_AQUA);
+	xOffset += xOffsetStep;
+	yOffset += yOffsetStep;
+
+	Drawing::ComputeSerie(oscillData.data2, serie, xOffset, yOffset);
+	Drawing::DrawSerie(this, serie, VGA_LIME);
+	xOffset += xOffsetStep;
+	yOffset += yOffsetStep;
+
+	Drawing::ComputeSerie(oscillData.data3, serie, xOffset, yOffset);
+	Drawing::DrawSerie(this, serie, VGA_PURPLE);
+	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+	#endif // CURRENT_OSCILL_OFF
+
+	oscillData.erase();
+
 	drawTime(menu);
 	drawMotoresource(menu);
 	drawCompareResult(menu);

@@ -1415,7 +1415,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnInterruptRaised(const InterruptTimeList& _list, EthalonCompareResult result)
+void ExternalEthalonCommandHandler::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& _list, EthalonCompareResult result)
 {
 	list = _list;
 }

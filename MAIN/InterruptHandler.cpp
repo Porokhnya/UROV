@@ -23,6 +23,12 @@ volatile bool hasRelayTriggered = false;
 volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабатывания реле защиты до первого прерывания
 volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
 
+// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+volatile uint32_t currentOscillTimer = 0; // таймер для сбора информации по току
+volatile bool currentOscillTimerActive = false; // флаг активности таймера сбора информации по току
+CurrentOscillData oscillData; // информация по току
+// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+
 #ifndef _RMS_OFF
 volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
 volatile bool inComputeRMSMode = false; // флаг, что мы считаем РМС
@@ -289,6 +295,7 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
+	CurrentOscillData& oscData,
 	InterruptTimeList& lst1, 
 	EthalonCompareResult res1, 
 	EthalonCompareNumber num1,
@@ -340,8 +347,90 @@ void InterruptHandlerClass::writeToLog(
 #endif // _SD_OFF  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+//--------------------------------------------------------------------------------------------------------------------------------------
+void InterruptHandlerClass::startCollectCurrentData()
+{
+#ifndef CURRENT_OSCILL_OFF
+	// сработала защита, нам надо собирать данные по току с определённым интервалом
+	if (!currentOscillTimerActive)
+	{
+		noInterrupts();
+			oscillData.clear();
+			currentOscillTimerActive = true;
+			currentOscillTimer = micros();
+		interrupts();
+	}
+#endif // #ifndef CURRENT_OSCILL_OFF
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void InterruptHandlerClass::stopCollectCurrentData()
+{
+	currentOscillTimerActive = false;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+CurrentOscillData& InterruptHandlerClass::getCurrentData()
+{
+	return oscillData;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+//--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
+
+	#ifndef CURRENT_OSCILL_OFF
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	if (currentOscillTimerActive)
+	{
+		// просто собираем информацию по току через указанные промежутки времени
+		if (adcSampler.available())
+		{
+			// есть данные по АЦП, проверяем таймер
+			if (micros() - currentOscillTimer >= CURRENT_OSCILL_FREQ)
+			{
+				// промежуток времени прошёл, собираем данные с АЦП, по всем трём каналам
+				uint32_t cT = micros();
+
+				int bufferLength = 0;
+				uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);    // Получить буфер с данными
+
+				uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
+
+				uint16_t serieWriteIterator = 0;
+
+				uint32_t raw1 = 0;
+				uint32_t raw2 = 0;
+				uint32_t raw3 = 0;
+
+
+				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
+				{
+
+					raw1 += cBuf[i + 4];                          // Данные 1 графика  (красный)
+					raw2 += cBuf[i + 3];                          // Данные 2 графика  (синий)
+					raw3 += cBuf[i + 2];                          // Данные 3 графика  (желтый)
+
+				} // for
+
+				raw1 /= countOfPoints;
+				raw2 /= countOfPoints;
+				raw3 /= countOfPoints;
+
+				// посчитали среднее, заносим в список
+				oscillData.times.push_back(cT);
+				oscillData.data1.push_back(raw1);
+				oscillData.data2.push_back(raw2);
+				oscillData.data3.push_back(raw3);
+
+				currentOscillTimer = micros();
+			} // if
+		} // if (adcSampler.available())
+
+	} // if(currentOscillTimerActive)
+	  // ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+	#endif // #ifndef CURRENT_OSCILL_OFF
+
 
   static bool inProcess = false;
 
@@ -443,8 +532,13 @@ void InterruptHandlerClass::update()
         Feedback.alarm(true);
       }
     } // if
+
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	// сработала защита, нам надо собирать данные по току с определённым интервалом
+	startCollectCurrentData();	
+	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
     
-  } // if
+  } // if(thisHasRelayTriggered)
 
 
   // работаем с энкодером, а именно - ожидаем окончание сбора с него данных
@@ -465,11 +559,21 @@ void InterruptHandlerClass::update()
 	  hasEncoderInterrupt = false;
       
       InterruptTimeList copyList1 = list1; // копируем данные в локальный список
-
       // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
       list1.empty();
+
+	  // копируем данные по току в локальный список
+	  stopCollectCurrentData();
+	  CurrentOscillData copyOscillData = oscillData;
+	  oscillData.clear();
+
           
     interrupts();
+
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	// нормализуем список времен записей по току
+	InterruptHandlerClass::normalizeList(copyOscillData.times);
+	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 	// здесь мы получили список прерываний, и можно с ним что-то делать
      InterruptHandlerClass::normalizeList(copyList1);
@@ -513,7 +617,7 @@ void InterruptHandlerClass::update()
 #ifndef _SD_OFF
 	//	DBGLN(F("Надо сохранить в лог, пишем на SD!"));
       // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(copyList1, compareRes1, compareNumber1, ethalonData1);   
+      InterruptHandlerClass::writeToLog(copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
 #endif // !_SD_OFF
     } // needToLog
     
@@ -561,7 +665,7 @@ void InterruptHandlerClass::update()
 #endif // _FAKE_CHART_DRAW
 
 		// уведомляем подписчика
-		informSubscriber(copyList1, compareRes1, thisTm, thisHasRelayTriggeredTime);
+		informSubscriber(copyOscillData,copyList1, compareRes1, thisTm, thisHasRelayTriggeredTime);
 
       } // if(subscriber)
       else
@@ -592,14 +696,14 @@ void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
   subscriber = h;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::informSubscriber(InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime)
+void InterruptHandlerClass::informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime)
 {
 	if (subscriber)
 	{
 		//DBGLN(F("Subscriber exists!"));
 
-		subscriber->OnTimeBeforeInterruptsBegin(timeBeforeInterruptsBegin, relayTriggeredTime);
-		subscriber->OnInterruptRaised(list, compareResult);
+		//subscriber->OnTimeBeforeInterruptsBegin(timeBeforeInterruptsBegin, relayTriggeredTime);
+		subscriber->OnInterruptRaised(oscData, list, compareResult);
 		// сообщаем обработчику, что данные в каком-то из списков есть
 		subscriber->OnHaveInterruptData();
 

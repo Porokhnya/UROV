@@ -96,13 +96,20 @@ void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopU
 		DBGLN(F("processInterruptFromModule: INTERRUPT HAS NO DATA!!!"));
 	}
 
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	// получаем список данных по току
+	CurrentOscillData oscillData = InterruptHandlerClass::getCurrentData();
+	// нормализуем список времён
+	InterruptHandlerClass::normalizeList(oscillData.times);
+	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+
 	if (needToLog)
 	{
 #ifndef _SD_OFF
 		DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
 		// надо записать в лог дату срабатывания системы
-		InterruptHandlerClass::writeToLog(interruptsList, compareRes1, compareNumber1, ethalonData1);
+		InterruptHandlerClass::writeToLog(oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
 
 #endif // !_SD_OFF
 	} // needToLog
@@ -112,7 +119,7 @@ void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopU
 	if (wantToInformSubscriber)
 	{
 		DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
-		InterruptHandler.informSubscriber(interruptsList, compareRes1, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime);
+		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime);
 	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -137,6 +144,10 @@ void OnRS485IncomingData(RS485* Sender)
 			DBGLN(F("[RS-485] HAS INTERRUPT FROM MODULE !!!"));
 
 			rs485RelayTriggeredTime = millis(); // запоминаем время срабатывания защиты
+
+			// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
+			// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 			//TODO: ТУТ МОЖНО ЧТО-ТО ДЕЛАТЬ ПО ФАКТУ СРАБАТЫВАНИЯ ЗАЩИТЫ, НАПРИМЕР - НАЧИНАТЬ ПРОВЕРКУ ТОКОВЫХ ТРАНСФОРМАТОРОВ.
 		}
@@ -180,6 +191,10 @@ void OnRS485IncomingData(RS485* Sender)
 				}
 				DBGLN(F("-----INTERRUPTS LIST END -----"));
 #endif
+				// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+				// говорим, что хватит нам собирать данные по току
+				InterruptHandlerClass::stopCollectCurrentData();
+				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 				// обрабатываем список прерываний  
 				processInterruptFromModule(interruptsList, endstopUpTriggered, endstopDownTriggered);
