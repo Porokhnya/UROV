@@ -218,12 +218,14 @@ void InterruptHandlerClass::writeRodPositionToLog(uint8_t channelNumber)
 #endif // _SD_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
+void InterruptHandlerClass::writeLogRecord(CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
 {
 #ifndef _SD_OFF
 
   if(_list.size() < 2) // ничего в списке прерываний нет
     return;
+
+  const uint8_t CHANNEL_NUM = 0;
 
  uint8_t workBuff[5] = {0};
 
@@ -232,11 +234,11 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   
   // пишем номер канала, для которого сработало прерывание
   workBuff[0] = recordChannelNumber;
-  workBuff[1] = channelNumber;
+  workBuff[1] = CHANNEL_NUM; // ВСЕГДА ПЕРВЫЙ КАНАЛ !!!
   Logger.write(workBuff,2);
   
   // пишем положение штанги
-  writeRodPositionToLog(channelNumber);
+  writeRodPositionToLog(CHANNEL_NUM); // ВСЕГДА ПЕРВЫЙ КАНАЛ
 
   // пишем время движения штанги  
   uint32_t moveTime = _list[_list.size()-1] - _list[0];
@@ -246,7 +248,7 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
   
 
   // пишем кол-во срабатываний канала
-  uint32_t motoresource = Settings.getMotoresource(channelNumber);
+  uint32_t motoresource = Settings.getMotoresource(CHANNEL_NUM); // ВСЕГДА ПЕРВЫЙ КАНАЛ
 
   workBuff[0] = recordMotoresource;
   memcpy(&(workBuff[1]),&motoresource,4);
@@ -285,6 +287,19 @@ void InterruptHandlerClass::writeLogRecord(uint8_t channelNumber, InterruptTimeL
    Logger.write(workBuff,3);
 
    Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));    
+  }
+
+  // пишем данные по току
+  if (oscData.times.size() > 1)
+  {
+	  workBuff[0] = recordOscDataFollow;
+	  uint16_t dataLen = oscData.times.size();
+	  memcpy(&(workBuff[1]), &dataLen, 2);
+	  Logger.write(workBuff, 3);
+	  Logger.write((uint8_t*)oscData.times.pData(), oscData.times.size() * sizeof(uint32_t));
+	  Logger.write((uint8_t*)oscData.data1.pData(), oscData.data1.size() * sizeof(uint32_t));
+	  Logger.write((uint8_t*)oscData.data2.pData(), oscData.data2.size() * sizeof(uint32_t));
+	  Logger.write((uint8_t*)oscData.data3.pData(), oscData.data3.size() * sizeof(uint32_t));
   }
 
   // заканчиваем запись
@@ -336,7 +351,7 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   if(lst1.size() > 1)
   {
-    writeLogRecord(0,lst1,res1,num1, ethalonData1); 
+    writeLogRecord(oscData,lst1,res1,num1, ethalonData1);
   } // if
 
 

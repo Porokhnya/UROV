@@ -441,6 +441,53 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.OscDataFollow: // идут данные по току для канала
+                            {
+                                System.Diagnostics.Debug.Assert(curRecord != null);
+
+                                curRecord.CurrentTimes.Clear();
+                                curRecord.CurrentData1.Clear();
+                                curRecord.CurrentData2.Clear();
+                                curRecord.CurrentData3.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по времени сбора записей по току
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentTimes.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 1
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData1.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 2
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData2.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 3
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData3.Add(curData);
+
+                                } // for
+
+                            }
+                            break;
+
                         case LogRecordType.InterruptDataBegin:
                             {
                                 System.Diagnostics.Debug.Assert(curRecord != null);

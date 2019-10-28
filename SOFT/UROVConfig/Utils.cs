@@ -69,6 +69,8 @@ namespace UROVConfig
         InterruptInfoEnd,    // конец записи по прерыванию
         RelayTriggeredTime, // время срабатывания защиты
         ChannelInductiveSensorState, // состояние индуктивного датчика канала
+
+        OscDataFollow, // идут данные по току для канала
     }
 
     public enum EthalonCompareNumber
@@ -149,6 +151,13 @@ namespace UROVConfig
         public EthalonCompareResult EthalonCompareResult;
         public List<int> InterruptData = new List<int>();
         public List<int> EthalonData = new List<int>();
+
+        // данные по току каналов
+        public List<int> CurrentTimes = new List<int>();
+        public List<int> CurrentData1 = new List<int>();
+        public List<int> CurrentData2 = new List<int>();
+        public List<int> CurrentData3 = new List<int>();
+
     }
 
     public class SDNodeTagHelper
