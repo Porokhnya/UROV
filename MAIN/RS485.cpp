@@ -169,7 +169,7 @@ bool RS485::gotRS485Packet()
         if(crc != rs485Packet.packetCrc)
         {
           // не сошлось, игнорируем
-          DBGLN(F("RS485: BAD PACKET CRC!!!"));
+          //DBGLN(F("RS485: BAD PACKET CRC!!!"));
           return false;
         }
         
@@ -232,7 +232,7 @@ bool RS485::processRS485Packet()
         }
         else
         {
-          DBGLN(F("RS485: BAD DATA CRC!!!"));
+          //DBGLN(F("RS485: BAD DATA CRC!!!"));
         }
     } // if(rs485Packet.dataLength)
     else
