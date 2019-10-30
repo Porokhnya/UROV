@@ -370,11 +370,9 @@ void InterruptHandlerClass::startCollectCurrentData()
 	// сработала защита, нам надо собирать данные по току с определённым интервалом
 	if (!currentOscillTimerActive)
 	{
-		noInterrupts();
-			oscillData.clear();
-			currentOscillTimerActive = true;
-			currentOscillTimer = micros();
-		interrupts();
+		oscillData.clear();
+		currentOscillTimerActive = true;
+		currentOscillTimer = micros();
 	}
 #endif // #ifndef CURRENT_OSCILL_OFF
 }
@@ -411,15 +409,12 @@ void InterruptHandlerClass::update()
 				uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);    // Получить буфер с данными
 
 				uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
-
-				uint16_t serieWriteIterator = 0;
-
+				
 				uint32_t raw1 = 0;
 				uint32_t raw2 = 0;
 				uint32_t raw3 = 0;
 
-
-				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
+				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS)                // получить результат измерения поканально, с интервалом 3
 				{
 
 					raw1 += cBuf[i + 4];                          // Данные 1 графика  (красный)
@@ -439,7 +434,11 @@ void InterruptHandlerClass::update()
 				oscillData.data3.push_back(raw3);
 
 				currentOscillTimer = micros();
+				adcSampler.reset(); // сбрасываем признак готовности данных
+
 			} // if
+
+
 		} // if (adcSampler.available())
 
 	} // if(currentOscillTimerActive)

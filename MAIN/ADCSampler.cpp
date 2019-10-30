@@ -21,6 +21,7 @@ ADCSampler::ADCSampler()
     memset((void *)adcBuffer[i], 0, BUFFER_SIZE);
   }
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::begin(unsigned int _sr)
 {
   this->samplingRate = _sr;
@@ -167,12 +168,11 @@ void ADCSampler::handleInterrupt()
 
 		int bufferLength = 0;
 		uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);
-		uint16_t serieWriteIterator = 0;
 		uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
 
-		uint32_t serie1, serie2, serie3;
+		uint32_t serie1=0, serie2=0, serie3=0;
 
-		for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++) // получить результат измерения поканально, с интервалом 3
+		for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS) // получить результат измерения поканально, с интервалом 3
 		{
 			serie1 += cBuf[i + 4];        // Данные 1 графика  (красный)
 			serie2 += cBuf[i + 3];        // Данные 2 графика  (синий)
