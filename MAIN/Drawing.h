@@ -38,6 +38,9 @@ namespace Drawing
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor);
   void ComputeChart(const InterruptTimeList& list1, Points& serie1);
   void DrawChart(AbstractTFTScreen* caller, const Points& serie1,uint16_t serie1Color=VGA_WHITE);
+  void ComputeSerie(const InterruptTimeList& timeList, Points& serie, uint16_t xOffset, uint16_t yOffset);
+  void DrawSerie(AbstractTFTScreen* caller, const Points& serie, uint16_t color);
+  void DrawSerie(AbstractTFTScreen* caller, const Points& serie, RGBColor color);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)

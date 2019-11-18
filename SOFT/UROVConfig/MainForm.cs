@@ -441,6 +441,53 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.OscDataFollow: // идут данные по току для канала
+                            {
+                                System.Diagnostics.Debug.Assert(curRecord != null);
+
+                                curRecord.CurrentTimes.Clear();
+                                curRecord.CurrentData1.Clear();
+                                curRecord.CurrentData2.Clear();
+                                curRecord.CurrentData3.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по времени сбора записей по току
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentTimes.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 1
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData1.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 2
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData2.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 4 байта записей по току канала 3
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentData3.Add(curData);
+
+                                } // for
+
+                            }
+                            break;
+
                         case LogRecordType.InterruptDataBegin:
                             {
                                 System.Diagnostics.Debug.Assert(curRecord != null);
@@ -1547,6 +1594,8 @@ namespace UROVConfig
             this.btnDisconnect.ImageIndex = 6;
             this.btnControllerName.ImageIndex = 8;
             this.btnImportSettings.ImageIndex = 9;
+            this.btnRecordEthalonUp.ImageIndex = 10;
+            this.btnRecordEthalonDown.ImageIndex = 11;
 
 
             plMainSettings.Dock = DockStyle.Fill;
@@ -1600,6 +1649,9 @@ namespace UROVConfig
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
             this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
+
+            this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
+            this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
 
             if (!bConnected) // порт закрыт
             {
@@ -3844,6 +3896,38 @@ namespace UROVConfig
 
 
                 } // switch
+            }
+        }
+        private bool inSetEthalonRecordToController = false;
+        private void btnRecordEthalonUp_Click(object sender, EventArgs e)
+        {
+            recordEthalon("UP");
+        }
+
+        private void btnRecordEthalonDown_Click(object sender, EventArgs e)
+        {
+            recordEthalon("DOWN");
+        }
+
+        private void recordEthalon(string dir)
+        {
+            ShowWaitCursor(true);
+            inSetEthalonRecordToController = true;
+            PushCommandToQueue(GET_PREFIX + "EREC" + PARAM_DELIMITER + dir, ParseRecordEthalon);
+        }
+
+        private void ParseRecordEthalon(Answer a)
+        {
+            inSetEthalonRecordToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                MessageBox.Show("Эталон успешно записан.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Ошибка записи эталона!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

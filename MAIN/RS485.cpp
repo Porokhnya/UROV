@@ -1,18 +1,15 @@
 #include "RS485.h"
 #include "CONFIG.h"
 //--------------------------------------------------------------------------------------------------
-extern "C" {
-static void __nohandler(RS485* Sender){}
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ON_RS485_INCOMING_DATA(RS485* Sender) __attribute__ ((weak, alias("__nohandler")));
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RS485::RS485(Stream& s, uint8_t de,uint32_t tmout) : dePin(de), receiveTimeout(tmout)
+RS485::RS485(Stream& s, uint8_t de,uint32_t tmout)
 {
-  workStream = &s;
-  writePtr = 0;
-  rsPacketPtr = (uint8_t*) &rs485Packet;
-  dataReceived = NULL;
+	dePin = de;
+	receiveTimeout = tmout;
+	workStream = &s;
+	writePtr = 0;
+	rsPacketPtr = (uint8_t*) &rs485Packet;
+	dataReceived = NULL;
+	dataHandler = NULL;
 }
 //--------------------------------------------------------------------------------------------------
 RS485::~RS485()
@@ -39,7 +36,7 @@ void RS485::switchToReceive()
 //--------------------------------------------------------------------------------------------------
 void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataLength)
 {
-  DBGLN(F("RS485: send data..."));
+ // DBGLN(F("RS485: send data..."));
   
   RS485Packet outPacket;
   outPacket.packetType = packetType;
@@ -52,13 +49,17 @@ void RS485::send(RS485PacketType packetType, const uint8_t* data, uint16_t dataL
   switchToSend();
 
   workStream->write(p,sizeof(RS485Packet));
-  workStream->write(data,dataLength);
+
+  if (data && dataLength)
+  {
+	  workStream->write(data, dataLength);
+  }
 
   waitTransmitComplete();
   
   switchToReceive();
 
-  DBGLN(F("RS485: data was sent."));
+ // DBGLN(F("RS485: data was sent."));
   
 }
 //--------------------------------------------------------------------------------------------------
@@ -71,6 +72,15 @@ RS485Packet RS485::getDataReceived(uint8_t* &data)
 {
     data = dataReceived;
     return rs485Packet;
+}
+//--------------------------------------------------------------------------------------------------
+void RS485::clearReceivedData()
+{
+	delete[] dataReceived;
+	dataReceived = NULL;
+	rsPacketPtr = (uint8_t*)&rs485Packet;
+	writePtr = 0;
+	memset(&rs485Packet, 0, sizeof(rs485Packet));
 }
 //--------------------------------------------------------------------------------------------------
 void RS485::update()
@@ -159,7 +169,7 @@ bool RS485::gotRS485Packet()
         if(crc != rs485Packet.packetCrc)
         {
           // не сошлось, игнорируем
-          DBGLN(F("RS485: BAD PACKET CRC!!!"));
+          //DBGLN(F("RS485: BAD PACKET CRC!!!"));
           return false;
         }
         
@@ -176,8 +186,8 @@ bool RS485::processRS485Packet()
    bool receiveResult = false;
    
     // у нас в пакете лежит длина данных, надо их вычитать из потока
-    DBG(F("RS485: DATA TO READ: "));
-    DBGLN(rs485Packet.dataLength);
+//    DBG(F("RS485: DATA TO READ: "));
+ //   DBGLN(rs485Packet.dataLength);
 
     uint16_t readed = 0;
     delete [] dataReceived;
@@ -195,9 +205,9 @@ bool RS485::processRS485Packet()
         startReadingTime = millis();
       }
 
-      if(millis() - startReadingTime > receiveTimeout) // таймаут чтения
+      if(millis() - startReadingTime >= receiveTimeout) // таймаут чтения
       {
-        DBGLN(F("RS485: RECEIVE TIMEOUT!!!"));
+        //DBGLN(F("RS485: RECEIVE TIMEOUT!!!"));
         hasTimeout = true;
         break;
       }
@@ -212,15 +222,17 @@ bool RS485::processRS485Packet()
         if(dataCrc == rs485Packet.dataCrc)
         {
           isCrcGood = true;
+		  /*
           DBG(F("RS485: DATA RECEIVED = "));
           #ifdef _DEBUG
             DEBUG_SERIAL.write(dataReceived,rs485Packet.dataLength);
             DEBUG_SERIAL.println();
           #endif        
+		  */
         }
         else
         {
-          DBGLN(F("RS485: BAD DATA CRC!!!"));
+          //DBGLN(F("RS485: BAD DATA CRC!!!"));
         }
     } // if(rs485Packet.dataLength)
     else
@@ -229,15 +241,40 @@ bool RS485::processRS485Packet()
     }
 
    receiveResult = isCrcGood && !hasTimeout;
-   if(receiveResult)
-      ON_RS485_INCOMING_DATA(this);
+
+   if (receiveResult)
+   {
+	   if (wantACK(rs485Packet.packetType))
+	   {
+		   // на пакет этого типа надо отсылать подтверждение!!!
+		   send(rs485ACK, NULL, 0);
+	   }
+
+	   if (dataHandler)
+	   {
+		   dataHandler(this);
+	   }
+   }
+   else
+   {
+	   clearReceivedData();
+   }
         
   return receiveResult;
+}
+//--------------------------------------------------------------------------------------------------
+bool RS485::wantACK(uint8_t type) // проверяем, надо ли отсылать подтверждение на получение пакета определённого типа
+{
+	return (type == rs485InterruptData);
 }
 //--------------------------------------------------------------------------------------------------
 uint8_t RS485::crc8(const uint8_t *addr, uint16_t len)
 {
   uint8_t crc = 0;
+
+  if (!len || !addr)
+	  return crc;
+
   while (len--) 
     {
     uint8_t inbyte = *addr++;

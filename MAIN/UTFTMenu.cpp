@@ -121,8 +121,8 @@ void TFTMenu::update()
     
     requestedToActiveScreen = NULL;
 
-	DBG(F("Активируем экран "));
-	DBGLN(screen->getName());
+	//DBG(F("Активируем экран "));
+	//DBGLN(screen->getName());
     
     screen->setActive(true);
     screen->onActivate();
@@ -134,9 +134,9 @@ void TFTMenu::update()
     screen->update(this);
     screen->draw(this);
 
-	DBG(F("Экран "));
-	DBG(screen->getName());
-	DBGLN(F(" отрисован."));
+	//DBG(F("Экран "));
+	//DBG(screen->getName());
+	//DBGLN(F(" отрисован."));
 
     return;
     
@@ -171,7 +171,7 @@ void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
 
 	if (requestedToActiveScreen != NULL) // ждём переключения на новый экран
 	{
-		DBGLN(F("Ждём переключения на какой-то экран!"));
+		//DBGLN(F("Ждём переключения на какой-то экран!"));
 		return;
 	}
   
@@ -179,8 +179,8 @@ void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
   {
      AbstractTFTScreen* si = screens[currentScreenIndex];
 
-	 DBG(F("Деактивируем экран "));
-	 DBGLN(si->getName());
+	 //DBG(F("Деактивируем экран "));
+	 //DBGLN(si->getName());
 
      si->setActive(false);
      si->onDeactivate();
@@ -190,8 +190,8 @@ void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
   {
     if(screens[i] == screen)
     {
-		DBG(F("Переключаемся на экран "));
-		DBGLN(screen->getName());
+		//DBG(F("Переключаемся на экран "));
+		//DBGLN(screen->getName());
 
       requestedToActiveScreen = screen;
       requestedToActiveScreenIndex = i;
@@ -216,8 +216,8 @@ void TFTMenu::switchToScreen(const char* screenName)
     AbstractTFTScreen* si = screens[i];
     if(!strcmp(si->getName(),screenName))
     {
-		DBG(F("Переключаемся на экран "));
-		DBGLN(screenName);
+		//DBG(F("Переключаемся на экран "));
+		//DBGLN(screenName);
       switchToScreen(si);
       break;
     }

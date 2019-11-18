@@ -175,6 +175,39 @@ private:
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#include "RS485.h"
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class RS485Screen : public AbstractTFTScreen
+{
+public:
+
+	static AbstractTFTScreen* create()
+	{
+		return new RS485Screen();
+	}
+
+	void OnRS485Data(RS485* Sender);
+
+protected:
+
+	virtual void onActivate();
+	virtual void onDeactivate();
+
+	virtual void doSetup(TFTMenu* menu);
+	virtual void doUpdate(TFTMenu* menu);
+	virtual void doDraw(TFTMenu* menu);
+	virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+
+private:
+	RS485Screen();
+
+	int backButton;
+	void releaseRS485();
+	uint32_t lastPacketSeenAt;
+	bool isModuleOnline;
+
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ParamsScreen : public AbstractTFTScreen
 {
   public:
@@ -503,12 +536,6 @@ typedef enum
   
 } EthalonRecordState;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-typedef enum
-{
-  dirUp,
-  dirDown
-} EthalonDirection;
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class EthalonRecordScreen : public AbstractTFTScreen, public InterruptEventSubscriber
 {
   public:
@@ -518,9 +545,9 @@ class EthalonRecordScreen : public AbstractTFTScreen, public InterruptEventSubsc
     return new EthalonRecordScreen();
   }
 
-  void OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult);
+  void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult);
   void OnHaveInterruptData();
-  void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime) {}
+  //void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime) {}
     
 protected:
 

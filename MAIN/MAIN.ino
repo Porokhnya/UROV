@@ -34,166 +34,210 @@ void screenAction(AbstractTFTScreen* screen)
 	screenIdleTimer = millis();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// RS-485
+// РАБОТА С RS-485
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485 rs485(RS485_SERIAL,Upr_RS485,RS485_READING_TIMEOUT);
-uint32_t rs485WaitTimer = 0;
-typedef enum
-{
-  rs485Normal,
-  rs485WaitAnswer,
-  rs485HandlePacket,
-  
-} RS485State;
-RS485State rs485State = rs485Normal;
+uint32_t rs485RelayTriggeredTime = 0; // время срабатывания защиты
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ON_RS485_INCOMING_DATA(RS485* Sender)
+void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
 {
-  rs485State =  rs485HandlePacket;
+	// тут обрабатываем результаты срабатывания защиты от модуля
+
+	// обновляем моторесурс, т.к. было срабатывание защиты
+	//DBGLN(F("processInterruptFromModule: INC motoresource!"));
+	uint32_t motoresource = Settings.getMotoresource(0);
+	motoresource++;
+	Settings.setMotoresource(0, motoresource);
+
+	bool hasAlarm = !interruptsList.size(); // авария, если в списке нет данных
+	if (hasAlarm)
+	{
+	//	DBGLN(F("processInterruptFromModule: HAS ALARM FLAG!"));
+		// сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
+		Feedback.alarm(true);
+	}
+
+
+	// начинаем сравнивать с эталоном
+	EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
+
+	EthalonCompareNumber compareNumber1;
+	InterruptTimeList ethalonData1;
+
+	bool needToLog = false;
+
+	// теперь смотрим - надо ли нам самим чего-то обрабатывать?
+	if (interruptsList.size() > 1)
+	{
+	//	DBG("processInterruptFromModule: INTERRUPT HAS DATA COUNT: ");
+	//	DBGLN(interruptsList.size());
+
+		// зажигаем светодиод "ТЕСТ"
+		Feedback.testDiode();
+
+		needToLog = true;
+
+		// здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
+		compareRes1 = EthalonComparer::Compare(interruptsList, 0, compareNumber1, ethalonData1);
+
+		if (compareRes1 == COMPARE_RESULT_MatchEthalon)
+		{
+	//		DBGLN(F("processInterruptFromModule: MATCH ETHALON!"));
+		}
+		else if (compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
+		{
+	//		DBGLN(F("processInterruptFromModule: MISMATCH ETHALON!"));
+			Feedback.failureDiode();
+			Feedback.alarm();
+		}
+	}
+	else
+	{
+	//	DBGLN(F("processInterruptFromModule: INTERRUPT HAS NO DATA!!!"));
+	}
+
+	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+	// получаем список данных по току
+	CurrentOscillData oscillData = InterruptHandlerClass::getCurrentData();
+	// нормализуем список времён
+	InterruptHandlerClass::normalizeList(oscillData.times);
+	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+
+	if (needToLog)
+	{
+#ifndef _SD_OFF
+	//	DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
+
+		// надо записать в лог дату срабатывания системы
+		InterruptHandlerClass::writeToLog(oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
+
+#endif // !_SD_OFF
+	} // needToLog
+
+	bool wantToInformSubscriber = (hasAlarm || (interruptsList.size() > 1));
+
+	if (wantToInformSubscriber)
+	{
+	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
+		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime);
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void processRS485()
+void OnRS485IncomingData(RS485* Sender)
 {
-  rs485.update();
+  // пришёл пакет от модуля по RS-485 (не обязательно от модуля, но в целом - пришёл какой-то пакет от кого-то)
 
-  switch(rs485State)
-  {
-    case rs485Normal: // нормальный режим работы, надо отослать пакет пинга
-    {
-        if(millis() - rs485WaitTimer >= RS485_PING_FREQ)
-        {
-          static uint32_t pingID = 0;
-          ++pingID;
+	uint8_t* data;
+	RS485Packet packet = rs485.getDataReceived(data);
 
-          rs485.send(rs485Ping,(const uint8_t*)&pingID,sizeof(pingID));
-          
-          rs485State = rs485WaitAnswer;
-          rs485WaitTimer = millis();
-        }
-    }
-    break; // rs485Normal
+	switch (packet.packetType)
+	{
+		case rs485Ping: // сообщение вида "ПРОВЕРКА СВЯЗИ", посылает модуль периодически для проверки связи
+		{
+			// пришёл пакет пинга
+		//	DBGLN(F("[RS-485] RECEIVE PING PACKET FROM MODULE !!!"));
+		}
+		break; // rs485Ping
 
-    case rs485WaitAnswer: // ждём ответа
-    {
-      if(millis() - rs485WaitTimer >= RS485_ANSWER_TIMEOUT)
-      {
-          //TODO: ответа не получили !!!
-          DBGLN(F("[RS-485] NO ANSWER FROM MODULE !!!"));
+		case rs485HasInterrupt: // сообщение вида "ЕСТЬ СРАБАТЫВАНИЕ ЗАЩИТЫ", посылает модуль по факту срабатывания защиты
+		{
+		//	DBGLN(F("[RS-485] HAS INTERRUPT FROM MODULE !!!"));
 
-          rs485WaitTimer = millis();
-          rs485State = rs485Normal;
-      }
-    }
-    break; // rs485WaitAnswer
+			rs485RelayTriggeredTime = millis(); // запоминаем время срабатывания защиты
 
-    case rs485HandlePacket:
-    {
-        // надо обработать пакет
-        uint8_t* data;
-        RS485Packet packet = rs485.getDataReceived(data);
+			// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
+			// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
-        switch(packet.packetType)
-        {
-            case rs485Pong:
-            {
-				DBGLN(F("[RS-485] RECEIVE PONT PACKET FROM MODULE!"));
-					
-              // это ответ от модуля - есть ли прерывания?
+			//TODO: ТУТ МОЖНО ЧТО-ТО ДЕЛАТЬ ПО ФАКТУ СРАБАТЫВАНИЯ ЗАЩИТЫ, НАПРИМЕР - НАЧИНАТЬ ПРОВЕРКУ ТОКОВЫХ ТРАНСФОРМАТОРОВ.
+		}
+		break; // rs485HasInterrupt
 
-              RS485PongPacket* pp = (RS485PongPacket*) data;
+		case rs485InterruptData: // сообщение вида "ДАННЫЕ ПО ПРЕРЫВАНИЮ", посылает модуль по факту собирания списка прерываний
+		{
+		//	DBGLN(F("[RS-485] HAS INTERRUPT LIST FROM MODULE !!!"));
 
-              if(pp->hasGuardTriggered)
-              {
-                DBGLN(F("[RS-485] GUARD TRIGGERED, WANT TO GET INTERRUPT DATA!!!!"));
+				// пришли данные по прерыванию, собираем их
 
-                // посылаем запрос на данные прерывания
-                uint8_t dummy;
-                rs485.send(rs485InterruptDataRequest,(const uint8_t*)&dummy,sizeof(dummy));
-                rs485WaitTimer = millis();
-                rs485State = rs485WaitAnswer;
-              }
-			  else
-			  {
-				  // переключаемся на нормальный режим работы
-				  rs485WaitTimer = millis();
-				  rs485State = rs485Normal;
-			  }
-            }
-            break; // rs485Pong
+				// первый байт в пакете - состояние верхнего концевика на момент окончания сбора данных
+				bool endstopUpTriggered = *data++;
 
-            case rs485InterruptDataAnswer:
-            {
-                // пришёл ответ на запрос данных прерывания
-				DBGLN(F("[RS-485] RECEIVE INTERRUPT DATA FROM MODULE!!!"));
+				// второй байт в пакете - состояние нижнего концевика на момент окончания сбора данных
+				bool endstopDownTriggered = *data++;
 
-               // парсим пакет
-               // первый байт в пакете - признак того, что у нас срабатывала защита
-               bool hasGuardTriggered = *data++;
-               if(hasGuardTriggered)
-               {
-                  // второй байт в пакете - состояние верхнего концевика на момент окончания сбора данных
-                  bool endstopUpTriggered = *data++;
+				// потом идёт список прерываний
+				// 2 байта - служебный заголовок пакета (концевик 1 + концевик 2), потом N записей по 4 байта. Высчитываем это из длины пакета в байтах
+				uint16_t recordsCount = (packet.dataLength - 2) / sizeof(uint32_t);
+				uint32_t* rec = (uint32_t*)data;
 
-                  // третий байт в пакете - состояние нижнего концевика на момент окончания сбора данных
-                  bool endstopDownTriggered = *data++;
+		//		DBG(F("[RS-485] INTERRUPTS COUNT: "));
+		//		DBGLN(recordsCount);
 
-                  // потом идёт список прерываний
-                  // три байта - заголовок, потом N записей по 4 байта. Высчитываем это из длины пакета в байтах
-                  uint16_t recordsCount = (packet.dataLength - 3)/sizeof(uint32_t);
-                  uint32_t* rec = (uint32_t*) data;
+				// сохраняем записи
+				InterruptTimeList interruptsList;
+				interruptsList.reserve(recordsCount);
 
-                  DBG(F("[RS-485] INTERRUPTS COUNT: "));
-                  DBGLN(recordsCount);
+				for (uint16_t i = 0; i<recordsCount; i++)
+				{
+					interruptsList.push_back(*rec++);
+				}
 
-                  // сохраняем записи
-                  Vector<uint32_t> interruptsList;
-                  interruptsList.reserve(recordsCount);
+				// выводим их для теста
+/*
+#ifdef _DEBUG
+				DBGLN(F("-----INTERRUPTS LIST FROM MODULE -----"));
+				for (size_t i = 0; i<interruptsList.size(); i++)
+				{
+					DBGLN(interruptsList[i]);
+				}
+				DBGLN(F("-----INTERRUPTS LIST END -----"));
+#endif
+*/
+				// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
+				// говорим, что хватит нам собирать данные по току
+				InterruptHandlerClass::stopCollectCurrentData();
+				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
-                  for(uint16_t i=0;i<recordsCount;i++)
-                  {
-                      interruptsList.push_back(*rec++);
-                  }
+				// обрабатываем список прерываний  
+				processInterruptFromModule(interruptsList, endstopUpTriggered, endstopDownTriggered);
+		}
+		break; // rs485InterruptData
 
-                  // выводим их для теста
-                  #ifdef _DEBUG
-                    DBGLN(F("-----INTERRUPTS LIST FROM MODULE -----"));
-                    for(size_t i=0;i<interruptsList.size();i++)
-                    {
-                      DBGLN(interruptsList[i]);
-                    }
-                    DBGLN(F("-----INTERRUPTS LIST END -----"));
-                  #endif
+		default:
+		{
+			//DBG(F("[RS-485] MAIN HANDLER, UNHANDLED PACKET TYPE: "));
+			//DBGLN(packet.packetType);
+		}
+		break;
 
-                  //TODO: ТУТ ЧТО-ТО ДЕЛАЕМ СО СПИСКОМ ПРЕРЫВАНИЙ !!!
-                
-               } // if(hasGuardTriggered)
+	} // switch
 
-               // переключаемся на нормальный режим работы
-               rs485WaitTimer = millis();
-               rs485State = rs485Normal;
-            }
-            break; // rs485InterruptDataAnswer
-
-			default:
-			{
-				DBG(F("[RS-485] UNKNOWN PACKET TYPE: "));
-				DBGLN(packet.packetType);
-
-				// переключаемся на нормальный режим работы
-				rs485WaitTimer = millis();
-				rs485State = rs485Normal;
-			}
-			break;
-          
-        } // switch
-    }
-    break; // rs485HandlePacket
-
-
-  } // switch
+	rs485.clearReceivedData(); // очищаем входящие данные
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void setup() 
+void SwitchRS485MainHandler(bool on)
+{
+	if (!on) // нас выключили
+	{
+	//	DBGLN(F("Main handler, release RS-485..."));
+
+		rs485.setHandler(NULL);
+		rs485.clearReceivedData();
+
+//		DBGLN(F("Main handler, RS-485 released."));
+	}
+	else // включили
+	{
+//		DBGLN(F("Main handler, own RS-485..."));
+
+		rs485.setHandler(OnRS485IncomingData);
+
+//		DBGLN(F("Main handler, RS-485 owned."));
+	}
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void setup()
 {
   Serial.begin(SERIAL_SPEED);
   while(!Serial);
@@ -231,6 +275,7 @@ void setup()
 
   // инициализируем RS-485
   RS485_SERIAL.begin(RS485_SPEED);
+  rs485.setHandler(OnRS485IncomingData);
   rs485.begin();
 
 #ifndef _SD_OFF
@@ -337,7 +382,7 @@ void loop()
   {
       if(millis() - screenIdleTimer > RESET_TO_MAIN_SCREEN_DELAY)
       {
-		  DBGLN(F("ДОЛГОЕ БЕЗДЕЙСТВИЕ, ПЕРЕКЛЮЧАЕМСЯ НА ГЛАВНЫЙ ЭКРАН!"));
+		 // DBGLN(F("ДОЛГОЕ БЕЗДЕЙСТВИЕ, ПЕРЕКЛЮЧАЕМСЯ НА ГЛАВНЫЙ ЭКРАН!"));
         screenIdleTimer = millis();
         Screen.switchToScreen(mainScreen);
       }
@@ -351,8 +396,7 @@ void loop()
 
 
   // обновляем RS-485
-  processRS485();
-
+  rs485.update();
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "TinyVector.h"
+#include "InterruptHandler.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 // класс для накопления команды из потока
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -97,10 +98,43 @@ class CommandHandlerClass
   bool setRDELAY(CommandParser& parser, Stream* pStream);
   bool getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool getEREC(const CommandParser& cParser, Stream* pStream);
+
+
   bool printBackSETResult(bool isOK, const char* command, Stream* pStream);
     
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern CommandHandlerClass CommandHandler;
+//--------------------------------------------------------------------------------------------------------------------------------------
+// обработчик команды прерывания
+//--------------------------------------------------------------------------------------------------------------------------------------
+class ExternalEthalonCommandHandler : public InterruptEventSubscriber
+{
+public:
+
+	ExternalEthalonCommandHandler();
+
+	// вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
+	virtual void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult result);
+
+	// вызывается, когда есть хотя бы один список с прерываниями - закончен
+	virtual void OnHaveInterruptData();
+
+	//virtual void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime) {}
+
+	// возвращает true, если запись удалась
+	bool beginRecord(uint32_t timeout);
+
+	void saveList(EthalonDirection direction); // сохраняет список прерываний в файл
+
+
+private:
+
+	bool done;
+	InterruptTimeList list; // список прерываний
+	uint32_t timer; // таймер для отсчёта времени
+	InterruptEventSubscriber* oldSubscriber; // старый подписчик
+};
 //--------------------------------------------------------------------------------------------------------------------------------------
 

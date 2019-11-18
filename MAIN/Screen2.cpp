@@ -54,6 +54,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(BorderMinScreen::create());
   Screen.addScreen(AcsDelayScreen::create());
   Screen.addScreen(RelayDelayScreen::create());
+  Screen.addScreen(RS485Screen::create());
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -247,6 +248,111 @@ void SystemScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   else if(pressedButton == communicateButton)
     menu->switchToScreen("CommunicateScreen");
     
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//RS485Screen
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RS485Screen* rs485Screen = NULL;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void rs485ScreenDataHandler(RS485* Sender)
+{
+	if (rs485Screen)
+	{
+		rs485Screen->OnRS485Data(Sender);
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
+{
+	rs485Screen = this;
+	lastPacketSeenAt = 0;
+	isModuleOnline = false;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::releaseRS485()
+{
+	DBGLN(F("RS485Screen: release RS-485..."));
+
+	rs485.clearReceivedData(); // очищаем принятые данные
+	SwitchRS485MainHandler(true); // включаем обработчик по умолчанию
+
+	DBGLN(F("RS485Screen: RS-485 released."));
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::OnRS485Data(RS485* Sender)
+{
+	DBGLN(F("RS485Screen: HAS PACKET FROM MODULE!"));
+
+	if (!isModuleOnline) // если модуль был офлайн - пишем сообщение о том, что модуль стал на связи
+	{
+		Screen.print("ОНЛАЙН", 2, 37);
+	}
+
+	rs485.clearReceivedData(); // очищаем входящие данные
+
+	isModuleOnline = true;
+	lastPacketSeenAt = millis();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onActivate()
+{
+	DBGLN(F("RS485Screen: Switch RS-485 to RS485Screen handler..."));
+
+	SwitchRS485MainHandler(false); // выключаем обработчик по умолчанию
+	rs485.setHandler(rs485ScreenDataHandler); // назначаем наш обработчик для RS-485
+
+	DBGLN(F("RS485Screen: RS-485 switched to RS485Screen handler."));
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onDeactivate()
+{
+	DBGLN(F("RS485Screen: Switch RS-485 to main handler"));
+
+	releaseRS485();
+
+	DBGLN(F("RS485Screen: RS-485 switched to main handler."));
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doSetup(TFTMenu* menu)
+{
+
+	// тут настраиваемся, например, можем добавлять кнопки
+	//rs485Button = screenButtons->addButton(5, 2, 210, 30, "RS485");
+	//wiFiButton = screenButtons->addButton(5, 37, 210, 30, "WiFi");
+	//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
+	//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doUpdate(TFTMenu* menu)
+{
+	// тут обновляем внутреннее состояние
+	if (millis() - lastPacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*2)
+	{
+		// очень давно не было тестового пакета, пишем "ОФЛАЙН" на экране
+
+		if (isModuleOnline) // только если до этого модуль был онлайн
+		{
+			menu->print("ОФЛАЙН", 2, 37);
+		}
+
+		lastPacketSeenAt = millis();
+		isModuleOnline = false;
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::doDraw(TFTMenu* menu)
+{
+	menu->print("RS-485:", 2, 2);
+	menu->print("ОФЛАЙН", 2, 37);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RS485Screen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+	if (pressedButton == backButton)
+		menu->switchToScreen("SystemScreen");
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // CommunicateScreen
@@ -1318,15 +1424,15 @@ EthalonRecordScreen::EthalonRecordScreen() : AbstractTFTScreen("EthalonRecordScr
 {
   state = recStarted;
   direction = dirUp;
-  channel1Button = /*channel2Button = channel3Button =*/ channel1SaveButton = /*channel2SaveButton = channel3SaveButton =*/ directionButton -1;
+  channel1Button =  channel1SaveButton =  directionButton = -1;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::doSetup(TFTMenu* menu)
 {
 
   screenButtons->setSymbolFont(Various_Symbols_32x32);
-  channel1SelectedChannel = /*channel2SelectedChannel = channel3SelectedChannel =*/ -1;
-  channel1SaveChannel = /*channel2SaveChannel = channel3SaveChannel =*/ -1;
+  channel1SelectedChannel =  -1;
+  channel1SaveChannel =  -1;
   currentDrawState = 0;
 
 //  reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
@@ -1379,7 +1485,7 @@ void EthalonRecordScreen::doSetup(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::resetButtons()
 {
-  int arr[] = {channel1Button, /*channel2Button, channel3Button,*/ channel1SaveButton, /*channel2SaveButton, channel3SaveButton,*/ -100};
+  int arr[] = {channel1Button, channel1SaveButton,  -100};
   int cntr = 0;
   while(arr[cntr] != -100)
   {
@@ -1692,8 +1798,8 @@ void EthalonRecordScreen::drawWelcome(TFTMenu* menu)
 void EthalonRecordScreen::onActivate()
 {
   state = recStarted;
-  channel1SelectedChannel = /*channel2SelectedChannel = channel3SelectedChannel =*/ -1;
-  channel1SaveChannel = /*channel2SaveChannel = channel3SaveChannel =*/ -1;
+  channel1SelectedChannel =  -1;
+  channel1SaveChannel =  -1;
   currentDrawState = 0;
   resetButtons();
   showButtons(false);
@@ -1755,7 +1861,7 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Drawing::DrawChart(this, serie1, VGA_RED);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(const InterruptTimeList& list, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
