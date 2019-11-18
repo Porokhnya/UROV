@@ -22,7 +22,7 @@ volatile uint32_t timer = 0; // служебный таймер
 volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
 typedef Vector<uint32_t> InterruptTimeList;
 InterruptTimeList encoderList; // список прерываний с энкодера
-Vector<uint8_t> rs485DataPacket; // список данных, который мы отправляем по RS-485
+Vector<uint8_t> rs485DataPacket; // список данных, который мы отправляем по RS-485   
 
 // наши концевики
 const uint32_t minInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY - ENDSTOP_HISTERESIS));
