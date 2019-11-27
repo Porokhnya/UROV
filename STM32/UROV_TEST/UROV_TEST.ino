@@ -60,7 +60,7 @@ void setup()
   Serial.println("TRY to draw string on TFT.");
   
   myGLCD.setTextColor(WHITE,RED);
-  myGLCD.drawString("TEST LGDP4524", 1, 30,1);
+  myGLCD.drawString("TEST LGDP4524", 5, 10,1);
 
   
 /*
