@@ -39,28 +39,78 @@ int dispx, dispy, text_y_center;
 uint32_t calx, caly, cals;
 char buf[13];
 
+uint32_t drawTimer = 0;
+uint8_t drawCounter = 0;
+void draw()
+{
+  static const uint16_t bgColors[] = {
+    MAGENTA,
+    RED,
+    YELLOW,
+    BLUE,
+    GREEN,
+    WHITE,
+    BLACK
+  };
+
+  static const uint16_t fgColors[] = {
+    BLACK,
+    WHITE,
+    BLACK,
+    BLACK,
+    BLACK,
+    BLACK,
+    WHITE
+  };
+
+  if(!(millis() - drawTimer >= 2000))
+    return;
+
+
+  uint16_t bgColor = bgColors[drawCounter];
+  uint16_t fgColor = fgColors[drawCounter];
+
+
+  Serial.println("TRY to draw string on TFT.");
+  myGLCD.fillScreen(bgColor);  
+  myGLCD.setTextColor(fgColor,bgColor);
+
+  const char* str = "TEST LGDP4524";
+
+  int dw = myGLCD.width();
+  int dh = myGLCD.height();
+  int tw = myGLCD.textWidth(str,1);
+  int th = myGLCD.fontHeight(1);
+  int left = (dw - tw)/2;
+  int top = (dh - th)/2;
+   
+  
+  myGLCD.drawString(str, left, top,1);   
+
+
+    drawTimer = millis();
+    drawCounter++;
+    if(drawCounter >= sizeof(bgColors)/sizeof(bgColors[0]))
+      drawCounter = 0;
+}
+
 void setup()
 {
   Serial.begin(57600);
-  delay(5000);
+  delay(3000);
   Serial.println("Begin.");
 
   Serial.println("init TFT..."); Serial.flush();
 
   
   myGLCD.init();
+  myGLCD.setRotation(3);
+  myGLCD.setFreeFont(TFT_SMALL_FONT);
 
  // Serial.print("TFT ID: "); Serial.flush();
  // Serial.println(controller.readID(), HEX);
   
- // myGLCD.setRotation(3);
-  myGLCD.fillScreen(RED);
-  myGLCD.setFreeFont(TFT_SMALL_FONT);
 
-  Serial.println("TRY to draw string on TFT.");
-  
-  myGLCD.setTextColor(WHITE,RED);
-  myGLCD.drawString("TEST LGDP4524", 5, 10,1);
 
   
 /*
@@ -300,8 +350,7 @@ void fail()
 
 void loop()
 {
-//  myGLCD.fillScreen(RED);
-//  myGLCD.drawString("TEST LGDP4524", 1, 30,1);
+  draw();
   
 /*  
   startup();
