@@ -56,6 +56,13 @@ void setup()
  // myGLCD.setRotation(3);
   myGLCD.fillScreen(RED);
   myGLCD.setFreeFont(TFT_SMALL_FONT);
+
+  Serial.println("TRY to draw string on TFT.");
+  
+  myGLCD.setTextColor(WHITE,RED);
+  myGLCD.drawString("TEST LGDP4524", 1, 30,1);
+
+  
 /*
  // myTouch.InitTouch(TOUCH_ORIENTATION);
  // myTouch.setPrecision(PREC_HI);
@@ -63,10 +70,6 @@ void setup()
   dispy=myGLCD.height();
   text_y_center=(dispy/2)-6;
 
-  Serial.println("TRY to draw string on TFT.");
-  
-  myGLCD.setTextColor(WHITE,RED);
-  myGLCD.drawString("TEST LGDP4524", 1, 30,1);
 
   myGLCD.fillRect(100,100,20,20,RED);
 */
@@ -297,7 +300,7 @@ void fail()
 
 void loop()
 {
-  myGLCD.fillScreen(RED);
+//  myGLCD.fillScreen(RED);
 //  myGLCD.drawString("TEST LGDP4524", 1, 30,1);
   
 /*  
