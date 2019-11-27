@@ -63,19 +63,30 @@ void draw()
     WHITE
   };
 
+  static const char* strings[] = {
+    "BLACK ON MAGENTA",
+    "WHITE ON RED",
+    "BLACK ON YELLOW",
+    "BLACK ON BLUE",
+    "BLACK ON GREEN",
+    "BLACK ON WHITE",
+    "WHITE ON BLACK"
+    
+  };
+
   if(!(millis() - drawTimer >= 2000))
     return;
 
 
   uint16_t bgColor = bgColors[drawCounter];
   uint16_t fgColor = fgColors[drawCounter];
+  const char* str = strings[drawCounter];
 
 
   Serial.println("TRY to draw string on TFT.");
   myGLCD.fillScreen(bgColor);  
   myGLCD.setTextColor(fgColor,bgColor);
 
-  const char* str = "TEST LGDP4524";
 
   int dw = myGLCD.width();
   int dh = myGLCD.height();
