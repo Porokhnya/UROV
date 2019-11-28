@@ -13,8 +13,7 @@ ButtonsList::ButtonsList()
 void ButtonsList::begin()
 {
   redButton.begin(BUTTON_RED);
-  blue1Button.begin(BUTTON_BLUE1);
-  blue2Button.begin(BUTTON_BLUE2);
+  blueButton.begin(BUTTON_BLUE);
   yellowButton.begin(BUTTON_YELLOW);
 
   inited = true;
@@ -26,8 +25,7 @@ void ButtonsList::update()
     return;
     
   redButton.update();
-  blue1Button.update();
-  blue2Button.update();
+  blueButton.update();
   yellowButton.update();
 
   if(yellowButton.isClicked())
@@ -45,15 +43,11 @@ void ButtonsList::update()
     DBGLN(F("RED BUTTON CLICKED!"));
   }
 
-  if(blue1Button.isClicked())
+  if(blueButton.isClicked())
   {
-    DBGLN(F("BLUE #1 BUTTON CLICKED!"));
+    DBGLN(F("BLUE BUTTON CLICKED!"));
   }
-
-  if(blue2Button.isClicked())
-  {
-    DBGLN(F("BLUE #2 BUTTON CLICKED!"));
-  }    
+ 
 }
 //--------------------------------------------------------------------------------------------------
 

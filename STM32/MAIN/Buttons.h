@@ -13,8 +13,7 @@ class ButtonsList
   private:
   
     Button redButton;
-    Button blue1Button;
-    Button blue2Button;
+    Button blueButton;
     Button yellowButton;
 
     bool inited;
