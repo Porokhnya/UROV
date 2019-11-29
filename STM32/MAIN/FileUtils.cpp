@@ -3,7 +3,7 @@
 #include "CONFIG.h"
 #include "DS3231.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SdFat SD;
+SdFatSdio SD;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool SDInit::sdInitFlag = false;
 bool SDInit::sdInitResult = false;
@@ -161,7 +161,7 @@ bool SDInit::InitSD()
     return SDInit::sdInitResult;
 
   SDInit::sdInitFlag = true;
-  SDInit::sdInitResult = SD.begin(SD_CS_PIN,SPI_HALF_SPEED);
+  SDInit::sdInitResult = SD.begin();//(SD_CS_PIN,SPI_HALF_SPEED);
   SdFile::dateTimeCallback(setFileDateTime);
   
   return SDInit::sdInitResult;

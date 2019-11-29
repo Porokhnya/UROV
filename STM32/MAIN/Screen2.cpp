@@ -26,7 +26,7 @@ void Screen2::doSetup(TFTMenu* menu)
   // добавляем разные подэкраны
   Screen.addScreen(SDScreen::create());
   Screen.addScreen(SDInfoScreen::create());
-  Screen.addScreen(SDFormatScreen::create());
+//  Screen.addScreen(SDFormatScreen::create());
 
   listLogFilesScreen = ListFilesScreen::create(vtLogsListing);
   listEthalonsFilesScreen = ListFilesScreen::create(vtEthalonsListing);
@@ -183,7 +183,7 @@ void SDScreen::doSetup(TFTMenu* menu)
 
   // тут настраиваемся, например, можем добавлять кнопки
   sdInfoButton = screenButtons->addButton(5, 2, 210, 30, "SD-инфо");
-  formatSDButton = screenButtons->addButton(5, 37, 210, 30, "Формат SD");
+  //formatSDButton = screenButtons->addButton(5, 37, 210, 30, "Формат SD");
 //  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
 //  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
@@ -206,8 +206,8 @@ void SDScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     menu->switchToScreen("Settings"); // переключаемся на экран настроек
   else if(pressedButton == sdInfoButton)
     menu->switchToScreen("SDInfoScreen");
-  else if(pressedButton == formatSDButton)
-    menu->switchToScreen("FormatSDScreen");
+//  else if(pressedButton == formatSDButton)
+    //menu->switchToScreen("FormatSDScreen");
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1888,7 +1888,7 @@ void EthalonRecordScreen::OnInterruptRaised(const CurrentOscillData& oscData, co
 
   
   // для теста - печатаем в Serial
-  #ifdef _DEBUG
+  #ifdef _MY_DEBUG
 
     if(list.size() > 1)
     {
@@ -1902,7 +1902,7 @@ void EthalonRecordScreen::OnInterruptRaised(const CurrentOscillData& oscData, co
 
     DBGLN("<< END OF INTERRUPT DATA");
     
-  #endif // _DEBUG  
+  #endif // _MY_DEBUG  
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2337,6 +2337,7 @@ void SDInfoScreen::doDraw(TFTMenu* menu)
 {
   TFT_Class* dc = menu->getDC();
   //uint8_t* oldFont = dc->getFont();
+    //Serial.println("DRAW");
 
   dc->setFreeFont(TFT_FONT);
   
@@ -2344,6 +2345,7 @@ void SDInfoScreen::doDraw(TFTMenu* menu)
   {
     // не удалось инициализировать!
     menu->print("Нет SD!", 10,10);
+    //Serial.println("111111");
     //dc->setFont(oldFont);
     return;
   }
@@ -2410,26 +2412,39 @@ String SDInfoScreen::formatSize(uint32_t sz)
    if(sz < 1024L*1024L) // under 1 Mb
    {
       float f = (sz*1.0)/1024L;
-      result += String(f,2);
+     //result += String(f,2);
+      int32_t vDataI = f*100;
+      result += int32_t(vDataI/100);
+      result += '.';
+      result += abs(vDataI%100);     
       result += "Kb";
    }
    else 
    if(sz < 1024L*1024L*1024L) // under 1 Gb
    {
       float f = (sz*1.0)/(1024L*1024L);
-      result += String(f,2);
+//      result += String(f,2);
+      int32_t vDataI = f*100;
+      result += int32_t(vDataI/100);
+      result += '.';
+      result += abs(vDataI%100);     
       result += "Mb";
    }
    else // over 1 Gb
    {
       float f = (sz*1.0)/(1024L*1024L*1024L);
-      result += String(f,2);
+//      result += String(f,2);
+      int32_t vDataI = f*100;
+      result += int32_t(vDataI/100);
+      result += '.';
+      result += abs(vDataI%100);     
       result += "Gb";
    }
 
    return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 // SDFormatScreen
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SDFormatScreen::SDFormatScreen() : AbstractTFTScreen("FormatSDScreen")
@@ -3064,5 +3079,6 @@ void SDFormatter::eraseCard()
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*/
 
 

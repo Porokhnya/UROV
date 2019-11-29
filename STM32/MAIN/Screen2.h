@@ -122,7 +122,7 @@ protected:
 private:
       SDScreen();
 
-      int sdInfoButton, formatSDButton, backButton;
+      int sdInfoButton,/* formatSDButton, */backButton;
   
   
 };
@@ -649,6 +649,7 @@ private:
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 class SDFormatScreen : public AbstractTFTScreen
 {
   public:
@@ -763,6 +764,7 @@ private:
       SDEraserScreen();  
   
 };
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 struct FileEntry
 {

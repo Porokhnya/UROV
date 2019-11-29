@@ -79,7 +79,7 @@ public:
 
 	  RodDirection rodDirection;
 
-    AT24C64* eeprom;
+    AT24C128* eeprom;
     DS3231Temperature coreTemp;
     uint32_t timer;
 

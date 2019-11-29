@@ -104,6 +104,9 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
   {
 	  t_temp_date += 1;
 	  t_temp_date = validateDate(t_temp_date, t_temp_mon, t_temp_year);
+
+    dc->fillRect(76,70,50,20,BLACK);
+   
 	  if (t_temp_date<10)
 	  {
 		  menu->getRusPrinter()->print("0", 76, 70);
@@ -119,6 +122,9 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_mon += 1;
 	  if (t_temp_mon == 13)
 		  t_temp_mon = 1;
+
+      dc->fillRect(123,70,50,20,BLACK);
+    
 	  if (t_temp_mon<10)
 	  {
 		  menu->getRusPrinter()->print("0", 123, 70);
@@ -134,12 +140,18 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_year += 1;
 	  if (t_temp_year >2099)
 		  t_temp_year = 2099;
+
+    dc->fillRect(170,70,50,20,BLACK);
+     
 	  menu->getRusPrinter()->print(String(t_temp_year - 2000).c_str(), 170, 70);
   }
   else if (pressedButton == 3)
   {
 	  t_temp_date -= 1;
 	  t_temp_date = validateDate(t_temp_date, t_temp_mon, t_temp_year);
+
+    dc->fillRect(76,70,50,20,BLACK);
+    
 	  if (t_temp_date<10)
 	  {
 		  menu->getRusPrinter()->print("0", 76, 70);
@@ -156,6 +168,9 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_mon -= 1;
 	  if (t_temp_mon == 0)
 		  t_temp_mon = 12;
+
+     dc->fillRect(123,70,50,20,BLACK);
+     
 	  if (t_temp_mon<10)
 	  {
 		  menu->getRusPrinter()->print("0", 123, 70);
@@ -171,6 +186,9 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_year -= 1;
 	  if (t_temp_year < 2017)
 		  t_temp_year = 2017;
+
+    dc->fillRect(170,70,50,20,BLACK);
+    
 	  menu->getRusPrinter()->print(String(t_temp_year - 2000).c_str(), 170, 70);
   }
 }

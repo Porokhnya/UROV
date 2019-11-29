@@ -224,7 +224,7 @@ bool RS485::processRS485Packet()
           isCrcGood = true;
 		  /*
           DBG(F("RS485: DATA RECEIVED = "));
-          #ifdef _DEBUG
+          #ifdef _MY_DEBUG
             DEBUG_SERIAL.write(dataReceived,rs485Packet.dataLength);
             DEBUG_SERIAL.println();
           #endif        

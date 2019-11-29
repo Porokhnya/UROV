@@ -31,6 +31,8 @@
 #include "Endstops.h"
 #include "RS485.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -191,7 +193,7 @@ void OnRS485IncomingData(RS485* Sender)
 
 				// выводим их для теста
 /*
-#ifdef _DEBUG
+#ifdef _MY_DEBUG
 				DBGLN(F("-----INTERRUPTS LIST FROM MODULE -----"));
 				for (size_t i = 0; i<interruptsList.size(); i++)
 				{
@@ -247,26 +249,14 @@ void SwitchRS485MainHandler(bool on)
 void setup()
 {
   Serial.begin(SERIAL_SPEED);
-  while(!Serial);
+  while(!Serial && millis() < 2000);
 
   DBGLN(F("Init I2C..."));
-  // на первом I2C у нас память висит
-  Wire.begin();
-  Wire.setClock(MY_I2C_SPEED);
-
-/*
-  // на втором I2C могут висеть часы
-  #if DS3231_WIRE_NUMBER == 1
-  Wire1.begin();
-  Wire1.setClock(MY_I2C_SPEED);
-  #endif
-*/
   
-  ConfigPin::setI2CPriority(5);
+  //Wire.begin();  
+  Wire1.begin();
+  
   DBGLN(F("I2C inited."));
-
-//  NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
-//  Serial.setInterruptPriority(2);
 
   ConfigPin::setup();
   
@@ -275,17 +265,23 @@ void setup()
   DBGLN(F("Settings inited."));
   
   DBGLN(F("Init RTC..."));
-  RealtimeClock.begin(DS3231_WIRE_NUMBER); 
+  RealtimeClock.begin(); 
  // RealtimeClock.setTime(0,1,11,1,7,2,2018);
+  DBGLN(F("RTC inited."));
 
 
   DBGLN(F("Init endstops..."));
   SetupEndstops();
+  DBGLN(F("Endstops inited."));
 
+
+  DBGLN(F("Init RS-485..."));
   // инициализируем RS-485
   RS485_SERIAL.begin(RS485_SPEED);
   rs485.setHandler(OnRS485IncomingData);
   rs485.begin();
+  DBGLN(F("RS-485 inited."));
+
 
 #ifndef _SD_OFF
 

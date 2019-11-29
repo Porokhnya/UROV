@@ -113,6 +113,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_hour += 1;
 	  if (t_temp_hour == 24)
 		  t_temp_hour = 0;
+
+    dc->fillRect(81,70,50,20,BLACK);
+    
 	  if (t_temp_hour<10)
 	  {
 		  menu->getRusPrinter()->print("0", 81, 70);
@@ -128,6 +131,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_min += 1;
 	  if (t_temp_min == 60)
 		  t_temp_min = 0;
+
+    dc->fillRect(128,70,50,20,BLACK);
+     
 	  if (t_temp_min<10)
 	  {
 		  menu->getRusPrinter()->print("0", 128, 70);
@@ -143,6 +149,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_sec += 1;
 	  if (t_temp_sec == 60)
 		  t_temp_sec = 0;
+
+    dc->fillRect(175,70,50,20,BLACK);
+    
 	  if (t_temp_sec<10)
 	  {
 		  menu->getRusPrinter()->print("0", 175, 70);
@@ -158,6 +167,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_hour -= 1;
 	  if (t_temp_hour < 0)
 		  t_temp_hour = 23;
+
+    dc->fillRect(81,70,50,20,BLACK);
+    
 	  if (t_temp_hour<10)
 	  {
 		  menu->getRusPrinter()->print("0", 81, 70);
@@ -173,6 +185,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_min -= 1;
 	  if (t_temp_min < 0)
 		  t_temp_min = 59;
+
+    dc->fillRect(128,70,50,20,BLACK);
+    
 	  if (t_temp_min<10)
 	  {
 		  menu->getRusPrinter()->print("0", 128, 70);
@@ -188,6 +203,9 @@ void Screen5::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  t_temp_sec -= 1;
 	  if (t_temp_sec < 0)
 		  t_temp_sec = 59;
+
+    dc->fillRect(175,70,50,20,BLACK);
+    
 	  if (t_temp_sec<10)
 	  {
 		  menu->getRusPrinter()->print("0", 175, 70);

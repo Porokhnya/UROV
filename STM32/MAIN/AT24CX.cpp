@@ -31,79 +31,81 @@ THE SOFTWARE.
 /**
  * Constructor with AT24Cx EEPROM at index 0
  */
-AT24CX::AT24CX() {
+AT24CX::AT24CX(TwoWire& w) {
+  wire = &w;
 	init(0, 32);
 }
 
 /**
  * Constructor with AT24Cx EEPROM at given index and size of page
  */
-AT24CX::AT24CX(byte index, byte pageSize) {
+AT24CX::AT24CX(TwoWire& w,byte index, byte pageSize) {
+  wire = &w;
 	init(index, pageSize);
 }
 
 /**
  * Constructor with AT24C32 EEPROM at index 0
  */
-AT24C32::AT24C32() {
+AT24C32::AT24C32(TwoWire& w) : AT24CX(w) {
 	init(0, 32);
 }
 /**
  * Constructor with AT24Cx EEPROM at given index
  */
-AT24C32::AT24C32(byte index) {
+AT24C32::AT24C32(TwoWire& w,byte index) : AT24CX(w)  {
 	init(index, 32);
 }
 
 /**
  * Constructor with AT24C64 EEPROM at index 0
  */
-AT24C64::AT24C64() {
+AT24C64::AT24C64(TwoWire& w) : AT24CX(w)  {
 	init(0, 32);
 }
 /**
  * Constructor with AT24C64 EEPROM at given index
  */
-AT24C64::AT24C64(byte index) {
+AT24C64::AT24C64(TwoWire& w,byte index) : AT24CX(w)  {
 	init(index, 32);
 }
 
 /**
  * Constructor with AT24C128 EEPROM at index 0
  */
-AT24C128::AT24C128() {
+AT24C128::AT24C128(TwoWire& w) : AT24CX(w)  {
 	init(0, 64);
 }
 /**
  * Constructor with AT24C128 EEPROM at given index
  */
-AT24C128::AT24C128(byte index) {
+AT24C128::AT24C128(TwoWire& w,byte index) : AT24CX(w)  {
 	init(index, 64);
 }
 
 /**
  * Constructor with AT24C256 EEPROM at index 0
  */
-AT24C256::AT24C256() {
+AT24C256::AT24C256(TwoWire& w) : AT24CX(w)  {
 	init(0, 64);
 }
 /**
  * Constructor with AT24C128 EEPROM at given index
  */
-AT24C256::AT24C256(byte index) {
+AT24C256::AT24C256(TwoWire& w,byte index) : AT24CX(w)  {
 	init(index, 64);
 }
 
 /**
  * Constructor with AT24C512 EEPROM at index 0
  */
-AT24C512::AT24C512() {
+AT24C512::AT24C512(TwoWire& w) : AT24CX(w)  {
 	init(0, 128);
 }
 /**
  * Constructor with AT24C512 EEPROM at given index
  */
-AT24C512::AT24C512(byte index) {
+AT24C512::AT24C512(TwoWire& w,byte index) : AT24CX(w)  {
 	init(index, 128);
 }
 
@@ -120,13 +122,13 @@ void AT24CX::init(byte index, byte pageSize) {
  * Write byte
  */
 void AT24CX::write(unsigned int address, byte data) {
-    Wire.beginTransmission(_id);
-    if(Wire.endTransmission()==0) {
-    	Wire.beginTransmission(_id);
-    	Wire.write(address >> 8);
-    	Wire.write(address & 0xFF);
-      	Wire.write(data);
-    	Wire.endTransmission();
+    wire->beginTransmission(_id);
+    if(wire->endTransmission()==0) {
+    	wire->beginTransmission(_id);
+    	wire->write(address >> 8);
+    	wire->write(address & 0xFF);
+      	wire->write(data);
+    	wire->endTransmission();
     	delay(10);
     }
 }
@@ -232,14 +234,14 @@ void AT24CX::write(unsigned int address, byte *data, int n) {
  * Write sequence of n bytes from offset
  */
 void AT24CX::write(unsigned int address, byte *data, int offset, int n) {
-    Wire.beginTransmission(_id);
-    if (Wire.endTransmission()==0) {
-     	Wire.beginTransmission(_id);
-    	Wire.write(address >> 8);
-    	Wire.write(address & 0xFF);
+    wire->beginTransmission(_id);
+    if (wire->endTransmission()==0) {
+     	wire->beginTransmission(_id);
+    	wire->write(address >> 8);
+    	wire->write(address & 0xFF);
     	byte *adr = data+offset;
-    	Wire.write(adr, n);
-    	Wire.endTransmission();
+    	wire->write(adr, n);
+    	wire->endTransmission();
     	delay(20);
     }
 }
@@ -250,15 +252,15 @@ void AT24CX::write(unsigned int address, byte *data, int offset, int n) {
 byte AT24CX::read(unsigned int address) {
 	byte b = 0;
 	int r = 0;
-	Wire.beginTransmission(_id);
-    if (Wire.endTransmission()==0) {
-     	Wire.beginTransmission(_id);
-    	Wire.write(address >> 8);
-    	Wire.write(address & 0xFF);
-    	if (Wire.endTransmission()==0) {
-			Wire.requestFrom(_id, 1);
-			while (Wire.available() > 0 && r<1) {
-				b = (byte)Wire.read();
+	wire->beginTransmission(_id);
+    if (wire->endTransmission()==0) {
+     	wire->beginTransmission(_id);
+    	wire->write(address >> 8);
+    	wire->write(address & 0xFF);
+    	if (wire->endTransmission()==0) {
+			wire->requestFrom(_id, 1);
+			while (wire->available() > 0 && r<1) {
+				b = (byte)wire->read();
 				r++;
 			}
     	}
@@ -290,16 +292,16 @@ void AT24CX::read(unsigned int address, byte *data, int n) {
  * Read sequence of n bytes to offset
  */
 void AT24CX::read(unsigned int address, byte *data, int offset, int n) {
-	Wire.beginTransmission(_id);
-    if (Wire.endTransmission()==0) {
-     	Wire.beginTransmission(_id);
-    	Wire.write(address >> 8);
-    	Wire.write(address & 0xFF);
-    	if (Wire.endTransmission()==0) {
+	wire->beginTransmission(_id);
+    if (wire->endTransmission()==0) {
+     	wire->beginTransmission(_id);
+    	wire->write(address >> 8);
+    	wire->write(address & 0xFF);
+    	if (wire->endTransmission()==0) {
 			int r = 0;
-    		Wire.requestFrom(_id, n);
-			while (Wire.available() > 0 && r<n) {
-				data[offset+r] = (byte)Wire.read();
+    		wire->requestFrom(_id, n);
+			while (wire->available() > 0 && r<n) {
+				data[offset+r] = (byte)wire->read();
 				r++;
 			}
     	}

@@ -80,8 +80,8 @@ void TFTMenu::setup()
   controller = new GxCTRL_Class(io);   
 
   //tftDC = new UTFT(TFT_MODEL,TFT_RS_PIN,TFT_WR_PIN,TFT_CS_PIN,TFT_RST_PIN);
-   tftDC = new TFT_Class(io, *controller, 220, 176);   // landscape 220x176
-  tftTouch = new TOUCH_Class(TFT_TOUCH_CLK_PIN,TFT_TOUCH_CS_PIN,TFT_TOUCH_DIN_PIN,TFT_TOUCH_DOUT_PIN,TFT_TOUCH_IRQ_PIN);
+   tftDC = new TFT_Class(io, *controller, 221, 176);   // landscape 220x176
+  tftTouch = new TOUCH_Class(TFT_TOUCH_CS_PIN);//(TFT_TOUCH_CLK_PIN,TFT_TOUCH_CS_PIN,TFT_TOUCH_DIN_PIN,TFT_TOUCH_DOUT_PIN,TFT_TOUCH_IRQ_PIN);
 
   #if TFT_INIT_DELAY > 0
   delay(TFT_INIT_DELAY);
@@ -92,8 +92,10 @@ void TFTMenu::setup()
   tftDC->fillScreen(TFT_BACK_COLOR);
   tftDC->setFreeFont(TFT_FONT);
 
-  tftTouch->InitTouch(TFT_ORIENTATION);
-  tftTouch->setPrecision(TOUCH_PRECISION);
+  //tftTouch->InitTouch(TFT_ORIENTATION);
+  //tftTouch->setPrecision(TOUCH_PRECISION);
+  tftTouch->begin();
+  
   
   rusPrint.init(tftDC);
 
@@ -107,9 +109,9 @@ void TFTMenu::setup()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int TFTMenu::print(const char* str,int x, int y, int deg, bool computeStringLengthOnly)
+int TFTMenu::print(const char* str,int x, int y)
 {
-  return rusPrint.print(str,x,y,deg,computeStringLengthOnly);
+  return rusPrint.print(str,x,y);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void TFTMenu::update()
@@ -492,15 +494,21 @@ void KeyboardScreen::drawValue(TFTMenu* menu)
 
  TFT_Class* dc = menu->getDC();
 
- //uint8_t* oldFont = dc->getFont();
  dc->setFreeFont(TFT_FONT);
-// dc->setColor(WHITE);
 
-// int fontWidth = dc->getFontXsize();
 
- int strLen = menu->getRusPrinter()->textWidth(input.c_str());
+// int strLen = menu->getRusPrinter()->textWidth(input.c_str());
+  int screenW = dc->width();
+  int boxX = 5;
+  int boxY = 3;
+  int boxX2 = screenW - 10;
+  int boxY2 = 19;
+  
+  dc->fillRect(boxX,boxY,boxX2,boxY2,BLACK);
+
  menu->print(input.c_str(),textX,textY);
 
+/*
  textX += strLen;
 
  // забиваем пробелами оставшуюся часть
@@ -509,9 +517,8 @@ void KeyboardScreen::drawValue(TFTMenu* menu)
    menu->print(" ",textX,textY);
    textX +=  menu->getRusPrinter()->textWidth(" ");
  }
+*/
 
-
-// dc->setFont(oldFont);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -12,7 +12,6 @@ public:
   ConfigPin();
   static void setup();
 
-  static void setI2CPriority(uint8_t priority);
  
 private:
 

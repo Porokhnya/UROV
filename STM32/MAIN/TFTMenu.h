@@ -2,7 +2,7 @@
 #define _UTFTMENU_H
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include "TinyVector.h"
-#include "TFTSettings.h"
+#include "CONFIG.h"
 
 #include "TFT_Includes.h"
 #include <URTouchCD.h>
@@ -80,7 +80,7 @@ public:
   TOUCH_Class* getTouch() { return tftTouch; };
   TFTRus* getRusPrinter() { return &rusPrint; };
 
-  int print(const char* str,int x, int y, int deg=0, bool computeStringLengthOnly=false);
+  int print(const char* str,int x, int y);
 
 
 private:

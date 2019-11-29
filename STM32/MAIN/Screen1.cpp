@@ -110,10 +110,8 @@ void Screen1::drawVoltage(TFTMenu* menu)
   word color = RED;
   TFT_Class* dc = menu->getDC();
   
- // word oldColor = dc->getColor();  
-  //dc->setBackColor(BLACK);
-  dc->setFreeFont(TFT_SMALL_FONT);//(SmallRusFont);
-  uint8_t fontHeight = FONT_HEIGHT(dc);//dc->getFontYsize();
+  dc->setFreeFont(TFT_SMALL_FONT);
+  uint8_t fontHeight = FONT_HEIGHT(dc);
   
   uint16_t curX = 190;
   uint16_t curY = 20;
@@ -131,11 +129,18 @@ void Screen1::drawVoltage(TFTMenu* menu)
     if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
       color = GREEN;
   
-    String data = String(vData.voltage,1)+"V";
+    //String data = String(vData.voltage,1)+"V";
+    int32_t vDataI = vData.voltage*10;
+    String data;
+    data = int32_t(vDataI/10);
+    data += '.';
+    data += abs(vDataI%10);
+    data += "V";
+    
     while(data.length() < 4)
       data += ' ';
-    
-    //dc->setColor(color);
+      
+
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
   
@@ -157,7 +162,14 @@ void Screen1::drawVoltage(TFTMenu* menu)
     if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
       color = GREEN;
   
-    String data = String(vData.voltage,1) + "V";
+    //String data = String(vData.voltage,1) + "V";
+    int32_t vDataI = vData.voltage*10;
+    String data;
+    data = int32_t(vDataI/10);
+    data += '.';
+    data += abs(vDataI%10);
+    data += "V";
+    
     while(data.length() < 4)
       data += ' ';
   
@@ -184,6 +196,7 @@ void Screen1::drawVoltage(TFTMenu* menu)
       color = GREEN;
   
     String data = String((uint16_t)vData.voltage) + "V";
+    
     while(data.length() < 4)
       data += ' ';
   
@@ -262,26 +275,28 @@ void Screen1::doSetup(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawTime(TFTMenu* menu)
 {
+
 #ifndef _DISABLE_DRAW_TIME
     DS3231Time tm = RealtimeClock.getTime();
     if (oldsecond != tm.second)
     {
-        oldsecond = tm.second;
-      // получаем компоненты даты в виде строк
       TFT_Class* dc = menu->getDC();
-    //  dc->setColor(WHITE);
-//      dc->setBackColor(BLACK);
-      dc->setFreeFont(TFT_SMALL_FONT);//(SmallRusFont);
+      dc->setFreeFont(TFT_SMALL_FONT);
+      
+        oldsecond = tm.second;
+
+      // получаем компоненты даты в виде строк
       String strDate = RealtimeClock.getDateStr(tm);
       String strTime = RealtimeClock.getTimeStr(tm);
   
       // печатаем их
-      menu->getRusPrinter()->print(strDate.c_str(), 5, 1,BLACK,WHITE);
-      menu->getRusPrinter()->print(strTime.c_str(), 90, 1,BLACK,WHITE);
+      menu->print(strDate.c_str(), 5, 1);
+      menu->print(strTime.c_str(), 90, 1);
   
 #ifndef _DISABLE_DRAW_RAM_ON_SCREEN
+      
       String str = "RAM: ";
-      str += getFreeMemory();
+      str += getFreeMemory();      
       Screen.print(str.c_str(), 10,123);
 #endif // !_DISABLE_DRAW_RAM_ON_SCREEN
       
@@ -293,7 +308,8 @@ void Screen1::drawTime(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doUpdate(TFTMenu* menu)
 {
-	
+
+
   drawTime(menu);
   drawVoltage(menu);
   drawChart();
@@ -433,25 +449,24 @@ void Screen1::doDraw(TFTMenu* menu)
   drawTime(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
+
   // рисуем версию ПО
   TFT_Class* dc = menu->getDC();
-//  dc->setColor(WHITE);
-//  dc->setBackColor(BLACK);
-  dc->setFreeFont(TFT_SMALL_FONT);//(SmallRusFont);
+  dc->setFreeFont(TFT_SMALL_FONT);
 
   uint16_t w = dc->width();
-//  uint8_t fw = dc->getFontXsize();
   String str = SOFTWARE_VERSION;
 
-  int strW = menu->getRusPrinter()->textWidth(str.c_str());//print(str.c_str(),0,0,0,true);
+  int strW = menu->getRusPrinter()->textWidth(str.c_str());
 
   int top = 1;
   int left = w - strW - 3;
 
-  menu->getRusPrinter()->print(str.c_str(),left,top,BLACK,WHITE);
+  menu->print(str.c_str(),left,top);
+  
 #endif // !_DISABLE_DRAW_SOFTWARE_VERSION
 
-  DBGLN(F("MainScreen::draw()"));
+ // DBGLN(F("MainScreen::draw()"));
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

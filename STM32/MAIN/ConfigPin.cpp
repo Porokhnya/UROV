@@ -7,25 +7,6 @@ ConfigPin::ConfigPin()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ConfigPin::setI2CPriority(uint8_t priority)
-{
-//TODO: Закомментировал!!!
-/*
-  NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
-  NVIC_DisableIRQ(WIRE_ISR_ID);
-  NVIC_ClearPendingIRQ(WIRE_ISR_ID);
-  NVIC_SetPriority(WIRE_ISR_ID, priority);
-  NVIC_EnableIRQ(WIRE_ISR_ID);
-
-#if defined (__arm__) && defined (__SAM3X8E__) 
-  NVIC_DisableIRQ(WIRE1_ISR_ID);
-  NVIC_ClearPendingIRQ(WIRE1_ISR_ID);
-  NVIC_SetPriority(WIRE1_ISR_ID, priority);
-  NVIC_EnableIRQ(WIRE1_ISR_ID);
-#endif  
-*/
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ConfigPin::setup()
 {
   

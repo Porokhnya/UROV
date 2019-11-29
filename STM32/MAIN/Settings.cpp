@@ -106,7 +106,7 @@ uint8_t SettingsClass::getInductiveSensorState(uint8_t channelNum)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::begin()
 {
-  eeprom = new AT24C64();
+  eeprom = new AT24C128(Wire1);
 
   uint8_t* writePtr = (uint8_t*)&relayDelay;
   eeprom->read(RELAY_DELAY_STORE_ADDRESS,writePtr,sizeof(uint32_t));
@@ -276,7 +276,6 @@ void SettingsClass::setMotoresource(uint8_t channelNum, uint32_t val)
     break;
 	*/
   }
-
     uint8_t* writePtr = (uint8_t*)&val;
     eeprom->write(addr,writePtr,sizeof(uint32_t));
 }

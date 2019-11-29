@@ -244,15 +244,20 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
       _UTFT->setFreeFont(_font_symbol);
       text_x = (buttons[buttonID].width/2) - (pRusPrinter->textWidth(buttons[buttonID].label)/2) + buttons[buttonID].pos_x;
       text_y = (buttons[buttonID].height/2) - (_UTFT->fontHeight(1)/2) + buttons[buttonID].pos_y;
+
+      // FIX: залезает на рамку, если разница в координатах меньше 2 !!!
+      if(text_y >= buttons[buttonID].pos_y)
+      {
+        while(text_y - buttons[buttonID].pos_y < 2)
+          text_y++;
+      }
+     
+      
     }
     else
     {
         if (buttons[buttonID].flags & BUTTON_HAS_FONT)
         {
-//Serial.print("button HAS font: ");
-//Serial.println((uint32_t)(buttons[buttonID].font));
-//Serial.println((uint32_t)TFT_FONT);
-
           _UTFT->setFreeFont(buttons[buttonID].font);
           curFont = buttons[buttonID].font;
         }
@@ -422,18 +427,18 @@ void TFT_Buttons_Rus::deleteAllButtons()
 int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc released)
 {
   
-    //if (_URTouch->TouchPressed())
-    if (_URTouch->dataAvailable() == true)
+    if (_URTouch->TouchPressed())
+    //if (_URTouch->dataAvailable() == true)
     {
 
-      _URTouch->read();
-      //TS_Point p = _URTouch->getPoint();
+      //_URTouch->read();
+      TS_Point p = _URTouch->getPoint();
 
 		int		result = -1;
-		//int		touch_x = p.x;
-		//int		touch_y = p.y;
-    int    touch_x = _URTouch->getX();
-    int   touch_y = _URTouch->getY();
+		int		touch_x = p.x;
+		int		touch_y = p.y;
+    //int    touch_x = _URTouch->getX();
+    //int   touch_y = _URTouch->getY();
 
    // Serial.print("x: "); Serial.print(touch_x);
    // Serial.print(", y: "); Serial.println(touch_y);
@@ -461,8 +466,8 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
    
 		if (result != -1)
 		{
-      //while (_URTouch->TouchPressed()) 
-      while (_URTouch->dataAvailable() == true) 
+      while (_URTouch->TouchPressed()) 
+      //while (_URTouch->dataAvailable() == true) 
       {
 //        Ticker.tick(); 
         yield(); 

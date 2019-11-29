@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 // includes
 #include <Arduino.h>
+#include <Wire.h>
 
 // byte
 typedef uint8_t byte;
@@ -39,10 +40,11 @@ typedef uint8_t byte;
 #define AT24CX_ID B1010000
 
 // general class definition
-class AT24CX {
+class AT24CX 
+{
 public:
-	AT24CX();
-	AT24CX(byte index, byte pageSize);
+	AT24CX(TwoWire& w);
+	AT24CX(TwoWire& w,byte index, byte pageSize);
 	void write(unsigned int address, byte data);
 	void write(unsigned int address, byte *data, int n);
 	void writeInt(unsigned int address, unsigned int data);
@@ -59,6 +61,7 @@ public:
 	void readChars(unsigned int address, char *data, int n);
 protected:
 	void init(byte index, byte pageSize);
+  TwoWire* wire;
 private:
 	void read(unsigned int address, byte *data, int offset, int n);
 	void write(unsigned int address, byte *data, int offset, int n);
@@ -70,36 +73,36 @@ private:
 // AT24C32 class definiton
 class AT24C32 : public AT24CX {
 public:
-	AT24C32();
-	AT24C32(byte index);
+	AT24C32(TwoWire& w);
+	AT24C32(TwoWire& w,byte index);
 };
 
 // AT24C64 class definiton
 class AT24C64 : public AT24CX {
 public:
-	AT24C64();
-	AT24C64(byte index);
+	AT24C64(TwoWire& w);
+	AT24C64(TwoWire& w,byte index);
 };
 
 // AT24C128 class definiton
 class AT24C128 : public AT24CX {
 public:
-	AT24C128();
-	AT24C128(byte index);
+	AT24C128(TwoWire& w);
+	AT24C128(TwoWire& w,byte index);
 };
 
 // AT24C256 class definiton
 class AT24C256 : public AT24CX {
 public:
-	AT24C256();
-	AT24C256(byte index);
+	AT24C256(TwoWire& w);
+	AT24C256(TwoWire& w,byte index);
 };
 
 // AT24C512 class definiton
 class AT24C512 : public AT24CX {
 public:
-	AT24C512();
-	AT24C512(byte index);
+	AT24C512(TwoWire& w);
+	AT24C512(TwoWire& w,byte index);
 };
 
 
