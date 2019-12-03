@@ -5,8 +5,6 @@
 #include "CONFIG.h"
 
 #include "TFT_Includes.h"
-#include <URTouchCD.h>
-#include <URTouch.h>
 #include "TFT_Buttons_Rus.h"
 #include "TFTRus.h"
 #include "Drawing.h"
