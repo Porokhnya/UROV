@@ -3,9 +3,193 @@
 #include "CONFIG.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler adcSampler;
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+TIM_HandleTypeDef htim3 = {0};
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADC_Handler()
+void MX_DMA_Init(void)  // Enable DMA controller clock
 {
+DBGLN("MX_DMA_Init START.");
+
+  // DMA controller clock enable 
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  // DMA interrupt init 
+  // DMA2_Stream0_IRQn interrupt configuration 
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+
+DBGLN("MX_DMA_Init END.");
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void MX_ADC1_Init(void) // Init ADC1
+{
+
+DBGLN("MX_ADC1_Init START.");
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* Peripheral clock enable */
+    __HAL_RCC_ADC1_CLK_ENABLE();  
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* ADC1 DMA Init */
+    /* ADC1 Init */
+    hdma_adc1.Instance = DMA2_Stream0;
+    hdma_adc1.Init.Channel = DMA_CHANNEL_0;
+    hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc1.Init.Mode = DMA_CIRCULAR;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_adc1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
+    {
+      return;
+    }
+    
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T3_TRGO;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 5;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    return;
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  /*
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+   return;
+  }
+  */
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = 2;
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    return;
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank = 3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    return;
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = 4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    return;
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = 5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    return;
+  }
+
+    __HAL_LINKDMA(&hadc1,DMA_Handle,hdma_adc1);
+  
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+DBGLN("MX_ADC1_Init END.");
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void MX_TIM3_Init(void)
+{
+  DBGLN("MX_TIM3_Init START.");
+  
+   /* Peripheral clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+    /* TIM3 interrupt Init */
+    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM3_IRQn);
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = SAMPLING_RATE;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  
+  //TODO: РУГАЕТСЯ НА ЭТУ СТРОЧКУ !!!
+  //htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    return;
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    return;
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    return;
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+ DBGLN("MX_TIM3_Init END.");
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void TIM3_IRQHandler()
+{
+  HAL_TIM_IRQHandler(&htim3);
 	adcSampler.handleInterrupt();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -14,122 +198,49 @@ ADCSampler::ADCSampler()
 	rmsComputeMode = false;
 	rmsStartComputeTime = 0;
   dataReady = false;
-  adcDMAIndex = 0;
-  adcTransferIndex = 0;
+  filledBufferIndex = 0;
+  workingBufferIndex = 0;
+  countOfSamples = 0;
+
   for (int i = 0; i < NUMBER_OF_BUFFERS; i++)
   {
     memset((void *)adcBuffer[i], 0, ADC_BUFFER_SIZE);
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::begin(unsigned int _sr)
-{
- //TODO: КОД АЦП ДЛЯ STM32 !!!
- /* 
-  this->samplingRate = _sr;
-  // Turning devices Timer on.
-  pmc_enable_periph_clk(ID_TC0); 
+void ADCSampler::begin()
+{  
+DBGLN("ADCSampler::begin START.");  
 
-
-  // Configure timer
-  TC_Configure(TC0, 0, TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET | TC_CMR_ASWTRG_CLEAR | TC_CMR_TCCLKS_TIMER_CLOCK1);
-
-  // It is good to have the timer 0 on PIN2, good for Debugging 
-  //int result = PIO_Configure( PIOB, PIO_PERIPH_B, PIO_PB25B_TIOA0, PIO_DEFAULT);
-
-  // Configure ADC pin A7
-  //  the below code is taken from adc_init(ADC, SystemCoreClock, ADC_FREQ_MAX, ADC_STARTUP_FAST);
-
-
-
-
-
-  ADC->ADC_CR = ADC_CR_SWRST;                            // Reset the controller.
-  ADC->ADC_MR = 0;                                       // Reset Mode Register.
-  ADC->ADC_PTCR = (ADC_PTCR_RXTDIS | ADC_PTCR_TXTDIS);   // Reset PDC transfer.
-  ADC->ADC_MR |= ADC_MR_PRESCAL(3);                      // ADC clock = MSCK/((PRESCAL+1)*2), 13 -> 750000 Sps
-  ADC->ADC_MR |= ADC_MR_STARTUP_SUT0;                    // What is this by the way?
-  ADC->ADC_MR |= ADC_MR_TRACKTIM(15);
-  ADC->ADC_MR |= ADC_MR_TRANSFER(1);
-  ADC->ADC_MR |= ADC_MR_TRGEN_EN;                         // Hardware trigger selected by TRGSEL field is enabled. Включен аппаратный триггер, выбранный по полю TRGSEL.
-  ADC->ADC_MR |= ADC_MR_TRGSEL_ADC_TRIG1;                 // selecting TIOA0 as trigger.
-  ADC->ADC_MR |= ADC_MR_LOWRES_BITS_12;                   // brief (ADC_MR) 12-bit resolution 
-  ADC->ADC_ACR |= ADC_ACR_TSON;                           // Включить датчик температуры    
-
-
-  ADC->ADC_CHER = ADC_CHANNELS;                           // Записать контролируемые входа
-  ADC->ADC_CHDR = ADC_CHANNELS_DIS;                       // Отключить не используемые входа
-
-  ADC->ADC_SEQR1 = 0x01234567;                            // use A0 to A7 in order into array Упорядочить аналоговые каналы как у Ардуино
-  ADC->ADC_SEQR2 = 0x00dcba00;                            //use A8 to A11 following in order into array
-
-  ADC->ADC_EMR = ADC_EMR_CMPMODE_IN                       // Генерирует событие, когда преобразованные данные пересекают окно сравнения.
-	//  | ADC_EMR_CMPSEL(4)                               // Compare channel 4 = A3
-	  | ADC_EMR_CMPALL                                    // Compare ALL channel
-	  | ADC_EMR_CMPFILTER(0);                             // Количество последовательных событий сравнения, необходимых для повышения флага = CMPFILTER + 1
-														  // При запрограммированном значении 0 флаг увеличивается, как только происходит событие.
-
-  ADC->ADC_CWR = ADC_CWR_LOWTHRES(_compare_Low) | ADC_CWR_HIGHTHRES(_compare_High); // Установить высокий и низкий порог компаратора АЦП
-
-
-
-
-  // Interupts 
-  ADC->ADC_IDR = ~ADC_IDR_ENDRX;                        // сбросить регистры прерывания по готовности данных.
-  ADC->ADC_IDR = ~ADC_IDR_COMPE;                        // сбросить регистры копаратора.
-  ADC->ADC_IER =  ADC_IER_ENDRX;                        // Включить прерывание по готовности данных.
- // ADC->ADC_IER =  ADC_IER_COMPE;                        // Прерывание по совпадению сравнения компаратором
-  ADC->ADC_ISR = ~ADC_ISR_COMPE;                        // ADC Interrupt Status Register Обнулить ошибку сравнения с момента последнего чтения ADC_ISR.
-  // Waiting for ENDRX as end of the transfer is set
-//    when the current DMA transfer is done (RCR = 0), i.e. it doesn't include the
-//    next DMA transfer.
-
-//    If we trigger on RXBUFF This flag is set if there is no more DMA transfer in
-//    progress (RCR = RNCR = 0). Hence we may miss samples.
-
-//	Ожидание окончания ENDRX в конце передачи
-//	когда выполняется текущая передача DMA (RCR = 0), то есть она не включает следующая передача DMA.
-//    Если мы запускаем RXBUFF, этот флаг устанавливается, если больше нет передачи DMA в прогресс (RCR = RNCR = 0). 
-//	Следовательно, мы можем пропустить образцы.
-  
-
-  
-  unsigned int cycles = 42000000 / samplingRate;
-
-  //  timing of ADC 
-  TC_SetRC(TC0, 0, cycles);                             // TIOA0 goes HIGH on RC.
-  TC_SetRA(TC0, 0, cycles / 2);                         // TIOA0 goes LOW  on RA.
-
-  // We have to reinitalise just in case the Sampler is stopped and restarted...
-  // Мы должны приступить к реинициализировать на случай, если Sampler остановлен и перезапущен ...
   dataReady = false;
-  dataHigh = false;                       // Признак срабатывания компаратора
-  adcDMAIndex = 0;
-  adcTransferIndex = 0;
+
+  filledBufferIndex = 0;
+  workingBufferIndex = 0;
+  
+  countOfSamples = 0;
+  
   for (int i = 0; i < NUMBER_OF_BUFFERS; i++)
   {
     memset((void *)adcBuffer[i], 0, ADC_BUFFER_SIZE);
   }
 
-  ADC->ADC_RPR  = (unsigned long) adcBuffer[adcDMAIndex];         // DMA buffer
-  ADC->ADC_RCR  = (unsigned int)  ADC_BUFFER_SIZE;                    // ADC works in half-word mode.
-  ADC->ADC_RNPR = (unsigned long) adcBuffer[(adcDMAIndex + 1)];   // next DMA buffer
-  ADC->ADC_RNCR = (unsigned int)  ADC_BUFFER_SIZE;
+  
+ //TODO: КОД АЦП ДЛЯ STM32 !!!
 
-  // Enable interrupts
-  NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
-  NVIC_DisableIRQ(ADC_IRQn);
-  NVIC_ClearPendingIRQ(ADC_IRQn);  
-  NVIC_SetPriority(ADC_IRQn, 6);  
-  NVIC_EnableIRQ(ADC_IRQn);
-  ADC->ADC_PTCR  =  ADC_PTCR_RXTEN;                               // Enable receiving data.
-  ADC->ADC_CR   |=  ADC_CR_START;                                 // start waiting for trigger.
+ MX_DMA_Init();
+ 
+ MX_ADC1_Init();
+ 
+ MX_TIM3_Init();
 
-  // Start timer
-  TC0->TC_CHANNEL[0].TC_SR;
-  TC0->TC_CHANNEL[0].TC_CCR = TC_CCR_CLKEN;
-  TC_Start(TC0, 0);
-  */
+
+ // говорим АЦП собирать данные по каналам в наш буфер
+ HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
+
+ // запускаем таймер
+// HAL_TIM_Base_Start(&htim3);
+ 
+DBGLN("ADCSampler::begin END.");   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::startComputeRMS()
@@ -157,85 +268,112 @@ void ADCSampler::end()
 void ADCSampler::handleInterrupt()
 {
   //TODO: Код АЦП для STM32!!!
-  
+
+
   /*
-  unsigned long status = ADC->ADC_ISR;
-  if (status & ADC_ISR_ENDRX)  
-  {                     // Проверить завершение преобразования
-    adcTransferIndex = adcDMAIndex;
-    adcDMAIndex = (adcDMAIndex + 1) % NUMBER_OF_BUFFERS;
-    ADC->ADC_RNPR  = (unsigned long) adcBuffer[(adcDMAIndex + 1) % NUMBER_OF_BUFFERS];
-    ADC->ADC_RNCR  = ADC_BUFFER_SIZE;
-	dataReady = true;                               // Данные сформированы
+    Буфер у нас для четырёх каналов, индексы:
 
-	if (rmsComputeMode)
-	{
-		// нас попросили считать РМС, считаем
+    0 -  Аналоговый вход трансформатора №1
+    1 - Аналоговый вход трансформатора №2
+    2 -  Аналоговый вход трансформатора №3
+    3 - Аналоговый вход контроль питания 3.3в
 
-		int bufferLength = 0;
-		uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);
-		uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
+     тут мы должны заполнять текущий буфер данными. У нас один буфер имеет размерность ADC_BUFFER_SIZE, которая
+     определяется как 200*NUM_CHANNELS, где NUM_CHANNELS = 4.
 
-		uint32_t serie1=0, serie2=0, serie3=0;
+     т.е. для каждого канала у нас - ADC_BUFFER_SIZE/NUM_CHANNELS измерений.
+     измерения располагаются последовательно по каналам.
 
-		for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS) // получить результат измерения поканально, с интервалом 3
-		{
-			serie1 += cBuf[i + 4];        // Данные 1 графика  (красный)
-			serie2 += cBuf[i + 3];        // Данные 2 графика  (синий)
-			serie3 += cBuf[i + 2];        // Данные 3 графика  (желтый)
-		}
+   */
 
-		// получаем средние значения за серию
-		serie1 /= countOfPoints;
-		serie2 /= countOfPoints;
-		serie3 /= countOfPoints;
+    // заполняем буфер данными одного измерения
+    uint16_t writeIndex = countOfSamples*NUM_CHANNELS;
+    
+    for(int i=0;i<NUM_CHANNELS;i++)
+    {
+        adcBuffer[workingBufferIndex][writeIndex++] = tempADCBuffer[i];
+    } // for
 
-		// складываем полученные средние с ранее высчитанными, и делим на 2, поскольку в высчитанном значении у нас тоже хранится среднее
-		if (rmsData1)
-		{
-			rmsData1 += serie1;
-			rmsData1 /= 2;
-		}
-		else
-			rmsData1 = serie1;
+    countOfSamples++;
 
-		if (rmsData2)
-		{
-			rmsData2 += serie2;
-			rmsData2 /= 2;
-		}
-		else
-			rmsData2 = serie2;
+    if(countOfSamples >= ADC_BUFFER_SIZE/NUM_CHANNELS)
+    {
+      // буфер заполнили
+      
+      countOfSamples = 0; // обнуляем кол-во сэмплов
+      
+      filledBufferIndex = workingBufferIndex; // запоминаем, какой буфер мы заполнили
+      
+      workingBufferIndex++; // перемещаемся на заполнение следующего буфера
+      
+      if(workingBufferIndex >= NUMBER_OF_BUFFERS) // если закончили заполнять все буфера - перемещаемся на старт
+      {
+        workingBufferIndex = 0;
+      }
 
-		if (rmsData3)
-		{
-			rmsData3 += serie3;
-			rmsData3 /= 2;
-		}
-		else
-			rmsData3 = serie3;
 
-		if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
-		{
-			// время подсчёта вышло, больше не считаем
-			rmsComputeMode = false;
-			rmsStartComputeTime = 0;
-		}
+      if (rmsComputeMode)
+        {
+          // нас попросили считать РМС, считаем
+      
+          int bufferLength = 0;
+          uint16_t* cBuf = adcSampler.getADCBuffer(&bufferLength);
+          uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
+      
+          uint32_t serie1=0, serie2=0, serie3=0;
+      
+          for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS) // получить результат измерения поканально, с интервалом 3
+          {
+            serie1 += cBuf[i + 0];        // Данные 1 графика  (красный)
+            serie2 += cBuf[i + 1];        // Данные 2 графика  (синий)
+            serie3 += cBuf[i + 2];        // Данные 3 графика  (желтый)
+          }
+      
+          // получаем средние значения за серию
+          serie1 /= countOfPoints;
+          serie2 /= countOfPoints;
+          serie3 /= countOfPoints;
+      
+          // складываем полученные средние с ранее высчитанными, и делим на 2, поскольку в высчитанном значении у нас тоже хранится среднее
+          if (rmsData1)
+          {
+            rmsData1 += serie1;
+            rmsData1 /= 2;
+          }
+          else
+            rmsData1 = serie1;
+      
+          if (rmsData2)
+          {
+            rmsData2 += serie2;
+            rmsData2 /= 2;
+          }
+          else
+            rmsData2 = serie2;
+      
+          if (rmsData3)
+          {
+            rmsData3 += serie3;
+            rmsData3 /= 2;
+          }
+          else
+            rmsData3 = serie3;
+      
+          if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
+          {
+            // время подсчёта вышло, больше не считаем
+            rmsComputeMode = false;
+            rmsStartComputeTime = 0;
+          }
+      
+        } // if(rmsComputeMode)
 
-	} // if(rmsComputeMode)
-  }
 
-  if (status & ADC_ISR_COMPE)                       // Проверить регистр АЦП компаратора порога
-  {
-	  //ADC->ADC_IDR = ~ADC_IDR_COMPE;              // сбросить регистры прерывания превышения порога компаратора АЦП  
-	  //ADC->ADC_IDR = ~ADC_ISR_COMPE;
-	  dataHigh = true;                              // Установить признак превышения порога компаратора АЦП    
-  }
-  else
-  {
-	  dataHigh = false;
-  }
-  */
+      dataReady = true; // Данные сформированы
+      
+      
+    } // if(countOfSamples >= ADC_BUFFER_SIZE/NUM_CHANNELS)
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::available()
@@ -243,20 +381,10 @@ bool ADCSampler::available()
   return dataReady;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool ADCSampler::available_compare()
-{
-	return dataHigh;
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-unsigned int ADCSampler::getSamplingRate()
-{
-  return samplingRate;
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-uint16_t* ADCSampler::getFilledBuffer(int *bufferLength)
+uint16_t* ADCSampler::getADCBuffer(int *bufferLength)
 {
   *bufferLength = ADC_BUFFER_SIZE;
-  return adcBuffer[adcTransferIndex];
+  return adcBuffer[filledBufferIndex];
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::reset()

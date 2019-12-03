@@ -157,8 +157,6 @@ void InterruptHandlerClass::begin()
   // резервируем память
   list1.reserve(INTERRUPT_RESERVE_RECORDS);
 
-  NVIC_SetPriorityGrouping(NVIC_PriorityGroup_1);
-
 #if (RELAY_INTERRUPT_LEVEL == RISING)
   pinMode(RELAY_PIN, INPUT_PULLUP);
 #else
@@ -406,7 +404,7 @@ void InterruptHandlerClass::update()
 				uint32_t cT = micros();
 
 				int bufferLength = 0;
-				uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);    // Получить буфер с данными
+				uint16_t* cBuf = adcSampler.getADCBuffer(&bufferLength);    // Получить буфер с данными
 
 				uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
 				
@@ -414,11 +412,21 @@ void InterruptHandlerClass::update()
 				uint32_t raw2 = 0;
 				uint32_t raw3 = 0;
 
+          /*
+            Буфер у нас для четырёх каналов, индексы:
+        
+            0 -  Аналоговый вход трансформатора №1
+            1 - Аналоговый вход трансформатора №2
+            2 -  Аналоговый вход трансформатора №3
+            3 - Аналоговый вход контроль питания 3.3в
+        
+        */  
+
 				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS)                // получить результат измерения поканально, с интервалом 3
 				{
 
-					raw1 += cBuf[i + 4];                          // Данные 1 графика  (красный)
-					raw2 += cBuf[i + 3];                          // Данные 2 графика  (синий)
+					raw1 += cBuf[i + 0];                          // Данные 1 графика  (красный)
+					raw2 += cBuf[i + 1];                          // Данные 2 графика  (синий)
 					raw3 += cBuf[i + 2];                          // Данные 3 графика  (желтый)
 
 				} // for

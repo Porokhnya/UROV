@@ -203,7 +203,6 @@
 // настройки АЦП
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#define NUM_CHANNELS 9   // Установить количество аналоговых входов
 /*
 ch7:A0
 ch6:A1
@@ -219,12 +218,15 @@ ch12:A10 Измерение 3V3   (7)
 ch13:A11 Измерение +5V   (8)
 */
 
-#define SAMPLING_RATE 2500   // Частота вызова (стробирования) АЦП 50мс  
+#define NUMBER_OF_BUFFERS 6                                            // Установить количество буферов
+#define SAMPLING_RATE 21000   // период таймера 3
+#define NUM_CHANNELS 4   // Установить количество аналоговых входов
+#define ADC_BUFFER_SIZE 200*NUM_CHANNELS                                   // Определить размер буфера хранения измеряемого сигнала     
 
+/*
 #define ADC_CHANNELS ADC_CHER_CH0 | ADC_CHER_CH1 | ADC_CHER_CH2 | ADC_CHER_CH3 | ADC_CHER_CH4 | ADC_CHER_CH10 | ADC_CHDR_CH11 | ADC_CHDR_CH12 | ADC_CHDR_CH13  //
 #define ADC_CHANNELS_DIS  ADC_CHDR_CH5 | ADC_CHDR_CH6 | ADC_CHDR_CH7  // Отключить не используемые входа
-#define ADC_BUFFER_SIZE 200*NUM_CHANNELS                                   // Определить размер буфера хранения измеряемого сигнала     
-#define NUMBER_OF_BUFFERS 6                                            // Установить количество буферов
+*/
 
 
 
@@ -306,14 +308,6 @@ ch13:A11 Измерение +5V   (8)
 
 
 
-
-#define NVIC_PriorityGroup_0   ((uint32_t)0x700)
-#define NVIC_PriorityGroup_1   ((uint32_t)0x600)
-#define NVIC_PriorityGroup_2   ((uint32_t)0x500)
-#define NVIC_PriorityGroup_3   ((uint32_t)0x400)
-#define NVIC_PriorityGroup_4   ((uint32_t)0x300)
-
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern RS485 rs485;
 extern TwoWire Wire1;
@@ -323,8 +317,8 @@ extern void SwitchRS485MainHandler(bool on); // включаем/выключа�
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef _MY_DEBUG
-#define DBG(s) { DEBUG_SERIAL << (s); }
-  #define DBGLN(s) { DEBUG_SERIAL << (s) << ENDL; }
+#define DBG(s) { DEBUG_SERIAL << (s); DEBUG_SERIAL.flush(); }
+  #define DBGLN(s) { DEBUG_SERIAL << (s) << ENDL; DEBUG_SERIAL.flush(); }
 #else
   #define DBG(s) (void) 0
   #define DBGLN(s) (void) 0

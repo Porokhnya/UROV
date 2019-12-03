@@ -15,12 +15,12 @@ void loopADC()
 {
 #ifndef _ADC_OFF
 
-  static bool dataHigh_old = false;
+//  static bool dataHigh_old = false;
   
   if (adcSampler.available()) 
   {
     int bufferLength = 0;
-    uint16_t* cBuf = adcSampler.getFilledBuffer(&bufferLength);    // Получить буфер с данными
+    uint16_t* cBuf = adcSampler.getADCBuffer(&bufferLength);    // Получить буфер с данными
 
 
     static uint16_t countOfPoints = 0;    
@@ -51,16 +51,27 @@ void loopADC()
     uint32_t raw5V = 0;
     uint32_t raw3V3 = 0;
 
+  /*
+    Буфер у нас для четырёх каналов, индексы:
+
+    0 -  Аналоговый вход трансформатора №1
+    1 - Аналоговый вход трансформатора №2
+    2 -  Аналоговый вход трансформатора №3
+    3 - Аналоговый вход контроль питания 3.3в
+
+*/  
     
     for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
     {
-	  serie1[serieWriteIterator] = cBuf[i + 4];        // Данные 1 графика  (красный)
-	  serie2[serieWriteIterator] = cBuf[i + 3];        // Данные 2 графика  (синий)
+	  serie1[serieWriteIterator] = cBuf[i + 0];        // Данные 1 графика  (красный)
+	  serie2[serieWriteIterator] = cBuf[i + 1];        // Данные 2 графика  (синий)
 	  serie3[serieWriteIterator] = cBuf[i + 2];        // Данные 3 графика  (желтый)
 
-	  raw3V3  += cBuf[i + 7];                          // Данные Измерение 3V3 
-	  raw5V   += cBuf[i + 8];                          // Данные Измерение +5V 
-	  raw200V += cBuf[i + 6];                          // Данные Измерение =200В
+	  raw3V3  += cBuf[i + 3];                          // Данные Измерение 3V3
+    
+    //TODO: ТУТ ЗАКОММЕНТИРОВАЛ, НЕТ КОНТРОЛЯ !!!
+	  raw5V   += 0;//cBuf[i + 8];                          // Данные Измерение +5V 
+	  raw200V += 0;//cBuf[i + 6];                          // Данные Измерение =200В
 
 
 	  } // for
@@ -81,10 +92,12 @@ void loopADC()
     }
 
   }
+  /*
     if (dataHigh_old != adcSampler.dataHigh)
     {
       dataHigh_old = adcSampler.dataHigh;
     }
+    */
 #endif // !_ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -269,7 +282,7 @@ void Screen1::doSetup(TFTMenu* menu)
 	adcSampler.setLowBorder(Settings.getTransformerLowBorder());
 	adcSampler.setHighBorder(Settings.getTransformerHighBorder());
   
-	adcSampler.begin(SAMPLING_RATE);  
+	adcSampler.begin();  
 #endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
