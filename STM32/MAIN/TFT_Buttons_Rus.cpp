@@ -249,7 +249,9 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
       if(text_y >= buttons[buttonID].pos_y)
       {
         while(text_y - buttons[buttonID].pos_y < 2)
+        {
           text_y++;
+        }
       }
      
       
