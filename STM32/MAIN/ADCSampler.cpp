@@ -1,4 +1,4 @@
-
+﻿
 #include "ADCSampler.h"
 #include "CONFIG.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -71,12 +71,12 @@ DBGLN("MX_ADC1_Init START.");
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = ENABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;                     // Запретить непрерывное измерение. Запускаем измерение по таймеру Т3
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T3_TRGO;
-  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 5;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T3_TRGO;  // В качестве внешнего события мы можем выбрать таймер (Т3)
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;                  // Смещение данных в право  
+  hadc1.Init.NbrOfConversion = 4;                              // Количество измеряемых каналов.
   hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -96,43 +96,40 @@ DBGLN("MX_ADC1_Init START.");
   */
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_4;
-  sConfig.Rank = 2;
-  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+  sConfig.Channel = ADC_CHANNEL_4;        // Подключить аналоговый вход PA4 (трансформатор №1)
+  sConfig.Rank = 1;                       // Номер очереди измерения каналов 
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES; // Время измерения (заряда измерительного конденсатора)
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     return;
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_5;
-  sConfig.Rank = 3;
+  sConfig.Channel = ADC_CHANNEL_5;    // Подключить аналоговый вход PA5 (трансформатор №2)
+  sConfig.Rank = 2;                   // Номер очереди измерения каналов 
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     return;
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_6;
-  sConfig.Rank = 4;
+  sConfig.Channel = ADC_CHANNEL_6;  // Подключить аналоговый вход PA6 (трансформатор №3)
+  sConfig.Rank = 3;                 // Номер очереди измерения каналов 
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     return;
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_7;
-  sConfig.Rank = 5;
+  sConfig.Channel = ADC_CHANNEL_7;   // Подключить аналоговый вход PA7 (измерение 3,3 вольта деленное на 2)
+  sConfig.Rank = 4;                  // Номер очереди измерения каналов 
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     return;
   }
 
     __HAL_LINKDMA(&hadc1,DMA_Handle,hdma_adc1);
-  
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
+ 
 DBGLN("MX_ADC1_Init END.");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -153,28 +150,25 @@ void MX_TIM3_Init(void)
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-  /* USER CODE BEGIN TIM3_Init 1 */
-
-  /* USER CODE END TIM3_Init 1 */
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = SAMPLING_RATE;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Instance = TIM3;                            // Применяем таймер №3
+  htim3.Init.Prescaler = 0;                         // Первый делитель. Тактовая частота 84 мГц (168000000/2)
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;      // Счет вверх
+  htim3.Init.Period = SAMPLING_RATE;                // Второй делитель. Период следования прерываний 260мкс. 
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;// 
   
   //TODO: РУГАЕТСЯ НА ЭТУ СТРОЧКУ !!!
-  //htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  //htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;  // Работа с теневым регистром, в этой версии библиотеки HAL не применяется.
   
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     return;
   }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;    // Внутренний источник тактирования
   if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
   {
     return;
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;  //
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
@@ -238,7 +232,7 @@ DBGLN("ADCSampler::begin START.");
  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
 
  // запускаем таймер
-// HAL_TIM_Base_Start(&htim3);
+ //HAL_TIM_Base_Start(&htim3);
  
 DBGLN("ADCSampler::begin END.");   
 }
@@ -273,9 +267,9 @@ void ADCSampler::handleInterrupt()
   /*
     Буфер у нас для четырёх каналов, индексы:
 
-    0 -  Аналоговый вход трансформатора №1
+    0 - Аналоговый вход трансформатора №1
     1 - Аналоговый вход трансформатора №2
-    2 -  Аналоговый вход трансформатора №3
+    2 - Аналоговый вход трансформатора №3
     3 - Аналоговый вход контроль питания 3.3в
 
      тут мы должны заполнять текущий буфер данными. У нас один буфер имеет размерность ADC_BUFFER_SIZE, которая
