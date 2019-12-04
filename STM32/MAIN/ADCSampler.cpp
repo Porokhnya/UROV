@@ -181,7 +181,7 @@ void MX_TIM3_Init(void)
  DBGLN("MX_TIM3_Init END.");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TIM3_IRQHandler()
+void TIM3_IRQHandler() // обработчик тика таймера
 {
   HAL_TIM_IRQHandler(&htim3);
 	adcSampler.handleInterrupt();
