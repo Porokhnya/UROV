@@ -16,8 +16,8 @@ DBGLN("MX_DMA_Init START.");
 
   // DMA interrupt init 
   // DMA2_Stream0_IRQn interrupt configuration 
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);  
 
 DBGLN("MX_DMA_Init END.");
 }
@@ -232,7 +232,7 @@ DBGLN("ADCSampler::begin START.");
  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
 
  // запускаем таймер
- //HAL_TIM_Base_Start(&htim3);
+ HAL_TIM_Base_Start(&htim3);
  
 DBGLN("ADCSampler::begin END.");   
 }
@@ -292,8 +292,7 @@ void ADCSampler::handleInterrupt()
 
     if(countOfSamples >= ADC_BUFFER_SIZE/NUM_CHANNELS)
     {
-      // буфер заполнили
-      
+      // буфер заполнили      
       countOfSamples = 0; // обнуляем кол-во сэмплов
       
       filledBufferIndex = workingBufferIndex; // запоминаем, какой буфер мы заполнили
