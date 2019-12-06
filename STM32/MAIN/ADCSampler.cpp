@@ -137,8 +137,6 @@ void MX_TIM3_Init(void)
 {
   DBGLN("MX_TIM3_Init START.");
   
-   /* Peripheral clock enable */
-    __HAL_RCC_TIM3_CLK_ENABLE();
     /* TIM3 interrupt Init */
     HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM3_IRQn);
@@ -158,11 +156,16 @@ void MX_TIM3_Init(void)
   
   //TODO: РУГАЕТСЯ НА ЭТУ СТРОЧКУ !!!
   //htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;  // Работа с теневым регистром, в этой версии библиотеки HAL не применяется.
+
+   /* Peripheral clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+
   
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     return;
   }
+
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;    // Внутренний источник тактирования
   if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
   {
@@ -174,9 +177,7 @@ void MX_TIM3_Init(void)
   {
     return;
   }
-  /* USER CODE BEGIN TIM3_Init 2 */
-
-  /* USER CODE END TIM3_Init 2 */
+  
 
  DBGLN("MX_TIM3_Init END.");
 }
@@ -229,14 +230,12 @@ DBGLN("ADCSampler::begin START.");
  //TODO: КОД АЦП ДЛЯ STM32 !!!
 
  MX_DMA_Init();
- 
  MX_ADC1_Init();
- 
  MX_TIM3_Init();
-
-
+ 
  // говорим АЦП собирать данные по каналам в наш буфер
  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
+
 
  // запускаем таймер
  HAL_TIM_Base_Start(&htim3);
