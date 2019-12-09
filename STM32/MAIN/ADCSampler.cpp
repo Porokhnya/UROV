@@ -3,9 +3,9 @@
 #include "CONFIG.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler adcSampler;
-ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
-TIM_HandleTypeDef htim3 = {0};
+static ADC_HandleTypeDef hadc1;
+static DMA_HandleTypeDef hdma_adc1;
+static TIM_HandleTypeDef htim3 = {0};
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MX_DMA_Init(void)  // Enable DMA controller clock
 {
@@ -138,12 +138,9 @@ void MX_TIM3_Init(void)
   DBGLN("MX_TIM3_Init START.");
   
     /* TIM3 interrupt Init */
-    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM3_IRQn);
+  HAL_NVIC_SetPriority( TIM3_IRQn, 0, 0 );
+  HAL_NVIC_EnableIRQ  ( TIM3_IRQn );
 
-  /* USER CODE BEGIN TIM3_Init 0 */
-
-  /* USER CODE END TIM3_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
@@ -182,14 +179,10 @@ void MX_TIM3_Init(void)
  DBGLN("MX_TIM3_Init END.");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TIM3_IRQHandler() // обработчик тика таймера
+extern "C"  void TIM3_IRQHandler(void) // обработчик тика таймера
 {
   
   HAL_TIM_IRQHandler(&htim3);
-
-
-  //TODO: ЧИСТО ДЛЯ ТЕСТА !!!
-  HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_6); 
 
   // вызываем обработчик прерывания, для накопления сэмплов АЦП
 	adcSampler.handleInterrupt();
@@ -238,7 +231,8 @@ DBGLN("ADCSampler::begin START.");
 
 
  // запускаем таймер
- HAL_TIM_Base_Start(&htim3);
+// HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_Base_Start_IT ( &htim3 ); 
  
 DBGLN("ADCSampler::begin END.");   
 }
