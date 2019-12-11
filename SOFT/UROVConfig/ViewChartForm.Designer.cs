@@ -41,6 +41,8 @@
             this.btnExport = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.exportToCSVDialog = new System.Windows.Forms.SaveFileDialog();
+            this.btnExportToCOMTRADE = new System.Windows.Forms.Button();
+            this.exportToCoMTRADEDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
@@ -114,6 +116,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.btnExportToCOMTRADE);
             this.panel3.Controls.Add(this.btnExportToCSV);
             this.panel3.Controls.Add(this.btnExport);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -158,6 +161,24 @@
             this.exportToCSVDialog.Filter = "Файл CSV|*.csv";
             this.exportToCSVDialog.RestoreDirectory = true;
             // 
+            // btnExportToCOMTRADE
+            // 
+            this.btnExportToCOMTRADE.BackColor = System.Drawing.Color.LightGreen;
+            this.btnExportToCOMTRADE.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportToCOMTRADE.ForeColor = System.Drawing.Color.Black;
+            this.btnExportToCOMTRADE.Location = new System.Drawing.Point(358, 12);
+            this.btnExportToCOMTRADE.Name = "btnExportToCOMTRADE";
+            this.btnExportToCOMTRADE.Size = new System.Drawing.Size(167, 40);
+            this.btnExportToCOMTRADE.TabIndex = 11;
+            this.btnExportToCOMTRADE.Text = "Экспорт в COMTRADE";
+            this.btnExportToCOMTRADE.UseVisualStyleBackColor = false;
+            this.btnExportToCOMTRADE.Click += new System.EventHandler(this.btnExportToCOMTRADE_Click);
+            // 
+            // exportToCoMTRADEDialog
+            // 
+            this.exportToCoMTRADEDialog.Filter = "Файл COMTRADE|*.dat";
+            this.exportToCoMTRADEDialog.RestoreDirectory = true;
+            // 
             // ViewChartForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -191,5 +212,7 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.Button btnExportToCSV;
         private System.Windows.Forms.SaveFileDialog exportToCSVDialog;
+        private System.Windows.Forms.Button btnExportToCOMTRADE;
+        private System.Windows.Forms.SaveFileDialog exportToCoMTRADEDialog;
     }
 }

@@ -3294,11 +3294,11 @@ namespace UROVConfig
             RequestFile(treeViewSD.SelectedNode);
         }
 
-        private void ShowChart(InterruptRecord record)
+        private void ShowChart(InterruptRecord record, string stationID, string stationName)
         {
             System.Diagnostics.Debug.Assert(record != null);
 
-            ViewChartForm vcf = new ViewChartForm();
+            ViewChartForm vcf = new ViewChartForm(record, stationID, stationName);
 
             vcf.setDefaultFileName(record.InterruptInfo.InterruptTime.ToString("yyyy-MM-dd HH.mm"));
 
@@ -3391,7 +3391,22 @@ namespace UROVConfig
             if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
                     e.RowIndex >= 0)
             {
-                ShowChart(senderGrid.Rows[e.RowIndex].Tag as InterruptRecord);
+                TreeNode child = treeView.SelectedNode;
+                string stationID = "";
+                string stationName = "";
+
+                if(child != null && child.Tag is ArchiveTreeLogItemRecord)
+                {
+                    ArchiveTreeLogItemRecord ali = child.Tag as ArchiveTreeLogItemRecord;
+                    ArchiveTreeRootItem atri = ali.Parent.Parent;
+                    stationID = atri.GUID;
+                    stationName = atri.GUID;
+                    if (ControllerNames.Instance.Names.ContainsKey(stationID))
+                        stationName = ControllerNames.Instance.Names[stationID];
+
+                }
+
+                ShowChart(senderGrid.Rows[e.RowIndex].Tag as InterruptRecord, stationID, stationName);
             }
         }
         /*
