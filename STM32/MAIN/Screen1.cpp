@@ -118,7 +118,9 @@ void Screen1::drawVoltage(TFTMenu* menu)
 {
 #ifndef _DISABLE_DRAW_VOLTAGE
   if(!isActive())
+  {
     return;
+  }
 
   word color = RED;
   TFT_Class* dc = menu->getDC();
@@ -140,9 +142,10 @@ void Screen1::drawVoltage(TFTMenu* menu)
     float highBorder = 3.3 + threshold;
   
     if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+    {
       color = GREEN;
+    }
   
-    //String data = String(vData.voltage,1)+"V";
     int32_t vDataI = vData.voltage*10;
     String data;
     data = int32_t(vDataI/10);
@@ -151,12 +154,15 @@ void Screen1::drawVoltage(TFTMenu* menu)
     data += "V";
     
     while(data.length() < 4)
+    {
       data += ' ';
-      
+    }      
 
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
-  
+
+  //TODO: ЗАКОММЕНТИРОВАЛ ОТРИСОВКУ ВОЛЬТАЖА 5В и 200В!!!
+  /*
   curY += fontHeight + 2;
   
   
@@ -173,9 +179,10 @@ void Screen1::drawVoltage(TFTMenu* menu)
     color = RED;
   
     if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+    {
       color = GREEN;
+    }
   
-    //String data = String(vData.voltage,1) + "V";
     int32_t vDataI = vData.voltage*10;
     String data;
     data = int32_t(vDataI/10);
@@ -184,9 +191,10 @@ void Screen1::drawVoltage(TFTMenu* menu)
     data += "V";
     
     while(data.length() < 4)
+    {
       data += ' ';
+    }
   
-    //dc->setColor(color);  
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
   
@@ -206,19 +214,21 @@ void Screen1::drawVoltage(TFTMenu* menu)
     color = RED;
   
     if(vData.voltage >= lowBorder && vData.voltage <= highBorder)
+    {
       color = GREEN;
+    }
   
     String data = String((uint16_t)vData.voltage) + "V";
     
     while(data.length() < 4)
+    {
       data += ' ';
+    }
   
-   // dc->setColor(color);  
-    //dc->print(data.c_str(),curX,curY);
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
+  */
 
-//  dc->setColor(oldColor);
 #endif // !_DISABLE_DRAW_VOLTAGE
    
 }
