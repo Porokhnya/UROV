@@ -160,10 +160,10 @@ namespace UROVConfig
             //int maxVal = 100;
             List<int> maxVals = new List<int>();
             maxVals.Add(100);
-            maxVals.Add(0);
+            maxVals.Add(100);
 
 
-            int channelsCount = 1;
+            int channelsCount = 2;
 
             // считаем данные графика прерывания
 
@@ -232,13 +232,13 @@ namespace UROVConfig
             {
                 //                maxVal = Math.Max(maxVal, pt);
                 int ethalonData = 0;
-                if(ethalonList.Count > 0 && ethalonList.Count < cntr)
+                if(ethalonList.Count > 0 && cntr < ethalonList.Count)
                 {
                     ethalonData = ethalonList[cntr];
                 }
 
-                //string line = String.Format("{0:0000000000},{1:0000000000},{2:000000},{3:000000}", recNum, timeList[recNum-1], pt, ethalonData);
-                string line = String.Format("{0:0000000000},{1:0000000000},{2:000000}", recNum, timeList[recNum - 1], pt);
+                string line = String.Format("{0:0000000000},{1:0000000000},{2:000000},{3:000000}", recNum, timeList[recNum - 1], pt, ethalonData);
+                //string line = String.Format("{0:0000000000},{1:0000000000},{2:000000}", recNum, timeList[recNum - 1], pt);
                 sb.AppendLine(line);
 
                 recNum++;
@@ -273,13 +273,10 @@ namespace UROVConfig
             sb.AppendLine("50");
 
             // nrates<CR,LF>
-            sb.AppendLine(channelsCount.ToString());
+            sb.AppendLine("1");
 
             // sssssl,endsampl<CR,LF>
-            for (int i = 0; i < channelsCount; i++)
-            {
-                sb.AppendFormat("{0},{1}\r\n", 50, percentsList.Count);//record.InterruptData.Count);
-            }
+            sb.AppendFormat("{0},{1}\r\n", 50, percentsList.Count);//record.InterruptData.Count);
 
             // mm/dd/yy,hh:mm:ss.ssssss<CR,LF>
             // mm/dd/yy,hh:mm:ss.ssssss<CR,LF>
