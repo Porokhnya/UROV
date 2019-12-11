@@ -125,7 +125,8 @@ void SettingsClass::begin()
 void SettingsClass::set3V3RawVoltage(uint16_t raw)
 {
   voltage3V3.raw = raw;  
-  voltage3V3.voltage = voltage3V3.raw*(2.4 / 4096 * 2);
+  //voltage3V3.voltage = voltage3V3.raw*(2.4 / 4096 * 2);
+   voltage3V3.voltage = voltage3V3.raw*(3.3 / 4096 * 2);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set5VRawVoltage(uint16_t raw)
