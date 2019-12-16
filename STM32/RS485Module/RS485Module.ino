@@ -181,7 +181,7 @@ void setup()
   rs485.begin();
 
   // считаем импульсы на штанге по прерыванию
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
+  attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
 
   DBGLN(F("Ready."));
 }
