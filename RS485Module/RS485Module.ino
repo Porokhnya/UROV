@@ -27,12 +27,6 @@ uint32_t pingID = 0; // ID пакета пинга
 uint32_t lastPacketSentAt = 0; // когда был послан последний пакет?
 
 volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
-<<<<<<< HEAD
-typedef Vector<uint32_t> InterruptTimeList;
-InterruptTimeList encoderList; // список прерываний с энкодера
-Vector<uint8_t> rs485DataPacket; // список данных, который мы отправляем по RS-485   
-=======
->>>>>>> b0e989e8b395d7e74816c4084cd0f10568fa3475
 
 bool waitForACK = false;
 uint32_t ackStartTime = 0;
