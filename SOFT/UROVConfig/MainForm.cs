@@ -441,6 +441,15 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.DataArrivedTime: // смещение от начала данных по току до начала данных по прерываниям
+                            {
+                                System.Diagnostics.Debug.Assert(curRecord != null);
+
+                                // далее идут 4 смещения, в миллисекундах
+                                curRecord.DataArrivedTime = Read32(content, readed); readed += 4;
+                            }
+                            break;
+
                         case LogRecordType.OscDataFollow: // идут данные по току для канала
                             {
                                 System.Diagnostics.Debug.Assert(curRecord != null);

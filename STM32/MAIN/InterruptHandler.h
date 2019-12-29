@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "CONFIG.h"
 #include "TinyVector.h"
+#include "DS3231.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 typedef Vector<uint32_t> InterruptTimeList;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ class InterruptHandlerClass
    void informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime);
    
    static void writeLogRecord(CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData);
-   static void writeToLog(CurrentOscillData& oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1);
+   static void writeToLog(uint32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData& oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1);
    static void writeRodPositionToLog(uint8_t channelNumber);
 
    // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //

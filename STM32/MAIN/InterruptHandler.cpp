@@ -2,7 +2,6 @@
 #include "InterruptScreen.h"
 #include "Endstops.h"
 #include "Feedback.h"
-#include "DS3231.h"
 #include "FileUtils.h"
 #include "Logger.h"
 #include "Settings.h"
@@ -19,6 +18,7 @@ volatile uint32_t lastEncoderInterruptTime = 0;
 
 volatile uint32_t relayTriggeredTime = 0; // время, когда защита сработала
 volatile bool hasRelayTriggered = false;
+DS3231Time trigTime; // время срабатывания защиты
 
 volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабатывания реле защиты до первого прерывания
 volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
@@ -132,6 +132,7 @@ void RelayTriggered()
 	}
   // запоминаем время срабатывания защиты
   relayTriggeredTime = micros();
+  trigTime = RealtimeClock.getTime();
   hasRelayTriggered = true;
   hasRelayTriggeredTime = true;
 
@@ -308,6 +309,8 @@ void InterruptHandlerClass::writeLogRecord(CurrentOscillData& oscData, Interrupt
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
+  uint32_t dataArrivedTime, 
+  DS3231Time& tm,
 	CurrentOscillData& oscData,
 	InterruptTimeList& lst1, 
 	EthalonCompareResult res1, 
@@ -325,7 +328,7 @@ void InterruptHandlerClass::writeToLog(
   Logger.write(workBuff,1);
   
   // пишем время срабатывания прерывания
-  DS3231Time tm = RealtimeClock.getTime();
+  //DS3231Time tm = RealtimeClock.getTime();
 
   workBuff[0] = recordInterruptTime;
   workBuff[1] = tm.dayOfMonth;
@@ -336,6 +339,11 @@ void InterruptHandlerClass::writeToLog(
   workBuff[7] = tm.second;
   
   Logger.write(workBuff,8);
+
+  // пишем время, когда пошли данные, относительно начала сбора данных по току
+  workBuff[0] = recordDataArrivedTime;
+  memcpy(&(workBuff[1]),&dataArrivedTime,4);
+  Logger.write(workBuff,5);  
 
   // пишем температуру системы
   DS3231Temperature temp = Settings.getTemperature();
@@ -592,6 +600,15 @@ void InterruptHandlerClass::update()
           
     interrupts();
 
+
+
+    // вычисляем смещение от начала записи по току до начала поступления данных
+    uint32_t datArrivTm = 0;
+    if(copyOscillData.times.size() > 0 && copyList1.size() > 0)
+    {
+      datArrivTm = copyList1[0] - copyOscillData.times[0];
+    }
+
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	// нормализуем список времен записей по току
 	InterruptHandlerClass::normalizeList(copyOscillData.times);
@@ -599,6 +616,8 @@ void InterruptHandlerClass::update()
 
 	// здесь мы получили список прерываний, и можно с ним что-то делать
      InterruptHandlerClass::normalizeList(copyList1);
+
+     
      EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
 
 	 EthalonCompareNumber compareNumber1;
@@ -639,7 +658,7 @@ void InterruptHandlerClass::update()
 #ifndef _SD_OFF
 	//	DBGLN(F("Надо сохранить в лог, пишем на SD!"));
       // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
+      InterruptHandlerClass::writeToLog(datArrivTm, trigTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
 #endif // !_SD_OFF
     } // needToLog
     

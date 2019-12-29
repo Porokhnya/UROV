@@ -71,6 +71,8 @@ namespace UROVConfig
         ChannelInductiveSensorState, // состояние индуктивного датчика канала
 
         OscDataFollow, // идут данные по току для канала
+        DataArrivedTime, // смещение от начала записей по току до начала данных по прерыванию, миллисекунд
+
     }
 
     public enum EthalonCompareNumber
@@ -147,6 +149,7 @@ namespace UROVConfig
         public RodPosition RodPosition;
         public int MoveTime;
         public int Motoresource;
+        public int DataArrivedTime;
         public EthalonCompareNumber EthalonCompareNumber;
         public EthalonCompareResult EthalonCompareResult;
         public List<int> InterruptData = new List<int>();

@@ -310,6 +310,7 @@ void InterruptHandlerClass::writeLogRecord(CurrentOscillData& oscData, Interrupt
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
+  DS3231Time& triggeredTime, 
 	CurrentOscillData& oscData,
 	InterruptTimeList& lst1, 
 	EthalonCompareResult res1, 
@@ -326,16 +327,16 @@ void InterruptHandlerClass::writeToLog(
   workBuff[0] = recordInterruptInfoBegin;
   Logger.write(workBuff,1);
   
-  // пишем время срабатывания прерывания
-  DS3231Time tm = RealtimeClock.getTime();
+  // пишем время срабатывания прерывания  
+  //DS3231Time tm = RealtimeClock.getTime();
 
   workBuff[0] = recordInterruptTime;
-  workBuff[1] = tm.dayOfMonth;
-  workBuff[2] = tm.month;
-  memcpy(&(workBuff[3]),&(tm.year),2);
-  workBuff[5] = tm.hour;
-  workBuff[6] = tm.minute;
-  workBuff[7] = tm.second;
+  workBuff[1] = triggeredTime.dayOfMonth;
+  workBuff[2] = triggeredTime.month;
+  memcpy(&(workBuff[3]),&(triggeredTime.year),2);
+  workBuff[5] = triggeredTime.hour;
+  workBuff[6] = triggeredTime.minute;
+  workBuff[7] = triggeredTime.second;
   
   Logger.write(workBuff,8);
 

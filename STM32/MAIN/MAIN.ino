@@ -47,8 +47,10 @@ void screenAction(AbstractTFTScreen* screen)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485 rs485(RS485_SERIAL,Upr_RS485,RS485_READING_TIMEOUT);
 uint32_t rs485RelayTriggeredTime = 0; // время срабатывания защиты
+uint32_t rs485DataArrivedTime = 0;
+DS3231Time rsRelTrigTime; // время срабатывания защиты
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
+void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
 {
 	// тут обрабатываем результаты срабатывания защиты от модуля
 
@@ -118,7 +120,7 @@ void processInterruptFromModule(InterruptTimeList& interruptsList, bool endstopU
 	//	DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
 		// надо записать в лог дату срабатывания системы
-		InterruptHandlerClass::writeToLog(oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
+		InterruptHandlerClass::writeToLog(dataArrivedTime, tm, oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
 
 #endif // !_SD_OFF
 	} // needToLog
@@ -153,6 +155,7 @@ void OnRS485IncomingData(RS485* Sender)
 		//	DBGLN(F("[RS-485] HAS INTERRUPT FROM MODULE !!!"));
 
 			rs485RelayTriggeredTime = millis(); // запоминаем время срабатывания защиты
+      rsRelTrigTime = RealtimeClock.getTime();
 
 			// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
@@ -191,6 +194,12 @@ void OnRS485IncomingData(RS485* Sender)
 					interruptsList.push_back(*rec++);
 				}
 
+       // запоминаем время, когда данные пришли
+       rs485DataArrivedTime = millis();
+
+       uint32_t dataArriveTime = rs485DataArrivedTime - rs485RelayTriggeredTime;
+
+
 				// выводим их для теста
 /*
 #ifdef _MY_DEBUG
@@ -208,7 +217,7 @@ void OnRS485IncomingData(RS485* Sender)
 				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 				// обрабатываем список прерываний  
-				processInterruptFromModule(interruptsList, endstopUpTriggered, endstopDownTriggered);
+				processInterruptFromModule(dataArriveTime, rsRelTrigTime,interruptsList, endstopUpTriggered, endstopDownTriggered);
 		}
 		break; // rs485InterruptData
 
