@@ -141,6 +141,13 @@ namespace UROVConfig
         public float SystemTemperature;
     }
 
+    public class ChannelData
+    {
+        public int RecordTime = 0;
+        public List<int> Values = new List<int>();       
+
+    };
+
     public class InterruptRecord
     {
         public InterruptInfo InterruptInfo;
