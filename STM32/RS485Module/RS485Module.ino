@@ -342,7 +342,7 @@ void loop()
       
           uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
           size_t catchedPulses = encoderList.size(); // сколько импульсов уже поймали?
-          bool isCollectDone = (nowMicros - thisTimer >= INTERRUPT_MAX_IDLE_TIME || catchedPulses >= MAX_PULSES_TO_CATCH);
+          bool isCollectDone = (nowMicros - thisTimer >= INTERRUPT_MAX_IDLE_TIME)// || catchedPulses >= MAX_PULSES_TO_CATCH);
           if(isCollectDone)
           {
             canHandleEncoder = false; // выключаем обработку испульсов энкодера
