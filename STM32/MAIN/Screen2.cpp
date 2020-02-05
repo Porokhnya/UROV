@@ -328,7 +328,7 @@ void RS485Screen::doSetup(TFTMenu* menu)
 void RS485Screen::doUpdate(TFTMenu* menu)
 {
 	// тут обновляем внутреннее состояние
-	if (millis() - lastPacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*2)
+	if (millis() - lastPacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*3)
 	{
 		// очень давно не было тестового пакета, пишем "ОФЛАЙН" на экране
 

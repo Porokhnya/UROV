@@ -1,4 +1,8 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+ STM32F103CBT6
+ */
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ВСЕ НАСТРОЙКИ - В CONFIG.h !!!!
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include "CONFIG.h"
@@ -41,6 +45,38 @@ const uint32_t minInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY - ENDSTOP_HISTER
 const uint32_t maxInterval = 1000000.0 / (1.*(ENDSTOP_FREQUENCY + ENDSTOP_HISTERESIS));  
 Endstop  endstopUp(ENDSTOP_UP_PIN, ENDSTOP_TRIGGER_LEVEL,minInterval,maxInterval);
 Endstop  endstopDown(ENDSTOP_DOWN_PIN, ENDSTOP_TRIGGER_LEVEL,minInterval,maxInterval);
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef ENABLE_TEST_INDICATION
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool indicationActive = false;
+uint32_t indicationTimer = 0;
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void indicate()
+{
+  if(indicationActive)
+  {
+    return;
+  }
+  digitalWrite(INDICATION_PIN,INDICATION_ON_LEVEL);
+  indicationActive = true;
+  indicationTimer = millis();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void updateIndicate()
+{
+  if(!indicationActive)
+  {
+    return;
+  }
+
+  if(millis() - indicationTimer >= INDICATION_DURATION)
+  {
+    indicationActive = false;
+    digitalWrite(INDICATION_PIN,!(INDICATION_ON_LEVEL));
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#endif // ENABLE_TEST_INDICATION
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
@@ -93,7 +129,9 @@ void normalizeList(DWordVector& list)
   size_t sz = list.size();
   
   if(sz < 2)
+  {
     return;
+  }
 
   // нормализуем список относительно первого значения
   uint32_t first = list[0];
@@ -150,6 +188,10 @@ void sendPingPacket()
       pingID++;
       rs485.send(rs485Ping,(const uint8_t*)&pingID, sizeof(pingID));
       lastPacketSentAt = millis();
+
+      #ifdef ENABLE_TEST_INDICATION
+          indicate();
+      #endif      
     }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -157,6 +199,12 @@ void setup()
 {
   #ifdef _DEBUG
     DEBUG_SERIAL.begin(SERIAL_SPEED);
+  #endif
+
+  // настраиваем светодиод индикации
+  #ifdef ENABLE_TEST_INDICATION
+    pinMode(INDICATION_PIN,OUTPUT);
+    digitalWrite(INDICATION_PIN,!(INDICATION_ON_LEVEL));
   #endif
 
   // настраиваем вход защиты
@@ -189,6 +237,10 @@ void setup()
 void loop() 
 {
 
+  #ifdef ENABLE_TEST_INDICATION
+    updateIndicate();
+  #endif
+
   // проверяем, пришёл ли пакет подтверждения?
   if(waitForACK)
   {
@@ -202,9 +254,12 @@ void loop()
                 
                 rs485.send(queuePacketType,(const uint8_t*)rs485QueuePacket.pData(),rs485QueuePacket.size());
                 
-                ackStartTime = millis();    // запоминаем, когда мы отослали пакет, и через сколько максимум надо попробовать его переслать повторно
-                
+                ackStartTime = millis();    // запоминаем, когда мы отослали пакет, и через сколько максимум надо попробовать его переслать повторно                
                 lastPacketSentAt = millis(); // запоминаем время отсыла последнего пакета
+
+                #ifdef ENABLE_TEST_INDICATION
+                    indicate();
+                #endif                
               }
               else
               {
@@ -237,10 +292,13 @@ void loop()
         pingID++;
         rs485.send(rs485HasInterrupt,(const uint8_t*)&pingID, sizeof(pingID));
         lastPacketSentAt = millis();
-         
-        
+                 
         //переключаемся на ветку сбора данных по прерываниям, с энкодера
         machineState = msWaitHandleInterrupts;
+
+        #ifdef ENABLE_TEST_INDICATION
+            indicate();
+        #endif        
       }
       else
       {
@@ -323,6 +381,11 @@ void loop()
 
         // переключаемся на ветку ожидания отщёлкивания концевика защиты
         machineState = msWaitGuardRelease;
+
+
+        #ifdef ENABLE_TEST_INDICATION
+            indicate();
+        #endif        
       }
 
     }
