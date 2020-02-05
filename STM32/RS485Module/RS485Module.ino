@@ -80,10 +80,12 @@ void updateIndicate()
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
+  
   if(!canHandleEncoder) // не надо собирать импульсы с энкодера
   {
     return;
   }
+  
     uint32_t now = micros();
     encoderList.push_back(now);
     timer = now; // обновляем значение таймера
@@ -217,7 +219,7 @@ void setup()
   );  
 
   // резервируем память
-  encoderList.reserve(INTERRUPT_RESERVE_RECORDS);
+  encoderList.reserve(MAX_PULSES_TO_CATCH);
 
   // настраиваем концевики
   DBGLN(F("Setup endstops..."));
@@ -229,7 +231,7 @@ void setup()
   rs485.begin();
 
   // считаем импульсы на штанге по прерыванию
-  attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
+//  attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
 
   DBGLN(F("Ready."));
 }
@@ -318,9 +320,15 @@ void loop()
         noInterrupts();
           encoderList.empty(); // очищаем список прерываний
           timer = micros();
-          canHandleEncoder = true;
+          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
-        interrupts();       
+        interrupts(); 
+
+        ///////////////////////////////////////////////////
+        // считаем импульсы на штанге по прерыванию
+        attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
+        ///////////////////////////////////////////////////
+           
       }
     }
     break; // msWaitHandleInterrupts
@@ -328,15 +336,24 @@ void loop()
     case msHandleInterrupts:
     {
       // собираем прерывания с энкодера
+      uint32_t nowMicros = micros();
+      
       noInterrupts();
-      uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
+      
+          uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
+          size_t catchedPulses = encoderList.size(); // сколько импульсов уже поймали?
+          bool isCollectDone = (nowMicros - thisTimer >= INTERRUPT_MAX_IDLE_TIME || catchedPulses >= MAX_PULSES_TO_CATCH);
+          if(isCollectDone)
+          {
+            canHandleEncoder = false; // выключаем обработку испульсов энкодера
+          }
       interrupts();
       
-      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME)
-      {
-        noInterrupts();
-          canHandleEncoder = false; // выключаем обработку испульсов энкодера
-        interrupts();
+      if(isCollectDone)
+      {        
+         ///////////////////////////////////////////////////
+         detachInterrupt(ENCODER_PIN1); // снимаем прерывание с пина энкодера
+         ///////////////////////////////////////////////////
 
         DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
         DBGLN(encoderList.size());
@@ -344,17 +361,6 @@ void loop()
         // нормализуем список
         normalizeList(encoderList);
 
-        /*
-        #ifdef _DEBUG
-          // выводим для теста данные в Serial
-          DBGLN(F("<<<< LIST BEGIN"));
-          for(size_t i=0;i<encoderList.size();i++)
-          {
-            DBGLN(encoderList[i]);
-          }
-          DBGLN(F("<<<< LIST END"));
-        #endif
-        */
 
         // готовим данные для отсыла по RS-475
         createRS485Packet(encoderList,rs485DataPacket);
