@@ -231,7 +231,7 @@ void setup()
   rs485.begin();
 
   // считаем импульсы на штанге по прерыванию
-//  attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
+  attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
 
   DBGLN(F("Ready."));
 }
@@ -326,7 +326,7 @@ void loop()
 
         ///////////////////////////////////////////////////
         // считаем импульсы на штанге по прерыванию
-        attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
+        //attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
         ///////////////////////////////////////////////////
            
       }
@@ -352,7 +352,7 @@ void loop()
       if(isCollectDone)
       {        
          ///////////////////////////////////////////////////
-         detachInterrupt(ENCODER_PIN1); // снимаем прерывание с пина энкодера
+        // detachInterrupt(ENCODER_PIN1); // снимаем прерывание с пина энкодера
          ///////////////////////////////////////////////////
 
         DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
