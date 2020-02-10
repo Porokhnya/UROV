@@ -68,7 +68,7 @@ void updateIndicate()
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
   
-  if(!canHandleEncoder) // не надо собирать импульсы с энкодера
+  if(!canHandleEncoder || encoderList.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
   {
     return;
   }
@@ -323,29 +323,29 @@ void loop()
     case msHandleInterrupts:
     {
       // собираем прерывания с энкодера
-      uint32_t nowMicros = micros();
+    //  uint32_t nowMicros = micros();
       
       noInterrupts();
       
           uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
-          
+      /*    
           size_t catchedPulses = encoderList.size(); // сколько импульсов уже поймали?
           bool isCollectDone = (nowMicros - thisTimer >= INTERRUPT_MAX_IDLE_TIME) || (catchedPulses >= MAX_PULSES_TO_CATCH);
           if(isCollectDone)
           {
             canHandleEncoder = false; // выключаем обработку импульсов энкодера
           }
-          
+*/          
       interrupts();
       
-      if(isCollectDone)
-      //if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME)
+      //if(isCollectDone)
+      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME)
       {
-        /*      
+              
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку импульсов энкодера
         interrupts(); 
-        */
+        
          ///////////////////////////////////////////////////
         // detachInterrupt(ENCODER_PIN1); // снимаем прерывание с пина энкодера
          ///////////////////////////////////////////////////
