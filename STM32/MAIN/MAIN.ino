@@ -420,6 +420,7 @@ void loop()
   if (millis() - lastRS485PacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*3)
   {
     HasRS485Link = false; // долго не было пакетов по RS-485
+    lastRS485PacketSeenAt = millis(); // чтобы часто не дёргать
   }
 
 }
