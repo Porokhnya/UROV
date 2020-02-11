@@ -112,6 +112,32 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   inDrawingChart = false;
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
   canLoopADC = false;
+  isRS485Online = false;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawRS485State(TFTMenu* menu)
+{
+    if(!isActive())
+    {
+      return;      
+    }
+
+  TFT_Class* dc = menu->getDC();
+  dc->setFreeFont(TFT_SMALL_FONT);  
+
+  uint16_t curX = 190;
+  uint16_t curY = 40;
+
+  word bgcolor = RED;
+  word fgcolor = BLACK;
+
+  if(isRS485Online)
+  {
+    bgcolor = GREEN;
+  }
+
+  const char* str = "RS485";
+  menu->getRusPrinter()->print(str,curX,curY,bgcolor,fgcolor);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawVoltage(TFTMenu* menu)
@@ -244,6 +270,7 @@ void Screen1::onDeactivate()
   chart.stopDraw();
   inDrawingChart = false;
   canDrawChart = false;
+  isRS485Online = false;
 
 #ifndef _ADC_OFF
 	canLoopADC = false;
@@ -258,6 +285,8 @@ void Screen1::onActivate()
 #ifndef _ADC_OFF
   canLoopADC = true;
 #endif // !_ADC_OFF
+
+  isRS485Online = HasRS485Link;
 
   // мы активизируемся, назначаем подписчика результатов прерываний
   InterruptHandler.setSubscriber(ScreenInterrupt);
@@ -336,6 +365,13 @@ void Screen1::doUpdate(TFTMenu* menu)
   drawTime(menu);
   drawVoltage(menu);
   drawChart();
+
+  bool hasrs = HasRS485Link;
+  if(isRS485Online != hasrs)
+  {
+    isRS485Online = hasrs;
+    drawRS485State(menu);
+  }
 
 #ifndef _ADC_OFF
   if(canLoopADC)
@@ -486,6 +522,8 @@ void Screen1::doDraw(TFTMenu* menu)
   int left = w - strW - 3;
 
   menu->print(str.c_str(),left,top);
+
+  drawRS485State(menu);
   
 #endif // !_DISABLE_DRAW_SOFTWARE_VERSION
 

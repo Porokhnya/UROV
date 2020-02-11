@@ -49,6 +49,8 @@ RS485 rs485(RS485_SERIAL,Upr_RS485,RS485_READING_TIMEOUT);
 uint32_t rs485RelayTriggeredTime = 0; // время срабатывания защиты
 uint32_t rs485DataArrivedTime = 0;
 DS3231Time rsRelTrigTime; // время срабатывания защиты
+bool HasRS485Link = false;
+uint32_t lastRS485PacketSeenAt = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
 {
@@ -137,6 +139,9 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 void OnRS485IncomingData(RS485* Sender)
 {
   // пришёл пакет от модуля по RS-485 (не обязательно от модуля, но в целом - пришёл какой-то пакет от кого-то)
+
+  HasRS485Link = true; // обновляем флаг, что есть связь
+  lastRS485PacketSeenAt = millis();
 
 	uint8_t* data;
 	RS485Packet packet = rs485.getDataReceived(data);
@@ -411,6 +416,11 @@ void loop()
 
   // обновляем RS-485
   rs485.update();
+
+  if (millis() - lastRS485PacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*3)
+  {
+    HasRS485Link = false; // долго не было пакетов по RS-485
+  }
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

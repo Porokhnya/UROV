@@ -32,6 +32,9 @@ protected:
 private:
     Screen1();
 
+    bool isRS485Online;
+    void drawRS485State(TFTMenu* menu);
+
     int last3V3Voltage, last5Vvoltage, last200Vvoltage;
     void drawVoltage(TFTMenu* menu);
 
