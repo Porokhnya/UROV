@@ -65,8 +65,77 @@ void updateIndicate()
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // ENABLE_TEST_INDICATION
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef PREDICT_ENABLED
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+volatile bool predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
+DWordVector predictList; // список для предсказаний
+volatile bool predictTriggeredFlag = false; // флаг срабатывания предсказания
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void predictOff() // выключаем предсказание
+{
+  if(predictEnabledFlag)
+  {
+    predictEnabledFlag = false; // отключаем сбор предсказаний
+    predictList.empty(); // очищаем список предсказаний
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void predictOn() // включаем предсказание
+{
+  if(!predictEnabledFlag)
+  {
+    predictEnabledFlag = true; // включаем сбор предсказаний
+    predictList.empty(); // очищаем список предсказаний
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool predictTriggered() // возвращает флаг срабатывания предсказания, однократно (т.е. флаг срабатывания предсказания сбрасывается перед выходом из функции)
+{
+  bool f = predictTriggeredFlag;
+  if(f)
+  {
+    noInterrupts();
+    predictTriggeredFlag = false;  
+    interrupts();
+  }
+  return f;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#endif // PREDICT_ENABLED
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
+  #ifdef PREDICT_ENABLED
+  
+  if(predictEnabledFlag && !predictTriggeredFlag) // можем делать предсказания о срабатывании защиты
+  {
+    // включено предсказание срабатывания защиты по импульсам
+    
+    if(predictList.size() < PREDICT_PULSES)
+    {
+      predictList.push_back(micros()); // сохраняем время импульса в нашем списке
+    }
+
+    if(predictList.size() >= PREDICT_PULSES) // накопили достаточное количество импульсов
+    {
+      // список наполнился, можем делать предсказания
+      uint32_t first = predictList[0];
+      uint32_t last = predictList[predictList.size()-1];
+      
+      if(last - first <= PREDICT_TIME) // время между крайними импульсами укладывается в настройку
+      {
+        // предсказание сработало
+        predictTriggeredFlag = true;
+      }
+      else
+      {
+        // предсказание не сработало, просто чистим список
+        predictList.empty();        
+      }
+    }
+  } // predictEnabledFlag
+  
+  #endif // PREDICT_ENABLED
   
   if(!canHandleEncoder || encoderList.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
   {
@@ -190,6 +259,10 @@ void setup()
     DEBUG_SERIAL.begin(SERIAL_SPEED);
   #endif
 
+  #ifdef PREDICT_ENABLED
+    predictList.reserve(PREDICT_PULSES);
+  #endif
+
   // настраиваем светодиод индикации
   #ifdef ENABLE_TEST_INDICATION
     pinMode(INDICATION_PIN,OUTPUT);
@@ -261,7 +334,7 @@ void loop()
         // закончились попытки переслать пакет
         waitForACK = false;
       }
-  }
+  } // waitForACK
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -269,8 +342,16 @@ void loop()
     case msIdle:
     {
       // в режиме ожидания, проверяем, не сработало ли реле защиты?
+      
       if(hasRelayTriggered())
       {
+        // сработало реле защиты
+        
+        #ifdef PREDICT_ENABLED
+        noInterrupts();
+          predictOff(); // отключаем сбор предсказаний
+        interrupts();
+        #endif
 
         timer = micros(); // запоминаем время срабатывания реле защиты
 
@@ -289,9 +370,47 @@ void loop()
             indicate();
         #endif        
       }
+      #ifdef PREDICT_ENABLED
+      else
+      if(predictTriggered()) // сработало предсказание?
+      {
+
+        DBGLN(F("PREDICT TRIGGERED, COLLECT PULSES..."));
+        
+          // предсказание сработало
+          // посылаем пакет с сообщением "ЕСТЬ СРАБАТЫВАНИЕ ЗАЩИТЫ" контроллеру        
+          
+          pingID++;
+          rs485.send(rs485HasInterrupt,(const uint8_t*)&pingID, sizeof(pingID));
+          lastPacketSentAt = millis();
+        
+        noInterrupts();
+        
+          encoderList.empty(); // очищаем список прерываний
+          
+          // тут копируем полученные в предсказании импульсы в список
+          for(size_t k=0;k<predictList.size();k++)
+          {
+            encoderList.push_back(predictList[k]);
+          }          
+
+          predictOff(); // выключаем предсказания
+          
+          timer = micros();
+          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+          machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
+          
+        interrupts();
+
+        #ifdef ENABLE_TEST_INDICATION
+            indicate();
+        #endif
+                           
+      } // predictTriggered()      
+      #endif // PREDICT_ENABLED
       else
       {
-        // реле защиты не сработало, отсылаем пакет пинга
+        // реле защиты не сработало, предсказание не сработало, отсылаем пакет пинга
         sendPingPacket();
       }
     }
@@ -310,11 +429,6 @@ void loop()
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
         interrupts(); 
-
-        ///////////////////////////////////////////////////
-        // считаем импульсы на штанге по прерыванию
-        //attachInterrupt(ENCODER_PIN1,EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);  
-        ///////////////////////////////////////////////////
            
       }
     }
@@ -323,39 +437,26 @@ void loop()
     case msHandleInterrupts:
     {
       // собираем прерывания с энкодера
-    //  uint32_t nowMicros = micros();
       
-      noInterrupts();
-      
+      noInterrupts();      
           uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
-      /*    
-          size_t catchedPulses = encoderList.size(); // сколько импульсов уже поймали?
-          bool isCollectDone = (nowMicros - thisTimer >= INTERRUPT_MAX_IDLE_TIME) || (catchedPulses >= MAX_PULSES_TO_CATCH);
-          if(isCollectDone)
-          {
-            canHandleEncoder = false; // выключаем обработку импульсов энкодера
-          }
-*/          
       interrupts();
       
-      //if(isCollectDone)
       if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME)
       {
               
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку импульсов энкодера
+          #ifdef PREDICT_ENABLED
+          predictOn(); // включаем сбор предсказаний          
+          #endif
         interrupts(); 
         
-         ///////////////////////////////////////////////////
-        // detachInterrupt(ENCODER_PIN1); // снимаем прерывание с пина энкодера
-         ///////////////////////////////////////////////////
-
         DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
         DBGLN(encoderList.size());
         
         // нормализуем список
         normalizeList(encoderList);
-
 
         // готовим данные для отсыла по RS-475
         createRS485Packet(encoderList,rs485DataPacket);

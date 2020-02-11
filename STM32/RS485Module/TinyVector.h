@@ -37,7 +37,9 @@ public:
     void reserve(size_t count) __attribute__((always_inline))
     {
       if(count <= d_capacity) // уже есть буфер нужного размера
+      {
         return;
+      }
 
         d_capacity = count;
 
@@ -50,7 +52,9 @@ public:
     void push_back(Data const &x) __attribute__((always_inline))
     {
         if (d_capacity == d_size) //when he pushes data onto the heap, he checks to see if the storage is full
+        {
             resize();  //if full - resize
+        }
 
         d_data[d_size++] = x;
     }; // Adds new value. If needed, allocates more space
@@ -58,7 +62,9 @@ public:
     void pop() __attribute__((always_inline)) // extract the last element by simple decrease the write pointer
     {
         if(d_size)
+        {
           --d_size;
+        }
     };
 
     void empty() __attribute__((always_inline)) // simple set size to 0 without memory free
@@ -69,7 +75,9 @@ public:
     void clear() __attribute__((always_inline)) //here
     {
         if(d_data)
+        {
           memset(d_data, 0, d_size);
+        }
         d_capacity = 0;
         d_size = 0;
         free(d_data);
