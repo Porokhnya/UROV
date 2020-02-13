@@ -11,6 +11,10 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RS485 rs485(RS485_SERIAL,RS485_DE_PIN,RS485_READING_TIMEOUT); // класс работы с RS-485
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef USE_EXTERNAL_WATCHDOG
+  ExternalWatchdogSettings watchdogSettings;
+#endif
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MachineState machineState = msIdle; // состояние конечного автомата
 volatile uint32_t timer = 0; // служебный таймер
 
@@ -253,6 +257,46 @@ void sendPingPacket()
     }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef USE_EXTERNAL_WATCHDOG
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void updateExternalWatchdog()
+{
+  static unsigned long watchdogLastMillis = millis();
+  unsigned long watchdogCurMillis = millis();
+
+  uint16_t dt = watchdogCurMillis - watchdogLastMillis;
+  watchdogLastMillis = watchdogCurMillis;
+
+      watchdogSettings.timer += dt;
+      switch(watchdogSettings.state)
+      {
+        case WAIT_FOR_TRIGGERED:
+        {
+          if(watchdogSettings.timer >= WATCHDOG_WORK_INTERVAL)
+          {
+            watchdogSettings.timer = 0;
+            watchdogSettings.state = WAIT_FOR_NORMAL;
+            digitalWrite(WATCHDOG_REBOOT_PIN, WATCHDOG_TRIGGERED_LEVEL);
+          }
+        }
+        break;
+
+        case WAIT_FOR_NORMAL:
+        {
+          if(watchdogSettings.timer >= WATCHDOG_PULSE_DURATION)
+          {
+            watchdogSettings.timer = 0;
+            watchdogSettings.state = WAIT_FOR_TRIGGERED;
+            digitalWrite(WATCHDOG_REBOOT_PIN, WATCHDOG_NORMAL_LEVEL);
+          }          
+        }
+        break;
+      }  
+  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#endif // USE_EXTERNAL_WATCHDOG
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
 {
   #ifdef _DEBUG
@@ -262,6 +306,13 @@ void setup()
   #ifdef PREDICT_ENABLED
     predictList.reserve(PREDICT_PULSES);
   #endif
+
+  #ifdef USE_EXTERNAL_WATCHDOG
+    pinMode(WATCHDOG_REBOOT_PIN,OUTPUT);
+    digitalWrite(WATCHDOG_REBOOT_PIN,WATCHDOG_NORMAL_LEVEL);
+    watchdogSettings.timer = 0;
+    watchdogSettings.state = WAIT_FOR_TRIGGERED;
+  #endif  
 
   // настраиваем светодиод индикации
   #ifdef ENABLE_TEST_INDICATION
@@ -302,6 +353,10 @@ void loop()
   #ifdef ENABLE_TEST_INDICATION
     updateIndicate();
   #endif
+
+ #ifdef USE_EXTERNAL_WATCHDOG
+   updateExternalWatchdog();
+ #endif // USE_EXTERNAL_WATCHDOG  
 
   // проверяем, пришёл ли пакет подтверждения?
   if(waitForACK)
@@ -525,6 +580,9 @@ void yield()
 {
   // обновляем концевики
   updateEndstops();
-  
+
+   #ifdef USE_EXTERNAL_WATCHDOG
+     updateExternalWatchdog();
+   #endif // USE_EXTERNAL_WATCHDOG  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

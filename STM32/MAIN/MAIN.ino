@@ -33,6 +33,10 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef USE_EXTERNAL_WATCHDOG
+  ExternalWatchdogSettings watchdogSettings;
+#endif
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -260,6 +264,46 @@ void SwitchRS485MainHandler(bool on)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef USE_EXTERNAL_WATCHDOG
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void updateExternalWatchdog()
+{
+  static unsigned long watchdogLastMillis = millis();
+  unsigned long watchdogCurMillis = millis();
+
+  uint16_t dt = watchdogCurMillis - watchdogLastMillis;
+  watchdogLastMillis = watchdogCurMillis;
+
+      watchdogSettings.timer += dt;
+      switch(watchdogSettings.state)
+      {
+        case WAIT_FOR_TRIGGERED:
+        {
+          if(watchdogSettings.timer >= WATCHDOG_WORK_INTERVAL)
+          {
+            watchdogSettings.timer = 0;
+            watchdogSettings.state = WAIT_FOR_NORMAL;
+            digitalWrite(WATCHDOG_REBOOT_PIN, WATCHDOG_TRIGGERED_LEVEL);
+          }
+        }
+        break;
+
+        case WAIT_FOR_NORMAL:
+        {
+          if(watchdogSettings.timer >= WATCHDOG_PULSE_DURATION)
+          {
+            watchdogSettings.timer = 0;
+            watchdogSettings.state = WAIT_FOR_TRIGGERED;
+            digitalWrite(WATCHDOG_REBOOT_PIN, WATCHDOG_NORMAL_LEVEL);
+          }          
+        }
+        break;
+      }  
+  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#endif // USE_EXTERNAL_WATCHDOG
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup()
 {
   Serial.begin(SERIAL_SPEED);
@@ -273,6 +317,14 @@ void setup()
   DBGLN(F("I2C inited."));
 
   ConfigPin::setup();
+
+  #ifdef USE_EXTERNAL_WATCHDOG
+    pinMode(WATCHDOG_REBOOT_PIN,OUTPUT);
+    digitalWrite(WATCHDOG_REBOOT_PIN,WATCHDOG_NORMAL_LEVEL);
+    watchdogSettings.timer = 0;
+    watchdogSettings.state = WAIT_FOR_TRIGGERED;
+  #endif  
+  
   
   DBGLN(F("Init settings..."));
   Settings.begin();
@@ -378,9 +430,13 @@ void setup()
 void loop() 
 {
 
-#ifndef _DELAYED_EVENT_OFF
-  CoreDelayedEvent.update();
-#endif // _DELAYED_EVENT_OFF
+  #ifndef _DELAYED_EVENT_OFF
+    CoreDelayedEvent.update();
+  #endif // _DELAYED_EVENT_OFF
+  
+   #ifdef USE_EXTERNAL_WATCHDOG
+     updateExternalWatchdog();
+   #endif // USE_EXTERNAL_WATCHDOG
 
   Settings.update();
   
@@ -445,6 +501,9 @@ void yield()
 
    Buttons.update();
 
+   #ifdef USE_EXTERNAL_WATCHDOG
+     updateExternalWatchdog();
+   #endif // USE_EXTERNAL_WATCHDOG
 
  nestedYield = false;
  
