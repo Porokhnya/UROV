@@ -215,7 +215,7 @@ bool RS485::processRS485Packet()
 
     bool isCrcGood = false;
     
-    if(rs485Packet.dataLength)
+    if(rs485Packet.dataLength && !hasTimeout)
     {
         uint8_t dataCrc = crc8(dataReceived,rs485Packet.dataLength);
         
