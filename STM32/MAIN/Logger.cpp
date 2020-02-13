@@ -47,7 +47,9 @@ bool LoggerClass::openWorkFile()
 void LoggerClass::closeWorkFile()
 {
   if(workFile.isOpen())
+  {
     workFile.close();
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void LoggerClass::write(uint8_t* data,size_t dataLength)
@@ -58,6 +60,12 @@ void LoggerClass::write(uint8_t* data,size_t dataLength)
 		return;
 	}
 
+  if(!data || !dataLength)
+  {
+    DBGLN(F("LoggerClass::write - нечего записывать!"));
+    return;    
+  }
+
 	if (!openWorkFile())
 	{
 		DBGLN(F("ОШИБКА ОТКРЫТИЯ ФАЙЛА НА SD !!!"));
@@ -65,6 +73,8 @@ void LoggerClass::write(uint8_t* data,size_t dataLength)
 	}
 
   workFile.write(data,dataLength);
+
+  closeWorkFile();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
