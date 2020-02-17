@@ -445,7 +445,7 @@ namespace UROVConfig
                             {
                                 System.Diagnostics.Debug.Assert(curRecord != null);
 
-                                // далее идут 4 смещения, в миллисекундах
+                                // далее идёт смещение, в миллисекундах, 4 байта
                                 curRecord.DataArrivedTime = Read32(content, readed); readed += 4;
                             }
                             break;

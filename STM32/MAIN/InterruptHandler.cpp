@@ -217,7 +217,7 @@ void InterruptHandlerClass::writeRodPositionToLog(uint8_t channelNumber)
 #endif // _SD_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::writeLogRecord(CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
+void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
 {
 #ifndef _SD_OFF
 
@@ -262,6 +262,11 @@ void InterruptHandlerClass::writeLogRecord(CurrentOscillData& oscData, Interrupt
   workBuff[0] = recordCompareResult;
   workBuff[1] = compareResult;
   Logger.write(workBuff,2);
+
+// пишем время, когда пошли данные, относительно начала сбора данных по току
+  workBuff[0] = recordDataArrivedTime;
+  memcpy(&(workBuff[1]),&dataArrivedTime,4);
+  Logger.write(workBuff,5);    
 
   // пишем список прерываний
   if(_list.size() > 1)
@@ -340,10 +345,6 @@ void InterruptHandlerClass::writeToLog(
   
   Logger.write(workBuff,8);
 
-  // пишем время, когда пошли данные, относительно начала сбора данных по току
-  workBuff[0] = recordDataArrivedTime;
-  memcpy(&(workBuff[1]),&dataArrivedTime,4);
-  Logger.write(workBuff,5);  
 
   // пишем температуру системы
   DS3231Temperature temp = Settings.getTemperature();
@@ -357,7 +358,7 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   if(lst1.size() > 1)
   {
-    writeLogRecord(oscData,lst1,res1,num1, ethalonData1);
+    writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, ethalonData1);
   } // if
 
 
