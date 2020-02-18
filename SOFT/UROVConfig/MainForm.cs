@@ -3151,7 +3151,7 @@ namespace UROVConfig
                     float lowBorder = 3.3f - threshold;
                     float highBorder = 3.3f + threshold;
 
-                    float currentV = vdata * (2.4f / 4096 * 2);
+                    float currentV = vdata * (3.3f / 4096 * 2);
 
                     if (currentV >= lowBorder && currentV <= highBorder)
                     {
@@ -3176,7 +3176,7 @@ namespace UROVConfig
                     float lowBorder = 5.0f - threshold;
                     float highBorder = 5.0f + threshold;
 
-                    float currentV = vdata * (2.4f / 4096 * 2);
+                    float currentV = vdata * (3.3f / 4096 * 2);
 
                     if (currentV >= lowBorder && currentV <= highBorder)
                     {
@@ -3201,7 +3201,7 @@ namespace UROVConfig
                     float lowBorder = 200.0f - threshold;
                     float highBorder = 200.0f + threshold;
 
-                    float currentV = vdata * (2.4f / 4096 * 100);
+                    float currentV = vdata * (3.3f / 4096 * 100);
 
                     if (currentV >= lowBorder && currentV <= highBorder)
                     {

@@ -1034,6 +1034,7 @@
             this.lblVoltage3.TabIndex = 7;
             this.lblVoltage3.Text = "-";
             this.lblVoltage3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblVoltage3.Visible = false;
             // 
             // lblVoltage2
             // 
@@ -1044,6 +1045,7 @@
             this.lblVoltage2.TabIndex = 6;
             this.lblVoltage2.Text = "-";
             this.lblVoltage2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblVoltage2.Visible = false;
             // 
             // lblVoltage1
             // 
@@ -1064,6 +1066,7 @@
             this.label28.Size = new System.Drawing.Size(62, 13);
             this.label28.TabIndex = 4;
             this.label28.Text = "Вход 200В:";
+            this.label28.Visible = false;
             // 
             // label29
             // 
@@ -1074,6 +1077,7 @@
             this.label29.Size = new System.Drawing.Size(50, 13);
             this.label29.TabIndex = 2;
             this.label29.Text = "Вход 5В:";
+            this.label29.Visible = false;
             // 
             // label30
             // 
