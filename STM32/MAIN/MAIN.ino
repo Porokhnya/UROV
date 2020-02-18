@@ -120,17 +120,6 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 	InterruptHandlerClass::normalizeList(oscillData.times);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
-	if (needToLog)
-	{
-#ifndef _SD_OFF
-	//	DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
-
-		// надо записать в лог дату срабатывания системы
-		InterruptHandlerClass::writeToLog(dataArrivedTime, tm, oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
-
-#endif // !_SD_OFF
-	} // needToLog
-
 	bool wantToInformSubscriber = (hasAlarm || (interruptsList.size() > 1));
 
 	if (wantToInformSubscriber)
@@ -138,6 +127,18 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
 		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime);
 	}
+
+  if (needToLog)
+  {
+#ifndef _SD_OFF
+  //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
+
+    // надо записать в лог дату срабатывания системы
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
+
+#endif // !_SD_OFF
+  } // needToLog
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void OnRS485IncomingData(RS485* Sender)
