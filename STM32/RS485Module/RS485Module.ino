@@ -377,6 +377,10 @@ void loop()
     updateIndicate();
   #endif
 
+  #ifdef USE_INTERNAL_WATCHDOG
+  HAL_IWDG_Refresh(&hiwdg); // Сброс встроенного сторожевого таймера
+  #endif 
+
  #ifdef USE_EXTERNAL_WATCHDOG
    updateExternalWatchdog();
  #endif // USE_EXTERNAL_WATCHDOG  
