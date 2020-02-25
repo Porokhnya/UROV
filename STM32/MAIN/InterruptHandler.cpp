@@ -203,47 +203,88 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::writeRodPositionToLog(uint8_t channelNumber)
+int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+, EthalonCompareNumber num, InterruptTimeList& ethalonData, bool toEEPROM, int curEEPROMWriteAddress)
 {
-#ifndef _SD_OFF
- // пишем положение штанги
-  RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
 
-  uint8_t workBuff[2] = {0};
-  workBuff[0] = recordRodPosition;
-  workBuff[1] = rodPos;
+  int written = 0;
   
-  Logger.write(workBuff,2);
-#endif // _SD_OFF
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData)
-{
-#ifndef _SD_OFF
-
   if(_list.size() < 2) // ничего в списке прерываний нет
-    return;
+    return written;
 
-  const uint8_t CHANNEL_NUM = 0;
+ const uint8_t CHANNEL_NUM = 0;
+ AT24CX* eeprom = Settings.getEEPROM();
 
  uint8_t workBuff[5] = {0};
 
   workBuff[0] = recordInterruptRecordBegin;
-  Logger.write(workBuff,1);
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,1);
+    written++;
+    curEEPROMWriteAddress++;
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,1);
+    #endif
+  }
   
   // пишем номер канала, для которого сработало прерывание
   workBuff[0] = recordChannelNumber;
   workBuff[1] = CHANNEL_NUM; // ВСЕГДА ПЕРВЫЙ КАНАЛ !!!
-  Logger.write(workBuff,2);
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,2);
+    written += 2;
+    curEEPROMWriteAddress += 2;
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,2);  
+    #endif
+  }
   
   // пишем положение штанги
-  writeRodPositionToLog(CHANNEL_NUM); // ВСЕГДА ПЕРВЫЙ КАНАЛ
+  RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
+
+  workBuff[0] = recordRodPosition;
+  workBuff[1] = rodPos;
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,2);
+    written += 2;
+    curEEPROMWriteAddress += 2;
+  }
+  else
+  {
+    #ifndef _SD_OFF  
+      Logger.write(workBuff,2);
+    #endif // _SD_OFF
+  }  
 
   // пишем время движения штанги  
   uint32_t moveTime = _list[_list.size()-1] - _list[0];
   workBuff[0] = recordMoveTime;
   memcpy(&(workBuff[1]),&moveTime,4);
-  Logger.write(workBuff,5);
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,5);
+    written += 5;
+    curEEPROMWriteAddress += 5;    
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,5);
+    #endif
+  }
   
 
   // пишем кол-во срабатываний канала
@@ -251,22 +292,70 @@ void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOsci
 
   workBuff[0] = recordMotoresource;
   memcpy(&(workBuff[1]),&motoresource,4);
-  Logger.write(workBuff,5);  
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,5);
+    written += 5;
+    curEEPROMWriteAddress += 5;    
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,5);  
+    #endif
+  }
 
   // пишем номер эталона, с которым сравнивали
   workBuff[0] = recordEthalonNumber;
   workBuff[1] = num;
-  Logger.write(workBuff,2);
+  
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,2);
+    written += 2;
+    curEEPROMWriteAddress += 2;        
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,2);
+    #endif
+  }
   
   // пишем результат сравнения с эталоном для канала
   workBuff[0] = recordCompareResult;
   workBuff[1] = compareResult;
-  Logger.write(workBuff,2);
+  
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,2);
+    written += 2;
+    curEEPROMWriteAddress += 2;        
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,2);
+    #endif
+  }
 
 // пишем время, когда пошли данные, относительно начала сбора данных по току
   workBuff[0] = recordDataArrivedTime;
   memcpy(&(workBuff[1]),&dataArrivedTime,4);
-  Logger.write(workBuff,5);    
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,5);
+    written += 5;
+    curEEPROMWriteAddress += 5;        
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,5);    
+    #endif
+  }
 
   // пишем список прерываний
   if(_list.size() > 1)
@@ -275,11 +364,39 @@ void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOsci
    workBuff[0] = recordInterruptDataBegin;
    uint16_t dataLen = _list.size();
    memcpy(&(workBuff[1]),&dataLen,2);
-   Logger.write(workBuff,3);
 
-   Logger.write((uint8_t*) _list.pData(), _list.size()*sizeof(uint32_t));
+   if(toEEPROM)
+   {
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;
+    
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) _list.pData(), _list.size()*sizeof(uint32_t));
+    written += _list.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += _list.size()*sizeof(uint32_t);
+   }
+   else
+   {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,3);
+    Logger.write((uint8_t*) _list.pData(), _list.size()*sizeof(uint32_t));
+    #endif
+   }
+
    workBuff[0] = recordInterruptDataEnd;
-   Logger.write(workBuff,1);
+   
+   if(toEEPROM)
+   {
+    eeprom->write(curEEPROMWriteAddress,workBuff,1);
+    written += 1;
+    curEEPROMWriteAddress += 1;            
+   }
+   else
+   {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,1);
+    #endif
+   }
   }
 
   if(ethalonData.size() > 1)
@@ -288,9 +405,25 @@ void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOsci
    workBuff[0] = recordEthalonDataFollow;
    uint16_t dataLen = ethalonData.size();
    memcpy(&(workBuff[1]),&dataLen,2);
-   Logger.write(workBuff,3);
 
-   Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));    
+   if(toEEPROM)
+   {
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;
+    
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));
+    written += ethalonData.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += ethalonData.size()*sizeof(uint32_t);
+    
+   }
+   else
+   {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,3);
+    Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));    
+    #endif
+   }
   }
 
   // пишем данные по току
@@ -299,18 +432,59 @@ void InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOsci
 	  workBuff[0] = recordOscDataFollow;
 	  uint16_t dataLen = oscData.times.size();
 	  memcpy(&(workBuff[1]), &dataLen, 2);
-	  Logger.write(workBuff, 3);
-	  Logger.write((uint8_t*)oscData.times.pData(), oscData.times.size() * sizeof(uint32_t));
-	  Logger.write((uint8_t*)oscData.data1.pData(), oscData.data1.size() * sizeof(uint32_t));
-	  Logger.write((uint8_t*)oscData.data2.pData(), oscData.data2.size() * sizeof(uint32_t));
-	  Logger.write((uint8_t*)oscData.data3.pData(), oscData.data3.size() * sizeof(uint32_t));
+
+    if(toEEPROM)
+    {
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;
+    
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.times.pData(), oscData.times.size()*sizeof(uint32_t));
+    written += oscData.times.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += oscData.times.size()*sizeof(uint32_t);
+
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data1.pData(), oscData.data1.size()*sizeof(uint32_t));
+    written += oscData.data1.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += oscData.data1.size()*sizeof(uint32_t);
+
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data2.pData(), oscData.data2.size()*sizeof(uint32_t));
+    written += oscData.data2.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += oscData.data2.size()*sizeof(uint32_t);
+
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data3.pData(), oscData.data3.size()*sizeof(uint32_t));
+    written += oscData.data3.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += oscData.data3.size()*sizeof(uint32_t);
+      
+    }
+    else
+    {
+      #ifndef _SD_OFF
+	    Logger.write(workBuff, 3);
+	    Logger.write((uint8_t*)oscData.times.pData(), oscData.times.size() * sizeof(uint32_t));
+	    Logger.write((uint8_t*)oscData.data1.pData(), oscData.data1.size() * sizeof(uint32_t));
+	    Logger.write((uint8_t*)oscData.data2.pData(), oscData.data2.size() * sizeof(uint32_t));
+	    Logger.write((uint8_t*)oscData.data3.pData(), oscData.data3.size() * sizeof(uint32_t));
+     #endif
+    }
   }
 
   // заканчиваем запись
   workBuff[0] = recordInterruptRecordEnd;
-  Logger.write(workBuff,1);
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,1);
+    written += 1;
+    curEEPROMWriteAddress += 1;                
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,1);
+    #endif
+  }
 
-#endif // _SD_OFF    
+
+return written;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
@@ -320,21 +494,82 @@ void InterruptHandlerClass::writeToLog(
 	InterruptTimeList& lst1, 
 	EthalonCompareResult res1, 
 	EthalonCompareNumber num1,
-	InterruptTimeList& ethalonData1
+	InterruptTimeList& ethalonData1,
+  bool toEEPROM
 )
 {
-#ifndef _SD_OFF
-
-//	DBGLN(F("ПИШЕМ НА SD !!!"));
 
   uint8_t workBuff[10] = {0};
+  int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS;
+  int recordStartAddress = 0;
+  int recordTotalLength = 0;
+  
+  AT24CX* eeprom = Settings.getEEPROM();
+  
+
+  if(toEEPROM)
+  {
+    // вычисляем адрес для записи в EEPROM
+    // сначала смотрим, под каким индексом записывать?
+    uint8_t idx = 0;
+    int header1 = eeprom->read(eepromAddress);
+    int header2 = eeprom->read(eepromAddress+1);
+    int header3 = eeprom->read(eepromAddress+2);
+    
+    if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
+    {
+      // прочитали текущий индекс, и инкрементировали его
+      idx = eeprom->read(eepromAddress+3);
+      idx++;
+      if(idx > 2) // пишем только последние 3 срабатывания
+      {
+        idx = 0;
+      }
+
+      // записали новый индекс
+      eeprom->write(eepromAddress+3,idx);
+    }
+    else
+    {
+      // нет записей, неправильные заголовки, надо записать
+      eeprom->write(eepromAddress,RECORD_HEADER1);
+      eeprom->write(eepromAddress+1,RECORD_HEADER2);
+      eeprom->write(eepromAddress+2,RECORD_HEADER3);
+      eeprom->write(eepromAddress+3,idx);
+    }
+
+    // теперь надо просчитать смещение для старта начала записи. При этом от начального адреса пропускаем 4 байта (адрес хранения индекса текущей записи)
+    eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + idx*EEPROM_LAST_3_RECORD_SIZE;
+
+    // сначала записываем заголовок для нашей записи
+    eeprom->write(eepromAddress,RECORD_HEADER1);
+    eeprom->write(eepromAddress+1,RECORD_HEADER2);
+    eeprom->write(eepromAddress+2,RECORD_HEADER3);
+    eepromAddress += 3;
+
+    // мы теперь на начале данных записи, надо пропустить 4 байта (куда мы потом запишем длину записи), и сохранить указатель на начало записи
+    recordStartAddress = eepromAddress;
+    eepromAddress += 4; // теперь можем писать данные, начиная с этого адреса
+    
+  }
 
   workBuff[0] = recordInterruptInfoBegin;
-  Logger.write(workBuff,1);
+
+  if(toEEPROM)
+  {
+    // потом пишем заголовок начала данных
+    eeprom->write(eepromAddress,workBuff,1);
+    eepromAddress++;
+    recordTotalLength++;
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,1);
+    #endif
+  }
   
   // пишем время срабатывания прерывания
-  //DS3231Time tm = RealtimeClock.getTime();
-
   workBuff[0] = recordInterruptTime;
   workBuff[1] = tm.dayOfMonth;
   workBuff[2] = tm.month;
@@ -342,8 +577,19 @@ void InterruptHandlerClass::writeToLog(
   workBuff[5] = tm.hour;
   workBuff[6] = tm.minute;
   workBuff[7] = tm.second;
-  
-  Logger.write(workBuff,8);
+
+  if(toEEPROM)
+  {
+    eeprom->write(eepromAddress,workBuff,8);
+    eepromAddress += 8;
+    recordTotalLength += 8;
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,8);
+    #endif
+  }
 
 
   // пишем температуру системы
@@ -352,21 +598,46 @@ void InterruptHandlerClass::writeToLog(
   workBuff[0] = recordSystemTemperature;
   workBuff[1] = temp.Value;
   workBuff[2] = temp.Fract;
-  
-  Logger.write(workBuff,3);
+
+  if(toEEPROM)
+  {
+    eeprom->write(eepromAddress,workBuff,3);
+    eepromAddress += 3;  
+    recordTotalLength += 3;  
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,3);
+    #endif
+  }
   
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   if(lst1.size() > 1)
   {
-    writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, ethalonData1);
+    int written = writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, ethalonData1,toEEPROM,eepromAddress);
+    eepromAddress += written;
+    recordTotalLength += written;
   } // if
 
 
     workBuff[0] = recordInterruptInfoEnd;
-    Logger.write(workBuff,1);
 
-//	DBGLN(F("Данные на SD записаны."));
-#endif // _SD_OFF  
+    if(toEEPROM)
+    {
+       eeprom->write(eepromAddress,workBuff,1);
+       recordTotalLength++;
+
+       // и не забываем записать всю длину сохранённых данных !!!
+       eeprom->write(recordStartAddress,(uint8_t*)&recordTotalLength,4);
+    }
+    else
+    {
+      #ifndef _SD_OFF
+      Logger.write(workBuff,1);
+      #endif
+    }
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //

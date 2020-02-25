@@ -27,6 +27,8 @@ public:
 
 	void update();
 
+  AT24CX* getEEPROM() {return eeprom;}
+
 	// возвращает настройку кол-ва импульсов на канал
 	uint16_t getChannelPulses(uint8_t channelNum);
 
