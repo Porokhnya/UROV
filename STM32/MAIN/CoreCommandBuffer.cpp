@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "DS3231.h"
 #include "Settings.h"
+#include "SDFakeFilesInterceptor.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 // список поддерживаемых команд
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -637,7 +638,18 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
     pStream->print(CORE_COMMAND_ANSWER_OK);
     pStream->print(parser.getArg(0));
     pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-    pStream->println(FileUtils::getFileSize(fileName));    
+
+    // проверяем - не фейковый ли это файл?
+    if(SDFakeFiles.isOurFakeFile(fileName))
+    {
+      // это фейковый файл, надо получить его размер
+      pStream->println(SDFakeFiles.getFileSize(fileName));
+    }
+    else
+    {
+      // файл не фейковый, печатаем его размер в поток
+      pStream->println(FileUtils::getFileSize(fileName));    
+    }
     
     return true;
   }
@@ -658,8 +670,19 @@ bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser
 
       fileName += parser.getArg(i);
     }
+
+    // проверяем, не фейковый ли это файл?
+    if(SDFakeFiles.isOurFakeFile(fileName))
+    {
+      // файл фейковый, надо отдать его содержимое
+      SDFakeFiles.printFakeFile(fileName,pStream);
+    }
+    else
+    {
+      // файл не фейковый, надо отправить его в поток
+      FileUtils::SendToStream(pStream, fileName);
+    }
     
-    FileUtils::SendToStream(pStream, fileName);
     pStream->println(endOfFile);
   }
   else
@@ -685,6 +708,9 @@ bool CommandHandlerClass::getLS(const char* commandPassed, const CommandParser& 
     }    
   }
 
+  // просим наши фейковые файлы добавиться в папку
+  SDFakeFiles.addToLS(folderName,pStream);
+  
   FileUtils::printFilesNames(folderName,false,pStream);
   pStream->println(CORE_END_OF_DATA);
   
