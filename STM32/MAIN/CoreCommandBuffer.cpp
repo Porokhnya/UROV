@@ -712,6 +712,7 @@ bool CommandHandlerClass::getLS(const char* commandPassed, const CommandParser& 
   SDFakeFiles.addToLS(folderName,pStream);
   
   FileUtils::printFilesNames(folderName,false,pStream);
+  
   pStream->println(CORE_END_OF_DATA);
   
   return true;
