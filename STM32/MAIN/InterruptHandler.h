@@ -47,6 +47,15 @@ typedef enum
 	dirDown
 } EthalonDirection;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+typedef enum
+{
+  msIdle, // нормальный режим работы
+  msWaitHandleInterrupts, // ждём до начала сбора прерываний
+  msHandleInterrupts, // собираем прерывания
+  msWaitGuardRelease, // ждём, пока концевик срабатывания защиты не переключится в разомкнутое состояние
+  
+} MachineState;
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 struct CurrentOscillData // данные по току, по трём каналам
 {
 	void clear() // очищает данные без освобождения памяти под них
@@ -81,7 +90,6 @@ struct InterruptEventSubscriber
   // вызывается, когда есть хотя бы один список с прерываниями - закончен
   virtual void OnHaveInterruptData() = 0;
 
- // virtual void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime) = 0;
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
 class InterruptHandlerClass
@@ -94,7 +102,7 @@ class InterruptHandlerClass
 
    void setSubscriber(InterruptEventSubscriber* h);
    InterruptEventSubscriber* getSubscriber();
-   void informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime);
+   void informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
    
    static void writeToLog(uint32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData& oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1, bool toEEPROM=false);
 

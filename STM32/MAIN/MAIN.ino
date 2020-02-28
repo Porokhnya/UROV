@@ -125,7 +125,7 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 	if (wantToInformSubscriber)
 	{
 	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
-		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime);
+		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1/*, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime*/);
 
    // обновляем экран, чтобы график появился сразу
    Screen.update();

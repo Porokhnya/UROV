@@ -121,8 +121,6 @@ public:
 	// вызывается, когда есть хотя бы один список с прерываниями - закончен
 	virtual void OnHaveInterruptData();
 
-	//virtual void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime) {}
-
 	// возвращает true, если запись удалась
 	bool beginRecord(uint32_t timeout);
 

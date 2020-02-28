@@ -10,38 +10,147 @@
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
-// список времён срабатываний прерываний на энкодере штанги
-InterruptTimeList list1;
-//--------------------------------------------------------------------------------------------------------------------------------------
-volatile bool hasEncoderInterrupt = false;
-volatile uint32_t lastEncoderInterruptTime = 0;
+InterruptTimeList encoderList; // список времён срабатываний прерываний на энкодере штанги
+MachineState machineState = msIdle; // состояние конечного автомата
+volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
+volatile uint32_t timer = 0; // служебный таймер
+DS3231Time relayTriggeredTime; // время срабатывания защиты
+volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 
-volatile uint32_t relayTriggeredTime = 0; // время, когда защита сработала
-volatile bool hasRelayTriggered = false;
-DS3231Time trigTime; // время срабатывания защиты
-
-volatile uint32_t timeBeforeInterruptsBegin = 0; // время от срабатывания реле защиты до первого прерывания
-volatile bool hasRelayTriggeredTime = false; // флаг, что было срабатывание реле защиты перед пачкой прерываний
-
-// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 volatile uint32_t currentOscillTimer = 0; // таймер для сбора информации по току
 volatile bool currentOscillTimerActive = false; // флаг активности таймера сбора информации по току
 CurrentOscillData oscillData; // информация по току
-// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+//--------------------------------------------------------------------------------------------------------------------------------------
+volatile bool relayTriggeredAtStart = false; // флаг, что защита сработала при старте (это срабатывание мы игнорируем)
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool hasRelayTriggered()
+{
+  if (relayTriggeredAtStart) // убираем первое срабатывание при старте
+  {
+    relayTriggeredAtStart = false;
+    return false;
+  }
+  if(digitalRead(RELAY_PIN) == RELAY_TRIGGER_LEVEL)
+  {
+    relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания защиты
+    // сохраняем состояние нижнего концевика 
+    downEndstopTriggered = RodDownEndstopTriggered(false);
+    return true;
+  }
 
+  return false;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+// RMS
+//--------------------------------------------------------------------------------------------------------------------------------------
 #ifndef _RMS_OFF
 volatile bool wantComputeRMS = false; // флаг, что мы должны подсчитать РМС
 volatile bool inComputeRMSMode = false; // флаг, что мы считаем РМС
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
 #endif // _RMS_OFF
-
-volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 //--------------------------------------------------------------------------------------------------------------------------------------
-InterruptEventSubscriber* subscriber = NULL;
+// ПРЕДСКАЗАНИЯ
+//--------------------------------------------------------------------------------------------------------------------------------------
+#ifdef PREDICT_ENABLED
+//--------------------------------------------------------------------------------------------------------------------------------------
+volatile bool predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
+InterruptTimeList predictList; // список для предсказаний
+volatile bool predictTriggeredFlag = false; // флаг срабатывания предсказания
+//--------------------------------------------------------------------------------------------------------------------------------------
+void predictOff() // выключаем предсказание
+{
+  if(predictEnabledFlag)
+  {
+    predictEnabledFlag = false; // отключаем сбор предсказаний
+    predictList.empty(); // очищаем список предсказаний
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void predictOn() // включаем предсказание
+{
+  if(!predictEnabledFlag)
+  {
+    predictEnabledFlag = true; // включаем сбор предсказаний
+    predictList.empty(); // очищаем список предсказаний
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool predictTriggered() // возвращает флаг срабатывания предсказания, однократно (т.е. флаг срабатывания предсказания сбрасывается перед выходом из функции)
+{
+  bool f = predictTriggeredFlag;
+  if(f)
+  {
+    noInterrupts();
+    predictTriggeredFlag = false;  
+    interrupts();
+  }
+  return f;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+#endif // PREDICT_ENABLED
+//--------------------------------------------------------------------------------------------------------------------------------------
+InterruptEventSubscriber* subscriber = NULL; // подписчик для обработки результатов пачки прерываний
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
+  #ifdef PREDICT_ENABLED
+  
+  if(predictEnabledFlag && !predictTriggeredFlag) // можем делать предсказания о срабатывании защиты
+  {
+    // включено предсказание срабатывания защиты по импульсам
+    
+    if(predictList.size() < PREDICT_PULSES)
+    {
+      predictList.push_back(micros()); // сохраняем время импульса в нашем списке
+    }
+
+    if(predictList.size() >= PREDICT_PULSES) // накопили достаточное количество импульсов
+    {
+      // список наполнился, можем делать предсказания
+      uint32_t first = predictList[0];
+      uint32_t last = predictList[predictList.size()-1];
+      
+      if(last - first <= PREDICT_TIME) // время между крайними импульсами укладывается в настройку
+      {
+        // предсказание сработало
+        predictTriggeredFlag = true;
+      }
+      else
+      {
+        // предсказание не сработало, просто чистим список
+        predictList.empty();        
+      }
+    }
+  } // predictEnabledFlag
+  
+  #endif // PREDICT_ENABLED
+  
+  if(!canHandleEncoder || encoderList.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
+  {
+    return;
+  }
+  
+    uint32_t now = micros();
+    encoderList.push_back(now);
+    timer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
+
+
+    #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+        // определяем направление вращения энкодера.
+        if (digitalRead(ENCODER_PIN2))
+        {
+          // по часовой
+          Settings.setRodDirection(rpUp);
+        }
+        else
+        {
+          // против часовой
+          Settings.setRodDirection(rpDown);
+        }
+    #endif
+    
+/*  
     uint32_t now = micros();
     list1.push_back(now);
 
@@ -66,16 +175,21 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 		  Settings.setRodDirection(rpDown);
 	  }
 #endif
-    
+*/    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void computeRMS()
 {
 #ifndef _RMS_OFF
 	if (computeRMSCalled)
+  {
 		return;
+  }
 
 	computeRMSCalled = true;
+  inComputeRMSMode = true;
+  rmsStartComputeTime = millis(); // запоминаем время начала сбора
+  
 	// считаем РМС
 	adcSampler.startComputeRMS();
 #endif // _RMS_OFF
@@ -90,6 +204,7 @@ void checkRMS()
 	adcSampler.getComputedRMS(rmsComputed1, rmsComputed2, rmsComputed3);
 
 	computeRMSCalled = false;
+  inComputeRMSMode = false;
 
 	// получаем текущее состояние нижнего концевика, оно должно измениться.
 	bool thiDownEndstopTriggered = RodDownEndstopTriggered(true);
@@ -121,9 +236,10 @@ void checkRMS()
 #endif // _RMS_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 volatile bool relayTriggeredAtStart = true;
 //--------------------------------------------------------------------------------------------------------------------------------------
-void RelayTriggered()
+void RelayTriggered() // обработчик срабатывания защиты
 {
 	if (relayTriggeredAtStart) // убираем первое срабатывание при старте
 	{
@@ -146,6 +262,7 @@ void RelayTriggered()
   downEndstopTriggered = RodDownEndstopTriggered(false);
 
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
 {
@@ -155,15 +272,26 @@ InterruptHandlerClass::InterruptHandlerClass()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::begin()
 {
-  // резервируем память
-  list1.reserve(INTERRUPT_RESERVE_RECORDS);
 
+// резервируем память
+  encoderList.reserve(MAX_PULSES_TO_CATCH);
+
+  // настраиваем вход защиты
+  pinMode(RELAY_PIN,
+  #if (RELAY_TRIGGER_LEVEL == LOW)
+    INPUT_PULLUP
+  #else
+    INPUT
+  #endif
+  );  
+  
+/*  
 #if (RELAY_INTERRUPT_LEVEL == RISING)
   pinMode(RELAY_PIN, INPUT_PULLUP);
 #else
   pinMode(RELAY_PIN, INPUT);
 #endif
-
+*/
 
   // настраиваем первый выход энкодера на чтение
 #if (ENCODER_INTERRUPT_LEVEL == RISING)
@@ -179,7 +307,9 @@ void InterruptHandlerClass::begin()
   delay(50);
 
   // взводим прерывание на входе срабатывания защиты
-  attachInterrupt((RELAY_PIN), RelayTriggered, RELAY_INTERRUPT_LEVEL);
+  //attachInterrupt((RELAY_PIN), RelayTriggered, RELAY_INTERRUPT_LEVEL);
+  
+  
 
   // считаем импульсы на штанге по прерыванию
   attachInterrupt((ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
@@ -670,8 +800,9 @@ CurrentOscillData& InterruptHandlerClass::getCurrentData()
 void InterruptHandlerClass::update()
 {
 
+  // собираем данные по току, если необходимо
+  
 	#ifndef CURRENT_OSCILL_OFF
-	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	if (currentOscillTimerActive)
 	{
 		// просто собираем информацию по току через указанные промежутки времени
@@ -730,10 +861,271 @@ void InterruptHandlerClass::update()
 		} // if (adcSampler.available())
 
 	} // if(currentOscillTimerActive)
-	  // ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 	#endif // #ifndef CURRENT_OSCILL_OFF
 
 
+  // считаем RMS, если это необходимо
+  #ifndef _RMS_OFF
+
+    // подсчёт RMS
+    if (inComputeRMSMode) // мы считаем RMS ?
+    {
+      if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
+      {
+    //    DBGLN(F("RMS собрано, проверяем!"));
+        inComputeRMSMode = false;
+        
+        // время подсчёта РМС вышло, надо проверять
+        checkRMS(); // проверяем РМС
+      }
+  
+    }  
+  #endif // _RMS_OFF
+
+  // проверяем состояние конечного автомата
+  switch(machineState)
+  {
+    case msIdle:
+    {
+      // в режиме ожидания, проверяем, не сработало ли реле защиты?
+      
+      if(hasRelayTriggered())
+      {
+        // сработало реле защиты
+
+        #ifndef _RMS_OFF
+          // считаем РМС
+            computeRMS();
+        #endif
+
+        // сработала защита, нам надо собирать данные по току с определённым интервалом
+        startCollectCurrentData();  
+        
+        #ifdef PREDICT_ENABLED
+        noInterrupts();
+          predictOff(); // отключаем сбор предсказаний
+        interrupts();
+        #endif
+
+     //   DBGLN(F("RELAY TRIGGERED, WAIT FOR PULSES BEGIN..."));
+        
+        timer = micros(); // запоминаем время срабатывания реле защиты
+                         
+        //переключаемся на ветку сбора данных по прерываниям, с энкодера
+        machineState = msWaitHandleInterrupts;
+
+      }
+      #ifdef PREDICT_ENABLED
+      else
+      if(predictTriggered()) // сработало предсказание?
+      {
+
+        // сохраняем время срабатывания защиты
+        relayTriggeredTime = RealtimeClock.getTime();
+         // сохраняем состояние нижнего концевика, с выключением прерываний
+        downEndstopTriggered = RodDownEndstopTriggered(true);
+
+      //  DBGLN(F("PREDICT TRIGGERED, COLLECT PULSES..."));
+      
+        #ifndef _RMS_OFF
+          // считаем РМС
+            computeRMS();
+        #endif
+
+        // сработало предсказание, нам надо собирать данные по току с определённым интервалом
+        startCollectCurrentData();  
+        
+        noInterrupts();
+        
+          encoderList.empty(); // очищаем список прерываний
+          
+          // тут копируем полученные в предсказании импульсы в список
+          for(size_t k=0;k<predictList.size();k++)
+          {
+            encoderList.push_back(predictList[k]);
+          }          
+
+          predictOff(); // выключаем предсказания
+          
+          timer = micros();
+          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+          machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
+                    
+        interrupts();
+                           
+      } // predictTriggered()      
+      #endif // PREDICT_ENABLED
+    }
+    break; // msIdle
+
+    case msWaitHandleInterrupts:
+    {
+      // ждём начала импульсов с энкодера
+      if(micros() - timer >= Settings.getRelayDelay())
+      {
+     //   DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
+                
+        noInterrupts();
+          encoderList.empty(); // очищаем список прерываний
+          timer = micros();
+          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+          machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
+        interrupts(); 
+           
+      }
+    }
+    break; // msWaitHandleInterrupts
+
+    case msHandleInterrupts:
+    {
+      // собираем прерывания с энкодера
+      
+      noInterrupts();      
+          uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
+      interrupts();
+      
+      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
+      {
+              
+        noInterrupts();
+          canHandleEncoder = false; // выключаем обработку импульсов энкодера
+          #ifdef PREDICT_ENABLED
+          predictOn(); // включаем сбор предсказаний          
+          #endif
+        interrupts(); 
+        
+        //DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
+       // DBGLN(encoderList.size());
+
+
+        // обновляем моторесурс, т.к. было срабатывание защиты
+        uint32_t motoresource = Settings.getMotoresource(0);
+        motoresource++;
+        Settings.setMotoresource(0, motoresource);
+
+        // проверяем, авария ли?
+        hasAlarm = !encoderList.size();
+        
+        // выставляем флаг аварии, в зависимости от наличия данных в списках
+        if(hasAlarm)
+        {
+          //    DBGLN(F("Взведён флаг аварии!"));
+          Feedback.alarm(true);
+        }        
+
+        noInterrupts();
+        
+            InterruptTimeList copyList1 = encoderList; // копируем данные в локальный список
+            // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
+            encoderList.empty();        
+            
+            // заканчиваем сбор данных по току, копируем данные по току в локальный список
+            stopCollectCurrentData();
+            CurrentOscillData copyOscillData = oscillData;
+            oscillData.clear();
+        
+        interrupts();
+
+        // вычисляем смещение от начала записи по току до начала поступления данных
+        uint32_t datArrivTm = 0;
+        if(copyOscillData.times.size() > 0 && copyList1.size() > 0)
+        {
+          datArrivTm = copyList1[0] - copyOscillData.times[0];
+        }
+
+        // нормализуем список времен записей по току
+        normalizeList(copyOscillData.times);
+
+         // нормализуем список прерываний
+         normalizeList(copyList1);
+
+
+         // начинаем работать со списком прерываний
+         EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
+         EthalonCompareNumber compareNumber1;
+         InterruptTimeList ethalonData1;
+
+          bool needToLog = false;
+
+        // теперь смотрим - надо ли нам самим чего-то обрабатывать?
+        if(copyList1.size() > 1)
+        {
+          //  DBG("Прерывание содержит данные: ");
+          //    DBGLN(copyList1.size());
+    
+          // зажигаем светодиод "ТЕСТ"
+          Feedback.testDiode();
+    
+          needToLog = true; // говорим, что надо записать в лог
+            
+           // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
+           compareRes1 = EthalonComparer::Compare(copyList1, 0,compareNumber1, ethalonData1);
+    
+           if(compareRes1 == COMPARE_RESULT_MatchEthalon)
+            {}
+           else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
+           {
+              Feedback.failureDiode();
+              Feedback.alarm();
+           }
+        } // if(copyList1.size() > 1)
+
+            if(needToLog)
+            {
+              // записываем последнее срабатывание в EEPROM
+              writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1,true);
+              
+              #ifndef _SD_OFF
+                  //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
+                  // надо записать в лог дату срабатывания системы
+                  writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
+              #endif // !_SD_OFF
+              
+            } // needToLog
+
+
+        bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1));
+
+        if(wantToInformSubscriber)
+        { 
+          //  DBGLN(F("Надо уведомить подписчика прерываний!"));
+          if(subscriber)
+          {
+            //  DBGLN(F("Подписчик найден!"));  
+              
+            // уведомляем подписчика
+            informSubscriber(copyOscillData,copyList1, compareRes1/*, thisTm, thisHasRelayTriggeredTime*/);
+    
+          } // if(subscriber)
+          
+        }   // if(wantToInformSubscriber)        
+
+        // переключаемся на ветку ожидания отщёлкивания концевика защиты
+        machineState = msWaitGuardRelease;
+
+      }
+
+    }
+    break; // msHandleInterrupts
+
+    case msWaitGuardRelease:
+    {
+      // ждём отщёлкивания концевика защиты
+      if(!hasRelayTriggered())
+      {
+         // концевик разомкнут, переходим в режим ожидания срабатывания защиты
+         machineState = msIdle;
+      }
+      
+    } // msWaitGuardRelease
+    break;
+    
+  } // switch  
+  
+
+  
+
+/*
   static bool inProcess = false;
 
   noInterrupts();
@@ -995,6 +1387,7 @@ void InterruptHandlerClass::update()
 
 	// всё обработали
     inProcess = false;
+*/    
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -1009,13 +1402,12 @@ void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
   subscriber = h;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult, uint32_t timeBeforeInterruptsBegin, uint32_t relayTriggeredTime)
+void InterruptHandlerClass::informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 	if (subscriber)
 	{
 		//DBGLN(F("Subscriber exists!"));
 
-		//subscriber->OnTimeBeforeInterruptsBegin(timeBeforeInterruptsBegin, relayTriggeredTime);
 		subscriber->OnInterruptRaised(oscData, list, compareResult);
 		// сообщаем обработчику, что данные в каком-то из списков есть
 		subscriber->OnHaveInterruptData();

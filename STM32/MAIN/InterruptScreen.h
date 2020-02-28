@@ -27,7 +27,6 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
 
   void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult result);
   void OnHaveInterruptData();
-  //void OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasRelayTime);
     
 protected:
 

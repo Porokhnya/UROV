@@ -247,14 +247,6 @@ void InterruptScreen::computeMotoresource()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void InterruptScreen::OnTimeBeforeInterruptsBegin(uint32_t tm, bool hasTime)
-{
-  timeBeforeInterrupts = tm;
-  hasRelayTriggeredTime = hasTime;
-}
-*/
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::drawCompareResult(TFTMenu* menu)
 {
   TFT_Class* dc = menu->getDC();
