@@ -44,18 +44,62 @@ namespace UROVConfig
             connForm = null;
         }
 
+        void OnTryToConnectToPort(string portname)
+        {
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate { OnTryToConnectToPort(portname); });
+                return;
+            }
+
+            if (connForm != null)
+            {
+                connForm.lblCurrentAction.Text = "Соединяемся с портом " + portname + "...";
+            }
+        }
+
         void OnTransportDisconnect(ITransport transport)
         {
+            
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate { OnTransportDisconnect(transport); });
+                return;
+            }
+            
+
+            System.Diagnostics.Debug.WriteLine("TRANSPORT DISCONNECT EVENT!");
+
             this.InitAfterConnect(false);
+
+            System.Diagnostics.Debug.WriteLine("TRANSPORT DISCONNECT EVENT DONE!");
         }
 
         /// <summary>
         /// Коннектимся к порту
         /// </summary>
         /// <param name="port">Имя порта</param>
-        public void StartConnectToPort(string port)
+        public void StartConnectToPort(string port, bool withHandshake, bool findDevice)
         {
-            System.Diagnostics.Debug.Assert(currentTransport == null);
+            //System.Diagnostics.Debug.Assert(currentTransport == null);
+            System.Diagnostics.Debug.WriteLine("START CONNECT, HANDLER IN MAIN FORM...");
+
+            if (currentTransport != null)
+            {
+                System.Diagnostics.Debug.WriteLine("CLOSE EXISTING CONNECTION...");
+
+                currentTransport.Disconnect();
+
+                //TODO: тут надо дождаться, когда транспорт полностью освободится !!!!
+
+                
+                while(currentTransport.Connected())
+                {
+                    Application.DoEvents();
+                }
+                System.Diagnostics.Debug.WriteLine("EXISTING CONNECTION CLOSED!");
+            }
+            
 
             int speed = GetConnectionSpeed();
 
@@ -64,9 +108,11 @@ namespace UROVConfig
             currentTransport.OnConnect = new ConnectResult(OnCOMConnect);
             currentTransport.OnDataReceived = new TransportDataReceived(OnDataFromCOMPort);
             currentTransport.OnDisconnect = new TransportDisconnect(OnTransportDisconnect);
+            currentTransport.OnTryToConnectToPort = new TryToConnectToPort(OnTryToConnectToPort);
 
+            System.Diagnostics.Debug.WriteLine("START TRANSPORT CONNECT....");
             // коннектимся
-            currentTransport.Connect();
+            currentTransport.Connect(withHandshake, findDevice);
 
         }
 
@@ -76,11 +122,14 @@ namespace UROVConfig
         /// <param name="line"></param>
         private void OnDataFromCOMPort(byte[] data)
         {
+            
             if (InvokeRequired)
             {
                 Invoke((MethodInvoker)delegate { OnDataFromCOMPort(data); });
                 return;
             }
+            
+
             EnsureCloseConnectionForm(); // закрываем форму коннекта, если она ещё не закрыта
 
 
@@ -117,10 +166,14 @@ namespace UROVConfig
             {
                 return;
             }
-            Answer a = new Answer(line);
-            this.currentCommand.ParseFunction(a);
-            this.currentCommand.ParseFunction = null; // освобождаем
-            this.currentCommand.CommandToSend = "";
+
+            if (this.currentCommand.ParseFunction != null)
+            {
+                Answer a = new Answer(line);
+                this.currentCommand.ParseFunction(a);
+                this.currentCommand.ParseFunction = null; // освобождаем
+                this.currentCommand.CommandToSend = "";
+            }
 
         }
 
@@ -1093,14 +1146,20 @@ namespace UROVConfig
         /// <param name="message"></param>
         private void OnCOMConnect(bool succ, string message)
         {
+            
             if (InvokeRequired)
             {
                 Invoke((MethodInvoker)delegate { OnCOMConnect(succ, message); });
                 return;
             }
 
+            lastConnected = succ;
+
+            System.Diagnostics.Debug.WriteLine("TRANSPORT CONNECT EVENT!");
+
             // обнуляем текущее состояние при переконнекте
             //this.currentCommand.ActionToSet = Actions.None;
+            EnsureCloseConnectionForm();
 
             if (succ)
             {
@@ -1111,16 +1170,18 @@ namespace UROVConfig
             }
             else
             {
-                EnsureCloseConnectionForm();
                 InitAfterConnect(false);
-                MessageBox.Show("Не удалось соединиться с портом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Не удалось соединиться с устройством!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
+            /*
             if (succ && connForm != null)
             {
                 connForm.lblCurrentAction.Text = "Ждём данные из порта...";
             }
+            */
+
+            System.Diagnostics.Debug.WriteLine("TRANSPORT CONNECT EVENT DONE!");
         }
 
         private bool ethalonsRequested = false;
@@ -1633,6 +1694,8 @@ namespace UROVConfig
 
         private bool uuidRequested = false;
 
+        private bool lastConnected = false;
+
 
         /// <summary>
         /// Обработчик простоя
@@ -1643,6 +1706,12 @@ namespace UROVConfig
         {
 
             bool bConnected = IsConnected();
+
+            if(lastConnected && !bConnected)
+            {
+                lastConnected = false;
+                InitAfterConnect(false);
+            }
 
             btnUploadEthalon.Enabled = bConnected && !inUploadFileToController;
             btnControllerName.Enabled = bConnected && uuidRequested;
@@ -1731,7 +1800,7 @@ namespace UROVConfig
             this.lastSelectedPort = mi;
             mi.Checked = true;
 
-            DoConnect((string)mi.Tag);
+            DoConnect((string)mi.Tag, true, false);
 
         }
 
@@ -1753,13 +1822,15 @@ namespace UROVConfig
         /// Начинаем коннектиться к порту
         /// </summary>
         /// <param name="port">имя порта</param>
-        private void DoConnect(string port)
+        private void DoConnect(string port, bool withHandshake, bool findDevice)
         {
+            System.Diagnostics.Debug.WriteLine("START CONNECT....");
+
             dateTimeFromControllerReceived = false; // не получили ещё текущее время с контроллера
             controllerDateTime = DateTime.MinValue; // устанавливаем минимальное значение даты            
 
             connForm = new ConnectForm(false);
-            connForm.SetMainFormAndPort(this, port);
+            connForm.SetMainFormAndPort(this, port, withHandshake, findDevice);
             connForm.ShowDialog();
         }
 
@@ -2936,12 +3007,6 @@ namespace UROVConfig
         }
 
 
-        private void btnDisconnect_Click(object sender, EventArgs e)
-        {
-            currentTransport.Disconnect();
-            this.treeView.Nodes[0].Nodes.Clear();
-        }
-
         private void ChangePortSpeed(object sender, EventArgs e)
         {
             ToolStripMenuItem selItem = sender as ToolStripMenuItem;
@@ -3953,6 +4018,17 @@ namespace UROVConfig
             {
                 MessageBox.Show("Ошибка записи эталона!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnDisconnect_Click(object sender, EventArgs e)
+        {
+            currentTransport.Disconnect();
+            this.treeView.Nodes[0].Nodes.Clear();
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            DoConnect("", false, true);
         }
     }
 

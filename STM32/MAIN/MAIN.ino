@@ -427,8 +427,7 @@ void setup()
 
   DBGLN(F("Inited."));
 
-  Serial.print(F("UROV "));
-  Serial.println(SOFTWARE_VERSION);
+  CommandHandler.getVER(&Serial);
 
   setupDone = true;
 

@@ -32,6 +32,7 @@ const char TBORDERS_COMMAND[] PROGMEM = "TBORDERS"; // пороги токово
 const char RDELAY_COMMAND[] PROGMEM = "RDELAY"; // время задержки после срабатывания реле до начала импульсов
 const char ETHALON_REC_COMMAND[] PROGMEM = "EREC"; // начать запись эталона
 const char DOWN_DIR_PARAM[] PROGMEM = "DOWN";
+const char VERSION_COMMAND[] PROGMEM = "VER"; // отдать информацию о версии
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern "C" char* sbrk(int i);
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -211,7 +212,8 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 					  commandHandled = printBackSETResult(false, commandName, pStream);
 				  }
 
-			  } // DATETIME			 
+			  } // DATETIME
+        
         else
         if(!strcmp_P(commandName, DELFILE_COMMAND))
         {
@@ -375,6 +377,11 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 			commandHandled = getEREC(cParser, pStream);
 
 		} // EREC
+   else 
+    if (!strcmp_P(commandName, VERSION_COMMAND))
+    {
+      commandHandled = getVER(pStream);
+    }
 		else
         if(!strcmp_P(commandName, PIN_COMMAND))
         {
@@ -764,6 +771,14 @@ bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandP
   return true;
 }
 */
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getVER(Stream* pStream)
+{
+  pStream->print(F("UROV "));
+  pStream->println(SOFTWARE_VERSION);
+
+  return true;
+}
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 {

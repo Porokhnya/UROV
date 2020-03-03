@@ -49,6 +49,7 @@ class CommandHandlerClass
     void processCommand(const String& command,Stream* outStream);
 
 	int getFreeMemory();
+  bool getVER(Stream* pStream);
 
  private:
   void onUnknownCommand(const String& command, Stream* outStream);

@@ -23,13 +23,14 @@ namespace UROVConfig
     public delegate void ConnectResult(bool success, string message);
 
     public delegate void TransportDisconnect(ITransport transport);
+    public delegate void TryToConnectToPort(string portName);
      
     public abstract class ITransport
     {  
         /// <summary>
         /// соединяется с чем-либо
         /// </summary>
-        public abstract void Connect();
+        public abstract void Connect(bool withHandshake, bool findDevice);
         /// <summary>
         /// состояние соединения
         /// </summary>
@@ -53,6 +54,7 @@ namespace UROVConfig
         public TransportDataReceived OnDataReceived;
         public ConnectResult OnConnect;
         public TransportDisconnect OnDisconnect;
+        public TryToConnectToPort OnTryToConnectToPort;
     }
 
     public class SerialPortTransport : ITransport
@@ -60,85 +62,246 @@ namespace UROVConfig
         private SerialPort port = null;
         private Thread openPortThread = null;
         private bool hasWriteError = false;
-  
-        private void TryOpenPort(object o)
+
+        private bool withHandshake = false;
+        private bool withFindDevice = false;
+        private int speed;
+
+        private long answerTimer = 0;
+        private long waitAnswerTimeout = 2000;
+        private bool deviceFound = false;
+        private List<byte> COMAnswer = new List<byte>();
+        private bool inFindDeviceMode = false;
+
+        void findDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort s = (SerialPort)o;
-
-            //TODO: Эту строчку добавил, чтобы пересбрасывало порт
-            s.DtrEnable = true;
-
-            bool succ = false;
-            string message = "";
             try
             {
-                s.Open();
-                while (!s.IsOpen)
+                SerialPort sp = (SerialPort)sender;
+                int cnt = sp.BytesToRead;
+                if (cnt > 0)
                 {
-                    Thread.Sleep(100);
+                    byte[] bReceived = new byte[cnt];
+
+                    for (int i = 0; i < cnt; i++)
+                        bReceived[i] = (byte)sp.ReadByte();
+
+                    COMAnswer.AddRange(bReceived);
+
+                    while (true)
+                    {
+                        int idx = Array.IndexOf(COMAnswer.ToArray(), (byte)'\n');
+                        if (idx != -1)
+                        {
+                            string line = System.Text.Encoding.UTF8.GetString(COMAnswer.ToArray(), 0, idx);
+                            COMAnswer.RemoveRange(0, idx + 1);
+                            line = line.Trim();
+                            if(line.StartsWith("UROV v."))
+                            {
+                                this.deviceFound = true;
+                                break;
+                            }
+
+                        }
+                        else
+                            break;
+                    }
+
+
+                        Thread.Sleep(10);
                 }
-                succ = true;
             }
-            catch (UnauthorizedAccessException e)
+            catch (Exception)
             {
-                message = e.Message;
-            }
-            catch (System.IO.IOException e)
-            {
-                message = e.Message;
-            }
-            catch (Exception e)
-            {
-                message = e.Message;
-            }
 
-            var mydelegate = new Action<bool, string>(DoOnConnect);
-            mydelegate.Invoke(succ, message);
-
+            }
         }
+
+
+        private void TryFindDevice(object o)
+        {
+            SerialPort s = (SerialPort)o;
+            
+
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string portname in ports)
+            {
+                string pname = portname;
+
+                if (s != null) // уже передали нормальный порт, не надо искать
+                {
+                    pname = s.PortName;
+                }
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: TRY TO CONNECT TO " + pname + "...");
+
+                OnTryToConnectToPort?.Invoke(portname);
+
+                this.deviceFound = false;
+
+                if (s == null) // надо искать порт
+                {
+                    this.port = new SerialPort(portname);
+                    this.port.BaudRate = this.speed;
+                    this.port.DataReceived += new SerialDataReceivedEventHandler(findDevice_DataReceived);
+
+                    if (this.withHandshake) // пересбрасываем порт, если надо
+                    {
+                        this.port.DtrEnable = true;
+                    }
+                }
+
+                try
+                {
+                    this.port.Open();
+
+                    while (!this.port.IsOpen)
+                    {
+                        Thread.Sleep(100);
+                    }
+
+                    answerTimer = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                    WriteLine("GET=VER");
+
+                    while(true)
+                    {
+                        if (deviceFound)
+                            break;
+
+                        if (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - answerTimer >= waitAnswerTimeout)
+                            break;
+                    }
+
+                    if(!deviceFound)
+                    {
+                        doClosePort();
+                        this.port = null;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch (Exception)
+                {
+                    doClosePort();
+                    this.port = null;
+                }
+
+                if(s != null)
+                {
+                    break; // не надо ничего больше искать, передали готовый порт. Если не получилось к нему соединиться - значит, не судьба
+                }
+
+            } // foreach
+
+            if (deviceFound)
+            {
+                this.port.DataReceived -= new SerialDataReceivedEventHandler(findDevice_DataReceived);
+                this.port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+                this.inFindDeviceMode = false;
+
+                DoOnConnect(true, "");
+                WriteLine("GET=VER");
+            }
+            else
+            {
+                doClosePort();
+                this.port = null;
+                DoOnConnect(false, "Can't find device!");
+            }
+        }
+
+       
         private void DoOnConnect(bool succ, string message)
         {
+            System.Diagnostics.Debug.WriteLine("TRANSPORT: INVOKED CONNECT EVENT...");
+
             openPortThread = null;
-            if (this.OnConnect != null)
+            //if (this.OnConnect != null)
             {
-                this.OnConnect(succ, message);
+                this.OnConnect?.Invoke(succ, message);
             }
         }
-        public override void  Connect()
+        public override void  Connect(bool handshakeEnabled, bool findDevice)
         {
+            this.withHandshake = handshakeEnabled;
+            this.withFindDevice = findDevice;
+
             this.hasWriteError = false;
-            openPortThread = new Thread(TryOpenPort);
-            openPortThread.Start(this.port);
+            this.inFindDeviceMode = false;
+
+            if (withFindDevice)
+            {
+                this.inFindDeviceMode = true;
+                openPortThread = new Thread(TryFindDevice);
+                openPortThread.Start(null);
+            }
+            else
+            {
+                this.inFindDeviceMode = true;
+                openPortThread = new Thread(TryFindDevice);
+                openPortThread.Start(this.port);
+            }
  	        
+        }
+       
+        
+        private void doClosePort()
+        {
+            if (this.port != null && this.port.IsOpen)
+            {
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: CLOSE PORT...");
+
+                this.port.DataReceived -= new SerialDataReceivedEventHandler(port_DataReceived);
+                this.port.DataReceived -= new SerialDataReceivedEventHandler(findDevice_DataReceived);
+
+                while (!(this.port.BytesToRead == 0 && this.port.BytesToWrite == 0))
+                {
+                    this.port.DiscardInBuffer();
+                    this.port.DiscardOutBuffer();
+                }
+
+                this.port.Close();
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: CLOSE PORT, BEFORE WHILE...");
+
+                while (this.port.IsOpen) { Application.DoEvents(); }
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: PORT CLOSED.");
+            }
         }
 
         public override void Disconnect()
         {
-            try
-            {
-                
-                if (this.port.IsOpen)
-                    this.port.Close();
-
-                while (port.IsOpen) { Application.DoEvents(); }
-
-                CallDisconnectEvent();
-
-            }
-            catch { }
+            doClosePort();
+            CallDisconnectEvent();
         }
 
         private void CallDisconnectEvent()
         {
-            if (!this.port.IsOpen)
+            System.Diagnostics.Debug.WriteLine("TRANSPORT: CallDisconnectEvent BEGIN...");
+
+            if (this.port == null || !this.port.IsOpen)
             {
-                if (this.OnDisconnect != null)
-                    this.OnDisconnect(this);
+                //if (this.OnDisconnect != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("TRANSPORT: InvokedDisconnectEvent...");
+                    this.OnDisconnect?.Invoke(this);
+                }
             }
+
+            System.Diagnostics.Debug.WriteLine("TRANSPORT: CallDisconnectEvent END.");
         }
 
         public override bool Connected()
         {
+            if (this.port == null)
+                return false;
+
+            if (this.inFindDeviceMode)
+                return false;
+
             return this.port.IsOpen && !this.hasWriteError;
         }
 
@@ -151,25 +314,12 @@ namespace UROVConfig
                     this.port.Write(data, i, 1);
                     Thread.Sleep(0);
                 }
-                //this.port.Write(data, 0, length);
             }
             catch (Exception)
             {
                 this.hasWriteError = true;
 
-                if (this.port.IsOpen)
-                {
-                    try
-                    {
-                        this.port.Close();
-                    }
-                    catch { }
-                }
-
-                while (port.IsOpen)
-                {
-                    Application.DoEvents();
-                }
+                doClosePort();
                 CallDisconnectEvent();
                 return false;
             }
@@ -187,19 +337,7 @@ namespace UROVConfig
             {
                 this.hasWriteError = true;
 
-                if (this.port.IsOpen)
-                {
-                    try
-                    {
-                        this.port.Close();
-                    }
-                    catch { }
-                }
-
-                while (port.IsOpen)
-                {
-                    Application.DoEvents();
-                }
+                doClosePort();
                 CallDisconnectEvent();
                 return false; 
             }
@@ -210,9 +348,15 @@ namespace UROVConfig
 
        public SerialPortTransport(string portname, int speed)
         {
-            this.port =  new SerialPort(portname);
-            this.port.BaudRate = speed;
-            this.port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+            this.speed = speed;
+
+            if (portname.Length > 0) // если сразу вызвали для порта, то создаём порт, потому что искать его - не надо
+            {
+                this.port = new SerialPort(portname);
+                this.port.BaudRate = speed;
+                this.port.DataReceived += new SerialDataReceivedEventHandler(findDevice_DataReceived);
+                
+            }
         }
        
 
@@ -230,10 +374,15 @@ namespace UROVConfig
                         bReceived[i] = (byte) sp.ReadByte();
 
 
-                    //System.Diagnostics.Debug.WriteLine("<= COM: " + s.TrimEnd());
+                    ThreadPool.QueueUserWorkItem(
+                        new WaitCallback(delegate (object state)
+                        {
+                           // if (this.OnDataReceived != null)
+                                this.OnDataReceived?.Invoke(bReceived);
 
-                    if (this.OnDataReceived != null)
-                        this.OnDataReceived(bReceived);
+                        }), null);
+
+
 
                     Thread.Sleep(10);
                 }

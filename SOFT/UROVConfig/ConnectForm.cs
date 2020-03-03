@@ -24,6 +24,8 @@ namespace UROVConfig
         private bool firstTimeActivate = true;
         private MainForm mainForm = null;
         private string portToConnect;
+        private bool withHandshake;
+        private bool findDevice;
 
         public ConnectFormShown OnConnectFormShown = null;
 
@@ -33,8 +35,11 @@ namespace UROVConfig
                 return;
             firstTimeActivate = false;
 
-            if(!hasNoActions)
-                this.mainForm.StartConnectToPort(this.portToConnect);
+            if (!hasNoActions)
+            {
+                System.Diagnostics.Debug.WriteLine("CONNECT FORM: CALL MAIN FORM HANDLER!");
+                this.mainForm.StartConnectToPort(this.portToConnect, this.withHandshake, this.findDevice);
+            }
 
             if(OnConnectFormShown != null)
             {
@@ -42,10 +47,12 @@ namespace UROVConfig
             }
         }
 
-        public void SetMainFormAndPort(MainForm fm, string port)
+        public void SetMainFormAndPort(MainForm fm, string port, bool withHandshake, bool findDevice)
         {
             mainForm = fm;
             portToConnect = port;
+            this.withHandshake = withHandshake;
+            this.findDevice = findDevice;
         }
     }
 }
