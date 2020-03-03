@@ -37,11 +37,11 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnExportToCOMTRADE = new System.Windows.Forms.Button();
             this.btnExportToCSV = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.exportToCSVDialog = new System.Windows.Forms.SaveFileDialog();
-            this.btnExportToCOMTRADE = new System.Windows.Forms.Button();
             this.exportToCoMTRADEDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -125,6 +125,19 @@
             this.panel3.Size = new System.Drawing.Size(870, 64);
             this.panel3.TabIndex = 2;
             // 
+            // btnExportToCOMTRADE
+            // 
+            this.btnExportToCOMTRADE.BackColor = System.Drawing.Color.LightGreen;
+            this.btnExportToCOMTRADE.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportToCOMTRADE.ForeColor = System.Drawing.Color.Black;
+            this.btnExportToCOMTRADE.Location = new System.Drawing.Point(358, 12);
+            this.btnExportToCOMTRADE.Name = "btnExportToCOMTRADE";
+            this.btnExportToCOMTRADE.Size = new System.Drawing.Size(167, 40);
+            this.btnExportToCOMTRADE.TabIndex = 11;
+            this.btnExportToCOMTRADE.Text = "Экспорт в COMTRADE";
+            this.btnExportToCOMTRADE.UseVisualStyleBackColor = false;
+            this.btnExportToCOMTRADE.Click += new System.EventHandler(this.btnExportToCOMTRADE_Click);
+            // 
             // btnExportToCSV
             // 
             this.btnExportToCSV.BackColor = System.Drawing.Color.LightGreen;
@@ -160,19 +173,6 @@
             // 
             this.exportToCSVDialog.Filter = "Файл CSV|*.csv";
             this.exportToCSVDialog.RestoreDirectory = true;
-            // 
-            // btnExportToCOMTRADE
-            // 
-            this.btnExportToCOMTRADE.BackColor = System.Drawing.Color.LightGreen;
-            this.btnExportToCOMTRADE.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportToCOMTRADE.ForeColor = System.Drawing.Color.Black;
-            this.btnExportToCOMTRADE.Location = new System.Drawing.Point(358, 12);
-            this.btnExportToCOMTRADE.Name = "btnExportToCOMTRADE";
-            this.btnExportToCOMTRADE.Size = new System.Drawing.Size(167, 40);
-            this.btnExportToCOMTRADE.TabIndex = 11;
-            this.btnExportToCOMTRADE.Text = "Экспорт в COMTRADE";
-            this.btnExportToCOMTRADE.UseVisualStyleBackColor = false;
-            this.btnExportToCOMTRADE.Click += new System.EventHandler(this.btnExportToCOMTRADE_Click);
             // 
             // exportToCoMTRADEDialog
             // 
