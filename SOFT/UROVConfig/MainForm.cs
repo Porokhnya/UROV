@@ -212,7 +212,7 @@ namespace UROVConfig
             }
             else if (upStr.EndsWith(".ETL"))
             {
-                CreateEthalonChart(content, this.ethalonChart);
+                CreateChart(content, this.ethalonChart);
                 this.plEthalonChart.BringToFront();
             }
         }
@@ -742,7 +742,7 @@ namespace UROVConfig
 
         } 
 
-        private void CreateEthalonChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
+        private void CreateChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
         {
 
             System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
@@ -826,9 +826,6 @@ namespace UROVConfig
 
                         // нормальный режим работы
 
-                        ///////////////////////////////////////////////////////////
-                        // НОВЫЙ КОД
-                        ///////////////////////////////////////////////////////////
                         COMAnswer.AddRange(dt);
 
                         while(true)
@@ -846,39 +843,14 @@ namespace UROVConfig
                                 break;
                         }
 
-                        ///////////////////////////////////////////////////////////
-                        // НОВЫЙ КОД КОНЕЦ
-                        ///////////////////////////////////////////////////////////
-
-                        /*
-                        for (int i = 0; i < dt.Length; i++)
-                            COMBuffer += (char)dt[i];
 
 
-                        while (true)
-                        {
-                            int idx = COMBuffer.IndexOf('\n');
-                            if (idx != -1)
-                            {
-                                string line = COMBuffer.Substring(0, idx);
-                                line = line.Trim();
-                                COMBuffer = COMBuffer.Substring(idx + 1);
-
-                                ProcessAnswerLine(line);
-
-                            }
-                            else
-                                break;
-                        }
-                        */
                     }
                     break;
 
                 case AnswerBehaviour.SDCommandFILE:
                     {
                         
-                        //if (fileDownloadFlags == FileDownloadFlags.View)
-                        //{
                             fileReadedBytes += dt.Length;
                             int percentsReading = (fileReadedBytes * 100) / (requestedFileSize == 0 ? 1 : requestedFileSize);
 
@@ -887,8 +859,6 @@ namespace UROVConfig
 
                             fileDownloadProgressFunction?.Invoke(percentsReading, dt.Length);
 
-                            //this.statusProgressBar.Value = percentsReading;
-                        //}
                         
 
                         // вычитываем файл с SD. Признаком окончания файла служат байты [END]\r\n
@@ -1934,6 +1904,27 @@ namespace UROVConfig
             }
         }
 
+        private const int everyNTimerTicksRequestLastTrig = 5;
+        private int timerTicksCounter = 0;
+        private void SetLastTrigReadingFlag()
+        {
+            this.answerBehaviour = AnswerBehaviour.SDCommandFILE;
+            this.fileDataParseFunction = this.ViewLastTrigData;
+            this.SDQueryAnswer.Clear();
+        }
+
+        private void ViewLastTrigData(List<byte> content)
+        {
+            if(content.Count > 0) // есть информация по срабатыванию!!!
+            {
+                LastTriggerViewForm vf = new LastTriggerViewForm();
+                CreateChart(content, vf.chart);
+                vf.Show();
+                vf.BringToFront();
+
+            }
+        }
+
         private void tmProcessCommandsTimer_Tick(object sender, EventArgs e)
         {
             ProcessNextCommand();
@@ -1945,6 +1936,13 @@ namespace UROVConfig
         {
             if (!GrantToProcess())
                 return;
+
+            timerTicksCounter++;
+            if(timerTicksCounter >= everyNTimerTicksRequestLastTrig)
+            {
+                timerTicksCounter = 0;
+                PushCommandToQueue(GET_PREFIX + "LASTTRIG", DummyAnswerReceiver, SetLastTrigReadingFlag);
+            }
 
             if (!this.GetCommandFromQeue(ref this.currentCommand))
                 return;
@@ -3706,7 +3704,7 @@ namespace UROVConfig
             try
             {
                 List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
-                CreateEthalonChart(content, this.archiveAthalonChart);
+                CreateChart(content, this.archiveAthalonChart);
                 this.plArchiveEthalonChart.BringToFront();
             }
             catch { }

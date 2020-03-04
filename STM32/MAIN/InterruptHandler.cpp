@@ -1050,8 +1050,8 @@ void InterruptHandlerClass::update()
         // теперь смотрим - надо ли нам самим чего-то обрабатывать?
         if(copyList1.size() > 1)
         {
-          //  DBG("Прерывание содержит данные: ");
-          //    DBGLN(copyList1.size());
+//            DBG("Прерывание содержит данные: ");
+//            DBGLN(copyList1.size());
     
           // зажигаем светодиод "ТЕСТ"
           Feedback.testDiode();
@@ -1072,6 +1072,9 @@ void InterruptHandlerClass::update()
 
             if(needToLog)
             {
+              // сохраняем последнее срабатывание в оперативку
+              LastTriggeredInterruptList = copyList1;
+              
               // записываем последнее срабатывание в EEPROM
               writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1,true);
               
@@ -1084,7 +1087,7 @@ void InterruptHandlerClass::update()
             } // needToLog
 
 
-        bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1));
+        bool wantToInformSubscriber = ( /*hasAlarm || */(copyList1.size() > 1));
 
         if(wantToInformSubscriber)
         { 

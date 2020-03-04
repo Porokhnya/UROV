@@ -33,6 +33,8 @@ const char RDELAY_COMMAND[] PROGMEM = "RDELAY"; // время задержки �
 const char ETHALON_REC_COMMAND[] PROGMEM = "EREC"; // начать запись эталона
 const char DOWN_DIR_PARAM[] PROGMEM = "DOWN";
 const char VERSION_COMMAND[] PROGMEM = "VER"; // отдать информацию о версии
+const char LAST_TRIG_COMMAND[] PROGMEM = "LASTTRIG"; // отдать содержимое последнего срабатывания защиты
+
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern "C" char* sbrk(int i);
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -471,12 +473,20 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 			SwitchRS485MainHandler(true); // включаем обработчик RS-485 по умолчанию
         } // LS        
         else
+        if(!strcmp_P(commandName, LAST_TRIG_COMMAND)) // LASTTRIG
+        {
+            // запросили получить содержимое последнего срабатывания, GET=LASTTRIG
+            SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
+              commandHandled = getLASTTRIG(commandName,cParser,pStream);                    
+            SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
+        } // LS        
+        else
         if(!strcmp_P(commandName, FILE_COMMAND)) // FILE
         {
             // запросили получить файл, GET=FILE|FilePath
-			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
-            commandHandled = getFILE(commandName,cParser,pStream);                    
-			SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
+			      SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
+              commandHandled = getFILE(commandName,cParser,pStream);                    
+			      SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
         } // LS        
         else
         if(!strcmp_P(commandName, FILESIZE_COMMAND)) // FILESIZE
@@ -661,6 +671,52 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
     return true;
   }
   return false;  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+
+/*
+  //TODO: фейковый список, не забыть удалить !!!
+  static bool bFirst = true;
+  if(bFirst)
+  {
+    LastTriggeredInterruptList.push_back(0);
+    LastTriggeredInterruptList.push_back(10);
+    LastTriggeredInterruptList.push_back(10);
+    LastTriggeredInterruptList.push_back(15);
+    LastTriggeredInterruptList.push_back(25);
+    LastTriggeredInterruptList.push_back(50);
+    LastTriggeredInterruptList.push_back(40);
+    LastTriggeredInterruptList.push_back(30);
+    LastTriggeredInterruptList.push_back(20);
+    LastTriggeredInterruptList.push_back(10);
+    LastTriggeredInterruptList.push_back(10);
+  }
+  bFirst = false;
+*/
+
+  String endOfFile = CORE_END_OF_DATA;
+  
+  if(LastTriggeredInterruptList.size() > 0) // есть последнее срабатывание
+  {
+    for(size_t i=0;i<LastTriggeredInterruptList.size();i++)
+    {
+      uint32_t rec = LastTriggeredInterruptList[i];
+      uint8_t* b = (uint8_t*)&rec;
+      for(size_t k=0;k<sizeof(rec);k++)
+      {
+        pStream->write(*b++);
+      }
+    }
+
+    LastTriggeredInterruptList.empty();
+
+  }
+
+  pStream->println(endOfFile);
+
+  return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser& parser, Stream* pStream)
