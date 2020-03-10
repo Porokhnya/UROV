@@ -317,7 +317,10 @@ namespace UROVConfig
         private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm, ShowInterruptInfo callback, bool stopAfterFirstRecord)
         {
 
-            ClearInterruptsList(targetGrid);
+            if (targetGrid != null)
+            {
+                ClearInterruptsList(targetGrid);
+            }
 
             // парсим лог-файл
             int readed = 0;
