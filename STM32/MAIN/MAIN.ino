@@ -32,7 +32,7 @@
 #include "RS485.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
-Vector<uint32_t> LastTriggeredInterruptList; // список последнего сработавшего прерывания
+Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_EXTERNAL_WATCHDOG
   ExternalWatchdogSettings watchdogSettings;
@@ -60,7 +60,6 @@ uint32_t lastRS485PacketSeenAt = 0;
 void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
 {
 	// тут обрабатываем результаты срабатывания защиты от модуля
-  LastTriggeredInterruptList = interruptsList; // сохраняем последние сработавшие данные по прерыванию в оперативку
 
 	// обновляем моторесурс, т.к. было срабатывание защиты
 	//DBGLN(F("processInterruptFromModule: INC motoresource!"));

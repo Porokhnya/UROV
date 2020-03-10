@@ -429,5 +429,5 @@ template <typename T> inline Stream& operator << (Stream &s, T n) { s.print(n); 
   } ExternalWatchdogSettings;
 #endif
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-extern Vector<uint32_t> LastTriggeredInterruptList;
+extern Vector<uint8_t> LastTriggeredInterruptRecord;
 

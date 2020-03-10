@@ -14,6 +14,8 @@ using System.IO;
 
 namespace UROVConfig
 {
+    public delegate void ShowInterruptInfo(InterruptRecord info);
+
     public enum TreeNodeType
     {
         MainSettingsNode,

@@ -111,12 +111,6 @@
     <Compile Include="DataGridViewNumericUpDownEditingControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="LastTriggerViewForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LastTriggerViewForm.Designer.cs">
-      <DependentUpon>LastTriggerViewForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -150,9 +144,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControllerNameForm.resx">
       <DependentUpon>ControllerNameForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LastTriggerViewForm.resx">
-      <DependentUpon>LastTriggerViewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

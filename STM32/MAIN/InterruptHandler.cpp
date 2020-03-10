@@ -354,6 +354,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,1);
     written++;
     curEEPROMWriteAddress++;
+
+    for(uint8_t c=0;c<1;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }
+    
   }
   else
   {
@@ -371,6 +377,11 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2;
+
+    for(uint8_t c=0;c<2;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }    
   }
   else
   {
@@ -390,6 +401,11 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2;
+
+    for(uint8_t c=0;c<2;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }    
   }
   else
   {
@@ -407,7 +423,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
-    curEEPROMWriteAddress += 5;    
+    curEEPROMWriteAddress += 5;   
+
+    for(uint8_t c=0;c<5;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }     
   }
   else
   {
@@ -427,7 +448,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
-    curEEPROMWriteAddress += 5;    
+    curEEPROMWriteAddress += 5;   
+
+    for(uint8_t c=0;c<5;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }     
   }
   else
   {
@@ -444,7 +470,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
-    curEEPROMWriteAddress += 2;        
+    curEEPROMWriteAddress += 2;  
+
+    for(uint8_t c=0;c<2;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }          
   }
   else
   {
@@ -461,7 +492,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
-    curEEPROMWriteAddress += 2;        
+    curEEPROMWriteAddress += 2; 
+
+    for(uint8_t c=0;c<2;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }           
   }
   else
   {
@@ -478,7 +514,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
-    curEEPROMWriteAddress += 5;        
+    curEEPROMWriteAddress += 5;    
+
+    for(uint8_t c=0;c<5;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }        
   }
   else
   {
@@ -500,10 +541,26 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
+
+    for(uint8_t c=0;c<3;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }    
     
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) _list.pData(), _list.size()*sizeof(uint32_t));
     written += _list.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += _list.size()*sizeof(uint32_t);
+
+    for(size_t k=0;k<_list.size();k++)
+    {
+       uint32_t rec = _list[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }
+    
    }
    else
    {
@@ -519,7 +576,12 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
    {
     eeprom->write(curEEPROMWriteAddress,workBuff,1);
     written += 1;
-    curEEPROMWriteAddress += 1;            
+    curEEPROMWriteAddress += 1;  
+
+    for(uint8_t c=0;c<1;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }               
    }
    else
    {
@@ -541,10 +603,25 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
+
+    for(uint8_t c=0;c<3;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }     
     
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));
     written += ethalonData.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += ethalonData.size()*sizeof(uint32_t);
+
+    for(size_t k=0;k<ethalonData.size();k++)
+    {
+       uint32_t rec = ethalonData[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }    
     
    }
    else
@@ -568,22 +645,67 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
+
+    for(uint8_t c=0;c<3;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }         
     
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.times.pData(), oscData.times.size()*sizeof(uint32_t));
     written += oscData.times.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += oscData.times.size()*sizeof(uint32_t);
 
+    for(size_t k=0;k<oscData.times.size();k++)
+    {
+       uint32_t rec = oscData.times[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }       
+
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data1.pData(), oscData.data1.size()*sizeof(uint32_t));
     written += oscData.data1.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += oscData.data1.size()*sizeof(uint32_t);
+
+    for(size_t k=0;k<oscData.data1.size();k++)
+    {
+       uint32_t rec = oscData.data1[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }         
 
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data2.pData(), oscData.data2.size()*sizeof(uint32_t));
     written += oscData.data2.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += oscData.data2.size()*sizeof(uint32_t);
 
+    for(size_t k=0;k<oscData.data2.size();k++)
+    {
+       uint32_t rec = oscData.data2[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }       
+
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data3.pData(), oscData.data3.size()*sizeof(uint32_t));
     written += oscData.data3.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += oscData.data3.size()*sizeof(uint32_t);
+
+    for(size_t k=0;k<oscData.data3.size();k++)
+    {
+       uint32_t rec = oscData.data3[k];
+       uint8_t* ptr = (uint8_t*)&rec;
+       for(size_t c=0;c<sizeof(uint32_t);c++)
+       {
+          LastTriggeredInterruptRecord.push_back(*ptr++);
+       }
+    }     
       
     }
     else
@@ -604,7 +726,13 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,1);
     written += 1;
-    curEEPROMWriteAddress += 1;                
+    curEEPROMWriteAddress += 1;  
+
+    for(uint8_t c=0;c<1;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }         
+                  
   }
   else
   {
@@ -639,6 +767,8 @@ void InterruptHandlerClass::writeToLog(
 
   if(toEEPROM)
   {
+    LastTriggeredInterruptRecord.empty(); // очищаем список срабатывания
+    
     // вычисляем адрес для записи в EEPROM
     // сначала смотрим, под каким индексом записывать?
     uint8_t idx = 0;
@@ -691,6 +821,8 @@ void InterruptHandlerClass::writeToLog(
     eeprom->write(eepromAddress,workBuff,1);
     eepromAddress++;
     recordTotalLength++;
+
+    LastTriggeredInterruptRecord.push_back(workBuff[0]);
   }
   else
   {
@@ -713,6 +845,12 @@ void InterruptHandlerClass::writeToLog(
     eeprom->write(eepromAddress,workBuff,8);
     eepromAddress += 8;
     recordTotalLength += 8;
+
+    for(uint8_t c=0;c<8;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }
+    
   }
   else
   {
@@ -734,6 +872,11 @@ void InterruptHandlerClass::writeToLog(
     eeprom->write(eepromAddress,workBuff,3);
     eepromAddress += 3;  
     recordTotalLength += 3;  
+
+    for(uint8_t c=0;c<3;c++)
+    {
+      LastTriggeredInterruptRecord.push_back(workBuff[c]);
+    }    
   }
   else
   {
@@ -760,6 +903,11 @@ void InterruptHandlerClass::writeToLog(
 
        // и не забываем записать всю длину сохранённых данных !!!
        eeprom->write(recordStartAddress,(uint8_t*)&recordTotalLength,4);
+
+      for(uint8_t c=0;c<1;c++)
+      {
+        LastTriggeredInterruptRecord.push_back(workBuff[c]);
+      }       
     }
     else
     {
@@ -1071,10 +1219,7 @@ void InterruptHandlerClass::update()
         } // if(copyList1.size() > 1)
 
             if(needToLog)
-            {
-              // сохраняем последнее срабатывание в оперативку
-              LastTriggeredInterruptList = copyList1;
-              
+            {              
               // записываем последнее срабатывание в EEPROM
               writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1,true);
               

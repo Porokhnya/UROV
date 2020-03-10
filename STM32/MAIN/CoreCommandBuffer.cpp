@@ -676,41 +676,18 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
 bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
 
-/*
-  //TODO: фейковый список, не забыть удалить !!!
-  static bool bFirst = true;
-  if(bFirst)
-  {
-    LastTriggeredInterruptList.push_back(0);
-    LastTriggeredInterruptList.push_back(10);
-    LastTriggeredInterruptList.push_back(10);
-    LastTriggeredInterruptList.push_back(15);
-    LastTriggeredInterruptList.push_back(25);
-    LastTriggeredInterruptList.push_back(50);
-    LastTriggeredInterruptList.push_back(40);
-    LastTriggeredInterruptList.push_back(30);
-    LastTriggeredInterruptList.push_back(20);
-    LastTriggeredInterruptList.push_back(10);
-    LastTriggeredInterruptList.push_back(10);
-  }
-  bFirst = false;
-*/
 
   String endOfFile = CORE_END_OF_DATA;
   
-  if(LastTriggeredInterruptList.size() > 0) // есть последнее срабатывание
+  if(LastTriggeredInterruptRecord.size() > 0) // есть последнее срабатывание
   {
-    for(size_t i=0;i<LastTriggeredInterruptList.size();i++)
+    size_t to = LastTriggeredInterruptRecord.size();
+    for(size_t i=0;i<to;i++)
     {
-      uint32_t rec = LastTriggeredInterruptList[i];
-      uint8_t* b = (uint8_t*)&rec;
-      for(size_t k=0;k<sizeof(rec);k++)
-      {
-        pStream->write(*b++);
-      }
+        pStream->write(LastTriggeredInterruptRecord[i]);
     }
 
-    LastTriggeredInterruptList.empty();
+    LastTriggeredInterruptRecord.empty();
 
   }
 

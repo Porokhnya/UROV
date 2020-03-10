@@ -183,7 +183,7 @@ namespace UROVConfig
         private void DoShowLogFile(ConnectForm frm)
         {
             System.Diagnostics.Debug.Assert(logContentToShow != null);
-            ShowLogFile(logContentToShow, this.logDataGrid, "", true,frm);
+            ShowLogFile(logContentToShow, this.logDataGrid, "", true,frm,null,false);
 
             frm.DialogResult = DialogResult.OK;
         }
@@ -312,7 +312,9 @@ namespace UROVConfig
 
         private Dictionary<DataGridView, LogInfo> gridToListCollection = new Dictionary<DataGridView, LogInfo>();
 
-        private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm)
+        
+
+        private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm, ShowInterruptInfo callback, bool stopAfterFirstRecord)
         {
 
             ClearInterruptsList(targetGrid);
@@ -324,8 +326,9 @@ namespace UROVConfig
 
             try
             {
+                bool stopped = false;
 
-                while (readed < content.Count)
+                while (readed < content.Count && !stopped)
                 {
                     if (frm != null)
                     {
@@ -578,7 +581,22 @@ namespace UROVConfig
 
                         case LogRecordType.InterruptRecordEnd:
                             {
-                                AddInterruptRecordToList(curRecord, targetGrid, addToColumnName, computeMotoresurcePercents);
+                                if (targetGrid != null)
+                                {
+                                    AddInterruptRecordToList(curRecord, targetGrid, addToColumnName, computeMotoresurcePercents);
+                                }
+
+                                if (stopAfterFirstRecord)
+                                {
+                                    stopped = true;
+                                }
+
+                                if (callback != null)
+                                {
+                                    System.Diagnostics.Debug.Assert(curRecord != null);
+                                    callback(curRecord);
+                                }
+
                             }
                             break;
 
@@ -593,17 +611,23 @@ namespace UROVConfig
 
             catch
             {
-                this.plEmptySDWorkspace.BringToFront();
+                if (targetGrid != null)
+                {
+                    this.plEmptySDWorkspace.BringToFront();
+                }
                 MessageBox.Show("Ошибка разбора лог-файла!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (gridToListCollection.ContainsKey(targetGrid))
+            if (targetGrid != null)
             {
-                targetGrid.RowCount = gridToListCollection[targetGrid].list.Count;
-            }
+                if (gridToListCollection.ContainsKey(targetGrid))
+                {
+                    targetGrid.RowCount = gridToListCollection[targetGrid].list.Count;
+                }
 
-              targetGrid.BringToFront();
+                targetGrid.BringToFront();
+            }
         }
 
         private void AddInterruptRecordToList(InterruptRecord record, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents)
@@ -613,7 +637,6 @@ namespace UROVConfig
 
             if(!gridToListCollection.ContainsKey(targetGrid))
             {
-                //List<InterruptRecord> lst = new List<InterruptRecord>();
                 LogInfo linf = new LogInfo();
                 linf.addToColumnName = addToColumnName;
                 linf.computeMotoresurcePercents = computeMotoresurcePercents;
@@ -623,71 +646,12 @@ namespace UROVConfig
             //Тут добавление в список в таблицу
 
             gridToListCollection[targetGrid].list.Add(record);
-            /*
-
-            int rowNumber = targetGrid.Rows.Add();
-
-            DataGridViewRow row = targetGrid.Rows[rowNumber];
-            row.Tag = record;
-
-            row.DefaultCellStyle.BackColor = rowNumber % 2 == 0 ? Color.LightGray : Color.White;
-
-            string cellText = (rowNumber+1).ToString();            
-            row.Cells["Num" + addToColumnName].Value = cellText;
-            row.Cells["Time" + addToColumnName].Value = record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
-            row.Cells["Temp" + addToColumnName].Value = record.InterruptInfo.SystemTemperature.ToString("0.00") + " °C";
-            row.Cells["Channel" + addToColumnName].Value = (1 + record.ChannelNumber).ToString();
-            row.Cells["Rod" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.RodPosition);
-            row.Cells["Compare" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareResult);
-            row.Cells["Etl" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.EthalonCompareNumber);
-            //DEPRECATED: row.Cells["Ind" + addToColumnName].Value = EnumHelpers.GetEnumDescription(record.InductiveSensorState);
-
-            if (record.EthalonCompareResult == EthalonCompareResult.MatchEthalon)
-                row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightGreen;
-            else
-                row.Cells["Compare" + addToColumnName].Style.BackColor = Color.LightSalmon;
-
-
-
-            if (record.RodPosition == RodPosition.Broken)
-                row.Cells["Rod" + addToColumnName].Style.BackColor = Color.LightSalmon;
-            else
-                row.Cells["Rod" + addToColumnName].Style.BackColor = Color.White;
-
-            if (computeMotoresurcePercents)
-            {
-                int resMax = 1;
-                switch (record.ChannelNumber)
-                {
-                    //DEPRECATED: case 0:
-                    default:
-                        resMax = Config.Instance.MotoresourceMax1;
-                        break;
-
-                }
-
-                if (resMax < 1)
-                    resMax = 1;
-
-                float motoPercents = (record.Motoresource * 100.0f) / resMax;
-
-                row.Cells["Motoresource" + addToColumnName].Value = record.Motoresource.ToString() + " (" + motoPercents.ToString("0.00") + "%)";
-            }
-            else
-                row.Cells["Motoresource" + addToColumnName].Value = record.Motoresource.ToString();
-
-
-            row.Cells["Pulses" + addToColumnName].Value = record.InterruptData.Count.ToString();
-
-            row.Cells["Btn" + addToColumnName].Value = "Просмотр";
-            */
 
         }
 
         private void ClearInterruptsList(DataGridView targetGrid)
         {
             // Тут очистка таблицы
-            // targetGrid.Rows.Clear();
             targetGrid.RowCount = 0;
             if (gridToListCollection.ContainsKey(targetGrid))
             {
@@ -1913,15 +1877,23 @@ namespace UROVConfig
             this.SDQueryAnswer.Clear();
         }
 
+        private void LastTrigCallback(InterruptRecord rec)
+        {
+            // тут показываем форму последнего срабатывания
+            string stationID = Config.Instance.ControllerGUID;
+            string stationName = stationID;
+
+            if (ControllerNames.Instance.Names.ContainsKey(stationID))
+                stationName = ControllerNames.Instance.Names[stationID];
+
+            ShowChart(rec, stationID, stationName,false);
+        }
+
         private void ViewLastTrigData(List<byte> content)
         {
             if(content.Count > 0) // есть информация по срабатыванию!!!
             {
-                LastTriggerViewForm vf = new LastTriggerViewForm();
-                CreateChart(content, vf.chart);
-                vf.Show();
-                vf.BringToFront();
-
+                ShowLogFile(content, null, "", false, null, LastTrigCallback, true);
             }
         }
 
@@ -3366,7 +3338,7 @@ namespace UROVConfig
             RequestFile(treeViewSD.SelectedNode);
         }
 
-        private void ShowChart(InterruptRecord record, string stationID, string stationName)
+        private void ShowChart(InterruptRecord record, string stationID, string stationName, bool modal)
         {
             System.Diagnostics.Debug.Assert(record != null);
 
@@ -3452,7 +3424,15 @@ namespace UROVConfig
 
                 } // for
 
+            if (modal)
+            {
                 vcf.ShowDialog();
+            }
+            else
+            {
+                vcf.Show();
+                vcf.BringToFront();
+            }
 
         }
 
@@ -3478,7 +3458,7 @@ namespace UROVConfig
 
                 }
 
-                ShowChart(senderGrid.Rows[e.RowIndex].Tag as InterruptRecord, stationID, stationName);
+                ShowChart(senderGrid.Rows[e.RowIndex].Tag as InterruptRecord, stationID, stationName,true);
             }
         }
         /*
@@ -3723,7 +3703,7 @@ namespace UROVConfig
 
             //List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
             List<byte> content = new List<byte>(result);
-            ShowLogFile(content, this.archiveLogDataGrid, "1", false,frm);
+            ShowLogFile(content, this.archiveLogDataGrid, "1", false,frm,null,false);
             this.archiveLogDataGrid.BringToFront();
 
             frm.DialogResult = DialogResult.OK;
