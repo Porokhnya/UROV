@@ -1894,7 +1894,13 @@ namespace UROVConfig
 
         private void ViewLastTrigData(List<byte> content)
         {
-            if(content.Count > 0) // есть информация по срабатыванию!!!
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate { ViewLastTrigData(content); });
+                return;
+            }
+
+            if (content.Count > 0) // есть информация по срабатыванию!!!
             {
                 ShowLogFile(content, null, "", false, null, LastTrigCallback, true);
             }
