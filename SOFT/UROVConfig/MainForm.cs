@@ -1574,6 +1574,12 @@ namespace UROVConfig
             // загружаем архив
 
             string path = Application.StartupPath + "\\Archive\\";
+            try
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            catch { }
+
             List<string> dirs = new List<string>(System.IO.Directory.EnumerateDirectories(path));
 
             foreach(string dir in dirs)
