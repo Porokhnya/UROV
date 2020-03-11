@@ -2776,6 +2776,13 @@ namespace UROVConfig
         {
             n.Nodes.Clear();
             string path = Application.StartupPath + "\\Archive\\" + eti.Parent.GUID + "\\ETL\\";
+
+            try
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            catch { }
+
             string[] files = System.IO.Directory.GetFiles(path);
 
             foreach(string fullfilename in files)
@@ -2793,6 +2800,13 @@ namespace UROVConfig
         {
             n.Nodes.Clear();
             string path = Application.StartupPath + "\\Archive\\" + eti.Parent.GUID + "\\LOG\\";
+
+            try
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            catch { }
+
             string[] files = System.IO.Directory.GetFiles(path);
 
             foreach (string file in files)
