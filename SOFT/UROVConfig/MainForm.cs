@@ -1482,19 +1482,17 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.MotoresourceMax1 = Convert.ToInt32(a.Params[1]); } catch { }
-                //DEPRECATED: try { Config.Instance.MotoresourceMax2 = Convert.ToInt32(a.Params[2]); } catch { }
-                //DEPRECATED: try { Config.Instance.MotoresourceMax3 = Convert.ToInt32(a.Params[3]); } catch { }
+
+                if (Config.Instance.MotoresourceMax1 > Convert.ToInt32(nudMotoresourceMax1.Maximum))
+                    Config.Instance.MotoresourceMax1 = Convert.ToInt32(nudMotoresourceMax1.Maximum);
+
             }
             else
             {
                 Config.Instance.MotoresourceMax1 = 0;
-                //DEPRECATED: Config.Instance.MotoresourceMax2 = 0;
-                //DEPRECATED: Config.Instance.MotoresourceMax3 = 0;
             }
 
             nudMotoresourceMax1.Value = Config.Instance.MotoresourceMax1;
-            //DEPRECATED: nudMotoresourceMax2.Value = Config.Instance.MotoresourceMax2;
-            //DEPRECATED: nudMotoresourceMax3.Value = Config.Instance.MotoresourceMax3;
 
         }
 
