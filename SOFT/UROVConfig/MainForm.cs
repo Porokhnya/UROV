@@ -497,6 +497,15 @@ namespace UROVConfig
 
                                 } // for
 
+
+                                // добавляем фейковую нулевую точку, дублированием первой.
+                                // между ними, таким образом, окажется нулевой промежуток времени.
+                                if (curRecord.EthalonData.Count > 0)
+                                {
+                                    int first = curRecord.EthalonData[0];
+                                    curRecord.EthalonData.Insert(0, first);
+                                }
+
                             }
                             break;
 
