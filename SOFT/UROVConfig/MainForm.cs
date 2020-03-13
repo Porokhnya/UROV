@@ -1333,19 +1333,17 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Delta1 = Convert.ToInt32(a.Params[1]); } catch { }
-                //DEPRECATED: try { Config.Instance.Delta2 = Convert.ToInt32(a.Params[2]); } catch { }
-                //DEPRECATED: try { Config.Instance.Delta3 = Convert.ToInt32(a.Params[3]); } catch { }
+
+                if (Config.Instance.Delta1 > Convert.ToInt32(nudDelta1.Maximum))
+                    Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Maximum);
+
             }
             else
             {
                 Config.Instance.Delta1 = 0;
-                //DEPRECATED: Config.Instance.Delta2 = 0;
-                //DEPRECATED: Config.Instance.Delta3 = 0;
             }
 
             nudDelta1.Value = Config.Instance.Delta1;
-            //DEPRECATED: nudDelta2.Value = Config.Instance.Delta2;
-            //DEPRECATED: nudDelta3.Value = Config.Instance.Delta3;
         }
 
         private void ParseAskPulses(Answer a)
@@ -1354,19 +1352,17 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Pulses1 = Convert.ToInt32(a.Params[1]); } catch { }
-                //DEPRECATED: try { Config.Instance.Pulses2 = Convert.ToInt32(a.Params[2]); } catch { }
-                //DEPRECATED: try { Config.Instance.Pulses3 = Convert.ToInt32(a.Params[3]); } catch { }
+
+                if (Config.Instance.Pulses1 > Convert.ToInt32(nudPulses1.Maximum))
+                    Config.Instance.Pulses1 = Convert.ToInt32(nudPulses1.Maximum);
+
             }
             else
             {
                 Config.Instance.Pulses1 = 0;
-                //DEPRECATED: Config.Instance.Pulses2 = 0;
-                //DEPRECATED: Config.Instance.Pulses3 = 0;
             }
 
             nudPulses1.Value = Config.Instance.Pulses1;
-            //DEPRECATED: nudPulses2.Value = Config.Instance.Pulses2;
-            //DEPRECATED: nudPulses3.Value = Config.Instance.Pulses3;
         }
 
         private void ParseAskBorders(Answer a)
@@ -1376,6 +1372,13 @@ namespace UROVConfig
             {
                 try { Config.Instance.LowBorder = Convert.ToInt32(a.Params[1]); } catch { }
                 try { Config.Instance.HighBorder = Convert.ToInt32(a.Params[2]); } catch { }
+
+                if (Config.Instance.LowBorder > Convert.ToInt32(nudLowBorder.Maximum))
+                    Config.Instance.LowBorder = Convert.ToInt32(nudLowBorder.Maximum);
+
+                if (Config.Instance.HighBorder > Convert.ToInt32(nudHighBorder.Maximum))
+                    Config.Instance.HighBorder = Convert.ToInt32(nudHighBorder.Maximum);
+
             }
             else
             {
@@ -1418,19 +1421,17 @@ namespace UROVConfig
             if(a.IsOkAnswer)
             {
                 try { Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(a.Params[1]);  } catch { }
-                //DEPRECATED: try { Config.Instance.MotoresourceCurrent2 = Convert.ToInt32(a.Params[2]); } catch { }
-                //DEPRECATED: try { Config.Instance.MotoresourceCurrent3 = Convert.ToInt32(a.Params[3]); } catch { }
+
+                if (Config.Instance.MotoresourceCurrent1 > Convert.ToInt32(nudMotoresourceCurrent1.Maximum))
+                    Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(nudMotoresourceCurrent1.Maximum);
+
             }
             else
             {
                 Config.Instance.MotoresourceCurrent1 = 0;
-                //DEPRECATED: Config.Instance.MotoresourceCurrent2 = 0;
-                //DEPRECATED: Config.Instance.MotoresourceCurrent3 = 0;
             }
 
             nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
-            //DEPRECATED: nudMotoresourceCurrent2.Value = Config.Instance.MotoresourceCurrent2;
-            //DEPRECATED: nudMotoresourceCurrent3.Value = Config.Instance.MotoresourceCurrent3;
 
             UpdateMotoresourcePercents();
         }
