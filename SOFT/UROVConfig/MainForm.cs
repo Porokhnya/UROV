@@ -1394,6 +1394,13 @@ namespace UROVConfig
             {
                 try { Config.Instance.RelayDelay = Convert.ToInt32(a.Params[1]); } catch { }
                 try { Config.Instance.ACSDelay = Convert.ToInt32(a.Params[2]); } catch { }
+
+                if (Config.Instance.RelayDelay > Convert.ToInt32(nudRelayDelay.Maximum))
+                    Config.Instance.RelayDelay = Convert.ToInt32(nudRelayDelay.Maximum);
+
+                if (Config.Instance.ACSDelay > Convert.ToInt32(nudACSDelay.Maximum))
+                    Config.Instance.ACSDelay = Convert.ToInt32(nudACSDelay.Maximum);
+
             }
             else
             {

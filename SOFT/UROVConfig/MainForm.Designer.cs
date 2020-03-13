@@ -695,10 +695,10 @@
             // 
             this.plSection.BackColor = System.Drawing.Color.White;
             this.plSection.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.plSection.Controls.Add(this.plStartPanel);
             this.plSection.Controls.Add(this.archiveLogDataGrid);
             this.plSection.Controls.Add(this.plArchiveEthalonChart);
             this.plSection.Controls.Add(this.plMainSettings);
-            this.plSection.Controls.Add(this.plStartPanel);
             this.plSection.Controls.Add(this.plSDSettings);
             this.plSection.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plSection.Location = new System.Drawing.Point(0, 0);
