@@ -1332,10 +1332,11 @@ namespace UROVConfig
             this.inSetDeltaToController = false;
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.Delta1 = Convert.ToInt32(a.Params[1]); } catch { }
-
-                if (Config.Instance.Delta1 > Convert.ToInt32(nudDelta1.Maximum))
-                    Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Maximum);
+                try { Config.Instance.Delta1 = Convert.ToInt32(a.Params[1]); }
+                catch
+                {
+                    Config.Instance.Delta1 = 0;
+               }
 
             }
             else
@@ -1343,7 +1344,15 @@ namespace UROVConfig
                 Config.Instance.Delta1 = 0;
             }
 
-            nudDelta1.Value = Config.Instance.Delta1;
+            try
+            {
+                nudDelta1.Value = Config.Instance.Delta1;
+            }
+            catch
+            {
+                nudDelta1.Value = 0;
+                Config.Instance.Delta1 = 0;
+            }
         }
 
         private void ParseAskPulses(Answer a)
@@ -1351,10 +1360,8 @@ namespace UROVConfig
             this.inSetPulsesToController = false;
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.Pulses1 = Convert.ToInt32(a.Params[1]); } catch { }
-
-                if (Config.Instance.Pulses1 > Convert.ToInt32(nudPulses1.Maximum))
-                    Config.Instance.Pulses1 = Convert.ToInt32(nudPulses1.Maximum);
+                try { Config.Instance.Pulses1 = Convert.ToInt32(a.Params[1]); }
+                catch { Config.Instance.Pulses1 = 0; }
 
             }
             else
@@ -1362,7 +1369,15 @@ namespace UROVConfig
                 Config.Instance.Pulses1 = 0;
             }
 
-            nudPulses1.Value = Config.Instance.Pulses1;
+            try
+            {
+                nudPulses1.Value = Config.Instance.Pulses1;
+            }
+            catch
+            {
+                nudPulses1.Value = 0;
+                Config.Instance.Pulses1 = 0;
+            }
         }
 
         private void ParseAskBorders(Answer a)
@@ -1370,14 +1385,9 @@ namespace UROVConfig
             this.inSetBordersToController = false;
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.LowBorder = Convert.ToInt32(a.Params[1]); } catch { }
-                try { Config.Instance.HighBorder = Convert.ToInt32(a.Params[2]); } catch { }
+                try { Config.Instance.LowBorder = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.LowBorder = 0; }
+                try { Config.Instance.HighBorder = Convert.ToInt32(a.Params[2]); } catch { Config.Instance.HighBorder = 0; }
 
-                if (Config.Instance.LowBorder > Convert.ToInt32(nudLowBorder.Maximum))
-                    Config.Instance.LowBorder = Convert.ToInt32(nudLowBorder.Maximum);
-
-                if (Config.Instance.HighBorder > Convert.ToInt32(nudHighBorder.Maximum))
-                    Config.Instance.HighBorder = Convert.ToInt32(nudHighBorder.Maximum);
 
             }
             else
@@ -1386,8 +1396,26 @@ namespace UROVConfig
                 Config.Instance.HighBorder = 0;
             }
 
-            nudLowBorder.Value = Config.Instance.LowBorder;
-            nudHighBorder.Value = Config.Instance.HighBorder;
+            try
+            {
+                nudLowBorder.Value = Config.Instance.LowBorder;
+            }
+            catch
+            {
+                nudLowBorder.Value = 0;
+                Config.Instance.LowBorder = 0;
+
+            }
+
+            try
+            {
+                nudHighBorder.Value = Config.Instance.HighBorder;
+            }
+            catch
+            {
+                nudHighBorder.Value = 0;
+                Config.Instance.HighBorder = 0;
+            }
         }
 
         private void ParseAskRelayDelay(Answer a)
@@ -1395,14 +1423,8 @@ namespace UROVConfig
             this.inSetRelayDelayToController = false;
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.RelayDelay = Convert.ToInt32(a.Params[1]); } catch { }
-                try { Config.Instance.ACSDelay = Convert.ToInt32(a.Params[2]); } catch { }
-
-                if (Config.Instance.RelayDelay > Convert.ToInt32(nudRelayDelay.Maximum))
-                    Config.Instance.RelayDelay = Convert.ToInt32(nudRelayDelay.Maximum);
-
-                if (Config.Instance.ACSDelay > Convert.ToInt32(nudACSDelay.Maximum))
-                    Config.Instance.ACSDelay = Convert.ToInt32(nudACSDelay.Maximum);
+                try { Config.Instance.RelayDelay = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.RelayDelay = 0; }
+                try { Config.Instance.ACSDelay = Convert.ToInt32(a.Params[2]); } catch { Config.Instance.ACSDelay = 0; }
 
             }
             else
@@ -1411,8 +1433,25 @@ namespace UROVConfig
                 Config.Instance.ACSDelay = 0;
             }
 
-            nudRelayDelay.Value = Config.Instance.RelayDelay;
-            nudACSDelay.Value = Config.Instance.ACSDelay;
+            try
+            {
+                nudRelayDelay.Value = Config.Instance.RelayDelay;
+            }
+            catch
+            {
+                nudRelayDelay.Value = 0;
+                Config.Instance.RelayDelay = 0;
+            }
+
+            try
+            {
+                nudACSDelay.Value = Config.Instance.ACSDelay;
+            }
+            catch
+            {
+                nudACSDelay.Value = 0;
+                Config.Instance.ACSDelay = 0;
+            }
         }
 
         private void ParseAskMotoresurceCurrent(Answer a)
@@ -1420,10 +1459,7 @@ namespace UROVConfig
             this.inSetMotoresourceCurrentToController = false;
             if(a.IsOkAnswer)
             {
-                try { Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(a.Params[1]);  } catch { }
-
-                if (Config.Instance.MotoresourceCurrent1 > Convert.ToInt32(nudMotoresourceCurrent1.Maximum))
-                    Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(nudMotoresourceCurrent1.Maximum);
+                try { Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(a.Params[1]);  } catch { Config.Instance.MotoresourceCurrent1 = 0; }
 
             }
             else
@@ -1431,7 +1467,15 @@ namespace UROVConfig
                 Config.Instance.MotoresourceCurrent1 = 0;
             }
 
-            nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
+            try
+            {
+                nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
+            }
+            catch
+            {
+                nudMotoresourceCurrent1.Value = 0;
+                Config.Instance.MotoresourceCurrent1 = 0;
+            }
 
             UpdateMotoresourcePercents();
         }
@@ -1481,10 +1525,7 @@ namespace UROVConfig
             this.inSetMotoresourceMaxToController = false;
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.MotoresourceMax1 = Convert.ToInt32(a.Params[1]); } catch { }
-
-                if (Config.Instance.MotoresourceMax1 > Convert.ToInt32(nudMotoresourceMax1.Maximum))
-                    Config.Instance.MotoresourceMax1 = Convert.ToInt32(nudMotoresourceMax1.Maximum);
+                try { Config.Instance.MotoresourceMax1 = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.MotoresourceMax1 = 0; }
 
             }
             else
@@ -1492,7 +1533,15 @@ namespace UROVConfig
                 Config.Instance.MotoresourceMax1 = 0;
             }
 
-            nudMotoresourceMax1.Value = Config.Instance.MotoresourceMax1;
+            try
+            {
+                nudMotoresourceMax1.Value = Config.Instance.MotoresourceMax1;
+            }
+            catch
+            {
+                nudMotoresourceMax1.Value = 0;
+                Config.Instance.MotoresourceMax1 = 0;
+            }
 
         }
 
@@ -2050,16 +2099,12 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Value);
-                //DEPRECATED: Config.Instance.Delta2 = Convert.ToInt32(nudDelta2.Value);
-                //DEPRECATED: Config.Instance.Delta3 = Convert.ToInt32(nudDelta3.Value);
 
                 MessageBox.Show("Дельты обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudDelta1.Value = Config.Instance.Delta1;
-                //DEPRECATED: nudDelta2.Value = Config.Instance.Delta2;
-                //DEPRECATED: nudDelta3.Value = Config.Instance.Delta3;
 
                 MessageBox.Show("Ошибка обновления дельт!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -2074,16 +2119,12 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 Config.Instance.Pulses1 = Convert.ToInt32(nudPulses1.Value);
-                //DEPRECATED: Config.Instance.Pulses2 = Convert.ToInt32(nudPulses2.Value);
-                //DEPRECATED: Config.Instance.Pulses3 = Convert.ToInt32(nudPulses3.Value);
 
                 MessageBox.Show("Импульсы обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudPulses1.Value = Config.Instance.Pulses1;
-                //DEPRECATED: nudPulses2.Value = Config.Instance.Pulses2;
-                //DEPRECATED: nudPulses3.Value = Config.Instance.Pulses3;
 
                 MessageBox.Show("Ошибка обновления импульсов!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -2139,16 +2180,12 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(nudMotoresourceCurrent1.Value);
-                //DEPRECATED: Config.Instance.MotoresourceCurrent2 = Convert.ToInt32(nudMotoresourceCurrent2.Value);
-                //DEPRECATED: Config.Instance.MotoresourceCurrent3 = Convert.ToInt32(nudMotoresourceCurrent3.Value);
 
                 MessageBox.Show("Текущий моторесурс обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
-                //DEPRECATED: nudMotoresourceCurrent2.Value = Config.Instance.MotoresourceCurrent2;
-                //DEPRECATED: nudMotoresourceCurrent3.Value = Config.Instance.MotoresourceCurrent3;
 
                 MessageBox.Show("Ошибка обновления текущего моторесурса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -2164,16 +2201,12 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 Config.Instance.MotoresourceMax1 = Convert.ToInt32(nudMotoresourceMax1.Value);
-                //DEPRECATED: Config.Instance.MotoresourceMax2 = Convert.ToInt32(nudMotoresourceMax2.Value);
-                //DEPRECATED: Config.Instance.MotoresourceMax3 = Convert.ToInt32(nudMotoresourceMax3.Value);
 
                 MessageBox.Show("Максимальный моторесурс обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudMotoresourceMax1.Value = Config.Instance.MotoresourceMax1;
-                //DEPRECATED: nudMotoresourceMax2.Value = Config.Instance.MotoresourceMax2;
-                //DEPRECATED: nudMotoresourceMax3.Value = Config.Instance.MotoresourceMax3;
 
                 MessageBox.Show("Ошибка обновления максимального моторесурса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -3122,86 +3155,6 @@ namespace UROVConfig
             lblVoltage3.BackColor = Color.LightGray;
             lblVoltage3.Text = "-";
         }
-
-        /*
-        //DEPRECATED:
-        private void ResetInductiveSensors()
-        {
-            lblInductive1.BackColor = Color.LightGray;
-            lblInductive1.Text = "-";
-
-            lblInductive2.BackColor = Color.LightGray;
-            lblInductive2.Text = "-";
-
-            lblInductive3.BackColor = Color.LightGray;
-            lblInductive3.Text = "-";
-        }
-
-        private void ParseInductiveSensors(Answer a)
-        {
-            if(a.IsOkAnswer)
-            {
-
-                try {
-
-                    bool indSensor1 = Convert.ToInt32(a.Params[1]) == 1;
-                    if(indSensor1)
-                    {
-                        lblInductive1.BackColor = Color.LightGreen;
-                        lblInductive1.Text = "Исправен";
-                    }
-                    else
-                    {
-                        lblInductive1.BackColor = Color.LightSalmon;
-                        lblInductive1.Text = "Неисправен!";
-
-                    }
-                }
-                catch { }
-
-                try
-                {
-
-                    bool indSensor2 = Convert.ToInt32(a.Params[2]) == 1;
-                    if (indSensor2)
-                    {
-                        lblInductive2.BackColor = Color.LightGreen;
-                        lblInductive2.Text = "Исправен";
-                    }
-                    else
-                    {
-                        lblInductive2.BackColor = Color.LightSalmon;
-                        lblInductive2.Text = "Неисправен!";
-
-                    }
-                }
-                catch { }
-
-                try
-                {
-
-                    bool indSensor3 = Convert.ToInt32(a.Params[3]) == 1;
-                    if (indSensor3)
-                    {
-                        lblInductive3.BackColor = Color.LightGreen;
-                        lblInductive3.Text = "Исправен";
-                    }
-                    else
-                    {
-                        lblInductive3.BackColor = Color.LightSalmon;
-                        lblInductive3.Text = "Неисправен!";
-
-                    }
-                }
-                catch { }
-
-            }
-            else
-            {
-                ResetInductiveSensors();
-            }
-        }
-        */
 
         private void ParseVoltage(Answer a)
         {
