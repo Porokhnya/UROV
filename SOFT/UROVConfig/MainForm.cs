@@ -573,6 +573,14 @@ namespace UROVConfig
                                     curRecord.InterruptData.Add(curInterruptData);
 
                                 } // for
+
+                                // добавляем фейковую нулевую точку, дублированием первой.
+                                // между ними, таким образом, окажется нулевой промежуток времени.
+                                if(curRecord.InterruptData.Count > 0)
+                                {
+                                    int first = curRecord.InterruptData[0];
+                                    curRecord.InterruptData.Insert(0, first);
+                                }
                             }
                             break;
 
