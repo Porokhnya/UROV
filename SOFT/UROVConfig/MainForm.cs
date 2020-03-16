@@ -497,7 +497,7 @@ namespace UROVConfig
 
                                 } // for
 
-
+                                /*
                                 // добавляем фейковую нулевую точку, дублированием первой.
                                 // между ними, таким образом, окажется нулевой промежуток времени.
                                 if (curRecord.EthalonData.Count > 0)
@@ -505,6 +505,7 @@ namespace UROVConfig
                                     int first = curRecord.EthalonData[0];
                                     curRecord.EthalonData.Insert(0, first);
                                 }
+                                */
 
                             }
                             break;
@@ -583,6 +584,7 @@ namespace UROVConfig
 
                                 } // for
 
+                                /*
                                 // добавляем фейковую нулевую точку, дублированием первой.
                                 // между ними, таким образом, окажется нулевой промежуток времени.
                                 if(curRecord.InterruptData.Count > 0)
@@ -590,6 +592,7 @@ namespace UROVConfig
                                     int first = curRecord.InterruptData[0];
                                     curRecord.InterruptData.Insert(0, first);
                                 }
+                                */
                             }
                             break;
 
@@ -3360,7 +3363,9 @@ namespace UROVConfig
             interruptSerie.Points.Clear();
 
 
+
             int xStep = 1;
+
 
             List<int> timeList = record.InterruptData;
 
@@ -3386,6 +3391,13 @@ namespace UROVConfig
 
             double xCoord = 0;
 
+            // добавляем фейковые начальные точки
+            System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+            ptFake1.XValue = xCoord;
+            ptFake1.SetValueY(0);
+            xCoord += xStep;
+            interruptSerie.Points.Add(ptFake1);
+
             // теперь считаем все остальные точки
             for (int i = 1; i < endStop; i++)
             {
@@ -3409,8 +3421,16 @@ namespace UROVConfig
 
                 xCoord = 0;
 
-                // считаем график эталона
-                for (int i = 1; i < record.EthalonData.Count; i++)
+                // добавляем фейковые начальные точки
+                System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+                ptFake2.XValue = xCoord;
+                ptFake2.SetValueY(0);
+                xCoord += xStep;
+                ethalonSerie.Points.Add(ptFake2);
+
+
+            // считаем график эталона
+            for (int i = 1; i < record.EthalonData.Count; i++)
                 {
                     int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
                     pulseTime *= 100;
