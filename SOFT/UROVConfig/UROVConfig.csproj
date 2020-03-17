@@ -184,14 +184,6 @@
     <None Include="Icons\connect_established.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\wait.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\pleasewait.gif" />
-    <None Include="Icons\progress.gif" />
-    <None Include="Icons\loader.png" />
-    <None Include="Icons\ajax-loader.gif" />
-    <None Include="Icons\ajax-loader-blue-64.gif" />
     <None Include="Icons\spinner.gif" />
     <None Include="Icons\tree\data.png" />
     <None Include="Icons\ip.png" />
