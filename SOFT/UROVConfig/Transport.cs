@@ -131,6 +131,10 @@ namespace UROVConfig
                 if (s != null) // уже передали нормальный порт, не надо искать
                 {
                     pname = s.PortName;
+                    if (this.withHandshake)
+                    {
+                        s.DtrEnable = true;
+                    }
                 }
 
                 System.Diagnostics.Debug.WriteLine("TRANSPORT: TRY TO CONNECT TO " + pname + "...");
