@@ -90,6 +90,7 @@
             this.treeView = new System.Windows.Forms.TreeView();
             this.smallImages = new System.Windows.Forms.ImageList(this.components);
             this.plSection = new System.Windows.Forms.Panel();
+            this.plStartPanel = new System.Windows.Forms.Panel();
             this.archiveLogDataGrid = new System.Windows.Forms.DataGridView();
             this.Num1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Time1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -175,7 +176,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.panel10 = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
-            this.plStartPanel = new System.Windows.Forms.Panel();
             this.plSDSettings = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.treeViewSD = new System.Windows.Forms.TreeView();
@@ -705,6 +705,13 @@
             this.plSection.Name = "plSection";
             this.plSection.Size = new System.Drawing.Size(1071, 533);
             this.plSection.TabIndex = 1;
+            // 
+            // plStartPanel
+            // 
+            this.plStartPanel.Location = new System.Drawing.Point(480, 81);
+            this.plStartPanel.Name = "plStartPanel";
+            this.plStartPanel.Size = new System.Drawing.Size(671, 346);
+            this.plStartPanel.TabIndex = 10;
             // 
             // archiveLogDataGrid
             // 
@@ -1701,13 +1708,6 @@
             this.label16.Size = new System.Drawing.Size(97, 24);
             this.label16.TabIndex = 0;
             this.label16.Text = "Импульсы";
-            // 
-            // plStartPanel
-            // 
-            this.plStartPanel.Location = new System.Drawing.Point(480, 81);
-            this.plStartPanel.Name = "plStartPanel";
-            this.plStartPanel.Size = new System.Drawing.Size(671, 346);
-            this.plStartPanel.TabIndex = 10;
             // 
             // plSDSettings
             // 
