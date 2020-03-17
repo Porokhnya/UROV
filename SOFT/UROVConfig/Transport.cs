@@ -377,7 +377,7 @@ namespace UROVConfig
                     for (int i = 0; i < cnt; i++)
                         bReceived[i] = (byte) sp.ReadByte();
 
-
+                    /*
                     ThreadPool.QueueUserWorkItem(
                         new WaitCallback(delegate (object state)
                         {
@@ -386,9 +386,10 @@ namespace UROVConfig
 
                         }), null);
 
+    */
+                    this.OnDataReceived?.Invoke(bReceived);
 
-
-                    Thread.Sleep(10);
+                    //   Thread.Sleep(10);
                 }
             }
             catch (Exception)
