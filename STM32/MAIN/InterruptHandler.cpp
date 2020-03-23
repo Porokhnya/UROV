@@ -22,6 +22,7 @@ volatile bool currentOscillTimerActive = false; // флаг активности
 CurrentOscillData oscillData; // информация по току
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool relayTriggeredAtStart = false; // флаг, что защита сработала при старте (это срабатывание мы игнорируем)
+volatile uint16_t interruptSkipCounter = 0; // счётчик пойманных импульсов, для пропуска лишних
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -94,7 +95,20 @@ InterruptEventSubscriber* subscriber = NULL; // подписчик для обр
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
-  #ifdef PREDICT_ENABLED
+
+  // тут проверяем, надо ли пропустить N импульсов
+  interruptSkipCounter++;
+  if(interruptSkipCounter % INTERRUPT_SKIP_COUNTER)
+  {
+     // надо пропустить
+     return;
+  }
+  else
+  {
+    interruptSkipCounter = 0;
+  }
+  
+  #ifdef PREDICT_ENABLED // включены предсказания?
   
   if(predictEnabledFlag && !predictTriggeredFlag) // можем делать предсказания о срабатывании защиты
   {
@@ -149,33 +163,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
           Settings.setRodDirection(rpDown);
         }
     #endif
-    
-/*  
-    uint32_t now = micros();
-    list1.push_back(now);
-
-	hasEncoderInterrupt = true;
-	lastEncoderInterruptTime = now;
-
-  if(list1.size() < 2)
-  {
-    timeBeforeInterruptsBegin = (now - relayTriggeredTime);
-  }
-
-#ifndef DISABLE_CATCH_ENCODER_DIRECTION
-		// определяем направление вращения энкодера.
-	  if (digitalRead(ENCODER_PIN2))
-	  {
-		  // по часовой
-		  Settings.setRodDirection(rpUp);
-	  }
-	  else
-	  {
-		  // против часовой
-		  Settings.setRodDirection(rpDown);
-	  }
-#endif
-*/    
+       
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void computeRMS()
