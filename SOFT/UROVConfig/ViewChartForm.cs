@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace UROVConfig
 {
@@ -536,6 +537,38 @@ namespace UROVConfig
                     MessageBox.Show("Данные экспортированы.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
+        }
+
+        private void ViewChartForm_Load(object sender, EventArgs e)
+        {
+            // задаём настройки масштабирования графиков
+
+            ChartArea area = chart.ChartAreas[0];
+
+            area.AxisX.IntervalType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.Zoomable = true;
+            area.CursorX.AutoScroll = true;
+
+            area.CursorX.IsUserEnabled = true;
+            area.CursorX.IsUserSelectionEnabled = true;
+            area.CursorX.IntervalType = DateTimeIntervalType.Number;
+            area.CursorX.Interval = 1D;
+
+            area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.SmallScrollSize = 1D;
+            area.AxisX.ScaleView.Zoomable = true;
+
+            area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.MinSize = 1D;
+
+            area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.SmallScrollMinSize = 1D;
+
+            area.AxisY.IntervalType = DateTimeIntervalType.Number;
+            area.AxisY.ScaleView.Zoomable = true;
+            area.CursorY.IsUserSelectionEnabled = true;
+            area.CursorY.IsUserEnabled = true;
+            area.CursorY.AutoScroll = true;
         }
     }
 }
