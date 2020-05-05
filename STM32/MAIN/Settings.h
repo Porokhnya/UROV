@@ -76,8 +76,15 @@ public:
 
 	RodDirection getRodDirection() { return rodDirection; }
 	void setRodDirection(RodDirection val) { rodDirection = val; }
+
+  uint32_t getSkipCounter() {return skipCounter; }
+  void setSkipCounter(uint32_t val);
+
     
   private:
+
+    uint32_t readSkipCounter();
+    uint32_t skipCounter;
 
 	  RodDirection rodDirection;
 

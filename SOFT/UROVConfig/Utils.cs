@@ -890,6 +890,15 @@ namespace UROVConfig
 
             relayDelay = 0;
             acsDelay = 0;
+
+            skipCounter = 1;
+        }
+
+        private int skipCounter = 1;
+        public int SkipCounter
+        {
+            get { return skipCounter; }
+            set { skipCounter = value; }
         }
 
         private int motoresourceCurrent1 = 0;

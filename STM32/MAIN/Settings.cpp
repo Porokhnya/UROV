@@ -99,7 +99,8 @@ void SettingsClass::begin()
   {
     acsDelay = ACS_SIGNAL_DELAY;
   }
-  
+
+  skipCounter = readSkipCounter();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set3V3RawVoltage(uint16_t raw)
@@ -170,6 +171,42 @@ void SettingsClass::setACSDelay(uint16_t val)
   eeprom->write(writeaddr,writePtr,sizeof(uint16_t)); 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::readSkipCounter()
+{
+
+  int readAddr = SKIP_COUNTER_STORE_ADDRESS;
+  uint8_t header1 = eeprom->read(readAddr++);
+  uint8_t header2 = eeprom->read(readAddr++);
+
+  if(!(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2))
+  {
+    return INTERRUPT_SKIP_COUNTER;
+  }
+  
+  uint32_t result = 0;
+  uint8_t* writePtr = (uint8_t*)&result;
+  eeprom->read(readAddr,writePtr,sizeof(uint32_t));
+  
+  if(result == 0xFFFFFFFF)
+    result = INTERRUPT_SKIP_COUNTER;
+
+  return result;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setSkipCounter(uint32_t val)
+{
+  skipCounter = val;
+  
+  int writeAddr = SKIP_COUNTER_STORE_ADDRESS;
+  eeprom->write(writeAddr++,RECORD_HEADER1);
+  eeprom->write(writeAddr++,RECORD_HEADER2);
+  
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(writeAddr,writePtr,sizeof(uint32_t)); 
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 uint32_t SettingsClass::getTransformerLowBorder()
 {
 

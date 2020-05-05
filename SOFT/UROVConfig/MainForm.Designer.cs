@@ -226,6 +226,8 @@
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -285,6 +287,7 @@
             this.plEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
             this.toolStripSD.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -1369,6 +1372,8 @@
             // panel11
             // 
             this.panel11.BackColor = System.Drawing.Color.White;
+            this.panel11.Controls.Add(this.nudSkipCounter);
+            this.panel11.Controls.Add(this.label5);
             this.panel11.Controls.Add(this.btnSetDelta);
             this.panel11.Controls.Add(this.nudDelta1);
             this.panel11.Controls.Add(this.label19);
@@ -1409,9 +1414,9 @@
             this.label19.ForeColor = System.Drawing.Color.Black;
             this.label19.Location = new System.Drawing.Point(13, 19);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(61, 13);
+            this.label19.Size = new System.Drawing.Size(48, 13);
             this.label19.TabIndex = 0;
-            this.label19.Text = "Канал №1:";
+            this.label19.Text = "Дельта:";
             // 
             // panel12
             // 
@@ -2127,6 +2132,38 @@
             this.dataGridViewTextBoxColumn18.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
             // 
+            // nudSkipCounter
+            // 
+            this.nudSkipCounter.Location = new System.Drawing.Point(16, 91);
+            this.nudSkipCounter.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Name = "nudSkipCounter";
+            this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
+            this.nudSkipCounter.TabIndex = 10;
+            this.nudSkipCounter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Location = new System.Drawing.Point(13, 75);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(113, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Пропускать каждый:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2234,6 +2271,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
             this.toolStripSD.ResumeLayout(false);
             this.toolStripSD.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2415,6 +2453,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn17;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn18;
+        private System.Windows.Forms.NumericUpDown nudSkipCounter;
+        private System.Windows.Forms.Label label5;
     }
 }
 

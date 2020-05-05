@@ -103,6 +103,9 @@ class CommandHandlerClass
 
   bool getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool setSKIPCOUNTER(CommandParser& parser, Stream* pStream);
+  bool getSKIPCOUNTER(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+
 
   bool printBackSETResult(bool isOK, const char* command, Stream* pStream);
     

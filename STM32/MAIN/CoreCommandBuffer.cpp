@@ -34,6 +34,8 @@ const char ETHALON_REC_COMMAND[] PROGMEM = "EREC"; // начать запись 
 const char DOWN_DIR_PARAM[] PROGMEM = "DOWN";
 const char VERSION_COMMAND[] PROGMEM = "VER"; // отдать информацию о версии
 const char LAST_TRIG_COMMAND[] PROGMEM = "LASTTRIG"; // отдать содержимое последнего срабатывания защиты
+const char SKIPCOUNTER_COMMAND[] PROGMEM = "SKIPC"; // настройка пропусков импульсов
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern "C" char* sbrk(int i);
@@ -273,6 +275,19 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // RDELAY_COMMAND               
         else
+        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
+        {
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setSKIPCOUNTER(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // SKIPCOUNTER_COMMAND               
+        else
         if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
         {
             if(cParser.argsCount() > 1)
@@ -402,6 +417,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             commandHandled = getRDELAY(commandName,cParser,pStream);                    
           
         } // RDELAY_COMMAND       
+        else
+        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
+        {
+            commandHandled = getSKIPCOUNTER(commandName,cParser,pStream);                    
+          
+        } // SKIPCOUNTER_COMMAND       
         else
         if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
         {
@@ -899,6 +920,40 @@ bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream)
 
   Settings.setRelayDelay(curBorder);
   Settings.setACSDelay(curAcsDelay);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getSKIPCOUNTER(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+    return false;  
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getSkipCounter());
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setSKIPCOUNTER(CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 2)
+    return false;
+  
+  uint32_t curBorder = atoi(parser.getArg(1));
+
+  Settings.setSkipCounter(curBorder);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

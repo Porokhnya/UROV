@@ -1232,9 +1232,11 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "RES_CUR", ParseAskMotoresurceCurrent, BeforeAskMotoresourceCurrent);
                 PushCommandToQueue(GET_PREFIX + "RES_MAX", ParseAskMotoresurceMax, BeforeAskMotoresourceMax);
                 PushCommandToQueue(GET_PREFIX + "PULSES", ParseAskPulses, BeforeAskPulses);
-                PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "TBORDERS", ParseAskBorders, BeforeAskBorders);
                 PushCommandToQueue(GET_PREFIX + "RDELAY", ParseAskRelayDelay, BeforeAskRelayDelay);
+
+                PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskDelta);
+                PushCommandToQueue(GET_PREFIX + "SKIPC", ParseAskSkipCounter, BeforeAskDelta);
                 //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
                 RequestEthalons();
@@ -1472,6 +1474,31 @@ namespace UROVConfig
                 nudACSDelay.Value = 0;
                 Config.Instance.ACSDelay = 0;
             }
+        }
+
+        private void ParseAskSkipCounter(Answer a)
+        {
+            this.inSetDeltaToController = false;
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.SkipCounter = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.SkipCounter = 1; }
+
+            }
+            else
+            {
+                Config.Instance.SkipCounter = 1;
+            }
+
+            try
+            {
+                nudSkipCounter.Value = Config.Instance.SkipCounter;
+            }
+            catch
+            {
+                nudSkipCounter.Value = 1;
+                Config.Instance.SkipCounter = 1;
+            }
+
         }
 
         private void ParseAskMotoresurceCurrent(Answer a)
@@ -2111,7 +2138,7 @@ namespace UROVConfig
 
         }
 
-        private void ParseSetDelta(Answer a)
+        private void ParseSetSkipCounter(Answer a)
         {
             inSetDeltaToController = false;
             ShowWaitCursor(false);
@@ -2119,6 +2146,7 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Value);
+                Config.Instance.SkipCounter = Convert.ToInt32(nudSkipCounter.Value);
 
                 MessageBox.Show("Дельты обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -2128,6 +2156,11 @@ namespace UROVConfig
 
                 MessageBox.Show("Ошибка обновления дельт!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+        }
+
+        private void ParseSetDelta(Answer a)
+        {
         }
 
 
@@ -3132,6 +3165,10 @@ namespace UROVConfig
             //DEPRECATED: s += Convert.ToString(nudDelta3.Value);
 
             PushCommandToQueue(SET_PREFIX + "DELTA" + PARAM_DELIMITER + s, ParseSetDelta);
+
+            s = "";
+            s += Convert.ToString(nudSkipCounter.Value);
+            PushCommandToQueue(SET_PREFIX + "SKIPC" + PARAM_DELIMITER + s, ParseSetSkipCounter);
         }
 
         /*
@@ -3798,6 +3835,7 @@ namespace UROVConfig
 
             PushCommandToQueue(SET_PREFIX + "TBORDERS" + PARAM_DELIMITER + s, ParseSetBorders);
         }
+
 
         private bool inSetRelayDelayToController = true;
         private void btnSetRelayDelay_Click(object sender, EventArgs e)
