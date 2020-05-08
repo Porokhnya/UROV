@@ -149,6 +149,8 @@
             this.label34 = new System.Windows.Forms.Label();
             this.plDelta = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
+            this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             this.btnSetDelta = new System.Windows.Forms.Button();
             this.nudDelta1 = new System.Windows.Forms.NumericUpDown();
             this.label19 = new System.Windows.Forms.Label();
@@ -226,8 +228,7 @@
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -264,6 +265,7 @@
             this.panel19.SuspendLayout();
             this.plDelta.SuspendLayout();
             this.panel11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).BeginInit();
             this.panel12.SuspendLayout();
             this.plMotoresourceCurrent.SuspendLayout();
@@ -287,7 +289,6 @@
             this.plEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
             this.toolStripSD.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -711,7 +712,7 @@
             // 
             // plStartPanel
             // 
-            this.plStartPanel.Location = new System.Drawing.Point(480, 81);
+            this.plStartPanel.Location = new System.Drawing.Point(480, -97);
             this.plStartPanel.Name = "plStartPanel";
             this.plStartPanel.Size = new System.Drawing.Size(671, 346);
             this.plStartPanel.TabIndex = 10;
@@ -1383,6 +1384,38 @@
             this.panel11.Size = new System.Drawing.Size(196, 187);
             this.panel11.TabIndex = 2;
             // 
+            // nudSkipCounter
+            // 
+            this.nudSkipCounter.Location = new System.Drawing.Point(16, 91);
+            this.nudSkipCounter.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Name = "nudSkipCounter";
+            this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
+            this.nudSkipCounter.TabIndex = 10;
+            this.nudSkipCounter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Location = new System.Drawing.Point(13, 75);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(113, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Пропускать каждый:";
+            // 
             // btnSetDelta
             // 
             this.btnSetDelta.BackColor = System.Drawing.Color.LightGreen;
@@ -1644,6 +1677,7 @@
             // panel9
             // 
             this.panel9.BackColor = System.Drawing.Color.White;
+            this.panel9.Controls.Add(this.label6);
             this.panel9.Controls.Add(this.btnSetPulses);
             this.panel9.Controls.Add(this.nudPulses1);
             this.panel9.Controls.Add(this.label15);
@@ -1684,9 +1718,9 @@
             this.label15.ForeColor = System.Drawing.Color.Black;
             this.label15.Location = new System.Drawing.Point(13, 19);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(61, 13);
+            this.label15.Size = new System.Drawing.Size(100, 13);
             this.label15.TabIndex = 0;
-            this.label15.Text = "Канал №1:";
+            this.label15.Text = "Эталонное кол-во:";
             // 
             // panel10
             // 
@@ -2132,37 +2166,14 @@
             this.dataGridViewTextBoxColumn18.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
             // 
-            // nudSkipCounter
+            // label6
             // 
-            this.nudSkipCounter.Location = new System.Drawing.Point(16, 91);
-            this.nudSkipCounter.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.nudSkipCounter.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudSkipCounter.Name = "nudSkipCounter";
-            this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
-            this.nudSkipCounter.TabIndex = 10;
-            this.nudSkipCounter.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(13, 75);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(113, 13);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Пропускать каждый:";
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label6.Location = new System.Drawing.Point(13, 68);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(170, 69);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Эталонное количество импульсов со штанги, для сравнения с графиком эталона.";
             // 
             // MainForm
             // 
@@ -2236,6 +2247,7 @@
             this.plDelta.PerformLayout();
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).EndInit();
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();
@@ -2271,7 +2283,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
             this.toolStripSD.ResumeLayout(false);
             this.toolStripSD.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2455,6 +2466,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn18;
         private System.Windows.Forms.NumericUpDown nudSkipCounter;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
 
