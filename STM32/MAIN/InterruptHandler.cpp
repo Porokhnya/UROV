@@ -97,11 +97,20 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 {
 
   // тут проверяем, надо ли пропустить N импульсов
-  interruptSkipCounter++;
-  if(interruptSkipCounter % Settings.getSkipCounter())
+  uint32_t toSkip = Settings.getSkipCounter();
+
+  if(toSkip > 1) // каждый первый - пропускать бессмысленно.
   {
-     // надо пропустить
-     return;
+      interruptSkipCounter++;
+      if(interruptSkipCounter % toSkip)
+      {
+         // надо пропустить
+         return;
+      }
+      else
+      {
+        interruptSkipCounter = 0;
+      }
   }
   else
   {

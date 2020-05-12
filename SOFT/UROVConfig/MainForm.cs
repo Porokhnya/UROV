@@ -1535,7 +1535,9 @@ namespace UROVConfig
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalSeparator = ".";
 
-            float percents = (Config.Instance.MotoresourceCurrent1 * 100.0f) / Config.Instance.MotoresourceMax1;
+            float percents = 0;
+            if(Config.Instance.MotoresourceMax1 > 0)
+                percents = (100.0f * Config.Instance.MotoresourceCurrent1) / Config.Instance.MotoresourceMax1;
 
             Color foreColor = Color.Green;
             if (percents >= 90.0f)
