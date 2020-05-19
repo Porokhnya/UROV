@@ -33,6 +33,9 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
 Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
+bool isBadSDDetected = false;
+bool isBadSDLedOn = false;
+uint32_t badSDBlinkTimer = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_EXTERNAL_WATCHDOG
   ExternalWatchdogSettings watchdogSettings;
@@ -349,6 +352,10 @@ void setup()
   DBGLN(F("Endstops inited."));
 
 
+  // настраиваем обратную связь (информационные диоды и пр.)
+  Feedback.begin();
+
+
   DBGLN(F("Init RS-485..."));
   // инициализируем RS-485
   RS485_SERIAL.begin(RS485_SPEED);
@@ -366,8 +373,12 @@ void setup()
   }
   else
   {
-	  DBGLN(F("ОШИБКА ИНИЦИАЛИЗАЦИИ SD!!"));
+	  DBGLN(F("SD INIT ERROR!!!"));
   }
+
+  SDSpeedResults sdSpeed = SDInit::MeasureSpeed(&Serial);
+  isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
+  
 #endif // !_SD_OFF
   
 
@@ -414,8 +425,6 @@ void setup()
   // переключаемся на первый экран
   Screen.switchToScreen("Main");
 
-  // настраиваем обратную связь (информационные диоды и пр.)
-  Feedback.begin();
 
   // настраиваем железные кнопки
   Buttons.begin();
@@ -436,6 +445,17 @@ void setup()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loop() 
 {
+
+  if(isBadSDDetected) // если детектирована плохая SD-карта
+  {
+    if(millis() - badSDBlinkTimer >= BAD_SD_BLINK_INTERVAL)
+    {
+      isBadSDLedOn = !isBadSDLedOn;
+      Feedback.failureDiode(isBadSDLedOn);
+      badSDBlinkTimer = millis();
+    }
+  } // if
+  
 
   #ifndef _DELAYED_EVENT_OFF
     CoreDelayedEvent.update();
