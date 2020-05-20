@@ -565,7 +565,7 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
 
     if(dirOnly.length())
     {
-      SD.mkdir(dirOnly.c_str());
+      SD_CARD.mkdir(dirOnly.c_str());
     }
 
     SdFile f;
@@ -1492,7 +1492,7 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
 #ifndef _SD_OFF
 
-	SD.mkdir(ETHALONS_DIRECTORY);
+	SD_CARD.mkdir(ETHALONS_DIRECTORY);
 
 	String fileName = ETHALONS_DIRECTORY;
 	fileName += ETHALON_NAME_PREFIX;

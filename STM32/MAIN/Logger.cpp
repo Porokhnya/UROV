@@ -15,7 +15,7 @@ bool LoggerClass::openWorkFile()
 
 
  // пишем в лог-файл дату/время срабатывания системы
-  SD.mkdir(LOGS_DIRECTORY);
+  SD_CARD.mkdir(LOGS_DIRECTORY);
 
   DS3231Time tm = RealtimeClock.getTime();
 

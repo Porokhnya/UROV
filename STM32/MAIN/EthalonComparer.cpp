@@ -107,7 +107,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   
   fileName += ETHALON_FILE_EXT;
   
-  if(!SD.exists(fileName.c_str()))
+  if(!SD_CARD.exists(fileName.c_str()))
   {
     DBGLN(F("не найден файл эталона!"));
 

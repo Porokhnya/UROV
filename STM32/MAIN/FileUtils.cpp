@@ -3,7 +3,7 @@
 #include "CONFIG.h"
 #include "DS3231.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SdFatSdio SD;
+SdFatSdio SD_CARD;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool SDInit::sdInitFlag = false;
 bool SDInit::sdInitResult = false;
@@ -26,7 +26,7 @@ void FileUtils::deleteFile(const String& fileName)
   if(!SDInit::sdInitResult)
     return;
       
-  SD.remove(fileName.c_str());
+  SD_CARD.remove(fileName.c_str());
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t FileUtils::getFileSize(const String& fileName)
@@ -161,7 +161,7 @@ bool SDInit::InitSD()
     return SDInit::sdInitResult;
 
   SDInit::sdInitFlag = true;
-  SDInit::sdInitResult = SD.begin();//(SD_CS_PIN,SPI_HALF_SPEED);
+  SDInit::sdInitResult = SD_CARD.begin();//(SD_CS_PIN,SPI_HALF_SPEED);
   SdFile::dateTimeCallback(setFileDateTime);
   
   return SDInit::sdInitResult;

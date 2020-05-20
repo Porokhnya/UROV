@@ -1611,7 +1611,7 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
     break;
   }
 
-  SD.mkdir(ETHALONS_DIRECTORY);
+  SD_CARD.mkdir(ETHALONS_DIRECTORY);
 
   String fileName = ETHALONS_DIRECTORY;
   fileName += ETHALON_NAME_PREFIX;
@@ -2389,13 +2389,13 @@ void SDInfoScreen::collectSDInfo()
   if(!hasSD)
     return;
     
-  cardSize = SD.card()->cardSize();
+  cardSize = SD_CARD.card()->cardSize();
   cardSize *= 512;
   
-  fatType = SD.vol()->fatType();
+  fatType = SD_CARD.vol()->fatType();
 
-  uint32_t volFree = SD.vol()->freeClusterCount();
-  freeSpace = 512L*volFree*SD.vol()->blocksPerCluster();
+  uint32_t volFree = SD_CARD.vol()->freeClusterCount();
+  freeSpace = 512L*volFree*SD_CARD.vol()->blocksPerCluster();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String SDInfoScreen::formatSize(uint32_t sz)
