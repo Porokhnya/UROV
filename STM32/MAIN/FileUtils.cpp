@@ -220,7 +220,7 @@ void showSDStats(const SDSpeedResults& info, Stream* showIn)
 const size_t BUF_SIZE = 32768;
 
 // File size in MB where MB = 1,000,000 bytes.
-const uint32_t FILE_SIZE_MB = 2;
+const uint32_t FILE_SIZE_MB = 5;
 
 // Test pass count.
 const uint8_t TEST_COUNT = 2;
