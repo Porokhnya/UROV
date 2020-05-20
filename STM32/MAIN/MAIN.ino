@@ -31,7 +31,10 @@
 #include "Endstops.h"
 #include "RS485.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef _WIRE1_OFF
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
+#endif
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
 bool isBadSDDetected = false;
 bool isBadSDLedOn = false;
@@ -53,7 +56,10 @@ void screenAction(AbstractTFTScreen* screen)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // РАБОТА С RS-485
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef _RS485_OFF
 RS485 rs485(RS485_SERIAL,Upr_RS485,RS485_READING_TIMEOUT);
+#endif
+
 uint32_t rs485RelayTriggeredTime = 0; // время срабатывания защиты
 uint32_t rs485DataArrivedTime = 0;
 DS3231Time rsRelTrigTime; // время срабатывания защиты
@@ -153,6 +159,7 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void OnRS485IncomingData(RS485* Sender)
 {
+#ifndef _RS485_OFF  
   // пришёл пакет от модуля по RS-485 (не обязательно от модуля, но в целом - пришёл какой-то пакет от кого-то)
 
   HasRS485Link = true; // обновляем флаг, что есть связь
@@ -251,10 +258,13 @@ void OnRS485IncomingData(RS485* Sender)
 	} // switch
 
 	rs485.clearReceivedData(); // очищаем входящие данные
+#endif // #ifndef _RS485_OFF 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SwitchRS485MainHandler(bool on)
 {
+#ifndef _RS485_OFF
+  
 	if (!on) // нас выключили
 	{
 	//	DBGLN(F("Main handler, release RS-485..."));
@@ -272,7 +282,7 @@ void SwitchRS485MainHandler(bool on)
 
 //		DBGLN(F("Main handler, RS-485 owned."));
 	}
-
+#endif // #ifndef _RS485_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_EXTERNAL_WATCHDOG
@@ -320,32 +330,52 @@ void setup()
   Serial.begin(SERIAL_SPEED);
   while(!Serial && millis() < 2000);
 
-  DBGLN(F("Init I2C..."));
-  
-  //Wire.begin();  
-  Wire1.begin();
-  
-  DBGLN(F("I2C inited."));
-
-  ConfigPin::setup();
-
   #ifdef USE_EXTERNAL_WATCHDOG
     pinMode(WATCHDOG_REBOOT_PIN,OUTPUT);
     digitalWrite(WATCHDOG_REBOOT_PIN,WATCHDOG_NORMAL_LEVEL);
     watchdogSettings.timer = 0;
     watchdogSettings.state = WAIT_FOR_TRIGGERED;
-  #endif  
+  #endif 
+
+
+
+#ifndef _SD_OFF
+
+  DBGLN(F("INIT SD..."));
+  if (SDInit::InitSD())
+  {
+    DBGLN(F("SD inited."));
+  }
+  else
+  {
+    DBGLN(F("SD INIT ERROR!!!"));
+  }
+
+  SDSpeedResults sdSpeed = SDInit::MeasureSpeed(&Serial);
+  isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
   
+#endif // !_SD_OFF   
+
   
+
+#ifndef _WIRE1_OFF
+  DBGLN(F("Init I2C..."));  
+  Wire1.begin();  
+  DBGLN(F("I2C inited."));
+#endif  
+
+  ConfigPin::setup();
+
   DBGLN(F("Init settings..."));
   Settings.begin();
   DBGLN(F("Settings inited."));
-  
+
+#ifndef _RTC_OFF  
   DBGLN(F("Init RTC..."));
   RealtimeClock.begin(); 
  // RealtimeClock.setTime(0,1,11,1,7,2,2018);
   DBGLN(F("RTC inited."));
-
+#endif // #ifndef _RTC_OFF
 
   DBGLN(F("Init endstops..."));
   SetupEndstops();
@@ -356,31 +386,14 @@ void setup()
   Feedback.begin();
 
 
+#ifndef _RS485_OFF
   DBGLN(F("Init RS-485..."));
   // инициализируем RS-485
   RS485_SERIAL.begin(RS485_SPEED);
   rs485.setHandler(OnRS485IncomingData);
   rs485.begin();
   DBGLN(F("RS-485 inited."));
-
-
-#ifndef _SD_OFF
-
-  DBGLN(F("INIT SD..."));
-  delay(1000);
-  if (SDInit::InitSD())
-  {
-	  DBGLN(F("SD inited."));
-  }
-  else
-  {
-	  DBGLN(F("SD INIT ERROR!!!"));
-  }
-
-  SDSpeedResults sdSpeed = SDInit::MeasureSpeed(&Serial);
-  isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
-  
-#endif // !_SD_OFF
+#endif // #ifndef _RS485_OFF  
   
 
   DBGLN(F("Init screen..."));
@@ -446,7 +459,6 @@ void setup()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loop() 
 {
-
   if(isBadSDDetected) // если детектирована плохая SD-карта
   {
     if(millis() - badSDBlinkTimer >= BAD_SD_BLINK_INTERVAL)
@@ -498,15 +510,17 @@ void loop()
 #endif // _COM_COMMANDS_OFF
 
 
+#ifndef _RS485_OFF
   // обновляем RS-485
   rs485.update();
+#endif // #ifndef _RS485_OFF  
 
   if (millis() - lastRS485PacketSeenAt >= (RS485_PING_PACKET_FREQUENCY)*3)
   {
     HasRS485Link = false; // долго не было пакетов по RS-485
     lastRS485PacketSeenAt = millis(); // чтобы часто не дёргать
   }
-
+ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool nestedYield = false;
@@ -516,7 +530,9 @@ bool nestedYield = false;
 void yield()
 {  
   if(nestedYield || !setupDone)
+  {
     return;
+  }
     
  nestedYield = true;
  

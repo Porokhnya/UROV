@@ -272,8 +272,10 @@ RS485Screen::RS485Screen() : AbstractTFTScreen("RS485Screen")
 void RS485Screen::releaseRS485()
 {
 	DBGLN(F("RS485Screen: release RS-485..."));
-
+ 
+#ifndef _RS485_OFF  
 	rs485.clearReceivedData(); // очищаем принятые данные
+#endif 
 	SwitchRS485MainHandler(true); // включаем обработчик по умолчанию
 
 	DBGLN(F("RS485Screen: RS-485 released."));
@@ -287,8 +289,9 @@ void RS485Screen::OnRS485Data(RS485* Sender)
 	{
 		Screen.print("ОНЛАЙН", 2, 37);
 	}
-
+#ifndef _RS485_OFF  
 	rs485.clearReceivedData(); // очищаем входящие данные
+#endif 
 
 	isModuleOnline = true;
 	lastPacketSeenAt = millis();
@@ -299,7 +302,9 @@ void RS485Screen::onActivate()
 	DBGLN(F("RS485Screen: Switch RS-485 to RS485Screen handler..."));
 
 	SwitchRS485MainHandler(false); // выключаем обработчик по умолчанию
+#ifndef _RS485_OFF  
 	rs485.setHandler(rs485ScreenDataHandler); // назначаем наш обработчик для RS-485
+#endif // #ifndef _RS485_OFF 
 
 	DBGLN(F("RS485Screen: RS-485 switched to RS485Screen handler."));
 }

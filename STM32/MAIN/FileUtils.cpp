@@ -166,15 +166,14 @@ bool SDInit::InitSD()
   DBGLN(F("[SD] begin..."));
   
   SDInit::sdInitFlag = true;
-  SDInit::sdInitResult = SD_CARD.begin();//(SD_CS_PIN,SPI_HALF_SPEED);
-  SdFile::dateTimeCallback(setFileDateTime);
+  SDInit::sdInitResult = SD_CARD.begin();
+ // SdFile::dateTimeCallback(setFileDateTime);
 
   DBG(F("[SD] inited? "));
   DBGLN(sdInitResult ? "true" : "false");
   
   return SDInit::sdInitResult;
 #else
-    DBGLN(F("[SD] SD-card disabled in firmware!"));
 	return false;
 #endif;
 }
@@ -226,82 +225,41 @@ void showSDStats(const SDSpeedResults& info, Stream* showIn)
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Size of read/write.
-const size_t BUF_SIZE = 50;//32768;
+const size_t BUF_SIZE = 32768;
 
 // File size in MB where MB = 1,000,000 bytes.
-const uint32_t FILE_SIZE_MB = 1;
+const uint32_t FILE_SIZE_MB = 5;
 
-// Test pass count.
+// Write/read pass count.
 const uint8_t TEST_COUNT = 2;
 
 // File size in bytes.
 const uint32_t FILE_SIZE = 1000000UL*FILE_SIZE_MB;
-uint8_t buf[BUF_SIZE];
+uint8_t sdTestBuf[BUF_SIZE];
 
-#define BENCH_FILENAME "bench.spb"
+ArduinoOutStream cout(Serial);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
+#define SD_OUT(s) if(outS) { outS->print(s); }
+#define SD_OUTLN(s) if(outS) { outS->println(s); }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
 {
   SDSpeedResults results;
   memset(&results,0,sizeof(results));
 
+  SD_OUTLN(F("[SD TEST] begin..."));
 
-  if(intermediateResultsOutStream != NULL)
+  SDInit::sdInitResult = SD_CARD.begin();
+  SDInit::sdInitFlag = true;
+
+  if(!SDInit::sdInitResult) // не удалось инициализировать SD
   {
-      intermediateResultsOutStream->println(F("[SD TEST] begin..."));
-  }
-
-  if(!sdInitResult) // не удалось инициализировать SD
-  {
-      if(intermediateResultsOutStream != NULL)
-      {
-          intermediateResultsOutStream->println(F("[SD TEST] card not found!"));
-      }
-
+    SD_OUTLN(F("[SD TEST] card not found!"));
     return results;
   }
 
   SdFile file;
   
-  if(file.open(BENCH_FILENAME,O_READ))
-  {
-    file.rewind();
-
-      if(intermediateResultsOutStream != NULL)
-      {
-          intermediateResultsOutStream->println(F("[SD TEST] found old bench file, read test results..."));
-      }
-
-     file.read(&results,sizeof(results));
-     file.close();
-
-    showSDStats(results,intermediateResultsOutStream);
-
-    return results;
-  }
-
-
-  // файла со старой статистикой нету, начинаем измерять...
-  if (!file.open(BENCH_FILENAME, O_CREAT | O_TRUNC | O_RDWR)) 
-  {
-      if(intermediateResultsOutStream != NULL)
-      {
-          intermediateResultsOutStream->println(F("[SD TEST] can't create bench file!"));
-      }
-
-    return results;
-  }
-
-  // fill buf with known data
-  for (uint16_t i = 0; i < (BUF_SIZE-2); i++) 
-  {
-    buf[i] = 'A' + (i % 26);
-  }
-  
-  buf[BUF_SIZE-2] = '\r';
-  buf[BUF_SIZE-1] = '\n';
-  
-  // начинаем старт записи
   float s;
   uint32_t t;
   uint32_t maxLatency;
@@ -311,52 +269,88 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
   uint32_t speedAccum = 0;
   uint32_t maxLatencyAccum = 0;
   uint32_t minLatencyAccum = 0;
-  uint32_t avgLatencyAccum = 0;
- 
-  
-  if(intermediateResultsOutStream != NULL)
-  {
-      intermediateResultsOutStream->println(F("[SD TEST] starting write test, please wait..."));
-  }  
-  
-  uint32_t n = FILE_SIZE/sizeof(buf);
+  uint32_t avgLatencyAccum = 0;  
 
-  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) 
+
+  // Discard any input.
+  do {
+    delay(10);
+  } while (Serial.available() && Serial.read() >= 0);
+
+  SD_OUTLN(F("TYPE ANY CHARACTER TO START BENCH TEST\n"));
+  while (!Serial.available()) {
+    SysCall::yield();
+  }
+
+
+  SD_OUT(F("Type is FAT")); SD_OUTLN(int(SD_CARD.vol()->fatType()));
+  SD_OUT(F("Card size: ")); SD_OUT(SD_CARD.card()->cardSize()*512E-9);
+  SD_OUTLN(F(" GB (GB = 1E9 bytes)"));
+
+
+
+#ifndef DISABLE_SAVE_BENCH_FILE
+
+  if(file.open(BENCH_RESULTS_FILENAME,O_READ))
   {
+    file.rewind();
+
+     SD_OUTLN(F("[SD TEST] found old bench file, read test results..."));
+
+     file.read(&results,sizeof(results));
+     file.close();
+
+    showSDStats(results,outS);
+
+    return results;
+  }
+#endif // #ifndef DISABLE_SAVE_BENCH_FILE
+
+
+SD_OUTLN(F("[SD TEST] create test file..."));
+
+  // open or create file - truncate existing file.
+  if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) {
+    SD_OUTLN(F("[SD TEST] create failed !!!"));
+    return results;
+  }
+
+SD_OUTLN(F("[SD TEST] test file created."));  
+
+  // fill buf with known data
+  for (uint16_t i = 0; i < (BUF_SIZE-2); i++) {
+    sdTestBuf[i] = 'A' + (i % 26);
+  }
+  sdTestBuf[BUF_SIZE-2] = '\r';
+  sdTestBuf[BUF_SIZE-1] = '\n';
+
+//  cout << F("File size ") << FILE_SIZE_MB << F(" MB\n");
+//  cout << F("Buffer size ") << BUF_SIZE << F(" bytes\n");
+  SD_OUTLN(F("Starting write test, please wait..."));
+
+  // do write test
+  uint32_t n = FILE_SIZE/sizeof(sdTestBuf);
+//  cout <<F("write speed and latency") << endl;
+//  cout << F("speed,max,min,avg") << endl;
+//  cout << F("KB/Sec,usec,usec,usec") << endl;
+  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) {
     file.truncate(0);
     maxLatency = 0;
     minLatency = 9999999;
     totalLatency = 0;
     t = millis();
-    
-    for (uint32_t i = 0; i < n; i++) 
-    {
+    for (uint32_t i = 0; i < n; i++) {
       uint32_t m = micros();
-      
-      long written = file.write(buf, sizeof(buf));
-      
-    //  DBG(F("WRITE TO FILE, BYTES: "));
-  //    DBGLN(sizeof(buf));
-      
-  //    DBG(F("File.write returns: "));
- //     DBGLN(written);
-
-      if (written != sizeof(buf)) 
-      {
-          if(intermediateResultsOutStream != NULL)
-          {
-              intermediateResultsOutStream->println(F("[SD TEST] write failed!"));
-          }
+      if (file.write(sdTestBuf, sizeof(sdTestBuf)) != sizeof(sdTestBuf)) {
+        SD_OUTLN(F("[SD TEST] write failed!!!"));
         file.close();
         return results;
       }
       m = micros() - m;
-      if (maxLatency < m) 
-      {
+      if (maxLatency < m) {
         maxLatency = m;
       }
-      if (minLatency > m) 
-      {
+      if (minLatency > m) {
         minLatency = m;
       }
       totalLatency += m;
@@ -364,84 +358,70 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
     file.sync();
     t = millis() - t;
     s = file.fileSize();
-    
-    speedAccum += s/t;
-    maxLatencyAccum += maxLatency;
-    minLatencyAccum += minLatency;
-    avgLatencyAccum += totalLatency/n;
-    
-  } // for
-
-  results.numPasses = TEST_COUNT;
-  results.writeSpeed = speedAccum/results.numPasses;
-  results.maxWriteLatency = maxLatencyAccum/results.numPasses;
-  results.minWriteLatency = minLatencyAccum/results.numPasses;
-  results.avgWriteLatency = avgLatencyAccum/results.numPasses;
-
-
-  // начинаем тест чтения
-  
-  speedAccum = 0;
-  maxLatencyAccum = 0;
-  minLatencyAccum = 0;
-  avgLatencyAccum = 0;
-
-
-  if(intermediateResultsOutStream != NULL)
-  {
-      intermediateResultsOutStream->println(F("[SD TEST] starting read test, please wait..."));
-  }
-
-  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) 
-  {
-    file.rewind();
-    maxLatency = 0;
-    minLatency = 9999999;
-    totalLatency = 0;
-    t = millis();
-    for (uint32_t i = 0; i < n; i++) 
-    {
-      buf[BUF_SIZE-1] = 0;
-      uint32_t m = micros();
-      int32_t nr = file.read(buf, sizeof(buf)); 
-      if (nr != sizeof(buf)) 
-      {   
-          if(intermediateResultsOutStream != NULL)
-          {
-              intermediateResultsOutStream->println(F("[SD TEST] read failed!"));
-          }
-        file.close();
-        return results;
-      }
-      m = micros() - m;
-      if (maxLatency < m) 
-      {
-        maxLatency = m;
-      }
-      if (minLatency > m) 
-      {
-        minLatency = m;
-      }
-      totalLatency += m;
-      
-      if (buf[BUF_SIZE-1] != '\n') 
-      {
-          if(intermediateResultsOutStream != NULL)
-          {
-              intermediateResultsOutStream->println(F("[SD TEST] data check error!"));
-          }        
-      }
-    } // for
-    
-    s = file.fileSize();
-    t = millis() - t;
+//    cout << s/t <<',' << maxLatency << ',' << minLatency;
+//    cout << ',' << totalLatency/n << endl;
 
     speedAccum += s/t;
     maxLatencyAccum += maxLatency;
     minLatencyAccum += minLatency;
     avgLatencyAccum += totalLatency/n;    
+  }
+  SD_OUTLN(F("Starting read test, please wait..."));
+//  cout << endl <<F("read speed and latency") << endl;
+//  cout << F("speed,max,min,avg") << endl;
+//  cout << F("KB/Sec,usec,usec,usec") << endl;
+
+
+  results.numPasses = TEST_COUNT;
+  results.writeSpeed = speedAccum/results.numPasses;
+  results.maxWriteLatency = maxLatencyAccum/results.numPasses;
+  results.minWriteLatency = minLatencyAccum/results.numPasses;
+  results.avgWriteLatency = avgLatencyAccum/results.numPasses;  
+
+  // do read test
+
+  speedAccum = 0;
+  maxLatencyAccum = 0;
+  minLatencyAccum = 0;
+  avgLatencyAccum = 0;
     
-  } // for
+  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) {
+    file.rewind();
+    maxLatency = 0;
+    minLatency = 9999999;
+    totalLatency = 0;
+    t = millis();
+    for (uint32_t i = 0; i < n; i++) {
+      sdTestBuf[BUF_SIZE-1] = 0;
+      uint32_t m = micros();
+      int32_t nr = file.read(sdTestBuf, sizeof(sdTestBuf)); 
+      if (nr != sizeof(sdTestBuf)) {   
+        SD_OUTLN(F("[SD TEST] read failed !!!"));
+        file.close();
+        return results;
+      }
+      m = micros() - m;
+      if (maxLatency < m) {
+        maxLatency = m;
+      }
+      if (minLatency > m) {
+        minLatency = m;
+      }
+      totalLatency += m;
+      if (sdTestBuf[BUF_SIZE-1] != '\n') {
+        SD_OUTLN(F("[SD TEST] data check error!"));
+      }
+    }
+    s = file.fileSize();
+    t = millis() - t;
+//    cout << s/t <<',' << maxLatency << ',' << minLatency;
+//    cout << ',' << totalLatency/n << endl;
+
+    speedAccum += s/t;
+    maxLatencyAccum += maxLatency;
+    minLatencyAccum += minLatency;
+    avgLatencyAccum += totalLatency/n;        
+  }
 
   results.readSpeed = speedAccum/results.numPasses;
   results.maxReadLatency = maxLatencyAccum/results.numPasses;
@@ -449,14 +429,24 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
   results.avgReadLatency = avgLatencyAccum/results.numPasses;
    
   results.testSucceeded = true;
-
-  // теперь записываем результаты тестирования в файл, чтобы потом повторно не дёргаться
-  file.truncate(0);
-  file.write(&results, sizeof(results));
-  file.sync();
-  file.close();
   
-  showSDStats(results,intermediateResultsOutStream);
+//  cout << endl << F("Done") << endl;
+  file.close();
+
+  showSDStats(results,outS);
+
+#ifndef DISABLE_SAVE_BENCH_FILE
+  if (file.open(BENCH_RESULTS_FILENAME, O_CREAT | O_TRUNC | O_RDWR)) 
+  {
+    // теперь записываем результаты тестирования в файл, чтобы потом повторно не дёргаться
+    file.truncate(0);
+    file.write(&results, sizeof(results));
+    file.sync();
+    file.close();
+  }  
+#endif // #ifndef DISABLE_SAVE_BENCH_FILE
+
+  SD_OUTLN(F("[SD TEST] done."));
   
   return results;
 }

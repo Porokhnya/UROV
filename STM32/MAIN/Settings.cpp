@@ -27,6 +27,12 @@ SettingsClass::SettingsClass()
 String SettingsClass::getUUID(const char* passedUUID)
 {
     String savedUUID;
+
+    if(!eeprom)
+    {
+      return savedUUID;
+    }
+    
     uint16_t addr = UUID_STORE_ADDRESS;
     uint8_t header1 = eeprom->read(addr); addr++;
     uint8_t header2 = eeprom->read(addr); addr++;
@@ -69,38 +75,44 @@ String SettingsClass::getUUID(const char* passedUUID)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::begin()
 {
+#ifndef _WIRE1_OFF  
   eeprom = new AT24C128(Wire1);
+#endif  
 
-  int readAddr = RELAY_DELAY_STORE_ADDRESS;
-  uint8_t header1, header2;
-  header1 = eeprom->read(readAddr++);
-  header2 = eeprom->read(readAddr++);
-
-  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+  if(eeprom)
   {
-    uint8_t* writePtr = (uint8_t*)&relayDelay;
-    eeprom->read(readAddr,writePtr,sizeof(uint32_t));
-  }
-  else
-  {
-    relayDelay = RELAY_WANT_DATA_AFTER;
-  }
-
-  readAddr = ACS_DELAY_STORE_ADDRESS;
-  header1 = eeprom->read(readAddr++);
-  header2 = eeprom->read(readAddr++);
-
-  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
-  {
-    uint8_t* writePtr = (uint8_t*)&acsDelay;
-    eeprom->read(readAddr,writePtr,sizeof(uint16_t));
-  }
-  else
-  {
-    acsDelay = ACS_SIGNAL_DELAY;
-  }
-
-  skipCounter = readSkipCounter();
+      int readAddr = RELAY_DELAY_STORE_ADDRESS;
+      uint8_t header1, header2;
+      header1 = eeprom->read(readAddr++);
+      header2 = eeprom->read(readAddr++);
+    
+      if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+      {
+        uint8_t* writePtr = (uint8_t*)&relayDelay;
+        eeprom->read(readAddr,writePtr,sizeof(uint32_t));
+      }
+      else
+      {
+        relayDelay = RELAY_WANT_DATA_AFTER;
+      }
+    
+      readAddr = ACS_DELAY_STORE_ADDRESS;
+      header1 = eeprom->read(readAddr++);
+      header2 = eeprom->read(readAddr++);
+    
+      if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+      {
+        uint8_t* writePtr = (uint8_t*)&acsDelay;
+        eeprom->read(readAddr,writePtr,sizeof(uint16_t));
+      }
+      else
+      {
+        acsDelay = ACS_SIGNAL_DELAY;
+      }
+    
+      skipCounter = readSkipCounter();
+  
+  } // if(eeprom)
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set3V3RawVoltage(uint16_t raw)
@@ -146,11 +158,14 @@ void SettingsClass::setRelayDelay(uint32_t val)
 {
   relayDelay = val;
 
-  int writeaddr = RELAY_DELAY_STORE_ADDRESS;
-  eeprom->write(writeaddr++,RECORD_HEADER1);
-  eeprom->write(writeaddr++,RECORD_HEADER2);
-  uint8_t* writePtr = (uint8_t*)&val;
-  eeprom->write(writeaddr,writePtr,sizeof(uint32_t)); 
+  if(eeprom)
+  {
+      int writeaddr = RELAY_DELAY_STORE_ADDRESS;
+      eeprom->write(writeaddr++,RECORD_HEADER1);
+      eeprom->write(writeaddr++,RECORD_HEADER2);
+      uint8_t* writePtr = (uint8_t*)&val;
+      eeprom->write(writeaddr,writePtr,sizeof(uint32_t)); 
+  }
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -163,16 +178,23 @@ void SettingsClass::setACSDelay(uint16_t val)
 {
   acsDelay = val;
 
-  int writeaddr = ACS_DELAY_STORE_ADDRESS;
-  eeprom->write(writeaddr++,RECORD_HEADER1);
-  eeprom->write(writeaddr++,RECORD_HEADER2);
-  
-  uint8_t* writePtr = (uint8_t*)&val;
-  eeprom->write(writeaddr,writePtr,sizeof(uint16_t)); 
+  if(eeprom)
+  {
+    int writeaddr = ACS_DELAY_STORE_ADDRESS;
+    eeprom->write(writeaddr++,RECORD_HEADER1);
+    eeprom->write(writeaddr++,RECORD_HEADER2);
+    
+    uint8_t* writePtr = (uint8_t*)&val;
+    eeprom->write(writeaddr,writePtr,sizeof(uint16_t)); 
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::readSkipCounter()
 {
+  if(!eeprom)
+  {
+    return INTERRUPT_SKIP_COUNTER;
+  }
 
   int readAddr = SKIP_COUNTER_STORE_ADDRESS;
   uint8_t header1 = eeprom->read(readAddr++);
@@ -196,19 +218,25 @@ uint32_t SettingsClass::readSkipCounter()
 void SettingsClass::setSkipCounter(uint32_t val)
 {
   skipCounter = val;
-  
-  int writeAddr = SKIP_COUNTER_STORE_ADDRESS;
-  eeprom->write(writeAddr++,RECORD_HEADER1);
-  eeprom->write(writeAddr++,RECORD_HEADER2);
-  
-  uint8_t* writePtr = (uint8_t*)&val;
-  eeprom->write(writeAddr,writePtr,sizeof(uint32_t)); 
+
+  if(eeprom)
+  {
+    int writeAddr = SKIP_COUNTER_STORE_ADDRESS;
+    eeprom->write(writeAddr++,RECORD_HEADER1);
+    eeprom->write(writeAddr++,RECORD_HEADER2);
+    
+    uint8_t* writePtr = (uint8_t*)&val;
+    eeprom->write(writeAddr,writePtr,sizeof(uint32_t)); 
+  }
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 uint32_t SettingsClass::getTransformerLowBorder()
 {
+  if(!eeprom)
+  {
+    return TRANSFORMER_LOW_DEFAULT_BORDER;
+  }
 
   int readAddr = TRANSFORMER_LOW_BORDER_STORE_ADDRESS;
   uint8_t header1 = eeprom->read(readAddr++);
@@ -232,6 +260,10 @@ uint32_t SettingsClass::getTransformerLowBorder()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getTransformerHighBorder()
 {
+  if(!eeprom)
+  {
+    return TRANSFORMER_HIGH_DEFAULT_BORDER;
+  }
 
   int readAddr = TRANSFORMER_HIGH_BORDER_STORE_ADDRESS;
   uint8_t header1 = eeprom->read(readAddr++);
@@ -254,32 +286,43 @@ uint32_t SettingsClass::getTransformerHighBorder()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setTransformerLowBorder(uint32_t val)
 {
-  int writeAddr = TRANSFORMER_LOW_BORDER_STORE_ADDRESS;
-  eeprom->write(writeAddr++,RECORD_HEADER1);
-  eeprom->write(writeAddr++,RECORD_HEADER2);
-  
-  uint8_t* writePtr = (uint8_t*)&val;
-  eeprom->write(writeAddr,writePtr,sizeof(uint32_t)); 
+  if(eeprom)
+  {
+    int writeAddr = TRANSFORMER_LOW_BORDER_STORE_ADDRESS;
+    eeprom->write(writeAddr++,RECORD_HEADER1);
+    eeprom->write(writeAddr++,RECORD_HEADER2);
+    
+    uint8_t* writePtr = (uint8_t*)&val;
+    eeprom->write(writeAddr,writePtr,sizeof(uint32_t)); 
+  }
 
    adcSampler.setLowBorder(val);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setTransformerHighBorder(uint32_t val)
 {
-  int writeAddr = TRANSFORMER_HIGH_BORDER_STORE_ADDRESS;
-  eeprom->write(writeAddr++,RECORD_HEADER1);
-  eeprom->write(writeAddr++,RECORD_HEADER2);
-
-  
-  uint8_t* writePtr = (uint8_t*)&val;
-  eeprom->write(writeAddr,writePtr,sizeof(uint32_t));
+  if(eeprom)
+  {
+    int writeAddr = TRANSFORMER_HIGH_BORDER_STORE_ADDRESS;
+    eeprom->write(writeAddr++,RECORD_HEADER1);
+    eeprom->write(writeAddr++,RECORD_HEADER2);
+    
+    uint8_t* writePtr = (uint8_t*)&val;
+    eeprom->write(writeAddr,writePtr,sizeof(uint32_t));
+  }
 
    adcSampler.setHighBorder(val);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getMotoresource(uint8_t channelNum)
 {
+  if(!eeprom)
+  {
+    return 0;
+  }
+  
   uint16_t addr = 0;
+  
   switch(channelNum)
   {
 	default:
@@ -312,6 +355,11 @@ uint32_t SettingsClass::getMotoresource(uint8_t channelNum)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setMotoresource(uint8_t channelNum, uint32_t val)
 {
+  if(!eeprom)
+  {
+    return;
+  }
+  
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -329,6 +377,11 @@ void SettingsClass::setMotoresource(uint8_t channelNum, uint32_t val)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getMotoresourceMax(uint8_t channelNum)
 {
+  if(!eeprom)
+  {
+    return 0;
+  }
+  
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -362,6 +415,11 @@ uint32_t SettingsClass::getMotoresourceMax(uint8_t channelNum)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setMotoresourceMax(uint8_t channelNum, uint32_t val)
 {
+  if(!eeprom)
+  {
+    return;
+  }
+  
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -380,6 +438,11 @@ void SettingsClass::setMotoresourceMax(uint8_t channelNum, uint32_t val)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t SettingsClass::getChannelPulses(uint8_t channelNum)
 {
+  if(!eeprom)
+  {
+    return 0;
+  }
+  
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -413,6 +476,10 @@ uint16_t SettingsClass::getChannelPulses(uint8_t channelNum)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setChannelPulses(uint8_t channelNum, uint16_t val)
 {
+  if(!eeprom)
+  {
+    return;
+  }
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -431,6 +498,10 @@ void SettingsClass::setChannelPulses(uint8_t channelNum, uint16_t val)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint8_t SettingsClass::getChannelDelta(uint8_t channelNum)
 {
+  if(!eeprom)
+  {
+    return 0;  
+  }
   uint16_t addr = 0;
   switch(channelNum)
   {
@@ -462,6 +533,11 @@ uint8_t SettingsClass::getChannelDelta(uint8_t channelNum)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setChannelDelta(uint8_t channelNum, uint8_t val)
 {
+  if(!eeprom)
+  {
+    return;
+  }
+  
   uint16_t addr = 0;
   switch(channelNum)
   {

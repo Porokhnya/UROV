@@ -196,11 +196,6 @@ ADCSampler::ADCSampler()
   filledBufferIndex = 0;
   workingBufferIndex = 0;
   countOfSamples = 0;
-
-  for (int i = 0; i < NUMBER_OF_BUFFERS; i++)
-  {
-    memset((void *)adcBuffer[i], 0, ADC_BUFFER_SIZE);
-  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::begin()
@@ -212,13 +207,8 @@ DBGLN("ADCSampler::begin START.");
   filledBufferIndex = 0;
   workingBufferIndex = 0;
   
-  countOfSamples = 0;
-  
-  for (int i = 0; i < NUMBER_OF_BUFFERS; i++)
-  {
-    memset((void *)adcBuffer[i], 0, ADC_BUFFER_SIZE);
-  }
-
+  countOfSamples = 0;  
+  memset(adcBuffer,0,sizeof(adcBuffer));
   
  //TODO: КОД АЦП ДЛЯ STM32 !!!
 

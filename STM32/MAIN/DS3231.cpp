@@ -1,5 +1,5 @@
 #include "DS3231.h"
-#include "ConfigPin.h"
+#include "CONFIG.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 _RealtimeClock RealtimeClock;
 char _RealtimeClock::workBuff[12] = {0};
@@ -141,19 +141,21 @@ DS3231Temperature _RealtimeClock::getTemperature()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void _RealtimeClock::begin()
 {
-
+#ifndef _RTC_OFF
   STM32RTC& rtc = STM32RTC::getInstance(); 
   // Select RTC clock source: LSI_CLOCK, LSE_CLOCK or HSE_CLOCK.
   // By default the LSI is selected as source.
   rtc.setClockSource(STM32RTC::LSE_CLOCK);     // 
   rtc.begin(); // initialize RTC 24H format
-    
+#endif // #ifndef _RTC_OFF    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 DS3231Time _RealtimeClock::getTime()
 {
-  STM32RTC& rtc = STM32RTC::getInstance(); 
   DS3231Time result;
+  
+#ifndef _RTC_OFF  
+  STM32RTC& rtc = STM32RTC::getInstance(); 
 
   uint32_t subSeconds;
    rtc.getTime((uint8_t*)&(result.hour), (uint8_t*)&(result.minute), (uint8_t*)&(result.second),&subSeconds);
@@ -161,6 +163,7 @@ DS3231Time _RealtimeClock::getTime()
    uint8_t y;
    rtc.getDate((uint8_t*)&(result.dayOfWeek), (uint8_t*)&(result.dayOfMonth), (uint8_t*)&(result.month),&y);
    result.year = 2000+y;
+#endif // #ifndef _RTC_OFF
 
   return result;
 }
@@ -172,6 +175,8 @@ void _RealtimeClock::setTime(const DS3231Time& time)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void _RealtimeClock::setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8_t dayOfWeek, uint8_t dayOfMonth, uint8_t month, uint16_t year)
 {
+#ifndef _RTC_OFF
+  
   STM32RTC& rtc = STM32RTC::getInstance(); 
 
   while(year > 100) // приводим к диапазону 0-99
@@ -181,6 +186,9 @@ void _RealtimeClock::setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8
   
   rtc.setTime(hour, minute, second);  
   rtc.setDate(dayOfWeek,dayOfMonth,month, year);
+  
+#endif // #ifndef _RTC_OFF
+  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 const char* _RealtimeClock::getDayOfWeekStr(const DS3231Time& t)
