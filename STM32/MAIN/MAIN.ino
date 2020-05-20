@@ -367,6 +367,7 @@ void setup()
 #ifndef _SD_OFF
 
   DBGLN(F("INIT SD..."));
+  delay(1000);
   if (SDInit::InitSD())
   {
 	  DBGLN(F("SD inited."));

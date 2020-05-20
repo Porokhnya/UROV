@@ -158,14 +158,23 @@ bool SDInit::InitSD()
 #ifndef _SD_OFF
 
   if(SDInit::sdInitFlag)
+  {
+    DBGLN(F("[SD] ALREADY INITED!"));
     return SDInit::sdInitResult;
+  }
 
+  DBGLN(F("[SD] begin..."));
+  
   SDInit::sdInitFlag = true;
   SDInit::sdInitResult = SD_CARD.begin();//(SD_CS_PIN,SPI_HALF_SPEED);
   SdFile::dateTimeCallback(setFileDateTime);
+
+  DBG(F("[SD] inited? "));
+  DBGLN(sdInitResult ? "true" : "false");
   
   return SDInit::sdInitResult;
 #else
+    DBGLN(F("[SD] SD-card disabled in firmware!"));
 	return false;
 #endif;
 }
@@ -217,10 +226,10 @@ void showSDStats(const SDSpeedResults& info, Stream* showIn)
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Size of read/write.
-const size_t BUF_SIZE = 32768;
+const size_t BUF_SIZE = 50;//32768;
 
 // File size in MB where MB = 1,000,000 bytes.
-const uint32_t FILE_SIZE_MB = 5;
+const uint32_t FILE_SIZE_MB = 1;
 
 // Test pass count.
 const uint8_t TEST_COUNT = 2;
@@ -228,11 +237,14 @@ const uint8_t TEST_COUNT = 2;
 // File size in bytes.
 const uint32_t FILE_SIZE = 1000000UL*FILE_SIZE_MB;
 uint8_t buf[BUF_SIZE];
+
+#define BENCH_FILENAME "bench.spb"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
 {
   SDSpeedResults results;
   memset(&results,0,sizeof(results));
+
 
   if(intermediateResultsOutStream != NULL)
   {
@@ -250,7 +262,8 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
   }
 
   SdFile file;
-  if(file.open("bench.bin",O_READ))
+  
+  if(file.open(BENCH_FILENAME,O_READ))
   {
     file.rewind();
 
@@ -267,8 +280,9 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
     return results;
   }
 
+
   // файла со старой статистикой нету, начинаем измерять...
-  if (!file.open("bench.bin", O_CREAT | O_TRUNC | O_RDWR)) 
+  if (!file.open(BENCH_FILENAME, O_CREAT | O_TRUNC | O_RDWR)) 
   {
       if(intermediateResultsOutStream != NULL)
       {
@@ -314,12 +328,20 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* intermediateResultsOutStream)
     minLatency = 9999999;
     totalLatency = 0;
     t = millis();
-    uint32_t speedAccum = 0;
     
     for (uint32_t i = 0; i < n; i++) 
     {
       uint32_t m = micros();
-      if (file.write(buf, sizeof(buf)) != sizeof(buf)) 
+      
+      long written = file.write(buf, sizeof(buf));
+      
+    //  DBG(F("WRITE TO FILE, BYTES: "));
+  //    DBGLN(sizeof(buf));
+      
+  //    DBG(F("File.write returns: "));
+ //     DBGLN(written);
+
+      if (written != sizeof(buf)) 
       {
           if(intermediateResultsOutStream != NULL)
           {
