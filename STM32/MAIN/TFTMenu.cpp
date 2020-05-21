@@ -125,8 +125,8 @@ void TFTMenu::update()
     
     requestedToActiveScreen = NULL;
 
-	//DBG(F("Активируем экран "));
-	//DBGLN(screen->getName());
+//	DBG(F("Активируем экран "));
+//	DBGLN(screen->getName());
     
     screen->setActive(true);
     screen->onActivate();
@@ -137,9 +137,9 @@ void TFTMenu::update()
     screen->update(this);
     screen->draw(this);
 
-	//DBG(F("Экран "));
-	//DBG(screen->getName());
-	//DBGLN(F(" отрисован."));
+//	DBG(F("Экран "));
+//	DBG(screen->getName());
+//	DBGLN(F(" отрисован."));
 
     return;
     
@@ -292,6 +292,15 @@ void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget)
   lines = _lines;
   screenButtons->relabelButton(yesButton,"ОК");
   screenButtons->hideButton(noButton);
+
+  if(!okTarget)
+  {
+    screenButtons->hideButton(yesButton);  
+  }
+  else
+  {
+    screenButtons->hideButton(yesButton);      
+  }
   
   targetOkScreen = okTarget;
   targetCancelScreen = NULL;
@@ -307,6 +316,7 @@ void MessageBoxScreen::confirm(Vector<const char*>& _lines, const char* okTarget
   screenButtons->relabelButton(noButton,"НЕТ");
   
   screenButtons->showButton(noButton);
+  screenButtons->showButton(yesButton);
   
   targetOkScreen = okTarget;
   targetCancelScreen = cancelTarget;

@@ -339,37 +339,11 @@ void setup()
   #endif 
 
 
-
-#ifndef _SD_OFF
-
-  DBGLN(F("INIT SD..."));
-  if (SDInit::InitSD())
-  {
-    DBGLN(F("SD inited."));
-  }
-  else
-  {
-    DBGLN(F("SD INIT ERROR!!!"));
-  }
-
-  sdSpeed = SDInit::MeasureSpeed(&Serial);
-  isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
-  
-#endif // !_SD_OFF   
-
-  
-
 #ifndef _WIRE1_OFF
   DBGLN(F("Init I2C..."));  
   Wire1.begin();  
   DBGLN(F("I2C inited."));
 #endif  
-
-  ConfigPin::setup();
-
-  DBGLN(F("Init settings..."));
-  Settings.begin();
-  DBGLN(F("Settings inited."));
 
 #ifndef _RTC_OFF  
   DBGLN(F("Init RTC..."));
@@ -378,29 +352,18 @@ void setup()
   DBGLN(F("RTC inited."));
 #endif // #ifndef _RTC_OFF
 
-  DBGLN(F("Init endstops..."));
-  SetupEndstops();
-  DBGLN(F("Endstops inited."));
 
+  ConfigPin::setup();
 
-  // настраиваем обратную связь (информационные диоды и пр.)
-  Feedback.begin();
+  DBGLN(F("Init settings..."));
+  Settings.begin();
+  DBGLN(F("Settings inited."));
 
-
-#ifndef _RS485_OFF
-  DBGLN(F("Init RS-485..."));
-  // инициализируем RS-485
-  RS485_SERIAL.begin(RS485_SPEED);
-  rs485.setHandler(OnRS485IncomingData);
-  rs485.begin();
-  DBGLN(F("RS-485 inited."));
-#endif // #ifndef _RS485_OFF  
-  
 
   DBGLN(F("Init screen..."));
   Screen.setup();
 
-  DBGLN(F("Add screen1...")); 
+ DBGLN(F("Add screen1...")); 
   Screen.addScreen(Screen1::create());           // первый экран покажется по умолчанию
 
 #ifndef _SCREEN_2_OFF
@@ -435,7 +398,63 @@ void setup()
 
   DBGLN(F("Add interrupt screen..."));
   // добавляем экран с графиком прерываний
-  Screen.addScreen(InterruptScreen::create());
+  Screen.addScreen(InterruptScreen::create());  
+  
+  screenIdleTimer = millis();
+  Screen.onAction(screenAction);
+
+
+
+#ifndef _SD_OFF
+
+  DBGLN(F("INIT SD..."));
+  if (SDInit::InitSD())
+  {
+    DBGLN(F("SD inited."));
+  }
+  else
+  {
+    DBGLN(F("SD INIT ERROR!!!"));
+  }
+
+  Vector<const char*> lines;
+  lines.push_back("");
+  lines.push_back("");
+  lines.push_back("ИДЁТ ТЕСТ SD!");
+  lines.push_back("ПОДОЖДИТЕ...");
+  MessageBox->show(lines,NULL);
+  Screen.update();
+  sdSpeed = SDInit::MeasureSpeed(&Serial);
+  isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
+  
+#endif // !_SD_OFF   
+
+ 
+
+
+
+
+  DBGLN(F("Init endstops..."));
+  SetupEndstops();
+  DBGLN(F("Endstops inited."));
+
+
+  // настраиваем обратную связь (информационные диоды и пр.)
+  Feedback.begin();
+
+
+#ifndef _RS485_OFF
+  DBGLN(F("Init RS-485..."));
+  // инициализируем RS-485
+  RS485_SERIAL.begin(RS485_SPEED);
+  rs485.setHandler(OnRS485IncomingData);
+  rs485.begin();
+  DBGLN(F("RS-485 inited."));
+#endif // #ifndef _RS485_OFF  
+  
+
+
+ 
 
   // переключаемся на первый экран
   Screen.switchToScreen("Main");
@@ -447,8 +466,6 @@ void setup()
   // поднимаем наши прерывания
   InterruptHandler.begin();
 
-  screenIdleTimer = millis();
-  Screen.onAction(screenAction);
 
   DBGLN(F("Inited."));
 

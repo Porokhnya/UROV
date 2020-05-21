@@ -131,7 +131,7 @@ void Screen1::drawSDSpeedInfo(TFTMenu* menu)
   word bgcolor = RED;
   word fgcolor = BLACK;
 
-  if(sdSpeed.testSucceeded)
+  if(sdSpeed.testSucceeded && (sdSpeed.writeSpeed >= MIN_SD_WRITE_SPEED) && (sdSpeed.readSpeed >= MIN_SD_READ_SPEED))
   {
     bgcolor = GREEN;
   }
@@ -141,7 +141,16 @@ void Screen1::drawSDSpeedInfo(TFTMenu* menu)
 
 
   bgcolor = BLACK;
-  fgcolor = GREEN;
+
+  if(sdSpeed.readSpeed >= MIN_SD_READ_SPEED)
+  {
+    fgcolor = GREEN;
+  }
+  else
+  {
+    fgcolor = RED;
+  }
+      
 
   curX = 180;
   curY += 16;
@@ -152,6 +161,15 @@ void Screen1::drawSDSpeedInfo(TFTMenu* menu)
   strSpeed += sdSpeed.readSpeed;
 
   menu->getRusPrinter()->print(strSpeed.c_str(),curX,curY,bgcolor,fgcolor);
+
+  if(sdSpeed.writeSpeed >= MIN_SD_WRITE_SPEED)
+  {
+    fgcolor = GREEN;
+  }
+  else
+  {
+    fgcolor = RED;
+  }
 
   curY += 16;
   strSpeed = char(187);
@@ -552,6 +570,8 @@ void Screen1::drawChart()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
 {
+  DBGLN(F("MainScreen::doDraw()"));
+  
   drawTime(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
@@ -575,7 +595,6 @@ void Screen1::doDraw(TFTMenu* menu)
   
 #endif // !_DISABLE_DRAW_SOFTWARE_VERSION
 
- // DBGLN(F("MainScreen::draw()"));
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
