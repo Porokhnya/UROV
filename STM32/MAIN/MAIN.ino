@@ -39,6 +39,7 @@ Vector<uint8_t> LastTriggeredInterruptRecord; // список последнег
 bool isBadSDDetected = false;
 bool isBadSDLedOn = false;
 uint32_t badSDBlinkTimer = 0;
+SDSpeedResults sdSpeed;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_EXTERNAL_WATCHDOG
   ExternalWatchdogSettings watchdogSettings;
@@ -351,7 +352,7 @@ void setup()
     DBGLN(F("SD INIT ERROR!!!"));
   }
 
-  SDSpeedResults sdSpeed = SDInit::MeasureSpeed(&Serial);
+  sdSpeed = SDInit::MeasureSpeed(&Serial);
   isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
   
 #endif // !_SD_OFF   

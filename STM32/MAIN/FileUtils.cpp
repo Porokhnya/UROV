@@ -271,7 +271,7 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
   uint32_t minLatencyAccum = 0;
   uint32_t avgLatencyAccum = 0;  
 
-
+/*
   // Discard any input.
   do {
     delay(10);
@@ -281,7 +281,7 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
   while (!Serial.available()) {
     SysCall::yield();
   }
-
+*/
 
   SD_OUT(F("Type is FAT")); SD_OUTLN(int(SD_CARD.vol()->fatType()));
   SD_OUT(F("Card size: ")); SD_OUT(SD_CARD.card()->cardSize()*512E-9);

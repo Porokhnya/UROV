@@ -115,6 +115,53 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   isRS485Online = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawSDSpeedInfo(TFTMenu* menu)
+{
+    if(!isActive())
+    {
+      return;      
+    }  
+
+  TFT_Class* dc = menu->getDC();
+  dc->setFreeFont(TFT_SMALL_FONT); 
+
+ uint16_t curX = 190;
+  uint16_t curY = 60;
+
+  word bgcolor = RED;
+  word fgcolor = BLACK;
+
+  if(sdSpeed.testSucceeded)
+  {
+    bgcolor = GREEN;
+  }
+
+  const char* str = "  SD   ";
+  menu->getRusPrinter()->print(str,curX,curY,bgcolor,fgcolor);
+
+
+  bgcolor = BLACK;
+  fgcolor = GREEN;
+
+  curX = 180;
+  curY += 16;
+  
+  String strSpeed;
+  strSpeed = char(188);
+  strSpeed += " ";
+  strSpeed += sdSpeed.readSpeed;
+
+  menu->getRusPrinter()->print(strSpeed.c_str(),curX,curY,bgcolor,fgcolor);
+
+  curY += 16;
+  strSpeed = char(187);
+  strSpeed += " ";
+  strSpeed += sdSpeed.writeSpeed;
+
+  menu->getRusPrinter()->print(strSpeed.c_str(),curX,curY,bgcolor,fgcolor);
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawRS485State(TFTMenu* menu)
 {
     if(!isActive())
@@ -524,6 +571,7 @@ void Screen1::doDraw(TFTMenu* menu)
   menu->print(str.c_str(),left,top);
 
   drawRS485State(menu);
+  drawSDSpeedInfo(menu);
   
 #endif // !_DISABLE_DRAW_SOFTWARE_VERSION
 

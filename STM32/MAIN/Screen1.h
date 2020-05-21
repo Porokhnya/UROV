@@ -35,6 +35,8 @@ private:
     bool isRS485Online;
     void drawRS485State(TFTMenu* menu);
 
+    void drawSDSpeedInfo(TFTMenu* menu);
+
     int last3V3Voltage, last5Vvoltage, last200Vvoltage;
     void drawVoltage(TFTMenu* menu);
 
