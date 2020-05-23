@@ -417,14 +417,14 @@ void setup()
     DBGLN(F("SD INIT ERROR!!!"));
   }
 
-  Vector<const char*> lines;
-  lines.push_back("");
-  lines.push_back("");
-  lines.push_back("ИДЁТ ТЕСТ SD!");
-  lines.push_back("ПОДОЖДИТЕ...");
-  MessageBox->show(lines,NULL);
-  Screen.update();
-  sdSpeed = SDInit::MeasureSpeed(&Serial);
+  sdSpeed = SDInit::MeasureSpeed(&Serial,
+  #ifdef DISABLE_SAVE_BENCH_FILE
+  false // no save bench results
+  #else
+  true // save bench results
+  #endif
+  ,false // read saved bench file, if exists, and return results
+  );
   isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
   
 #endif // !_SD_OFF   

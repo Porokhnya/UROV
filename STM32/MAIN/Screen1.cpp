@@ -341,7 +341,7 @@ void Screen1::onDeactivate()
 	canLoopADC = false;
 #endif // !_ADC_OFF
 
-  DBGLN(F("MainScreen::onDeactivate()"));
+//  DBGLN(F("MainScreen::onDeactivate()"));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -356,7 +356,7 @@ void Screen1::onActivate()
   // мы активизируемся, назначаем подписчика результатов прерываний
   InterruptHandler.setSubscriber(ScreenInterrupt);
 
-  DBGLN(F("MainScreen::onActivate()"));
+  //DBGLN(F("MainScreen::onActivate()"));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -570,7 +570,7 @@ void Screen1::drawChart()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
 {
-  DBGLN(F("MainScreen::doDraw()"));
+//  DBGLN(F("MainScreen::doDraw()"));
   
   drawTime(menu);
 

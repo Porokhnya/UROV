@@ -35,6 +35,7 @@ const char DOWN_DIR_PARAM[] PROGMEM = "DOWN";
 const char VERSION_COMMAND[] PROGMEM = "VER"; // отдать информацию о версии
 const char LAST_TRIG_COMMAND[] PROGMEM = "LASTTRIG"; // отдать содержимое последнего срабатывания защиты
 const char SKIPCOUNTER_COMMAND[] PROGMEM = "SKIPC"; // настройка пропусков импульсов
+const char SDTEST_COMMAND[] PROGMEM = "SDTEST"; // запустить тест SD
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -469,6 +470,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
           
         } // UUID_COMMAND       
         else
+        if(!strcmp_P(commandName, SDTEST_COMMAND))
+        {
+            commandHandled = getSDTEST(commandName,cParser,pStream);                    
+          
+        } // SDTEST_COMMAND       
+        else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
         {
             commandHandled = getMOTORESOURCE_CURRENT(commandName,cParser,pStream);                    
@@ -874,6 +881,33 @@ bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 	}
 
 	return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+    return false;  
+
+  // измеряем скорость работы с SD, никуда не выводим, создаём файл отчёта, не читаем перед началом теста ранее сохранённый файл отчёта
+  sdSpeed = SDInit::MeasureSpeed(NULL,true,true);
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);  
+  pStream->print(sdSpeed.testSucceeded ? "SUCC" : "FAIL");
+
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);  
+  pStream->print(sdSpeed.writeSpeed);
+
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);  
+  pStream->print(sdSpeed.readSpeed);
+
+
+  pStream->println();
+
+  return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream)

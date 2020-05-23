@@ -30,7 +30,7 @@ class SDInit
     static bool sdInitFlag;
     static bool sdInitResult;
     static bool InitSD();
-    static SDSpeedResults MeasureSpeed(Stream* intermediateResultsOutStream);
+    static SDSpeedResults MeasureSpeed(Stream* intermediateResultsOutStream, bool withBenchFile, bool dontReadSavedBenchFile);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class FileUtils

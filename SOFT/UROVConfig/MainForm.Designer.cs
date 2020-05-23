@@ -30,28 +30,28 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Контроллер");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Архив", 6, 6);
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle401 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle402 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle403 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle404 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea51 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series51 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle405 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle406 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle407 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle408 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea52 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series52 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle409 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle410 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle411 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle412 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle413 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle414 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle415 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle416 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Контроллер");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Архив", 6, 6);
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle43 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle46 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle47 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle48 = new System.Windows.Forms.DataGridViewCellStyle();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.connectStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusProgressMessage = new System.Windows.Forms.ToolStripStatusLabel();
@@ -110,6 +110,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.plInfo = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label14 = new System.Windows.Forms.Label();
             this.btnSetDateTime2 = new System.Windows.Forms.Button();
             this.tbControllerTime = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -121,6 +122,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.plVoltage = new System.Windows.Forms.Panel();
             this.panel15 = new System.Windows.Forms.Panel();
+            this.label17 = new System.Windows.Forms.Label();
             this.lblVoltage3 = new System.Windows.Forms.Label();
             this.lblVoltage2 = new System.Windows.Forms.Label();
             this.lblVoltage1 = new System.Windows.Forms.Label();
@@ -131,6 +133,7 @@
             this.label31 = new System.Windows.Forms.Label();
             this.plTransformerBorders = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label21 = new System.Windows.Forms.Label();
             this.btnSetBorders = new System.Windows.Forms.Button();
             this.nudHighBorder = new System.Windows.Forms.NumericUpDown();
             this.nudLowBorder = new System.Windows.Forms.NumericUpDown();
@@ -140,6 +143,7 @@
             this.label32 = new System.Windows.Forms.Label();
             this.plRelayDelay = new System.Windows.Forms.Panel();
             this.panel18 = new System.Windows.Forms.Panel();
+            this.label18 = new System.Windows.Forms.Label();
             this.nudACSDelay = new System.Windows.Forms.NumericUpDown();
             this.label25 = new System.Windows.Forms.Label();
             this.btnSetRelayDelay = new System.Windows.Forms.Button();
@@ -149,6 +153,7 @@
             this.label34 = new System.Windows.Forms.Label();
             this.plDelta = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
             this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.btnSetDelta = new System.Windows.Forms.Button();
@@ -158,6 +163,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.plMotoresourceCurrent = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
             this.lblMotoresourcePercents1 = new System.Windows.Forms.Label();
             this.btnSetMotoresourceCurrent = new System.Windows.Forms.Button();
             this.nudMotoresourceCurrent1 = new System.Windows.Forms.NumericUpDown();
@@ -166,6 +172,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.plMotoresourceMax = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
             this.btnSetMotoresourceMax = new System.Windows.Forms.Button();
             this.nudMotoresourceMax1 = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
@@ -229,13 +236,7 @@
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
+            this.btnSDTest = new System.Windows.Forms.ToolStripButton();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -384,6 +385,7 @@
             this.btnUploadEthalon,
             this.btnRecordEthalonUp,
             this.btnRecordEthalonDown,
+            this.btnSDTest,
             this.toolStripSeparator1,
             this.btnAbout});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
@@ -606,6 +608,7 @@
             this.toolbarImages.Images.SetKeyName(9, "import_settings.png");
             this.toolbarImages.Images.SetKeyName(10, "top.png");
             this.toolbarImages.Images.SetKeyName(11, "bottom.png");
+            this.toolbarImages.Images.SetKeyName(12, "media-flash-sd-mmc.png");
             // 
             // tmProcessCommandsTimer
             // 
@@ -663,16 +666,16 @@
             this.treeView.ImageList = this.smallImages;
             this.treeView.Location = new System.Drawing.Point(0, 0);
             this.treeView.Name = "treeView";
-            treeNode3.ImageIndex = 1;
-            treeNode3.Name = "rootNode";
-            treeNode3.Text = "Контроллер";
-            treeNode4.ImageIndex = 6;
-            treeNode4.Name = "Node0";
-            treeNode4.SelectedImageIndex = 6;
-            treeNode4.Text = "Архив";
+            treeNode1.ImageIndex = 1;
+            treeNode1.Name = "rootNode";
+            treeNode1.Text = "Контроллер";
+            treeNode2.ImageIndex = 6;
+            treeNode2.Name = "Node0";
+            treeNode2.SelectedImageIndex = 6;
+            treeNode2.Text = "Архив";
             this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3,
-            treeNode4});
+            treeNode1,
+            treeNode2});
             this.treeView.SelectedImageIndex = 1;
             this.treeView.Size = new System.Drawing.Size(194, 533);
             this.treeView.TabIndex = 0;
@@ -759,8 +762,8 @@
             // Num1
             // 
             this.Num1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle401.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num1.DefaultCellStyle = dataGridViewCellStyle401;
+            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num1.DefaultCellStyle = dataGridViewCellStyle33;
             this.Num1.HeaderText = "№";
             this.Num1.Name = "Num1";
             this.Num1.ReadOnly = true;
@@ -775,8 +778,8 @@
             // 
             // Temp1
             // 
-            dataGridViewCellStyle402.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp1.DefaultCellStyle = dataGridViewCellStyle402;
+            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp1.DefaultCellStyle = dataGridViewCellStyle34;
             this.Temp1.HeaderText = "Температура";
             this.Temp1.Name = "Temp1";
             this.Temp1.ReadOnly = true;
@@ -789,16 +792,16 @@
             // 
             // Channel1
             // 
-            dataGridViewCellStyle403.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel1.DefaultCellStyle = dataGridViewCellStyle403;
+            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel1.DefaultCellStyle = dataGridViewCellStyle35;
             this.Channel1.HeaderText = "Канал";
             this.Channel1.Name = "Channel1";
             this.Channel1.ReadOnly = true;
             // 
             // Pulses1
             // 
-            dataGridViewCellStyle404.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle404;
+            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle36;
             this.Pulses1.HeaderText = "Импульсов";
             this.Pulses1.Name = "Pulses1";
             this.Pulses1.ReadOnly = true;
@@ -838,15 +841,15 @@
             // 
             // archiveAthalonChart
             // 
-            chartArea51.Name = "ethalonChartArea";
-            this.archiveAthalonChart.ChartAreas.Add(chartArea51);
+            chartArea5.Name = "ethalonChartArea";
+            this.archiveAthalonChart.ChartAreas.Add(chartArea5);
             this.archiveAthalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.archiveAthalonChart.Location = new System.Drawing.Point(0, 0);
             this.archiveAthalonChart.Name = "archiveAthalonChart";
-            series51.ChartArea = "ethalonChartArea";
-            series51.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series51.Name = "ethalonChartSerie";
-            this.archiveAthalonChart.Series.Add(series51);
+            series5.ChartArea = "ethalonChartArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series5.Name = "ethalonChartSerie";
+            this.archiveAthalonChart.Series.Add(series5);
             this.archiveAthalonChart.Size = new System.Drawing.Size(200, 134);
             this.archiveAthalonChart.TabIndex = 2;
             this.archiveAthalonChart.Text = "chart1";
@@ -929,6 +932,20 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(196, 247);
             this.panel3.TabIndex = 2;
+            // 
+            // label14
+            // 
+            this.label14.BackColor = System.Drawing.Color.LightYellow;
+            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label14.ForeColor = System.Drawing.Color.Black;
+            this.label14.Location = new System.Drawing.Point(13, 142);
+            this.label14.Name = "label14";
+            this.label14.Padding = new System.Windows.Forms.Padding(4);
+            this.label14.Size = new System.Drawing.Size(170, 63);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Кнопка \"Установить время\" устанавливает время контроллера на системное время комп" +
+    "ьютера.";
             // 
             // btnSetDateTime2
             // 
@@ -1059,6 +1076,19 @@
             this.panel15.Size = new System.Drawing.Size(196, 247);
             this.panel15.TabIndex = 2;
             // 
+            // label17
+            // 
+            this.label17.BackColor = System.Drawing.Color.LightYellow;
+            this.label17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label17.ForeColor = System.Drawing.Color.Black;
+            this.label17.Location = new System.Drawing.Point(13, 119);
+            this.label17.Name = "label17";
+            this.label17.Padding = new System.Windows.Forms.Padding(4);
+            this.label17.Size = new System.Drawing.Size(170, 82);
+            this.label17.TabIndex = 13;
+            this.label17.Text = "Текущее состояние входов контроллера.";
+            // 
             // lblVoltage3
             // 
             this.lblVoltage3.BackColor = System.Drawing.Color.LightGray;
@@ -1176,6 +1206,19 @@
             this.panel2.Size = new System.Drawing.Size(196, 247);
             this.panel2.TabIndex = 2;
             // 
+            // label21
+            // 
+            this.label21.BackColor = System.Drawing.Color.LightYellow;
+            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label21.ForeColor = System.Drawing.Color.Black;
+            this.label21.Location = new System.Drawing.Point(13, 119);
+            this.label21.Name = "label21";
+            this.label21.Padding = new System.Windows.Forms.Padding(4);
+            this.label21.Size = new System.Drawing.Size(170, 82);
+            this.label21.TabIndex = 13;
+            this.label21.Text = "Верхний и нижний пороги компаратора АЦП (пока не используются).";
+            // 
             // btnSetBorders
             // 
             this.btnSetBorders.BackColor = System.Drawing.Color.LightGreen;
@@ -1286,6 +1329,20 @@
             this.panel18.Size = new System.Drawing.Size(196, 247);
             this.panel18.TabIndex = 2;
             // 
+            // label18
+            // 
+            this.label18.BackColor = System.Drawing.Color.LightYellow;
+            this.label18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label18.ForeColor = System.Drawing.Color.Black;
+            this.label18.Location = new System.Drawing.Point(13, 120);
+            this.label18.Name = "label18";
+            this.label18.Padding = new System.Windows.Forms.Padding(4);
+            this.label18.Size = new System.Drawing.Size(170, 82);
+            this.label18.TabIndex = 12;
+            this.label18.Text = "Задержка после срабатывания защиты перед началом сбора импульсов, мс. Задержка вы" +
+    "дачи сигнала на АСУ ТП, мс.";
+            // 
             // nudACSDelay
             // 
             this.nudACSDelay.Location = new System.Drawing.Point(16, 70);
@@ -1395,6 +1452,20 @@
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(196, 247);
             this.panel11.TabIndex = 2;
+            // 
+            // label9
+            // 
+            this.label9.BackColor = System.Drawing.Color.LightYellow;
+            this.label9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label9.ForeColor = System.Drawing.Color.Black;
+            this.label9.Location = new System.Drawing.Point(13, 120);
+            this.label9.Name = "label9";
+            this.label9.Padding = new System.Windows.Forms.Padding(4);
+            this.label9.Size = new System.Drawing.Size(170, 82);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Дельта - гистерезис кол-ва имульсов. \"Пропускать...\" - какой по счёту импульс буд" +
+    "ет учитываться (1 - каждый, 2 - каждый второй, и т.п.).";
             // 
             // nudSkipCounter
             // 
@@ -1515,6 +1586,20 @@
             this.panel5.Size = new System.Drawing.Size(196, 247);
             this.panel5.TabIndex = 2;
             // 
+            // label10
+            // 
+            this.label10.BackColor = System.Drawing.Color.LightYellow;
+            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label10.ForeColor = System.Drawing.Color.Black;
+            this.label10.Location = new System.Drawing.Point(13, 120);
+            this.label10.Name = "label10";
+            this.label10.Padding = new System.Windows.Forms.Padding(4);
+            this.label10.Size = new System.Drawing.Size(170, 82);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Показывает, сколько прибор отработал от максимального ресурса. Его можно установи" +
+    "ть на нужное значение.\r\n";
+            // 
             // lblMotoresourcePercents1
             // 
             this.lblMotoresourcePercents1.BackColor = System.Drawing.Color.White;
@@ -1613,6 +1698,20 @@
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(196, 247);
             this.panel7.TabIndex = 2;
+            // 
+            // label13
+            // 
+            this.label13.BackColor = System.Drawing.Color.LightYellow;
+            this.label13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label13.ForeColor = System.Drawing.Color.Black;
+            this.label13.Location = new System.Drawing.Point(13, 120);
+            this.label13.Name = "label13";
+            this.label13.Padding = new System.Windows.Forms.Padding(4);
+            this.label13.Size = new System.Drawing.Size(170, 82);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "Указывает максимальное кол-во срабатываний защиты (справочное значение). Его можн" +
+    "о установить на необходимую величину.";
             // 
             // btnSetMotoresourceMax
             // 
@@ -1865,8 +1964,8 @@
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle405.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle405;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle37;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -1881,8 +1980,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle406.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle406;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle38;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -1895,16 +1994,16 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle407.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle407;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle39;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
             // 
             // Pulses
             // 
-            dataGridViewCellStyle408.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle408;
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle40;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -1950,15 +2049,15 @@
             // 
             // ethalonChart
             // 
-            chartArea52.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea52);
+            chartArea6.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea6);
             this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ethalonChart.Location = new System.Drawing.Point(0, 0);
             this.ethalonChart.Name = "ethalonChart";
-            series52.ChartArea = "ethalonChartArea";
-            series52.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series52.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series52);
+            series6.ChartArea = "ethalonChartArea";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series6.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series6);
             this.ethalonChart.Size = new System.Drawing.Size(200, 193);
             this.ethalonChart.TabIndex = 0;
             this.ethalonChart.Text = "chart1";
@@ -2077,8 +2176,8 @@
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle409.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle409;
+            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle41;
             this.dataGridViewTextBoxColumn1.HeaderText = "№";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             this.dataGridViewTextBoxColumn1.ReadOnly = true;
@@ -2092,8 +2191,8 @@
             // 
             // dataGridViewTextBoxColumn3
             // 
-            dataGridViewCellStyle410.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle410;
+            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle42;
             this.dataGridViewTextBoxColumn3.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
@@ -2106,16 +2205,16 @@
             // 
             // dataGridViewTextBoxColumn5
             // 
-            dataGridViewCellStyle411.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle411;
+            dataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle43;
             this.dataGridViewTextBoxColumn5.HeaderText = "Штанга";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn6
             // 
-            dataGridViewCellStyle412.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle412;
+            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle44;
             this.dataGridViewTextBoxColumn6.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
             this.dataGridViewTextBoxColumn6.ReadOnly = true;
@@ -2141,8 +2240,8 @@
             // dataGridViewTextBoxColumn10
             // 
             this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle413.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle413;
+            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle45;
             this.dataGridViewTextBoxColumn10.HeaderText = "№";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
             // 
@@ -2154,8 +2253,8 @@
             // 
             // dataGridViewTextBoxColumn12
             // 
-            dataGridViewCellStyle414.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle414;
+            dataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle46;
             this.dataGridViewTextBoxColumn12.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             // 
@@ -2166,15 +2265,15 @@
             // 
             // dataGridViewTextBoxColumn14
             // 
-            dataGridViewCellStyle415.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle415;
+            dataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle47;
             this.dataGridViewTextBoxColumn14.HeaderText = "Канал";
             this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
             // 
             // dataGridViewTextBoxColumn15
             // 
-            dataGridViewCellStyle416.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle416;
+            dataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle48;
             this.dataGridViewTextBoxColumn15.HeaderText = "Импульсов";
             this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
             // 
@@ -2193,101 +2292,17 @@
             this.dataGridViewTextBoxColumn18.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
             // 
-            // label9
+            // btnSDTest
             // 
-            this.label9.BackColor = System.Drawing.Color.LightYellow;
-            this.label9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(13, 120);
-            this.label9.Name = "label9";
-            this.label9.Padding = new System.Windows.Forms.Padding(4);
-            this.label9.Size = new System.Drawing.Size(170, 82);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "Дельта - гистерезис кол-ва имульсов. \"Пропускать...\" - какой по счёту импульс буд" +
-    "ет учитываться (1 - каждый, 2 - каждый второй, и т.п.).";
-            // 
-            // label10
-            // 
-            this.label10.BackColor = System.Drawing.Color.LightYellow;
-            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label10.ForeColor = System.Drawing.Color.Black;
-            this.label10.Location = new System.Drawing.Point(13, 120);
-            this.label10.Name = "label10";
-            this.label10.Padding = new System.Windows.Forms.Padding(4);
-            this.label10.Size = new System.Drawing.Size(170, 82);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "Показывает, сколько прибор отработал от максимального ресурса. Его можно установи" +
-    "ть на нужное значение.\r\n";
-            // 
-            // label13
-            // 
-            this.label13.BackColor = System.Drawing.Color.LightYellow;
-            this.label13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label13.ForeColor = System.Drawing.Color.Black;
-            this.label13.Location = new System.Drawing.Point(13, 120);
-            this.label13.Name = "label13";
-            this.label13.Padding = new System.Windows.Forms.Padding(4);
-            this.label13.Size = new System.Drawing.Size(170, 82);
-            this.label13.TabIndex = 10;
-            this.label13.Text = "Указывает максимальное кол-во срабатываний защиты (справочное значение). Его можн" +
-    "о установить на необходимую величину.";
-            // 
-            // label14
-            // 
-            this.label14.BackColor = System.Drawing.Color.LightYellow;
-            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label14.ForeColor = System.Drawing.Color.Black;
-            this.label14.Location = new System.Drawing.Point(13, 142);
-            this.label14.Name = "label14";
-            this.label14.Padding = new System.Windows.Forms.Padding(4);
-            this.label14.Size = new System.Drawing.Size(170, 63);
-            this.label14.TabIndex = 12;
-            this.label14.Text = "Кнопка \"Установить время\" устанавливает время контроллера на системное время комп" +
-    "ьютера.";
-            // 
-            // label17
-            // 
-            this.label17.BackColor = System.Drawing.Color.LightYellow;
-            this.label17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label17.ForeColor = System.Drawing.Color.Black;
-            this.label17.Location = new System.Drawing.Point(13, 119);
-            this.label17.Name = "label17";
-            this.label17.Padding = new System.Windows.Forms.Padding(4);
-            this.label17.Size = new System.Drawing.Size(170, 82);
-            this.label17.TabIndex = 13;
-            this.label17.Text = "Текущее состояние входов контроллера.";
-            // 
-            // label18
-            // 
-            this.label18.BackColor = System.Drawing.Color.LightYellow;
-            this.label18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label18.ForeColor = System.Drawing.Color.Black;
-            this.label18.Location = new System.Drawing.Point(13, 120);
-            this.label18.Name = "label18";
-            this.label18.Padding = new System.Windows.Forms.Padding(4);
-            this.label18.Size = new System.Drawing.Size(170, 82);
-            this.label18.TabIndex = 12;
-            this.label18.Text = "Задержка после срабатывания защиты перед началом сбора импульсов, мс. Задержка вы" +
-    "дачи сигнала на АСУ ТП, мс.";
-            // 
-            // label21
-            // 
-            this.label21.BackColor = System.Drawing.Color.LightYellow;
-            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label21.ForeColor = System.Drawing.Color.Black;
-            this.label21.Location = new System.Drawing.Point(13, 119);
-            this.label21.Name = "label21";
-            this.label21.Padding = new System.Windows.Forms.Padding(4);
-            this.label21.Size = new System.Drawing.Size(170, 82);
-            this.label21.TabIndex = 13;
-            this.label21.Text = "Верхний и нижний пороги компаратора АЦП (пока не используются).";
+            this.btnSDTest.Enabled = false;
+            this.btnSDTest.Image = ((System.Drawing.Image)(resources.GetObject("btnSDTest.Image")));
+            this.btnSDTest.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSDTest.Name = "btnSDTest";
+            this.btnSDTest.Size = new System.Drawing.Size(52, 67);
+            this.btnSDTest.Text = "Тест SD";
+            this.btnSDTest.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnSDTest.ToolTipText = "Запустить тестирование SD-карты";
+            this.btnSDTest.Click += new System.EventHandler(this.btnSDTest_Click);
             // 
             // MainForm
             // 
@@ -2588,6 +2603,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.ToolStripButton btnSDTest;
     }
 }
 

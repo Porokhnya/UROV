@@ -1713,6 +1713,7 @@ namespace UROVConfig
             this.btnImportSettings.ImageIndex = 9;
             this.btnRecordEthalonUp.ImageIndex = 10;
             this.btnRecordEthalonDown.ImageIndex = 11;
+            this.btnSDTest.ImageIndex = 12;
 
 
             plMainSettings.Dock = DockStyle.Fill;
@@ -1777,6 +1778,7 @@ namespace UROVConfig
 
             this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
             this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
+            this.btnSDTest.Enabled = bConnected;
 
             if (!bConnected) // порт закрыт
             {
@@ -4072,6 +4074,56 @@ namespace UROVConfig
         private void btnConnect_Click(object sender, EventArgs e)
         {
             DoConnect("", false, true);
+        }
+
+        private void ParseSDTest(Answer a)
+        {
+            sdTestForm.DialogResult = DialogResult.OK;
+            sdTestForm = null;
+
+            if(a.IsOkAnswer && a.ParamsCount > 3)
+            {
+                if (a.Params[1] == "SUCC")
+                {
+                    String mess = "Тестирование SD-карты успешно завершено.\n\n\tСкорость записи: ";
+                    mess += a.Params[2];
+                    mess += " Кб/с\n\tСкорость чтения: ";
+                    mess += a.Params[3];
+                    mess += " Кб/с";
+
+                    MessageBox.Show(mess,"Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Тест SD-карты неуспешен!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Тест SD-карты неуспешен!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        ConnectForm sdTestForm = null;
+        private void StartSDTest(ConnectForm frm)
+        {
+            PushCommandToQueue(GET_PREFIX + "SDTEST", ParseSDTest);
+
+            //frm.DialogResult = DialogResult.OK;
+        }
+
+        private void btnSDTest_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("Начать тест SD-карты?", "Подтверждение", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            if (dr != System.Windows.Forms.DialogResult.OK)
+                return;
+
+
+            sdTestForm = new ConnectForm(true);
+            sdTestForm.OnConnectFormShown = this.StartSDTest;
+            sdTestForm.lblCurrentAction.Text = "Тестирование SD-карты, подождите...";
+            sdTestForm.ShowDialog();
+
         }
     }
 

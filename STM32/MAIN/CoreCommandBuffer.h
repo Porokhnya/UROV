@@ -86,6 +86,7 @@ class CommandHandlerClass
   bool getVOLTAGE(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
   bool getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+  bool getSDTEST(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
   bool setTBORDERMAX(CommandParser& parser, Stream* pStream);
   bool getTBORDERMAX(const char* commandPassed, const CommandParser& parser, Stream* pStream);

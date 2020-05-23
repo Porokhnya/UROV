@@ -2,6 +2,7 @@
 #include "FileUtils.h"
 #include "CONFIG.h"
 #include "DS3231.h"
+#include "TFTMenu.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SdFatSdio SD_CARD;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -242,8 +243,17 @@ ArduinoOutStream cout(Serial);
 #define SD_OUT(s) if(outS) { outS->print(s); }
 #define SD_OUTLN(s) if(outS) { outS->println(s); }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
+SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontReadSavedBenchFile)
 {
+
+  Vector<const char*> lines;
+  lines.push_back("");
+  lines.push_back("");
+  lines.push_back("ИДЁТ ТЕСТ SD!");
+  lines.push_back("ПОДОЖДИТЕ...");
+  MessageBox->show(lines,NULL);
+  Screen.update();
+  
   SDSpeedResults results;
   memset(&results,0,sizeof(results));
 
@@ -289,7 +299,8 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
 
 
 
-#ifndef DISABLE_SAVE_BENCH_FILE
+if(withBenchFile && !dontReadSavedBenchFile)
+{
 
   if(file.open(BENCH_RESULTS_FILENAME,O_READ))
   {
@@ -302,9 +313,10 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS)
 
     showSDStats(results,outS);
 
+    Screen.switchToScreen("Main");
     return results;
   }
-#endif // #ifndef DISABLE_SAVE_BENCH_FILE
+} // if(withBenchFile)
 
 
 SD_OUTLN(F("[SD TEST] create test file..."));
@@ -312,6 +324,8 @@ SD_OUTLN(F("[SD TEST] create test file..."));
   // open or create file - truncate existing file.
   if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) {
     SD_OUTLN(F("[SD TEST] create failed !!!"));
+
+    Screen.switchToScreen("Main");
     return results;
   }
 
@@ -344,6 +358,8 @@ SD_OUTLN(F("[SD TEST] test file created."));
       if (file.write(sdTestBuf, sizeof(sdTestBuf)) != sizeof(sdTestBuf)) {
         SD_OUTLN(F("[SD TEST] write failed!!!"));
         file.close();
+        
+        Screen.switchToScreen("Main");
         return results;
       }
       m = micros() - m;
@@ -398,6 +414,8 @@ SD_OUTLN(F("[SD TEST] test file created."));
       if (nr != sizeof(sdTestBuf)) {   
         SD_OUTLN(F("[SD TEST] read failed !!!"));
         file.close();
+
+        Screen.switchToScreen("Main");
         return results;
       }
       m = micros() - m;
@@ -435,7 +453,8 @@ SD_OUTLN(F("[SD TEST] test file created."));
 
   showSDStats(results,outS);
 
-#ifndef DISABLE_SAVE_BENCH_FILE
+if(withBenchFile)
+{
   if (file.open(BENCH_RESULTS_FILENAME, O_CREAT | O_TRUNC | O_RDWR)) 
   {
     // теперь записываем результаты тестирования в файл, чтобы потом повторно не дёргаться
@@ -444,10 +463,11 @@ SD_OUTLN(F("[SD TEST] test file created."));
     file.sync();
     file.close();
   }  
-#endif // #ifndef DISABLE_SAVE_BENCH_FILE
+} // if(withBenchFile)
 
   SD_OUTLN(F("[SD TEST] done."));
-  
+
+  Screen.switchToScreen("Main");
   return results;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
