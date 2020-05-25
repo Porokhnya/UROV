@@ -68,7 +68,7 @@ namespace UROVConfig
         private int speed;
 
         private long answerTimer = 0;
-        private long waitAnswerTimeout = 2000;
+        private long waitAnswerTimeout = 20000;
         private bool deviceFound = false;
         private List<byte> COMAnswer = new List<byte>();
         private bool inFindDeviceMode = false;
