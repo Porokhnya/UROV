@@ -326,8 +326,12 @@ void ChartSerie::drawLine(TFT_Class* dc, uint16_t xPoint)
   uint16_t startIdx = xPoint -1;
   uint16_t endIdx = xPoint;
 
-  uint16_t maxPointY = parentChart->getMaxYValue(); 
+  uint16_t maxPointY = 4095;//parentChart->getMaxYValue(); 
   uint16_t maxY = parentChart->getYMax();
+
+//  DBG("maxPointY="); DBGLN(maxPointY);
+//  DBG("maxY="); DBGLN(maxY);
+//  DBG("map="); DBGLN(map(points[startIdx],0,maxPointY,0,maxY));
   
   //word initialColor = dc->getColor();
   //dc->setColor(serieColor.R,serieColor.G,serieColor.B);

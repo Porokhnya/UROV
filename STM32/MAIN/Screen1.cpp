@@ -65,9 +65,9 @@ void loopADC()
     {
       // делим на 100, чтобы сместить данные графика на нужный диапазон
       
-	  serie1[serieWriteIterator] = cBuf[i + 0] / 100;        // Данные 1 графика  (красный)
-	  serie2[serieWriteIterator] = cBuf[i + 1] / 100;        // Данные 2 графика  (синий)
-	  serie3[serieWriteIterator] = cBuf[i + 2] / 100;        // Данные 3 графика  (желтый)
+	  serie1[serieWriteIterator] = cBuf[i + 0];// / 100;        // Данные 1 графика  (красный)
+	  serie2[serieWriteIterator] = cBuf[i + 1];// / 100;        // Данные 2 графика  (синий)
+	  serie3[serieWriteIterator] = cBuf[i + 2];// / 100;        // Данные 3 графика  (желтый)
 
 	  raw3V3  += cBuf[i + 3];                          // Данные Измерение 3V3
     
