@@ -7,9 +7,26 @@
 #include "InterruptHandler.h"
 #include "InterruptScreen.h"
 #include "Settings.h"
+#include "Utils.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Screen1* mainScreen = NULL;
 extern "C" char* sbrk(int i);
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t redCurrentInfoMax = 0; // макс. данные по току, канал 1 (красный)
+uint32_t redCurrentInfoMin = 0; // мин. данные по току, канал 1 (красный)
+
+uint32_t blueCurrentInfoMax = 0; // макс. данные по току, канал 2 (синий)
+uint32_t blueCurrentInfoMin = 0; // мин. данные по току, канал 2 (синий)
+
+uint32_t yellowCurrentInfoMax = 0; // макс. данные по току, канал 3 (желтый)
+uint32_t yellowCurrentInfoMin = 0; // мин. данные по току, канал 3 (желтый)
+
+uint8_t currentNumSamples = 0; // кол-во семплов измерений по току
+const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
+
+uint16_t channel1Current = 0; // ток канала 1
+uint16_t channel2Current = 0; // ток канала 2
+uint16_t channel3Current = 0; // ток канала 3
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loopADC()
 {
@@ -62,12 +79,10 @@ void loopADC()
 */  
     
     for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
-    {
-      // делим на 100, чтобы сместить данные графика на нужный диапазон
-      
-	  serie1[serieWriteIterator] = cBuf[i + 0];// / 100;        // Данные 1 графика  (красный)
-	  serie2[serieWriteIterator] = cBuf[i + 1];// / 100;        // Данные 2 графика  (синий)
-	  serie3[serieWriteIterator] = cBuf[i + 2];// / 100;        // Данные 3 графика  (желтый)
+    {      
+	  serie1[serieWriteIterator] = cBuf[i + 0];        // Данные 1 графика  (красный)
+	  serie2[serieWriteIterator] = cBuf[i + 1];        // Данные 2 графика  (синий)
+	  serie3[serieWriteIterator] = cBuf[i + 2];        // Данные 3 графика  (желтый)
 
 	  raw3V3  += cBuf[i + 3];                          // Данные Измерение 3V3
     
@@ -77,6 +92,82 @@ void loopADC()
 
 
 	  } // for
+
+    // у нас заполнен массив показаний, можно считать ток.
+    // для этого собираем максимальные и минимальные значения по каждому из каналов,
+    // и плюсуем их. Как только наберём нужное кол-во семплов - работаем дальше.
+    uint32_t ch1Min = 0xFFFFFFFF, ch1Max = 0, ch2Min = 0xFFFFFFFF, ch2Max = 0, ch3Min = 0xFFFFFFFF, ch3Max = 0;
+    
+    for(uint16_t i=0;i<countOfPoints;i++)
+    {
+              ch1Min = min(ch1Min,serie1[i]);
+              ch2Min = min(ch1Min,serie2[i]);
+              ch3Min = min(ch1Min,serie3[i]);
+
+              ch1Max = max(ch1Max,serie1[i]);
+              ch2Max = max(ch1Max,serie2[i]);
+              ch3Max = max(ch1Max,serie3[i]);
+              
+    } // for
+
+    if(ch1Min == 0xFFFFFFFF)
+    {
+      ch1Min = ch1Max;
+    }
+
+    if(ch2Min == 0xFFFFFFFF)
+    {
+      ch2Min = ch2Max;
+    }
+
+    if(ch3Min == 0xFFFFFFFF)
+    {
+      ch3Min = ch3Max;
+    }
+
+    // плюсуем полученные значения в накопительную часть
+    redCurrentInfoMin += ch1Min;
+    blueCurrentInfoMin += ch2Min;
+    yellowCurrentInfoMin += ch3Min;
+
+    redCurrentInfoMax += ch1Max;
+    blueCurrentInfoMax += ch2Max;
+    yellowCurrentInfoMax += ch3Max;
+
+    // проверяем, собрали ли нужное кол-во семплов?
+    currentNumSamples++;
+
+    if(currentNumSamples >= CURRENT_NUM_SAMPLES)
+    {
+      // собрали нужное кол-во семплов, можно вычислять ток по каналам.
+
+      // Вычисляем среднее делением на Х. От максимального отнимаем минимальное - получаем размах. Это будет величина переменного тока. 
+      // Вернее, измеренное напряжение, которое мы потом преобразуем в ток из расчета 3 вольта равны 5 амперам.
+      
+      uint32_t channel1Avg = redCurrentInfoMax/CURRENT_NUM_SAMPLES - redCurrentInfoMin/CURRENT_NUM_SAMPLES;
+      uint32_t channel2Avg = blueCurrentInfoMax/CURRENT_NUM_SAMPLES - blueCurrentInfoMin/CURRENT_NUM_SAMPLES;
+      uint32_t channel3Avg = yellowCurrentInfoMax/CURRENT_NUM_SAMPLES - yellowCurrentInfoMin/CURRENT_NUM_SAMPLES;
+
+      // вычислили напряжение, теперь вычисляем ток по формуле: 3В = 5А. Для этого напряжение надо умножить на 5, и разделить на 3
+      
+      channel1Current = (channel1Avg*5)/3;
+      channel2Current = (channel2Avg*5)/3;
+      channel3Current = (channel3Avg*5)/3;
+
+
+      // не забываем чистить за собой, подготавливая к следующему обновлению
+      currentNumSamples = 0;
+      
+      redCurrentInfoMin = 0;
+      blueCurrentInfoMin = 0;
+      yellowCurrentInfoMin = 0;
+
+      redCurrentInfoMax = 0;
+      blueCurrentInfoMax = 0;
+      yellowCurrentInfoMax = 0;
+      
+    } // if
+    
 
     raw200V /= countOfPoints;
     raw3V3 /= countOfPoints;
@@ -115,6 +206,7 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   last3V3Voltage = last5Vvoltage = last200Vvoltage = -1;
   canLoopADC = false;
   isRS485Online = false;
+  oldChannel1Current = oldChannel2Current = oldChannel3Current = 0xFFFF;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawSDSpeedInfo(TFTMenu* menu)
@@ -128,7 +220,7 @@ void Screen1::drawSDSpeedInfo(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT); 
 
  uint16_t curX = 190;
-  uint16_t curY = 60;
+  uint16_t curY = 80;
 
   word bgcolor = RED;
   word fgcolor = BLACK;
@@ -193,7 +285,7 @@ void Screen1::drawRS485State(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT);  
 
   uint16_t curX = 190;
-  uint16_t curY = 40;
+  uint16_t curY = 20;
 
   word bgcolor = RED;
   word fgcolor = BLACK;
@@ -207,6 +299,7 @@ void Screen1::drawRS485State(TFTMenu* menu)
   menu->getRusPrinter()->print(str,curX,curY,bgcolor,fgcolor);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 void Screen1::drawVoltage(TFTMenu* menu)
 {
 #ifndef _DISABLE_DRAW_VOLTAGE
@@ -253,7 +346,7 @@ void Screen1::drawVoltage(TFTMenu* menu)
 
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
-
+*/
   //TODO: ЗАКОММЕНТИРОВАЛ ОТРИСОВКУ ВОЛЬТАЖА 5В и 200В!!!
   /*
   curY += fontHeight + 2;
@@ -321,10 +414,11 @@ void Screen1::drawVoltage(TFTMenu* menu)
     menu->getRusPrinter()->print(data.c_str(),curX,curY,BLACK,color);
   }
   */
-
+/*
 #endif // !_DISABLE_DRAW_VOLTAGE
    
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onDeactivate()
 {
@@ -352,6 +446,9 @@ void Screen1::onActivate()
 #ifndef _ADC_OFF
   canLoopADC = true;
 #endif // !_ADC_OFF
+
+  oldChannel1Current = oldChannel2Current = oldChannel3Current = 0xFFFF;
+  oldCurrentString1 = oldCurrentString2 = oldCurrentString3 = "";
 
   isRS485Online = HasRS485Link;
 
@@ -425,12 +522,77 @@ void Screen1::drawTime(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawCurrent(TFTMenu* menu)
+{
+
+  if(!isActive())
+  {
+    return;      
+  }  
+
+    TFT_Class* dc = menu->getDC();  
+
+  dc->setFreeFont(TFT_SMALL_FONT);
+  uint8_t fontHeight = FONT_HEIGHT(dc);
+  const uint8_t y_spacing = 1;
+  
+  uint16_t curX = 190;
+  uint16_t curY = 36;  
+
+  word bgcolor = BLACK;
+  word fgcolor = RED;
+
+  // не забываем, что раз у нас разрядность АЦП - в микровольтах (3.3/4095 = 0.0008 В), то и результат у нас - в микроамперах
+  char buff[50] = {0};
+  
+  if(oldChannel1Current != channel1Current)
+  {
+    menu->getRusPrinter()->print(oldCurrentString1.c_str(),curX,curY,bgcolor,bgcolor);
+    
+    oldChannel1Current = channel1Current;
+    oldCurrentString1 = formatFloat(float(oldChannel1Current)/10000,2);
+    oldCurrentString1 += "A";
+
+    menu->getRusPrinter()->print(oldCurrentString1.c_str(),curX,curY,bgcolor,fgcolor);
+  }
+
+  fgcolor = BLUE;
+  curY += fontHeight + y_spacing;
+
+ if(oldChannel2Current != channel2Current)
+  {
+    menu->getRusPrinter()->print(oldCurrentString2.c_str(),curX,curY,bgcolor,bgcolor);
+    
+    oldChannel2Current = channel2Current;
+    oldCurrentString2 = formatFloat(float(oldChannel2Current)/10000,2);
+    oldCurrentString2 += "A";
+
+    menu->getRusPrinter()->print(oldCurrentString2.c_str(),curX,curY,bgcolor,fgcolor);
+  }  
+
+ fgcolor = YELLOW;
+  curY += fontHeight + y_spacing;
+
+ if(oldChannel3Current != channel3Current)
+  {
+
+    menu->getRusPrinter()->print(oldCurrentString3.c_str(),curX,curY,bgcolor,bgcolor);
+    
+    oldChannel3Current = channel3Current;
+    oldCurrentString3 = formatFloat(float(oldChannel3Current)/10000,2);
+    oldCurrentString3 += "A";
+
+    menu->getRusPrinter()->print(oldCurrentString3.c_str(),curX,curY,bgcolor,fgcolor);
+  }    
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doUpdate(TFTMenu* menu)
 {
 
 
   drawTime(menu);
-  drawVoltage(menu);
+//  drawVoltage(menu);
+  drawCurrent(menu);
   drawChart();
 
   bool hasrs = HasRS485Link;
@@ -574,6 +736,7 @@ void Screen1::doDraw(TFTMenu* menu)
 //  DBGLN(F("MainScreen::doDraw()"));
   
   drawTime(menu);
+  drawCurrent(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
 

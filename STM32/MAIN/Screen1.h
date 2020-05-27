@@ -37,8 +37,12 @@ private:
 
     void drawSDSpeedInfo(TFTMenu* menu);
 
+    uint16_t oldChannel1Current, oldChannel2Current, oldChannel3Current;
+    String oldCurrentString1,oldCurrentString2,oldCurrentString3;
+    void drawCurrent(TFTMenu* menu);
+
     int last3V3Voltage, last5Vvoltage, last200Vvoltage;
-    void drawVoltage(TFTMenu* menu);
+    //void drawVoltage(TFTMenu* menu);
 
 	//DEPRECATED: void drawInductiveSensors(TFTMenu* menu);
 	//DEPRECATED: uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
