@@ -456,7 +456,6 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
   if(pointsCount <= CHART_POINTS_COUNT || pointsCount <= maxPointToSeek)
   {
     // кол-во точек уже равно кол-ву точек на графике, синхронизировать начало - не получится
-   // DBGLN(F("Too many points!!!!"));
     return 0;
   }
   

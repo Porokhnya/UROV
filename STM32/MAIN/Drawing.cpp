@@ -36,17 +36,10 @@ namespace Drawing
 	  int screenWidth = dc->width();
 	  int screenHeight = dc->height();
 
-	  DBG(F("Screen width: "));
-	  DBGLN(screenWidth);
-
-	  DBG(F("Screen height: "));
-	  DBGLN(screenHeight);
-
       size_t totalPulses = timeList.size();
     
       if(totalPulses < 2) // нет ничего к отрисовке, т.к. для графика нужны хотя бы две точки
       {
-		  DBGLN(F("НЕДОСТАТОЧНО ТОЧЕК ДЛЯ ОТРИСОВКИ!!!"));
         return;
       }
     
@@ -151,14 +144,13 @@ namespace Drawing
   {
 	  if (serie.size() < 2)
 	  {
-		  DBGLN(F("НЕ ХВАТАЕТ ТОЧЕК ДЛЯ ОТРИСОВКИ !!!"));
 		  return;
 	  }
 
 	  size_t to = serie.size();
 
-	  DBG(F("Точек к отрисовке: "));
-	  DBGLN(to);
+//	  DBG(F("Точек к отрисовке: "));
+//	  DBGLN(to);
 
 	  Point ptStart, ptEnd;
 	  
@@ -192,22 +184,13 @@ namespace Drawing
 
       } // for 
 
-	  
-
-	  
-
-
-	  DBGLN(F("ВСЕ ЛИНИИ НА ГРАФИКЕ ОТРИСОВАНЫ."));
-
   }
 
   void DrawSerie(AbstractTFTScreen* caller, const Points& serie, uint16_t color)
   {
-	  DBGLN(F("DrawSerie BEGIN"));
 
 	  if (serie.size() < 2 || !caller->isActive()) // низзя рисовать
 	  {
-		  DBGLN(F("НЕЛЬЗЯ РИСОВАТЬ СЕРИЮ!!!"));
 		  return;
 	  }
      
@@ -218,7 +201,6 @@ namespace Drawing
       doDrawSerie(dc,serie,color);        
       //dc->setColor(oldColor);  
 
-	  DBGLN(F("СЕРИЯ ОТРИСОВАНА!"));
   }
   
   void DrawSerie(AbstractTFTScreen* caller, const Points& serie, RGBColor color)
@@ -228,8 +210,6 @@ namespace Drawing
 
   void DrawChart(AbstractTFTScreen* caller, const Points& serie1, uint16_t serie1Color)
   {
-	  DBGLN(F("DrawChart BEGIN"));
-    
     // рисуем сетку
 	const int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
 	const int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
@@ -247,12 +227,10 @@ namespace Drawing
 
     yield();
 
-	DBGLN(F("DrawChart END"));
   }
 
   void ComputeChart(const InterruptTimeList& list1, Points& serie1)
   {
-	  DBGLN(F("ComputeChart BEGIN"));
      /*
       Формируем график
       Ось X время регистрации всех импульсов (общее время хода линейки, перемещения траверсы).
@@ -272,7 +250,6 @@ namespace Drawing
 //      yOffset += yOffsetStep;
 //      xOffset += xOffsetStep;
     
-	  DBGLN(F("ComputeChart END"));
   }
   
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor)
