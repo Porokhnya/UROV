@@ -12,6 +12,12 @@
 Screen1* mainScreen = NULL;
 extern "C" char* sbrk(int i);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
+const float COEFF_1 = 5.0; // первый коэффициент по пересчёту тока
+const float COEFF_2 = 2.8; // второй коэффициент по пересчёту тока
+const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
+const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 100; // минимальное значение тока, которое интерпретируется как 0
+
 uint32_t redCurrentInfoMax = 0; // макс. данные по току, канал 1 (красный)
 uint32_t redCurrentInfoMin = 0; // мин. данные по току, канал 1 (красный)
 
@@ -22,7 +28,7 @@ uint32_t yellowCurrentInfoMax = 0; // макс. данные по току, ка
 uint32_t yellowCurrentInfoMin = 0; // мин. данные по току, канал 3 (желтый)
 
 uint8_t currentNumSamples = 0; // кол-во семплов измерений по току
-const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
+
 
 uint16_t channel1Current = 0; // ток канала 1
 uint16_t channel2Current = 0; // ток канала 2
@@ -150,9 +156,25 @@ void loopADC()
 
       // вычислили напряжение, теперь вычисляем ток по формуле: 3В = 5А. Для этого напряжение надо умножить на 5, и разделить на 3
       
-      channel1Current = (channel1Avg*5)/3;
-      channel2Current = (channel2Avg*5)/3;
-      channel3Current = (channel3Avg*5)/3;
+      channel1Current = (COEFF_1*channel1Avg)/COEFF_2;
+      channel2Current = (COEFF_1*channel2Avg)/COEFF_2;
+      channel3Current = (COEFF_1*channel3Avg)/COEFF_2;
+
+      // отсекаем минимальный нижний порог
+      if(channel1Current <= CURRENT_MIN_TREAT_AS_ZERO)
+      {
+        channel1Current = 0;
+      }
+
+      if(channel2Current <= CURRENT_MIN_TREAT_AS_ZERO)
+      {
+        channel2Current = 0;
+      }
+
+      if(channel3Current <= CURRENT_MIN_TREAT_AS_ZERO)
+      {
+        channel3Current = 0;
+      }
 
 
       // не забываем чистить за собой, подготавливая к следующему обновлению
@@ -535,8 +557,6 @@ void Screen1::drawCurrent(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT);
   uint8_t fontHeight = FONT_HEIGHT(dc);
   const uint8_t y_spacing = 1;
-
-  const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
   
   uint16_t curX = 190;
   uint16_t curY = 36;  
