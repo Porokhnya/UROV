@@ -535,6 +535,8 @@ void Screen1::drawCurrent(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT);
   uint8_t fontHeight = FONT_HEIGHT(dc);
   const uint8_t y_spacing = 1;
+
+  const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
   
   uint16_t curX = 190;
   uint16_t curY = 36;  
@@ -547,10 +549,12 @@ void Screen1::drawCurrent(TFTMenu* menu)
   
   if(oldChannel1Current != channel1Current)
   {
+//    DBG("CHANNEL 1 CURRENT: "); DBGLN(channel1Current);
+    
     menu->getRusPrinter()->print(oldCurrentString1.c_str(),curX,curY,bgcolor,bgcolor);
     
     oldChannel1Current = channel1Current;
-    oldCurrentString1 = formatFloat(float(oldChannel1Current)/10000,2);
+    oldCurrentString1 = formatFloat(float(oldChannel1Current)/CURRENT_DIVIDER,2);
     oldCurrentString1 += "A";
 
     menu->getRusPrinter()->print(oldCurrentString1.c_str(),curX,curY,bgcolor,fgcolor);
@@ -561,10 +565,12 @@ void Screen1::drawCurrent(TFTMenu* menu)
 
  if(oldChannel2Current != channel2Current)
   {
+//    DBG("CHANNEL 2 CURRENT: "); DBGLN(channel2Current);
+    
     menu->getRusPrinter()->print(oldCurrentString2.c_str(),curX,curY,bgcolor,bgcolor);
     
     oldChannel2Current = channel2Current;
-    oldCurrentString2 = formatFloat(float(oldChannel2Current)/10000,2);
+    oldCurrentString2 = formatFloat(float(oldChannel2Current)/CURRENT_DIVIDER,2);
     oldCurrentString2 += "A";
 
     menu->getRusPrinter()->print(oldCurrentString2.c_str(),curX,curY,bgcolor,fgcolor);
@@ -576,10 +582,13 @@ void Screen1::drawCurrent(TFTMenu* menu)
  if(oldChannel3Current != channel3Current)
   {
 
+//    DBG("CHANNEL 3 CURRENT: "); DBGLN(channel3Current);
+    
+
     menu->getRusPrinter()->print(oldCurrentString3.c_str(),curX,curY,bgcolor,bgcolor);
     
     oldChannel3Current = channel3Current;
-    oldCurrentString3 = formatFloat(float(oldChannel3Current)/10000,2);
+    oldCurrentString3 = formatFloat(float(oldChannel3Current)/CURRENT_DIVIDER,2);
     oldCurrentString3 += "A";
 
     menu->getRusPrinter()->print(oldCurrentString3.c_str(),curX,curY,bgcolor,fgcolor);
@@ -613,8 +622,8 @@ void Screen1::doUpdate(TFTMenu* menu)
 uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 {
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
-  const uint16_t lowBorder = 100; // нижняя граница, по которой ищем начало
-  const uint16_t wantedBorder = 2048; // граница синхронизации
+  const uint16_t lowBorder = 1730; // нижняя граница, по которой ищем начало
+  const uint16_t wantedBorder = 1800; // граница синхронизации
   const uint8_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
 
   if(pointsCount <= CHART_POINTS_COUNT || pointsCount <= maxPointToSeek)
