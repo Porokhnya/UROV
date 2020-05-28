@@ -4,23 +4,18 @@
 
 String formatFloat(float f, uint8_t decimalPlaces)
 {
-	int n = 10;
+	int n = 1;
 	for(uint8_t i=0;i<decimalPlaces;i++)
 	{
 		n *= 10;
 	}
-	
-	f *= n;
-	
-	int32_t t = f;
-	uint32_t d = t%n;
-	t -= d;	
-	t/=n;
-	
-	String result;
-	result = t;
-	result += '.';
-	result += d;
-	
-	return result;
+
+ String formatter;
+ formatter = "%d.%0";
+ formatter += decimalPlaces;
+ formatter += "d";
+ 
+ char buff[50] = {0};
+ sprintf(buff,formatter.c_str(), (int32_t)f, abs(int32_t(f*n))%n);
+ return buff;
 }

@@ -101,12 +101,12 @@ void loopADC()
     for(uint16_t i=0;i<countOfPoints;i++)
     {
               ch1Min = min(ch1Min,serie1[i]);
-              ch2Min = min(ch1Min,serie2[i]);
-              ch3Min = min(ch1Min,serie3[i]);
+              ch2Min = min(ch2Min,serie2[i]);
+              ch3Min = min(ch3Min,serie3[i]);
 
               ch1Max = max(ch1Max,serie1[i]);
-              ch2Max = max(ch1Max,serie2[i]);
-              ch3Max = max(ch1Max,serie3[i]);
+              ch2Max = max(ch2Max,serie2[i]);
+              ch3Max = max(ch3Max,serie3[i]);
               
     } // for
 
@@ -544,9 +544,7 @@ void Screen1::drawCurrent(TFTMenu* menu)
   word bgcolor = BLACK;
   word fgcolor = RED;
 
-  // не забываем, что раз у нас разрядность АЦП - в микровольтах (3.3/4095 = 0.0008 В), то и результат у нас - в микроамперах
-  char buff[50] = {0};
-  
+  // не забываем, что раз у нас разрядность АЦП - в микровольтах (3.3/4095 = 0.0008 В), то и результат у нас - в микроамперах  
   if(oldChannel1Current != channel1Current)
   {
 //    DBG("CHANNEL 1 CURRENT: "); DBGLN(channel1Current);
