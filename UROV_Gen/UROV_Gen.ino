@@ -35,6 +35,50 @@ void screenAction(AbstractTFTScreen* screen)
    screenIdleTimer = millis();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void checkTemperatureAlert()
+{
+  DS18B20Temperature t1 = TempSensors.getTemperature(0);
+  DS18B20Temperature t2 = TempSensors.getTemperature(1);
+
+  int8_t alarmBorder =  Settings.getTemperatureAlertBorder();
+
+  bool hasAlarm = false;
+  
+  if(t1.hasData())
+  {
+    int t = t1.Whole;
+    if(t1.Negative)
+    {
+      t = -t;
+    }
+
+    if(t >= alarmBorder)
+    {
+      hasAlarm = true;
+    }
+  }
+
+  if(t2.hasData())
+  {
+    int t = t2.Whole;
+    if(t2.Negative)
+    {
+      t = -t;
+    }
+
+    if(t >= alarmBorder)
+    {
+      hasAlarm = true;
+    }
+  }
+
+  if(hasAlarm) // есть превышение по перегреву, выключаем шунты
+  {
+      Relay_Shunt1.off();
+      Relay_Shunt2.off();   
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void setup() 
 {
   Serial.begin(SERIAL_SPEED);
@@ -163,6 +207,8 @@ void setup()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loop() 
 {
+
+  checkTemperatureAlert(); // проверяем по перегреву
 
 #ifndef _DELAYED_EVENT_OFF
   CoreDelayedEvent.update();

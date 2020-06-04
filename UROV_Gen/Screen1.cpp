@@ -354,6 +354,7 @@ void Screen1::doUpdate(TFTMenu* menu)
 	
   drawTime(menu);
   drawRelayState(menu);
+  drawTemperature(menu);
   drawChart();
 
 #ifndef _ADC_OFF
@@ -361,16 +362,6 @@ void Screen1::doUpdate(TFTMenu* menu)
     loopADC();
 #endif // !_ADC_OFF
 	// тут обновляем внутреннее состояние
-
-
-  // проверяем на превышение температуры датчиков
-  bool hasAlarm = hasSensor1Alarm() || hasSensor2Alarm();
- 
-  if(hasAlarm) // есть превышение по перегреву, выключаем шунты
-  {
-      Relay_Shunt1.off();
-      Relay_Shunt2.off();
-  }
  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -384,7 +375,7 @@ bool Screen1::hasSensor1Alarm()
         t = -t;
       }
 
-      if(t >= TEMPERATURE_ALERT_BORDER)
+      if(t >= Settings.getTemperatureAlertBorder())
       {
         return true;
       }
@@ -403,7 +394,7 @@ bool Screen1::hasSensor2Alarm()
         t = -t;
       }
 
-      if(t >= TEMPERATURE_ALERT_BORDER)
+      if(t >= Settings.getTemperatureAlertBorder())
       {
         return true;
       }
@@ -685,8 +676,8 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
 void Screen1::doDraw(TFTMenu* menu)
 {
   drawTime(menu);
-
   drawRelayState(menu,true);
+  drawTemperature(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
   // рисуем версию ПО

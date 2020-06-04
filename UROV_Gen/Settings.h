@@ -27,6 +27,8 @@ public:
 
 	void update();
 
+  int8_t getTemperatureAlertBorder();
+
 	// возвращает настройку кол-ва импульсов на канал
 	uint16_t getChannelPulses(uint8_t channelNum);
 
