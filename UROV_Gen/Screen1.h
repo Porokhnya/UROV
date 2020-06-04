@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "DS18B20Query.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // экран номер 1
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -35,6 +36,18 @@ private:
     void drawRelayState(TFTMenu* menu, bool anyway=false);
 
     int settingsButton,relAllButton, shunt1Button, shunt2Button;
+
+    int oldFreeMemory;
+    String oldFreeMemCaption;
+    int freeMemX, freeMemY;
+
+
+    // DS18B20
+    String sensor1DisplayString, sensor2DisplayString;
+    DS18B20Temperature sensor1Temperature, sensor2Temperature;
+    bool hasSensor1Alarm();
+    bool hasSensor2Alarm();
+    void drawTemperature(TFTMenu* menu);
 
     Screen1();
 

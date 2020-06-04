@@ -128,6 +128,13 @@ void Screen1::onActivate()
 #endif // !_ADC_OFF
 
 
+    sensor1DisplayString = "";
+    sensor2DisplayString = "";
+
+
+    oldFreeMemory = -1;
+    oldFreeMemCaption = "";
+
     relAll_State = Relay_LineALL.isOn();
     relLineA_State = Relay_LineA.isOn();
     relLineB_State = Relay_LineB.isOn();
@@ -215,34 +222,130 @@ void Screen1::doSetup(TFTMenu* menu)
 #endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawTemperature(TFTMenu* menu)
+{
+    UTFT* dc = menu->getDC();
+    dc->setBackColor(VGA_BLACK);
+    dc->setFont(BigRusFont);
+  
+    DS18B20Temperature t1 = TempSensors.getTemperature(0);
+    DS18B20Temperature t2 = TempSensors.getTemperature(1);
+
+    if(t1 != sensor1Temperature)
+    {
+      sensor1Temperature = t1;
+
+      // рисуем данные с датчика
+      if(sensor1DisplayString != "")
+      {
+        dc->setColor(VGA_BLACK);
+        dc->print(sensor1DisplayString.c_str(), SENSOR_1_DRAW_X, SENSOR_1_DRAW_Y);
+        
+      }
+
+      if(hasSensor1Alarm())
+      {
+        dc->setColor(VGA_RED);
+      }
+      else
+      {
+        dc->setColor(VGA_WHITE);
+      }
+
+      sensor1DisplayString = "T1: ";
+      sensor1DisplayString += sensor1Temperature;
+      dc->print(sensor1DisplayString.c_str(), SENSOR_1_DRAW_X, SENSOR_1_DRAW_Y);
+    }
+
+
+    if(t2 != sensor2Temperature)
+    {
+      sensor2Temperature = t2;
+      
+      // рисуем данные с датчика
+      if(sensor2DisplayString != "")
+      {
+        dc->setColor(VGA_BLACK);
+        dc->print(sensor2DisplayString.c_str(), SENSOR_2_DRAW_X, SENSOR_2_DRAW_Y);
+      }
+
+      if(hasSensor2Alarm())
+      {
+        dc->setColor(VGA_RED);
+      }
+      else
+      {
+        dc->setColor(VGA_WHITE);
+      }
+
+
+      sensor2DisplayString = "T2: ";
+      sensor2DisplayString += sensor2Temperature;
+      dc->print(sensor2DisplayString.c_str(), SENSOR_2_DRAW_X, SENSOR_2_DRAW_Y);
+    }    
+
+
+  dc->setFont(SmallRusFont);   
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawTime(TFTMenu* menu)
 {
+    UTFT* dc = menu->getDC();
+    dc->setColor(VGA_WHITE);
+    dc->setBackColor(VGA_BLACK);
+    dc->setFont(SmallRusFont);
+  
 #ifndef _DISABLE_DRAW_TIME
     DS3231Time tm = RealtimeClock.getTime();
     if (oldsecond != tm.second)
     {
         oldsecond = tm.second;
       // получаем компоненты даты в виде строк
-      UTFT* dc = menu->getDC();
-      dc->setColor(VGA_WHITE);
-      dc->setBackColor(VGA_BLACK);
-      dc->setFont(SmallRusFont);
       String strDate = RealtimeClock.getDateStr(tm);
       String strTime = RealtimeClock.getTimeStr(tm);
   
       // печатаем их
       dc->print(strDate.c_str(), 5, 21);
       dc->print(strTime.c_str(), 90, 21);
-  
-#ifndef _DISABLE_DRAW_RAM_ON_SCREEN
-      String str = "RAM: ";
-      str += getFreeMemory();
-      Screen.print(str.c_str(), 10,143);
-#endif // !_DISABLE_DRAW_RAM_ON_SCREEN
-      
+        
     }
 
 #endif // !_DISABLE_DRAW_TIME
+
+
+#ifndef _DISABLE_DRAW_RAM_ON_SCREEN
+
+        int freeMem = getFreeMemory();
+        
+        if(oldFreeMemory != freeMem)
+        {
+          oldFreeMemory = freeMem;
+
+          if(oldFreeMemCaption != "") // инфа по свободной памяти изменилась, стираем надпись фоновым цветом
+          {
+            dc->setColor(VGA_BLACK);
+            menu->print(oldFreeMemCaption.c_str(), freeMemX,freeMemY);
+            dc->setColor(VGA_WHITE);
+            oldFreeMemCaption = "";
+          }
+          
+          oldFreeMemCaption = "RAM: ";
+          oldFreeMemCaption += freeMem;
+    
+          uint16_t w = dc->getDisplayXSize();
+          uint8_t fw = dc->getFontXsize();
+
+          int strL = menu->print(oldFreeMemCaption.c_str(),0,0,0,true);
+          int strW = strL*fw;
+        
+          freeMemY = 1;
+          freeMemX = w - strW - 3;
+      
+          menu->print(oldFreeMemCaption.c_str(), freeMemX,freeMemY);
+        }
+
+#endif // !_DISABLE_DRAW_RAM_ON_SCREEN
+
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -258,8 +361,56 @@ void Screen1::doUpdate(TFTMenu* menu)
     loopADC();
 #endif // !_ADC_OFF
 	// тут обновляем внутреннее состояние
-}
 
+
+  // проверяем на превышение температуры датчиков
+  bool hasAlarm = hasSensor1Alarm() || hasSensor2Alarm();
+ 
+  if(hasAlarm) // есть превышение по перегреву, выключаем шунты
+  {
+      Relay_Shunt1.off();
+      Relay_Shunt2.off();
+  }
+ 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool Screen1::hasSensor1Alarm()
+{
+ if(sensor1Temperature.hasData())
+  {
+      int t = sensor1Temperature.Whole;
+      if(sensor1Temperature.Negative)
+      {
+        t = -t;
+      }
+
+      if(t >= TEMPERATURE_ALERT_BORDER)
+      {
+        return true;
+      }
+  }  
+
+  return false;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool Screen1::hasSensor2Alarm()
+{
+ if(sensor2Temperature.hasData())
+  {
+      int t = sensor2Temperature.Whole;
+      if(sensor2Temperature.Negative)
+      {
+        t = -t;
+      }
+
+      if(t >= TEMPERATURE_ALERT_BORDER)
+      {
+        return true;
+      }
+  }  
+
+  return false;
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 {
@@ -357,7 +508,7 @@ void Screen1::drawChart()
   inDrawingChart = true;    
 	// рисуем сетку
 	int gridX = 5; // начальная координата сетки по X
-	int gridY = 20; // начальная координата сетки по Y
+	int gridY = 40; // начальная координата сетки по Y
 	int columnsCount = 6; // 5 столбцов
 	int rowsCount = 4; // 6 строк
 	int columnWidth = 25; // ширина столбца
@@ -551,7 +702,7 @@ void Screen1::doDraw(TFTMenu* menu)
   int strL = menu->print(str.c_str(),0,0,0,true);
   int strW = strL*fw;
 
-  int top = 1;
+  int top = 21;
   int left = w - strW - 3;
 
   menu->print(str.c_str(),left,top);

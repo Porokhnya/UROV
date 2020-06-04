@@ -16,11 +16,11 @@ Screen2::Screen2() : AbstractTFTScreen("Settings")
 void Screen2::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  filesButton = screenButtons->addButton(5, 2, 210, 30, "Файлы");
-  sdScreenButton = screenButtons->addButton(5, 37, 210, 30, "SD");
-  adjustTimeButton = screenButtons->addButton( 5, 72, 210, 30, "ЧАСЫ");
-  paramsScreenButton = screenButtons->addButton(5, 107, 210, 30, "Параметры");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  filesButton = screenButtons->addButton(5, 22, 210, 30, "Файлы");
+  sdScreenButton = screenButtons->addButton(5, 57, 210, 30, "SD");
+  adjustTimeButton = screenButtons->addButton( 5, 92, 210, 30, "ЧАСЫ");
+  paramsScreenButton = screenButtons->addButton(5, 127, 210, 30, "Параметры");
+  backButton = screenButtons->addButton(5, 162, 210, 30, "ВЫХОД");
 
 
   // добавляем разные подэкраны

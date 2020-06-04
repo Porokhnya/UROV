@@ -74,6 +74,10 @@ public:
 
 	RodDirection getRodDirection() { return rodDirection; }
 	void setRodDirection(RodDirection val) { rodDirection = val; }
+
+
+  uint8_t read(int addr);
+  void write(int addr, uint8_t val);
     
   private:
 

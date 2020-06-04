@@ -23,6 +23,7 @@
 #include <Wire.h>
 #include "Endstops.h"
 #include "Relay.h"
+#include "DS18B20Query.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -71,6 +72,8 @@ void setup()
   DBGLN(F("Init settings..."));
   Settings.begin();
   DBGLN(F("Settings inited."));
+
+  TempSensors.begin();
   
   DBGLN(F("Init RTC..."));
   RealtimeClock.begin(DS3231_WIRE_NUMBER);           // запускаем их на шине I2C 1 (SDA1, SCL1);
@@ -166,6 +169,8 @@ void loop()
 #endif // _DELAYED_EVENT_OFF
 
   Settings.update();
+
+  TempSensors.update();
   
   // обновляем кнопки
   Buttons.update();
