@@ -95,7 +95,7 @@ void Screen6::onButtonPressed(TFTMenu* menu, int pressedButton)
 	
 	// обработчик нажатия на кнопку. Номера кнопок начинаются с 0 и идут в том порядке, в котором мы их добавляли
   if(pressedButton == 6)
-    menu->switchToScreen("SCREEN4"); // переключаемся на первый экран
+    menu->switchToScreen("RTCSettings"); // переключаемся на первый экран
   else if (pressedButton == 7)
   {
 	  RealtimeClock.setTime(t_temp_sec, t_temp_min, t_temp_hour, t_temp_dow, t_temp_date, t_temp_mon, t_temp_year);

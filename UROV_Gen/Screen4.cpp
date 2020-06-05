@@ -35,11 +35,17 @@ void Screen4::onButtonPressed(TFTMenu* menu, int pressedButton)
   // обработчик нажатия на кнопку. Номера кнопок начинаются с 0 и идут в том порядке, в котором мы их добавляли
  
   if (pressedButton == 0)
+  {
 	  menu->switchToScreen("DateSettings"); // переключаемся на 5 экран
+  }
   else if (pressedButton == 1)
+  {
 	  menu->switchToScreen("TimeSettings"); // переключаемся на 6 экран
+  }
   else if (pressedButton == 2)
+  {
 	  menu->switchToScreen("Settings"); // переключаемся на экран настроек
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
