@@ -257,6 +257,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
       if(sensor1Temperature.hasData())
       {
         sensor1DisplayString += char(127); // значок градуса
+        sensor1DisplayString += "C"; // значок градуса
       }
       dc->print(sensor1DisplayString.c_str(), SENSOR_1_DRAW_X, SENSOR_1_DRAW_Y);
     }
@@ -289,6 +290,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
       if(sensor2Temperature.hasData())
       {
         sensor1DisplayString += char(127); // значок градуса
+        sensor2DisplayString += "C"; // значок градуса
       }
       
       dc->print(sensor2DisplayString.c_str(), SENSOR_2_DRAW_X, SENSOR_2_DRAW_Y);
