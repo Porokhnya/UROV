@@ -498,7 +498,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
       
       if(sensor2Temperature.hasData())
       {
-        sensor1DisplayString += char(127); // значок градуса
+        sensor2DisplayString += char(127); // значок градуса
         sensor2DisplayString += "C"; // значок градуса
       }
       
