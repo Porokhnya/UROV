@@ -42,6 +42,12 @@ private:
     int freeMemX, freeMemY;
 
 
+    uint16_t oldChannel1Current, oldChannel2Current, oldChannel3Current;
+    String oldCurrentString1,oldCurrentString2,oldCurrentString3;
+    void drawCurrent(TFTMenu* menu);
+
+
+
     // DS18B20
     String sensor1DisplayString, sensor2DisplayString;
     DS18B20Temperature sensor1Temperature, sensor2Temperature;
