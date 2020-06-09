@@ -6,6 +6,7 @@
 #include "AT24CX.h"
 #include "InterruptHandler.h"
 #include "DelayedEvents.h"
+#include "PulsesGen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // подключаем наши экраны
 #include "Screen1.h"              // Главный экран
@@ -209,6 +210,8 @@ void setup()
 void loop() 
 {
 
+  ImpulseGenerator.update();  
+
   checkTemperatureAlert(); // проверяем по перегреву
 
 #ifndef _DELAYED_EVENT_OFF
@@ -262,7 +265,9 @@ void yield()
     return;
     
  nestedYield = true;
- 
+
+  ImpulseGenerator.update();
+  
    // обновляем прерывания
    InterruptHandler.update();
 
