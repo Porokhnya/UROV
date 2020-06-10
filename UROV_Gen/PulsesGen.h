@@ -58,5 +58,6 @@ class ImpulseGeneratorClass
 	uint8_t currentPinLevel;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-extern ImpulseGeneratorClass ImpulseGenerator;
+extern ImpulseGeneratorClass ImpulseGeneratorA;
+extern ImpulseGeneratorClass ImpulseGeneratorB;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

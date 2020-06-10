@@ -210,7 +210,8 @@ void setup()
 void loop() 
 {
 
-  ImpulseGenerator.update();  
+  ImpulseGeneratorA.update();  
+  ImpulseGeneratorB.update();  
 
   checkTemperatureAlert(); // проверяем по перегреву
 
@@ -266,7 +267,8 @@ void yield()
     
  nestedYield = true;
 
-  ImpulseGenerator.update();
+  ImpulseGeneratorA.update();
+  ImpulseGeneratorB.update();
   
    // обновляем прерывания
    InterruptHandler.update();
