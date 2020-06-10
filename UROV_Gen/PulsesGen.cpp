@@ -4,6 +4,7 @@
 #include "PulsesGen.h"
 #include "Settings.h"
 #include "DueTimer.h"
+#include "digitalWriteFast.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const uint8_t IMPULSE_PIN_A = 53;    // НОМЕР ПИНА A, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t IMPULSE_PIN_B = 49;    // НОМЕР ПИНА B, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
@@ -17,7 +18,7 @@ volatile bool timerStarted = false;
 volatile uint8_t timerUsed = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
-{
+{  
   ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
 }
@@ -25,6 +26,7 @@ void genUpdate()
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 {
   pin = p;
+  
   workMode = igNothing;
   pList = NULL;
   memAddress = 0;
@@ -38,9 +40,9 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
-  pinMode(pin,OUTPUT);
+  pinModeFast(pin,OUTPUT);
   currentPinLevel = !PULSE_ON_LEVEL;
-  digitalWrite(pin,currentPinLevel);
+  digitalWriteFast(pin,currentPinLevel);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::timerStart()
@@ -198,8 +200,9 @@ void ImpulseGeneratorClass::wipe()
   
   workMode = igNothing;
   
-  currentPinLevel = !PULSE_ON_LEVEL;
-  digitalWrite(pin,currentPinLevel);
+  currentPinLevel = !PULSE_ON_LEVEL;  
+  digitalWriteFast(pin,currentPinLevel);
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::start(const String& fileName)
@@ -276,7 +279,8 @@ void ImpulseGeneratorClass::update()
     if(!done) // ещё не закончили работу, время паузы вышло, меняем уровень на пине
     {
       currentPinLevel = !currentPinLevel;
-      digitalWrite(pin,currentPinLevel);
+      
+      digitalWriteFast(pin,currentPinLevel);
 
       lastMicros = micros(); // не забываем, что надо засечь текущее время
     }

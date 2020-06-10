@@ -17,7 +17,7 @@ class ImpulseGeneratorClass
 {
   public:
 
-  ImpulseGeneratorClass(uint8_t pinNumber);
+  ImpulseGeneratorClass(uint8_t pin);
 	
 	void start(const String& fileName);
 	void start(int memAddr);
@@ -37,6 +37,7 @@ class ImpulseGeneratorClass
   private:
 
   uint8_t pin;
+  
   void pinConfig();
   void timerConfig();
 
