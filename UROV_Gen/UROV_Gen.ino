@@ -6,7 +6,6 @@
 #include "AT24CX.h"
 #include "InterruptHandler.h"
 #include "DelayedEvents.h"
-#include "PulsesGen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // подключаем наши экраны
 #include "Screen1.h"              // Главный экран
@@ -203,15 +202,13 @@ void setup()
   Serial.print(F("UROV "));
   Serial.println(SOFTWARE_VERSION);
 
+
   setupDone = true;
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void loop() 
 {
-
-  ImpulseGeneratorA.update();  
-  ImpulseGeneratorB.update();  
 
   checkTemperatureAlert(); // проверяем по перегреву
 
@@ -266,9 +263,6 @@ void yield()
     return;
     
  nestedYield = true;
-
-  ImpulseGeneratorA.update();
-  ImpulseGeneratorB.update();
   
    // обновляем прерывания
    InterruptHandler.update();

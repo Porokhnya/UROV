@@ -38,6 +38,10 @@ class ImpulseGeneratorClass
 
   uint8_t pin;
   void pinConfig();
+  void timerConfig();
+
+  void timerStart();
+  void timerStop();
 
   uint32_t getNextPauseTime(bool& done);
 

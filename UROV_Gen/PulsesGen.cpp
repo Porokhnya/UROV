@@ -3,6 +3,7 @@
 #include "CONFIG.h"
 #include "PulsesGen.h"
 #include "Settings.h"
+#include "DueTimer.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const uint8_t IMPULSE_PIN_A = 53;    // НОМЕР ПИНА A, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t IMPULSE_PIN_B = 49;    // НОМЕР ПИНА B, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
@@ -10,6 +11,16 @@ const uint8_t PULSE_ON_LEVEL = HIGH; // УРОВЕНЬ ВКЛЮЧЕННОГО И
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass ImpulseGeneratorA(IMPULSE_PIN_A);
 ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+volatile bool timerAttached = false;
+volatile bool timerStarted = false;
+volatile uint8_t timerUsed = 0;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void genUpdate()
+{
+  ImpulseGeneratorA.update();
+  ImpulseGeneratorB.update();
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 {
@@ -30,6 +41,41 @@ void ImpulseGeneratorClass::pinConfig()
   pinMode(pin,OUTPUT);
   currentPinLevel = !PULSE_ON_LEVEL;
   digitalWrite(pin,currentPinLevel);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseGeneratorClass::timerStart()
+{
+    timerUsed++;
+    if(!timerStarted)
+    {
+      timerStarted = true;
+      GEN_TIMER.start();
+    }  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseGeneratorClass::timerStop()
+{
+  if(timerUsed)
+  {
+    timerUsed--;
+  }
+  
+  if(!timerUsed)
+  {
+     GEN_TIMER.stop();
+     timerStarted = false;
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseGeneratorClass::timerConfig()
+{
+    if(!timerAttached)
+    {
+      timerAttached = true;
+      GEN_TIMER.attachInterrupt(genUpdate);
+      GEN_TIMER.setPeriod(GEN_TIMER_PERIOD);
+    }
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
@@ -115,6 +161,9 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::wipe()
 {
+
+  timerStop();
+  
   switch(workMode)
   {
     case igNothing: 
@@ -157,6 +206,7 @@ void ImpulseGeneratorClass::start(const String& fileName)
 {
   wipe();
   pinConfig();
+  timerConfig();
 
 #ifndef _SD_OFF
   if(!file.open(fileName.c_str(),O_READ))
@@ -167,6 +217,8 @@ void ImpulseGeneratorClass::start(const String& fileName)
   workMode = igFile;
   done = false;
 
+  timerStart();
+
 #endif // _SD_OFF
 
 }
@@ -174,6 +226,7 @@ void ImpulseGeneratorClass::start(const String& fileName)
 void ImpulseGeneratorClass::start(int memAddr)
 {
     pinConfig();
+    timerConfig();
   
     memAddress = memAddr;
     memCount = 0;
@@ -187,16 +240,21 @@ void ImpulseGeneratorClass::start(int memAddr)
 
   workMode = igEEPROM;
   done = false;
+
+  timerStart();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::start(const Vector<uint32_t>& list)
 {
   pinConfig();
+  timerConfig();
   
   pList = &list;
   listIterator = 0;
   workMode = igList;
   done = false;
+
+  timerStart();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::stop()
