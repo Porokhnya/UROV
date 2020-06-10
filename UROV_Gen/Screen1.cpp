@@ -461,7 +461,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
         dc->setColor(VGA_WHITE);
       }
 
-      sensor1DisplayString = "T1: ";
+      sensor1DisplayString = "T1:";
       sensor1DisplayString += sensor1Temperature;
       if(sensor1Temperature.hasData())
       {
@@ -493,7 +493,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
       }
 
 
-      sensor2DisplayString = "T2: ";
+      sensor2DisplayString = "T2:";
       sensor2DisplayString += sensor2Temperature;
       
       if(sensor2Temperature.hasData())
@@ -764,41 +764,44 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
     uint16_t y = RELAY_DRAW_COORD_Y;
     const uint8_t spacer = 5;
 
-    // красная кнопка
-    if(anyway || relAll_State != r_all)
-    {
-      relAll_State = r_all;
-      
-      if(relAll_State)
+    // красная кнопка 
+ 	if (anyway || relLineA_State != r_a)
+	{
+	   relLineA_State = r_a;
+
+	  if (relLineA_State)
       {
         dc->setColor(VGA_RED);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-        screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
-        screenButtons->drawButton(relAllButton);
+  /*      screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
+        screenButtons->drawButton(relAllButton);*/
       }
       else
       {
+		dc->print("A", x + 5, y + 5);
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+
+		dc->print("A", x + 5, y + 5);
         
         dc->setColor(VGA_RED);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-        screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
-        screenButtons->drawButton(relAllButton);
+		
+ /*       screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
+        screenButtons->drawButton(relAllButton);*/
       }
     }
 
     x += RELAY_BOX_SIZE + spacer;
 
     // синяя кнопка
-    if(anyway || relLineA_State != r_a)
-    {
-      relLineA_State = r_a;
+ 	if (anyway || relLineB_State != r_b)
+	{
+	  relLineB_State = r_b;
 
-      
-      if(relLineA_State)
+	  if (relLineB_State)
       {
         dc->setColor(VGA_BLUE);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -815,14 +818,12 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
 
     x += RELAY_BOX_SIZE + spacer;
 
+    // серая кнопка
+	if (anyway || relLineC_State != r_c)
+	{
+		relLineC_State = r_c;
 
-    // черная кнопка
-    if(anyway || relLineB_State != r_b)
-    {
-      relLineB_State = r_b;
-
-      
-      if(relLineB_State)
+		if (relLineC_State)
       {
         dc->setColor(VGA_WHITE);        
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -837,18 +838,19 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       }
     }
 
-    x += RELAY_BOX_SIZE + spacer;
+   x += RELAY_BOX_SIZE + spacer;
 
-    // серая кнопка
-    if(anyway || relLineC_State != r_c)
+    // черная кнопка
+    if (anyway || relAll_State != r_all)
     {
-      relLineC_State = r_c;
+	   relAll_State = r_all;
 
-      
-      if(relLineC_State)
+	   if (relAll_State)
       {
         dc->setColor(VGA_GRAY);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+		screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
+	    screenButtons->drawButton(relAllButton);
       }
       else
       {
@@ -857,6 +859,8 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
         
         dc->setColor(VGA_GRAY);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+		screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
+		screenButtons->drawButton(relAllButton);
       }
     }
 
@@ -916,7 +920,7 @@ void Screen1::doDraw(TFTMenu* menu)
   int strL = menu->print(str.c_str(),0,0,0,true);
   int strW = strL*fw;
 
-  int top = 21;
+  int top = 20;
   int left = w - strW - 3;
 
   menu->print(str.c_str(),left,top);
