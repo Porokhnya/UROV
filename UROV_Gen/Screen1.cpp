@@ -9,6 +9,7 @@
 #include "Settings.h"
 #include "Relay.h"
 #include "Utils.h"
+#include "PulsesGen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Screen1* mainScreen = NULL;        
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -22,8 +23,8 @@ const float COEFF_2 = 2.8; // второй коэффициент по пере�
 const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
 const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 100; // минимальное значение тока, которое интерпретируется как 0
 
-const uint16_t CURRENT_DRAW_X_COORD = 200; // координата по X для начала отрисовки значений токов по каналам
-const uint16_t CURRENT_DRAW_Y_COORD = 100; // координата по Y для начала отрисовки значений токов по каналам
+const uint16_t CURRENT_DRAW_X_COORD = 165; // координата по X для начала отрисовки значений токов по каналам
+const uint16_t CURRENT_DRAW_Y_COORD = 67;  // координата по Y для начала отрисовки значений токов по каналам
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // служебная информация по измерению тока
@@ -229,6 +230,45 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::startGeneratePulses()
+{
+  // делаем список импульсов энкодера
+  encoderAPulses.clear();
+  encoderBPulses.clear();
+
+  // импульсы по линии A энкодера, паузы между сменой уровня на выводе, в микросекундах
+  encoderAPulses.push_back(100);
+  encoderAPulses.push_back(200);
+  encoderAPulses.push_back(300);
+  encoderAPulses.push_back(400);
+  encoderAPulses.push_back(500);
+  encoderAPulses.push_back(600);
+  encoderAPulses.push_back(500);
+  encoderAPulses.push_back(400);
+  encoderAPulses.push_back(300);
+  encoderAPulses.push_back(200);
+  encoderAPulses.push_back(100);
+
+  // импульсы по линии B энкодера, паузы между сменой уровня на выводе, в микросекундах
+  encoderBPulses.push_back(200);
+  encoderBPulses.push_back(300);
+  encoderBPulses.push_back(400);
+  encoderBPulses.push_back(500);
+  encoderBPulses.push_back(600);
+  encoderBPulses.push_back(700);
+  encoderBPulses.push_back(600);
+  encoderBPulses.push_back(500);
+  encoderBPulses.push_back(400);
+  encoderBPulses.push_back(300);
+  encoderBPulses.push_back(200);
+
+
+  // запускаем генерацию импульсов
+  ImpulseGeneratorA.start(encoderAPulses);
+  ImpulseGeneratorB.start(encoderBPulses);
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::onDeactivate()
 {
   // станем неактивными, надо выключить подписчика результатов прерываний
@@ -262,6 +302,9 @@ void Screen1::onActivate()
 
     sensor1DisplayString = "";
     sensor2DisplayString = "";
+    
+    sensor1Temperature.reset();
+    sensor2Temperature.reset();
 
 
     oldFreeMemory = -1;
@@ -321,9 +364,9 @@ void Screen1::doSetup(TFTMenu* menu)
 	// Кнопки подачи тока в УРОВ. При включении/отключении изменять цвет заполнения кнопки 
 
 
-	screenButtons->addButton(5, 210, 80, 40, "---");    // включить ток на линии rele_lineAll
-	screenButtons->addButton(95, 210, 80, 40, "---");  // кнопка шунт1 rele_shunt1
-	screenButtons->addButton(185, 210, 80, 40, "---"); // кнопка шунт2 rele_shunt2
+	encoderButton = screenButtons->addButton(5, 210, 80, 40, "ЭНК");    // включить генерацию импульсов энкодера
+	screenButtons->addButton(95, 210, 80, 40, "---");   // кнопка 
+	endButton = screenButtons->addButton(185, 210, 80, 40, "END");  // кнопка выхода из просмотра редультатов теста
 
 	relAllButton = screenButtons->addButton(5, 260, 80, 40, "ТОК");    // включить ток на линии rele_lineAll
 	shunt1Button = screenButtons->addButton(95, 260, 80, 40, "3,6А");  // кнопка шунт1 rele_shunt1
@@ -363,7 +406,7 @@ void Screen1::drawCurrent(TFTMenu* menu)
   }  
 
    UTFT* dc = menu->getDC();
-   dc->setFont(SmallRusFont);
+   dc->setFont(BigRusFont);
     
   uint8_t fontHeight = dc->getFontYsize();
   const uint8_t y_spacing = 1;
@@ -429,9 +472,11 @@ void Screen1::drawCurrent(TFTMenu* menu)
     dc->setColor(fgcolor);
     menu->print(oldCurrentString3.c_str(),curX,curY);
   }    
+
+ dc->setFont(SmallRusFont);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawTemperature(TFTMenu* menu)
+void Screen1::drawTemperature(TFTMenu* menu, bool anyway)
 {
     UTFT* dc = menu->getDC();
     dc->setBackColor(VGA_BLACK);
@@ -440,7 +485,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
     DS18B20Temperature t1 = TempSensors.getTemperature(0);
     DS18B20Temperature t2 = TempSensors.getTemperature(1);
 
-    if(t1 != sensor1Temperature)
+    if(anyway || t1 != sensor1Temperature)
     {
       sensor1Temperature = t1;
 
@@ -472,7 +517,7 @@ void Screen1::drawTemperature(TFTMenu* menu)
     }
 
 
-    if(t2 != sensor2Temperature)
+    if(anyway || t2 != sensor2Temperature)
     {
       sensor2Temperature = t2;
       
@@ -759,6 +804,9 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
 
     UTFT* dc = menu->getDC();
     dc->setBackColor(VGA_BLACK);
+	//dc->setColor(VGA_WHITE);
+	//dc->setBackColor(VGA_BLACK);
+	dc->setFont(BigRusFont);
 
     uint16_t x = RELAY_DRAW_COORD_X;
     uint16_t y = RELAY_DRAW_COORD_Y;
@@ -773,24 +821,22 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_RED);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-
-  /*      screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
-        screenButtons->drawButton(relAllButton);*/
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_RED);
+		dc->print("A", x + 12, y + 12);
       }
       else
       {
-		dc->print("A", x + 5, y + 5);
+		
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-		dc->print("A", x + 5, y + 5);
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_BLACK);
+		dc->print("A", x + 12, y + 12);
         
         dc->setColor(VGA_RED);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-
-		
- /*       screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
-        screenButtons->drawButton(relAllButton);*/
       }
     }
 
@@ -805,11 +851,19 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_BLUE);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_BLUE);
+		dc->print("B", x + 12, y + 12);
       }
       else
       {
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_BLACK);
+		dc->print("B", x + 12, y + 12);
+
         
         dc->setColor(VGA_BLUE);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -827,11 +881,18 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_WHITE);        
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+		dc->setColor(VGA_BLACK);
+		dc->setBackColor(VGA_WHITE);
+		dc->print("C", x + 12, y + 12);
       }
       else
       {
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_BLACK);
+		dc->print("C", x + 12, y + 12);
 
         dc->setColor(VGA_WHITE);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -849,6 +910,11 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_GRAY);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_GRAY);
+		dc->print("S", x + 12, y + 12);
+
 		screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
 	    screenButtons->drawButton(relAllButton);
       }
@@ -859,6 +925,10 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
         
         dc->setColor(VGA_GRAY);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
+		dc->setColor(VGA_WHITE);
+		dc->setBackColor(VGA_BLACK);
+		dc->print("S", x + 12, y + 12);
+
 		screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
 		screenButtons->drawButton(relAllButton);
       }
@@ -903,7 +973,7 @@ void Screen1::doDraw(TFTMenu* menu)
 {
   drawTime(menu);
   drawRelayState(menu,true);
-  drawTemperature(menu);
+  drawTemperature(menu,true);
   drawCurrent(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
@@ -950,6 +1020,10 @@ void Screen1::onButtonPressed(TFTMenu* menu, int pressedButton)
  {
     Relay_Shunt2.switchState();
  }
+ else if(pressedButton == encoderButton)
+ {
+   startGeneratePulses();
+ }
 #endif // !_DISABLE_MAIN_SCREEN_BUTTONS
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -962,3 +1036,10 @@ int Screen1::getFreeMemory()
 	return (stack_ptr - heapend + mi.fordblks);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+Изменение в строках
+25,26, 366, 433, 324, 326
+
+
+
+*/

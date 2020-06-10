@@ -35,7 +35,11 @@ private:
     bool relAll_State, relLineA_State, relLineB_State, relLineC_State, relShunt1_State, relShunt2_State;
     void drawRelayState(TFTMenu* menu, bool anyway=false);
 
-    int settingsButton,relAllButton, shunt1Button, shunt2Button;
+    int settingsButton,relAllButton, shunt1Button, shunt2Button, encoderButton, endButton;
+
+    void startGeneratePulses();
+    Vector<uint32_t> encoderAPulses;
+    Vector<uint32_t> encoderBPulses;
 
     int oldFreeMemory;
     String oldFreeMemCaption;
@@ -53,7 +57,7 @@ private:
     DS18B20Temperature sensor1Temperature, sensor2Temperature;
     bool hasSensor1Alarm();
     bool hasSensor2Alarm();
-    void drawTemperature(TFTMenu* menu);
+    void drawTemperature(TFTMenu* menu, bool anyway=false);
 
     Screen1();
 

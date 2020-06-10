@@ -13,9 +13,7 @@ typedef struct _ds_temp
 
   _ds_temp()
   {
-    Negative = false;
-    Whole = NO_TEMPERATURE_DATA;
-    Fract = 0; 
+    reset();
   }
 
   bool operator==(const _ds_temp& rhs)
@@ -31,6 +29,13 @@ typedef struct _ds_temp
   bool hasData() const
   {
     return (Whole != NO_TEMPERATURE_DATA);
+  }
+
+  void reset()
+  {
+    Negative = false;
+    Whole = NO_TEMPERATURE_DATA;
+    Fract = 0;     
   }
 
   operator String() const;
