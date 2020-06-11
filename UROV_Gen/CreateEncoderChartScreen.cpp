@@ -10,7 +10,7 @@ CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("Create
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  backButton = screenButtons->addButton( 10 ,  30, 200,  50, "ВЕРНУТЬСЯ");
+  backButton = screenButtons->addButton( 20 ,  250, 160,  40, "ЗАВЕРШИТЬ");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
@@ -21,16 +21,21 @@ void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
 void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
 {
   UTFT* dc = menu->getDC();
+  dc->setColor(VGA_RED);
+  dc->setBackColor(VGA_WHITE);
+  
+  // тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
+  menu->print("Экран номер 3", 20, 15);
 
 
   // рисуем сетку
   RGBColor gridColor = { 0,200,0 }; // цвет сетки
-  int gridX = 10; // стартовая координата по X для сетки
-  int gridY = 10; // стартовая координата по Y для сетки
-  int columnsCount = 5; // количество столбцов сетки
-  int rowsCount = 10; // количество строк сетки
-  int columnWidth = 20; // ширина столбца
-  int rowHeight = 20; // высота строки
+  int gridX = 20; // стартовая координата по X для сетки
+  int gridY = 30; // стартовая координата по Y для сетки
+  int columnsCount = 6; // количество столбцов сетки
+  int rowsCount = 4; // количество строк сетки
+  int columnWidth = 50; // ширина столбца
+  int rowHeight = 50; // высота строки
   
   Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
 }
