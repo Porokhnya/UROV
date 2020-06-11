@@ -24,6 +24,7 @@
 #include "Endstops.h"
 #include "Relay.h"
 #include "DS18B20Query.h"
+#include "Buzzer.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -201,6 +202,9 @@ void setup()
 
   Serial.print(F("UROV "));
   Serial.println(SOFTWARE_VERSION);
+
+  Buzzer.begin();
+  Buzzer.buzz();
 
 
   setupDone = true;
