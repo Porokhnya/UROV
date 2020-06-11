@@ -301,7 +301,7 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  inductiveSensorButton = screenButtons->addButton(5, 2, 210, 30, "Инд. датчик");
+  createEncoderChartButton = screenButtons->addButton(5, 2, 210, 30, "График создать");
   transformerButton = screenButtons->addButton(5, 37, 210, 30, "Пороги транс.");
   acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
   relayDelayButton = screenButtons->addButton( 5, 107, 210, 30, "Задержка имп.");
@@ -323,8 +323,8 @@ void ParamsScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
     menu->switchToScreen("Settings");
-  else if(pressedButton == inductiveSensorButton)
-    menu->switchToScreen("InductiveSensorScreen");
+  else if(pressedButton == createEncoderChartButton)
+    menu->switchToScreen("CreateEncoderChartScreen");
   else if(pressedButton == transformerButton)
     menu->switchToScreen("TransformerScreen");
   else if(pressedButton == acsDelayButton)

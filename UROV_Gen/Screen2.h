@@ -194,7 +194,7 @@ protected:
 private:
       ParamsScreen();
 
-      int inductiveSensorButton, transformerButton, acsDelayButton, relayDelayButton, backButton;
+      int createEncoderChartButton, transformerButton, acsDelayButton, relayDelayButton, backButton;
   
   
 };

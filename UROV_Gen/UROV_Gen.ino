@@ -25,6 +25,7 @@
 #include "Relay.h"
 #include "DS18B20Query.h"
 #include "Buzzer.h"
+#include "CreateEncoderChartScreen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -178,6 +179,9 @@ void setup()
   // добавляем 6 экран. Установка даты
   Screen.addScreen(Screen6::create());
 #endif // !_SCREEN_6_OFF
+
+
+  Screen.addScreen(CreateEncoderChartScreen::create());
 
   DBGLN(F("Add interrupt screen..."));
   // добавляем экран с графиком прерываний
