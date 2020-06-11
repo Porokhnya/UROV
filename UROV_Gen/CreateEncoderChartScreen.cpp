@@ -21,11 +21,6 @@ void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
 void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
 {
   UTFT* dc = menu->getDC();
-  dc->setColor(VGA_RED);
-  dc->setBackColor(VGA_WHITE);
-  
-  // тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
-  menu->print("Экран номер 3", 10, 0);
 
 
   // рисуем сетку

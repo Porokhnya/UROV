@@ -16,11 +16,11 @@ Screen2::Screen2() : AbstractTFTScreen("Settings")
 void Screen2::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  filesButton = screenButtons->addButton(5, 22, 210, 30, "Файлы");
-  sdScreenButton = screenButtons->addButton(5, 57, 210, 30, "SD");
-  adjustTimeButton = screenButtons->addButton( 5, 92, 210, 30, "ЧАСЫ");
-  paramsScreenButton = screenButtons->addButton(5, 127, 210, 30, "Параметры");
-  backButton = screenButtons->addButton(5, 162, 210, 30, "ВЫХОД");
+  filesButton = screenButtons->addButton(5, 22, BUTTON_WIDTH, BUTTON_HEIGHT, "Файлы");
+  sdScreenButton = screenButtons->addButton(5, 57, BUTTON_WIDTH, BUTTON_HEIGHT, "SD");
+  adjustTimeButton = screenButtons->addButton( 5, 92, BUTTON_WIDTH, BUTTON_HEIGHT, "ЧАСЫ");
+  paramsScreenButton = screenButtons->addButton(5, 127, BUTTON_WIDTH, BUTTON_HEIGHT, "Параметры");
+  backButton = screenButtons->addButton(5, 162, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 
   // добавляем разные подэкраны
@@ -96,11 +96,11 @@ void FilesScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  filesListButton = screenButtons->addButton(5, 2, 210, 30, "Список");
-  ethalonScreenButton = screenButtons->addButton(5, 37, 210, 30, "Эталоны");
-  viewLogButton = screenButtons->addButton( 5, 72, 210, 30, "Логи");
-  clearDataButton = screenButtons->addButton(5, 107, 210, 30, "Очистка");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  filesListButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Список");
+  ethalonScreenButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Эталоны");
+  viewLogButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Логи");
+  clearDataButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Очистка");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -142,11 +142,11 @@ ClearDataScreen::ClearDataScreen() : AbstractTFTScreen("ClearDataScreen")
 void ClearDataScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  clearDataButton = screenButtons->addButton(5, 2, 210, 30, "Очистить");
-//  reserved = screenButtons->addButton(5, 37, 210, 30, "reserved");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  clearDataButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Очистить");
+//  reserved = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,11 +181,11 @@ void SDScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
 
   // тут настраиваемся, например, можем добавлять кнопки
-  sdInfoButton = screenButtons->addButton(5, 2, 210, 30, "SD-инфо");
-  formatSDButton = screenButtons->addButton(5, 37, 210, 30, "Формат SD");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  sdInfoButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "SD-инфо");
+  formatSDButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Формат SD");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,11 +222,11 @@ void SystemScreen::doSetup(TFTMenu* menu)
    screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
 
   // тут настраиваемся, например, можем добавлять кнопки
-  communicateButton = screenButtons->addButton(5, 2, 210, 30, "Коммуникатор");
-//  reserved = screenButtons->addButton(5, 37, 210, 30, "reserved");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  communicateButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Коммуникатор");
+//  reserved = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -260,11 +260,11 @@ void CommunicateScreen::doSetup(TFTMenu* menu)
 {
   
   // тут настраиваемся, например, можем добавлять кнопки
-  rs485Button = screenButtons->addButton(5, 2, 210, 30, "RS485");
-  wiFiButton = screenButtons->addButton(5, 37, 210, 30, "WiFi");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  rs485Button = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "RS485");
+  wiFiButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "WiFi");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -301,11 +301,11 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  createEncoderChartButton = screenButtons->addButton(5, 2, 210, 30, "График создать");
-  transformerButton = screenButtons->addButton(5, 37, 210, 30, "Пороги транс.");
-  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
-  relayDelayButton = screenButtons->addButton( 5, 107, 210, 30, "Задержка имп.");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  createEncoderChartButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "График создать");
+  transformerButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Пороги транс.");
+  acsDelayButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
+  relayDelayButton = screenButtons->addButton( 5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка имп.");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -344,11 +344,11 @@ InductiveSensorScreen::InductiveSensorScreen() : AbstractTFTScreen("InductiveSen
 void InductiveSensorScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  pulsesCountButton = screenButtons->addButton(5, 2, 210, 30, "Импульсы");
-  pulseDeltaButton = screenButtons->addButton(5, 37, 210, 30, "Дельты");
-  motoresourceButton = screenButtons->addButton( 5, 72, 210, 30, "Ресурс тек.");
-  motoresourceMaxButton = screenButtons->addButton(5, 107, 210, 30, "Ресурс макс.");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  pulsesCountButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Импульсы");
+  pulseDeltaButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Дельты");
+  motoresourceButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Ресурс тек.");
+  motoresourceMaxButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Ресурс макс.");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -394,11 +394,11 @@ void PulsesCountScreen::doSetup(TFTMenu* menu)
   //DEPRECATED: channel3PulsesVal = Settings.getChannelPulses(2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1PulsesVal.c_str());
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, 30, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1PulsesVal.c_str());
   //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2PulsesVal.c_str());
   //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3PulsesVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
   //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,VGA_BLACK);
@@ -487,11 +487,11 @@ void PulsesDeltaScreen::doSetup(TFTMenu* menu)
   //DEPRECATED: channel3DeltaVal = Settings.getChannelDelta(2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1DeltaVal.c_str());
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, 30, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1DeltaVal.c_str());
   //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2DeltaVal.c_str());
   //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3DeltaVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
   //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,VGA_BLACK);
@@ -585,12 +585,12 @@ void MotoresourceScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1MotoresourceVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2MotoresourceVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3MotoresourceVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1MotoresourceVal.c_str());
+  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, BUTTON_HEIGHT, channel2MotoresourceVal.c_str());
+  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, BUTTON_HEIGHT, channel3MotoresourceVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
   //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,VGA_BLACK);
@@ -698,12 +698,12 @@ void MotoresourceMaxScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1MotoresourceVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2MotoresourceVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3MotoresourceVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1MotoresourceVal.c_str());
+  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, BUTTON_HEIGHT, channel2MotoresourceVal.c_str());
+  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, BUTTON_HEIGHT, channel3MotoresourceVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
   //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,VGA_BLACK);
@@ -799,11 +799,11 @@ TransformerScreen::TransformerScreen() : AbstractTFTScreen("TransformerScreen")
 void TransformerScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  borderMaxButton = screenButtons->addButton(5, 2, 210, 30, "Порог макс.");
-  borderMinButton = screenButtons->addButton(5, 37, 210, 30, "Порог мин.");
-//  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  borderMaxButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Порог макс.");
+  borderMinButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Порог мин.");
+//  acsDelayButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -848,10 +848,10 @@ void BorderMaxScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1BorderVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1BorderVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
 
@@ -932,10 +932,10 @@ void BorderMinScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1BorderVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1BorderVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
 
@@ -1016,10 +1016,10 @@ void AcsDelayScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1AcsDelayVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1AcsDelayVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
 
@@ -1100,10 +1100,10 @@ void RelayDelayScreen::doSetup(TFTMenu* menu)
   onActivate();
   
   // тут настраиваемся, например, можем добавлять кнопки
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1RelayDelayVal.c_str());
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  channel1Button = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, channel1RelayDelayVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, BUTTON_HEIGHT, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,VGA_BLACK);
 
@@ -1174,11 +1174,11 @@ FilesListScreen::FilesListScreen() : AbstractTFTScreen("FilesListScreen")
 void FilesListScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  viewChartsButton = screenButtons->addButton(5, 2, 210, 30, "Графики");
-//  reserved = screenButtons->addButton(5, 37, 210, 30, "reserved");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  viewChartsButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Графики");
+//  reserved = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1211,11 +1211,11 @@ EthalonScreen::EthalonScreen() : AbstractTFTScreen("EthalonScreen")
 void EthalonScreen::doSetup(TFTMenu* menu)
 {
 
-  viewEthalonButton = screenButtons->addButton(5, 2, 210, 30, "Просмотр");
-  createEthalonButton = screenButtons->addButton(5, 37, 210, 30, "Создание");
-  singleButton = screenButtons->addButton( 5, 72, 210, 30, "Однократный");
-  ethalonFlagButton = screenButtons->addButton(5, 107, 210, 30, "Флаг эталон");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  viewEthalonButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Просмотр");
+  createEthalonButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Создание");
+  singleButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Однократный");
+  ethalonFlagButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Флаг эталон");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1262,11 +1262,11 @@ EthalonChartScreen::EthalonChartScreen() : AbstractTFTScreen("EthalonChartScreen
 void EthalonChartScreen::doSetup(TFTMenu* menu)
 {
 
-  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-  //reserved = screenButtons->addButton(5, 37, 210, 30, "reserved");
-  //reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-  //reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  //reserved = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  //reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  //reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1329,12 +1329,12 @@ void EthalonRecordScreen::doSetup(TFTMenu* menu)
   channel1SaveChannel = /*channel2SaveChannel = channel3SaveChannel =*/ -1;
   currentDrawState = 0;
 
-//  reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 37, 210, 30, "reserved");
-//  reserved = screenButtons->addButton( 5, 72, 210, 30, "reserved");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
-  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
-  saveButton = screenButtons->addButton(113, 142, 94, 30, "СОХР");
+//  reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  backButton = screenButtons->addButton(5, 142, 100, BUTTON_HEIGHT, "ВЫХОД");
+  saveButton = screenButtons->addButton(113, 142, 94, BUTTON_HEIGHT, "СОХР");
 
   uint16_t curX = 162;
   uint16_t curY = 20; 
@@ -2044,12 +2044,12 @@ void ListFilesScreen::doSetup(TFTMenu* menu)
 
   screenButtons->setSymbolFont(Various_Symbols_32x32);
   
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
   
   if(viewType == vtEthalonsListing)
     viewFileButton = screenButtons->addButton(128, 2, 90, 50, "|", BUTTON_SYMBOL);
   else if(viewType == vtLogsListing)
-    viewFileButton = screenButtons->addButton(128, 2, 90, 30, "=>COM");
+    viewFileButton = screenButtons->addButton(128, 2, 90, BUTTON_HEIGHT, "=>COM");
 
   UTFT* dc = menu->getDC();
   int screenWidth = dc->getDisplayXSize();
@@ -2216,7 +2216,7 @@ void SDInfoScreen::doSetup(TFTMenu* menu)
   // инициализируем SD
   hasSD = SDInit::InitSD();
   
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
   // собираем информацию об SD
   collectSDInfo();
@@ -2337,11 +2337,11 @@ void SDFormatScreen::doSetup(TFTMenu* menu)
 
   if(hasSD)
   {
-    formatButton = screenButtons->addButton( 5, 2, 210, 30, "Формат");
-    clearFatButton = screenButtons->addButton(5, 37, 210, 30, "Стереть всё");
+    formatButton = screenButtons->addButton( 5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Формат");
+    clearFatButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Стереть всё");
   }
   
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
   // добавляем экран форматирования
   menu->addScreen(SDFormatterScreen::create());  

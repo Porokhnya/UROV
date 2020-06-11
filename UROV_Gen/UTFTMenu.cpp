@@ -241,8 +241,8 @@ MessageBoxScreen::MessageBoxScreen() : AbstractTFTScreen("MessageBox")
 void MessageBoxScreen::doSetup(TFTMenu* menu)
 {
 
-  yesButton = screenButtons->addButton(5, 107, 210, 30, "ДА");
-  noButton = screenButtons->addButton(5, 142, 210, 30, "НЕТ");
+  yesButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "ДА");
+  noButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "НЕТ");
 
 
 }

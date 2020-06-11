@@ -9,10 +9,10 @@ Screen4::Screen4() : AbstractTFTScreen("RTCSettings")
 void Screen4::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
-  screenButtons->addButton( 5, 2, 210, 30, "Уст.время");
-  screenButtons->addButton(5, 37, 210, 30, "Уст.дату");
+  screenButtons->addButton( 5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Уст.время");
+  screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Уст.дату");
  
-  screenButtons->addButton(5, 140, 210, 30, "ВЫХОД");  //5, 140, 165, 30
+  screenButtons->addButton(5, 140, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");  //5, 140, 165, 30
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen4::doUpdate(TFTMenu* menu)
