@@ -18,10 +18,10 @@ Screen1* mainScreen = NULL;
 const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
 
 const float COEFF_1 = 5.0; // первый коэффициент по пересчёту тока
-const float COEFF_2 = 2.8; // второй коэффициент по пересчёту тока
+const float COEFF_2 = 3.795; // второй коэффициент по пересчёту тока
 
 const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
-const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 100; // минимальное значение тока, которое интерпретируется как 0
+const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 200; // минимальное значение тока, которое интерпретируется как 0
 
 const uint16_t CURRENT_DRAW_X_COORD = 165; // координата по X для начала отрисовки значений токов по каналам
 const uint16_t CURRENT_DRAW_Y_COORD = 67;  // координата по Y для начала отрисовки значений токов по каналам
