@@ -13,7 +13,7 @@ class BuzzerClass
 
    private:
    
-    static void buzzOffHandler(void* param);
+    static void buzzOffHandler();//void* param);
     void buzzLevel(bool on);
     bool active;
   

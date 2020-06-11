@@ -1,4 +1,4 @@
-#include "DelayedEvents.h"
+#include "DueTimer.h"
 #include "Buzzer.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 BuzzerClass Buzzer;
@@ -12,12 +12,16 @@ void BuzzerClass::begin()
 {
   pinMode(BUZZER_PIN,OUTPUT);
   digitalWrite(BUZZER_PIN,!BUZZER_LEVEL);
+  
+  BUZZER_TIMER.attachInterrupt(buzzOffHandler);
+  BUZZER_TIMER.setPeriod(1000ul*BUZZER_DURATION);
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void BuzzerClass::stop()
 {
   buzzLevel(false);
+  BUZZER_TIMER.stop();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void BuzzerClass::buzz()
@@ -27,8 +31,9 @@ void BuzzerClass::buzz()
 
   active = true;
   buzzLevel(true);
-    
-  CoreDelayedEvent.raise(BUZZER_DURATION,buzzOffHandler,this);
+
+  BUZZER_TIMER.start();
+  //CoreDelayedEvent.raise(BUZZER_DURATION,buzzOffHandler,this);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void BuzzerClass::buzzLevel(bool on)
@@ -36,10 +41,16 @@ void BuzzerClass::buzzLevel(bool on)
   digitalWrite(BUZZER_PIN, on ? BUZZER_LEVEL : !BUZZER_LEVEL);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void BuzzerClass::buzzOffHandler(void* param)
+void BuzzerClass::buzzOffHandler()//(void* param)
 {
+  BUZZER_TIMER.stop();
+  Buzzer.buzzLevel(false);
+  Buzzer.active = false;
+  
+  /*
   BuzzerClass* bc = (BuzzerClass*) param;
   bc->buzzLevel(false);
   bc->active = false;
+  */
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
