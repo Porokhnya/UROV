@@ -269,7 +269,7 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
  
    double error = 0;
    double xStep = double(x1-x0)/pointsCount; // 10/100 = 0.1
-   double deltaerr = (double(deltay + abs(xStep)) / double(deltax + abs(xStep))) / (double(pointsCount)/deltax); // (2/10) / (100/10) = 0.02
+   double deltaerr = (double(deltay + 0) / double(deltax + 0)) / (double(pointsCount)/deltax); // (2/10) / (100/10) = 0.02
  
    int y = y0;
    int diry = y1 - y0;
