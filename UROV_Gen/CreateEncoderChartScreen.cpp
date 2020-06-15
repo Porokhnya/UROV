@@ -251,7 +251,51 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   */
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& resultPoints)
+{
+   int deltax = abs(x1 - x0);
+   int deltay = abs(y1 - y0);
+ 
+   float error = 0;
+   float deltaerr = ((deltay + 1) / (deltax + 1))/pointsCount;
+ 
+   int y = y0;
+   int diry = y1 - y0;
+ 
+   if(diry > 0)
+       diry = 1;
+ 
+   if(diry < 0)
+       diry = -1;
+ 
+ float xStep = float(x1-x0)/pointsCount;
+ 
+ float x = x0;
+ while(x <= x1)
+ {
+  
+  uint16_t pointX = round(x);
+  uint16_t pointY = y;
+
+  Serial.print("X="); Serial.print(pointX); Serial.print("; Y="); Serial.println(pointY);
+
+  Point pt = {pointX, pointY};
+  resultPoints.push_back(pt);
+  
+       
+       error = error + deltaerr;
+   
+    if(error >= 1.0)
+   {
+           y = y + diry;
+           error = error - 1.0;
+   }
+   
+   x += xStep;
+ }   
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
 {
 	UTFT* dc = menu->getDC();
@@ -276,6 +320,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     dc->drawLine(ptPrev.X, ptPrev.Y, END_POINT_X, END_POINT_Y);
   }
 
+  // ТЕСТОВЫЙ КОД - НАЧАЛО
+
   // выводим для теста список рассчитанных точек
   for(size_t i=0;i<computedPoints.size();i++)
   {
@@ -285,6 +331,25 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
       Serial.print(", pt.Y : ");
       Serial.println(pt.Y);    
   }
+
+  // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
+  // для упрощения теста считаем, что там 1 нас 100 точек.
+  
+  Points resultPoints; // тут массив с конечными координатами рассчитанных точек
+  Point ptFirst = chartPoints[0]; // первая точка в абсолютных координатах дисплея, поставленная пользователем
+
+  // пытаемся посчитать 100 точек, поместив их в массив resultPoints
+  creteLinePoints(START_POINT_X, ptFirst.X, START_POINT_Y, ptFirst.Y, 100, resultPoints);
+
+  // теперь пытаемся отрисовать эти точки пикселями на экране
+  dc->setColor(VGA_RED);
+  for(size_t i=0;i<resultPoints.size();i++)
+  {
+    Point pt = resultPoints[i];
+    dc->drawPixel(pt.X,pt.Y);
+  } // for
+
+  // ТЕСТОВЫЙ КОД - КОНЕЦ
 
   /*
 	pointF_X[0] = 20;
