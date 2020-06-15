@@ -159,7 +159,6 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 	if (tftTouch_point->dataAvailable() == true)
 	{
 		tftTouch_point->read();
-		int		result = -1;
 		int		touch_x = tftTouch_point->getX();
 		int		touch_y = tftTouch_point->getY();
 
@@ -196,17 +195,17 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 			Serial.print(", touch_y : ");
 			Serial.println(touch_y);
 
-    // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
-    Point ptComputed = {touch_x, touch_y};
-    computedPoints.push_back(ptComputed);
+      // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
+      Point ptComputed = {touch_x, touch_y};
+      computedPoints.push_back(ptComputed);
+    
+      Buzzer.buzz();
       
 		}
-		Buzzer.buzz();
 		while (tftTouch_point->dataAvailable() == true) {}
-		//delay(150);
-		while (tftTouch_point->dataAvailable() == false) {}
-		delay(150);
-		//while (tftTouch_point->dataAvailable() == true) {}
+
+//		while (tftTouch_point->dataAvailable() == false) {}
+//		delay(150);
 
 
     /*
