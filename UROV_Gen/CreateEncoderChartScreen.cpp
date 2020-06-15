@@ -254,11 +254,20 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& resultPoints)
 {
-   int deltax = abs(x1 - x0);
-   int deltay = abs(y1 - y0);
+
+  /*
+   рассматриваем на примере:
+    дельта по X = 10
+    дельта по Y = 5
+    кол-во точек = 100
+   */
+  
+   int deltax = abs(x1 - x0); // 10
+   int deltay = abs(y1 - y0); // 5
  
    double error = 0;
-   double deltaerr = double(deltay + 1) / (double(deltax + 1)*pointsCount);
+   double deltaerr = (double(deltay + 1) / double(deltax + 1)) / (double(pointsCount)/deltax); // (6/11) / (100/10) = 0.0545
+   double xStep = double(x1-x0)/pointsCount; // 10/100 = 0.1
  
    int y = y0;
    int diry = y1 - y0;
@@ -269,7 +278,6 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
    if(diry < 0)
        diry = -1;
  
- double xStep = double(x1-x0)/pointsCount;
  
  double x = x0;
  while(x <= x1)
