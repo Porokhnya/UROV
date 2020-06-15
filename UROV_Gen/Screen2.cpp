@@ -15,12 +15,20 @@ Screen2::Screen2() : AbstractTFTScreen("Settings")
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen2::doSetup(TFTMenu* menu)
 {
+
+	int menu_height = 30;
+	int button_gap = 15;
+
   // тут настраиваемся, например, можем добавлять кнопки
-  filesButton = screenButtons->addButton(5, 22, BUTTON_WIDTH, BUTTON_HEIGHT, "Файлы");
-  sdScreenButton = screenButtons->addButton(5, 57, BUTTON_WIDTH, BUTTON_HEIGHT, "SD");
-  adjustTimeButton = screenButtons->addButton( 5, 92, BUTTON_WIDTH, BUTTON_HEIGHT, "ЧАСЫ");
-  paramsScreenButton = screenButtons->addButton(5, 127, BUTTON_WIDTH, BUTTON_HEIGHT, "Параметры");
-  backButton = screenButtons->addButton(5, 162, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
+  filesButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Файлы");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  sdScreenButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "SD");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  adjustTimeButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ЧАСЫ");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  paramsScreenButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Параметры");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  backButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 
   // добавляем разные подэкраны
@@ -95,12 +103,20 @@ void FilesScreen::doSetup(TFTMenu* menu)
 {
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
+
+  int menu_height = 30;
+  int button_gap = 15;
+
   // тут настраиваемся, например, можем добавлять кнопки
-  filesListButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Список");
-  ethalonScreenButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Эталоны");
-  viewLogButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Логи");
-  clearDataButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Очистка");
-  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
+  filesListButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Список");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  ethalonScreenButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Эталоны");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  viewLogButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Логи");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  clearDataButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Очистка");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  backButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -180,12 +196,19 @@ void SDScreen::doSetup(TFTMenu* menu)
 {
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
 
+  int menu_height = 30;
+  int button_gap = 15;
+
   // тут настраиваемся, например, можем добавлять кнопки
-  sdInfoButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "SD-инфо");
-  formatSDButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Формат SD");
-//  reserved = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
-//  reserved = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
-  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
+  sdInfoButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "SD-инфо");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  formatSDButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Формат SD");
+  menu_height += BUTTON_HEIGHT + button_gap;
+//  reserved = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  menu_height += BUTTON_HEIGHT + button_gap;
+//  reserved = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "reserved");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  backButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -300,12 +323,19 @@ void ParamsScreen::doSetup(TFTMenu* menu)
 {
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
+  int menu_height = 30;
+  int button_gap = 15;
+
   // тут настраиваемся, например, можем добавлять кнопки
-  createEncoderChartButton = screenButtons->addButton(5, 2, BUTTON_WIDTH, BUTTON_HEIGHT, "График создать");
-  transformerButton = screenButtons->addButton(5, 37, BUTTON_WIDTH, BUTTON_HEIGHT, "Пороги транс.");
-  acsDelayButton = screenButtons->addButton( 5, 72, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
-  relayDelayButton = screenButtons->addButton( 5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка имп.");
-  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
+  createEncoderChartButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "График создать");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  transformerButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Пороги транс.");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  acsDelayButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  relayDelayButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка имп.");
+  menu_height += BUTTON_HEIGHT + button_gap;
+  backButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@ const float COEFF_1 = 5.0; // первый коэффициент по пере�
 const float COEFF_2 = 3.795; // второй коэффициент по пересчёту тока
 
 const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
-const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 200; // минимальное значение тока, которое интерпретируется как 0
+const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 900; // минимальное значение тока, которое интерпретируется как 0
 
 const uint16_t CURRENT_DRAW_X_COORD = 165; // координата по X для начала отрисовки значений токов по каналам
 const uint16_t CURRENT_DRAW_Y_COORD = 67;  // координата по Y для начала отрисовки значений токов по каналам
@@ -409,7 +409,7 @@ void Screen1::drawCurrent(TFTMenu* menu)
    dc->setFont(BigRusFont);
     
   uint8_t fontHeight = dc->getFontYsize();
-  const uint8_t y_spacing = 1;
+  const uint8_t y_spacing = 5;
   
   uint16_t curX = CURRENT_DRAW_X_COORD;
   uint16_t curY = CURRENT_DRAW_Y_COORD;  
@@ -454,7 +454,8 @@ void Screen1::drawCurrent(TFTMenu* menu)
   }  
 
  fgcolor = VGA_YELLOW;
-  curY += fontHeight + y_spacing;
+
+  curY += fontHeight + y_spacing; 
 
  if(oldChannel3Current != channel3Current)
   {
