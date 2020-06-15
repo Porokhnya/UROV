@@ -203,6 +203,7 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
       
 		}
 		while (tftTouch_point->dataAvailable() == true) {}
+    delay(500);
 
 //		while (tftTouch_point->dataAvailable() == false) {}
 //		delay(150);
