@@ -285,7 +285,7 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
  while(x <= x1)
  {
   
-  uint16_t pointX = round(x);
+  uint16_t pointX = x; // БЕЗ ROUND
   uint16_t pointY = y;
 
   Serial.print("X="); Serial.print(pointX); Serial.print("; Y="); Serial.println(pointY);
