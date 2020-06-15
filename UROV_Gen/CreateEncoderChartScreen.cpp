@@ -259,17 +259,17 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
 
   /*
    рассматриваем на примере:
-    дельта по X = 10
-    дельта по Y = 2
+    дельта по X = 2
+    дельта по Y = 10
     кол-во точек = 100
    */
   
-   int deltax = abs(x1 - x0); // 10
-   int deltay = abs(y1 - y0); // 2
+   int deltax = abs(x1 - x0); // 2
+   int deltay = abs(y1 - y0); // 10
  
    double error = 0;
-   double xStep = double(x1-x0)/pointsCount; // 10/100 = 0.1
-   double deltaerr = (double(deltay + 0) / double(deltax + 0)) / (double(pointsCount)/deltax); // (2/10) / (100/10) = 0.02
+   double xStep = double(x1-x0)/pointsCount; // 2/100 = 0.02
+   double deltaerr = (double(deltay + 0) / double(deltax + 0)) / (double(pointsCount)/deltax); // (10/2) / (100/2) = 0.1
  
    int y = y0;
    int diry = y1 - y0;
