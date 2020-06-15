@@ -204,7 +204,7 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		delay(150);
 		//while (tftTouch_point->dataAvailable() == true) {}
 
-    // у нас есть преобразовынные координаты точки, помещаем её в список рассчитанных координат
+    // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
     Point ptComputed = {touch_x, touch_y};
     computedPoints.push_back(ptComputed);
 
