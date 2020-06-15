@@ -3,7 +3,14 @@
 #include "Buzzer.h"
 
 const size_t MAX_POINTS_IN_CHART = 8; // максимальное кол-во точек на экране графика
-const uint8_t TOUCH_X_MIN = 20; // минимальная координата точки по X
+const uint16_t TOUCH_X_MIN = 20; // минимальная координата обработки тача по X
+const uint16_t TOUCH_Y_MIN = 30; // минимальная координата обработки тача по Y
+
+const uint16_t START_POINT_X = 20; // начальная координата физической точки графика на экране по X
+const uint16_t START_POINT_Y = 230;  // начальная координата физической точки графика на экране по X
+
+const uint16_t END_POINT_X = 320; // конечная координата физической точки графика на экране по X
+const uint16_t END_POINT_Y = 230;  // конечная координата физической точки графика на экране по X
 
 //int point_X[10] = { 0 };
 //int point_Y[10] = { 0 };
@@ -18,10 +25,9 @@ CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("Create
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::onActivate()
 {
-    // очищаем наш график при активации экрана
-    chartPoints.clear();
-
-    touch_x_min = TOUCH_X_MIN;
+  chartPoints.clear(); // очищаем список наших экранных точек
+  computedPoints.clear(); // очищаем список рассчитанных координат точек
+  touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
@@ -163,7 +169,7 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		pointF_Y[step_pount] = touch_y; // фактическая точко по Y
    */
 
-		if ((touch_x > touch_x_min && touch_x < 321) && (touch_y > 30 && touch_y < 231)) //Вычислять только в пределах сетки с увеличением по Х
+		if ((touch_x > touch_x_min && touch_x <= END_POINT_X) && (touch_y > TOUCH_Y_MIN && touch_y <= END_POINT_Y)) //Вычислять только в пределах сетки с увеличением по Х
 		{
 
       // добавляем новую точку в список точек
@@ -184,8 +190,8 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
      
 			menu->print(stringVar.c_str(), 320, 234);         // стрелка ограничения по Х на графике
 			dc->setFont(SmallRusFont);
-			touch_x -= 20;
-			touch_y = 230 - touch_y;
+			touch_x -= START_POINT_X;
+			touch_y = START_POINT_Y - touch_y;
 			Serial.print("touch_x : ");
 			Serial.print(touch_x);
 			Serial.print(", touch_y : ");
@@ -197,6 +203,10 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		while (tftTouch_point->dataAvailable() == false) {}
 		delay(150);
 		//while (tftTouch_point->dataAvailable() == true) {}
+
+    // у нас есть преобразовынные координаты точки, помещаем её в список рассчитанных координат
+    Point ptComputed = {touch_x, touch_y};
+    computedPoints.push_back(ptComputed);
 
     /*
 		point_X[step_pount] = touch_x;
@@ -211,8 +221,9 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 {
   drawGrid(menu); // рисуем сетку снова
 
-  // очищаем список наших точек
-  chartPoints.clear();
+  chartPoints.clear(); // очищаем список наших экранных точек
+  computedPoints.clear(); // очищаем список рассчитанных координат точек
+  touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   /*
 	step_pount = 0;    //  Количество точек в начало
@@ -238,7 +249,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   if(chartPoints.size())
   {
     // рисуем, только если есть точки в списке
-    Point ptPrev = {20,230};
+    Point ptPrev = {START_POINT_X,START_POINT_Y};
 
     for(size_t i=0;i<chartPoints.size();i++)
     {
@@ -249,7 +260,17 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     } // for
 
     // рисуем окончание графика
-    dc->drawLine(ptPrev.X, ptPrev.Y, 320, 230);
+    dc->drawLine(ptPrev.X, ptPrev.Y, END_POINT_X, END_POINT_Y);
+  }
+
+  // выводим для теста список рассчитанных точек
+  for(size_t i=0;i<computedPoints.size();i++)
+  {
+      Point pt = computedPoints[i];
+      Serial.print("pt.X : ");
+      Serial.print(pt.X);
+      Serial.print(", pt.Y : ");
+      Serial.println(pt.Y);    
   }
 
   /*
