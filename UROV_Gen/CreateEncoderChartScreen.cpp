@@ -3,6 +3,7 @@
 #include "Buzzer.h"
 
 const size_t MAX_POINTS_IN_CHART = 8; // максимальное кол-во точек на экране графика
+const uint8_t TOUCH_X_MIN = 20; // минимальная координата точки по X
 
 //int point_X[10] = { 0 };
 //int point_Y[10] = { 0 };
@@ -19,6 +20,8 @@ void CreateEncoderChartScreen::onActivate()
 {
     // очищаем наш график при активации экрана
     chartPoints.clear();
+
+    touch_x_min = TOUCH_X_MIN;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
@@ -82,6 +85,8 @@ void CreateEncoderChartScreen::drawGrid(TFTMenu* menu)
   int columnWidth = 50; // ширина столбца
   int rowHeight = 50; // высота строки
   
+  dc->setColor(VGA_BLACK);
+  dc->fillRect(gridX, gridY, gridX + 15 + (columnWidth*columnsCount), gridY + 18 + (rowHeight*rowsCount)); // Очистить экран
   Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +172,9 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 
 
 			menu->print("*", touch_x-2, touch_y - 3);  // Точка на графике
-			touch_x_min = touch_x;
+      
+			touch_x_min = touch_x; // запрещаем формировать точку по X меньше предыдущей
+      
 			menu->print(">", touch_x_min, 236);        // стрелка ограничения по Х на графике
 			dc->drawLine(20, 240, touch_x_min, 240);   // стрелка ограничения по Х на графике
 			dc->setFont(BigRusFont);
