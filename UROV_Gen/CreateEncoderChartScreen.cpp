@@ -343,7 +343,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   creteLinePoints(START_POINT_X, ptFirst.X, START_POINT_Y, ptFirst.Y, 100, resultPoints);
 
   // теперь пытаемся отрисовать эти точки пикселями на экране
-  dc->setColor(VGA_RED);
+  dc->setColor(VGA_YELLOW);
   for(size_t i=0;i<resultPoints.size();i++)
   {
     Point pt = resultPoints[i];
