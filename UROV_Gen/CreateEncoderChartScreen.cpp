@@ -335,20 +335,34 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
   // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
   // для упрощения теста считаем, что там 1 нас 100 точек.
-  
-  Points resultPoints; // тут массив с конечными координатами рассчитанных точек
-  Point ptFirst = chartPoints[0]; // первая точка в абсолютных координатах дисплея, поставленная пользователем
 
-  // пытаемся посчитать 100 точек, поместив их в массив resultPoints
-  creteLinePoints(START_POINT_X, ptFirst.X, START_POINT_Y, ptFirst.Y, 100, resultPoints);
-
-  // теперь пытаемся отрисовать эти точки пикселями на экране
-  dc->setColor(VGA_YELLOW);
-  for(size_t i=0;i<resultPoints.size();i++)
+  if(chartPoints.size())
   {
-    Point pt = resultPoints[i];
-    dc->drawPixel(pt.X,pt.Y);
-  } // for
+      Points resultPoints; // тут массив с конечными координатами рассчитанных точек
+      const uint8_t POINTS_PER_PART = 50; // сколько точек будет на один отрезок графика
+
+       Point ptPrev = {START_POINT_X,START_POINT_Y};
+  
+      for(size_t i=0;i<chartPoints.size();i++)
+      {
+        Point ptNext = chartPoints[i];
+        // пытаемся посчитать POINTS_PER_PART точек, поместив их в массив resultPoints
+        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, POINTS_PER_PART, resultPoints);
+        ptPrev = ptNext;
+      } // for
+
+    // формируем окончание графика
+    creteLinePoints(ptPrev.X, END_POINT_X, ptPrev.Y, END_POINT_Y, POINTS_PER_PART, resultPoints);      
+          
+    // теперь пытаемся отрисовать эти точки пикселями на экране
+    dc->setColor(VGA_YELLOW);
+    for(size_t i=0;i<resultPoints.size();i++)
+    {
+      Point pt = resultPoints[i];
+      dc->drawPixel(pt.X,pt.Y);
+    } // for
+
+  } // if(chartPoints.size())
 
   // ТЕСТОВЫЙ КОД - КОНЕЦ
 
