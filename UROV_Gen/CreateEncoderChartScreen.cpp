@@ -257,9 +257,8 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
    int deltax = abs(x1 - x0);
    int deltay = abs(y1 - y0);
  
-   float error = 0;
-//   float deltaerr = ((deltay + 1) / (deltax + 1))/pointsCount;
-   float deltaerr = float(deltay + 1) / (float(deltax + 1)*pointsCount);
+   double error = 0;
+   double deltaerr = double(deltay + 1) / (double(deltax + 1)*pointsCount);
  
    int y = y0;
    int diry = y1 - y0;
@@ -270,9 +269,9 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
    if(diry < 0)
        diry = -1;
  
- float xStep = float(x1-x0)/pointsCount;
+ double xStep = double(x1-x0)/pointsCount;
  
- float x = x0;
+ double x = x0;
  while(x <= x1)
  {
   
@@ -283,18 +282,18 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
 
   Point pt = {pointX, pointY};
   resultPoints.push_back(pt);
-  
-       
-       error = error + deltaerr;
+         
+  error += deltaerr;
    
     if(error >= 1.0)
    {
-           y = y + diry;
-           error = error - 1.0;
+           y += diry;
+           error -= 1.0;
    }
    
    x += xStep;
- }   
+ } // while
+   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
