@@ -19,6 +19,18 @@ typedef struct _Point
   uint16_t X;
   uint16_t Y;
 
+  _Point()
+  {
+    X = 0;
+    Y = 0;
+  }
+
+  _Point(uint16_t _x, uint16_t _y)
+  {
+    X = _x;
+    Y = _y;
+  }
+
   bool operator== (const _Point& rhs)
   {
 	  if (this == &rhs)
