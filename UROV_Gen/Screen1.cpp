@@ -80,9 +80,9 @@ void loopADC()
  
     uint16_t serieWriteIterator = 0;
 
-    uint32_t raw200V = 0;
-    uint32_t raw5V = 0;
-    uint32_t raw3V3 = 0;
+//    uint32_t raw200V = 0;
+//    uint32_t raw5V = 0;
+//    uint32_t raw3V3 = 0;
 
     
     for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++)                // получить результат измерения поканально, с интервалом 3
@@ -822,9 +822,9 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_RED);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_RED);
-		dc->print("A", x + 12, y + 12);
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_RED);
+    		dc->print("A", x + 12, y + 12);
       }
       else
       {
@@ -832,9 +832,9 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_BLACK);
-		dc->print("A", x + 12, y + 12);
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_BLACK);
+    		dc->print("A", x + 12, y + 12);
         
         dc->setColor(VGA_RED);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -852,19 +852,18 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_BLUE);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_BLUE);
-		dc->print("B", x + 12, y + 12);
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_BLUE);
+    		dc->print("B", x + 12, y + 12);
       }
       else
       {
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_BLACK);
-		dc->print("B", x + 12, y + 12);
-
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_BLACK);
+    		dc->print("B", x + 12, y + 12);
         
         dc->setColor(VGA_BLUE);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -882,18 +881,18 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
       {
         dc->setColor(VGA_WHITE);        
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-		dc->setColor(VGA_BLACK);
-		dc->setBackColor(VGA_WHITE);
-		dc->print("C", x + 12, y + 12);
+    		dc->setColor(VGA_BLACK);
+    		dc->setBackColor(VGA_WHITE);
+    		dc->print("C", x + 12, y + 12);
       }
       else
       {
         dc->setColor(VGA_BLACK);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_BLACK);
-		dc->print("C", x + 12, y + 12);
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_BLACK);
+    		dc->print("C", x + 12, y + 12);
 
         dc->setColor(VGA_WHITE);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
@@ -912,12 +911,12 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
         dc->setColor(VGA_GRAY);
         dc->fillRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
 
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_GRAY);
-		dc->print("S", x + 12, y + 12);
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_GRAY);
+    		dc->print("S", x + 12, y + 12);
 
-		screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
-	    screenButtons->drawButton(relAllButton);
+    		screenButtons->setButtonBackColor(relAllButton,VGA_GREEN);
+	      screenButtons->drawButton(relAllButton);
       }
       else
       {
@@ -926,12 +925,13 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
         
         dc->setColor(VGA_GRAY);
         dc->drawRect(x,y,x+RELAY_BOX_SIZE,y+RELAY_BOX_SIZE);
-		dc->setColor(VGA_WHITE);
-		dc->setBackColor(VGA_BLACK);
-		dc->print("S", x + 12, y + 12);
+        
+    		dc->setColor(VGA_WHITE);
+    		dc->setBackColor(VGA_BLACK);
+    		dc->print("S", x + 12, y + 12);
 
-		screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
-		screenButtons->drawButton(relAllButton);
+    		screenButtons->setButtonBackColor(relAllButton,VGA_BLUE);
+    		screenButtons->drawButton(relAllButton);
       }
     }
 

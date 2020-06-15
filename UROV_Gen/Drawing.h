@@ -16,8 +16,8 @@ typedef struct
 #pragma pack(push,1)
 typedef struct _Point
 {
-  uint16_t X;
-  uint16_t Y;
+  int X;
+  int Y;
 
   _Point()
   {
@@ -25,7 +25,7 @@ typedef struct _Point
     Y = 0;
   }
 
-  _Point(uint16_t _x, uint16_t _y)
+  _Point(int _x, int _y)
   {
     X = _x;
     Y = _y;

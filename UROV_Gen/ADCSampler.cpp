@@ -170,7 +170,7 @@ void ADCSampler::handleInterrupt()
 		uint16_t serieWriteIterator = 0;
 		uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
 
-		uint32_t serie1, serie2, serie3;
+		uint32_t serie1 = 0, serie2 = 0, serie3 = 0;
 
 		for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS, serieWriteIterator++) // получить результат измерения поканально, с интервалом 3
 		{

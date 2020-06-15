@@ -254,7 +254,7 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& resultPoints)
+void creteLinePoints(int x0, int x1, int y0, int y1, uint16_t pointsCount, Points& resultPoints)
 {
 
   /*
@@ -285,8 +285,8 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
  while(x <= x1)
  {
   
-  uint16_t pointX = x; // БЕЗ ROUND
-  uint16_t pointY = y;
+  int pointX = x; // БЕЗ ROUND
+  int pointY = y;
 
   Serial.print("X="); Serial.print(pointX); Serial.print("; Y="); Serial.println(pointY);
 
