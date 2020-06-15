@@ -258,7 +258,8 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
    int deltay = abs(y1 - y0);
  
    float error = 0;
-   float deltaerr = ((deltay + 1) / (deltax + 1))/pointsCount;
+//   float deltaerr = ((deltay + 1) / (deltax + 1))/pointsCount;
+   float deltaerr = (float(deltay + 1) / float(deltax + 1)*pointsCount);
  
    int y = y0;
    int diry = y1 - y0;
