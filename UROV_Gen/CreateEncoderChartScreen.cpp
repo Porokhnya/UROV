@@ -26,7 +26,7 @@ CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("Create
 void CreateEncoderChartScreen::onActivate()
 {
   chartPoints.clear(); // очищаем список наших экранных точек
-  computedPoints.clear(); // очищаем список рассчитанных координат точек
+//  computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton);
@@ -193,17 +193,19 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
      
 			menu->print(stringVar.c_str(), 320, 234);         // стрелка ограничения по Х на графике
 			dc->setFont(SmallRusFont);
+      
 			touch_x -= START_POINT_X;
 			touch_y = START_POINT_Y - touch_y;
+      
 			Serial.print("touch_x : ");
 			Serial.print(touch_x);
 			Serial.print(", touch_y : ");
 			Serial.println(touch_y);
-
+/*
       // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
       Point ptComputed = {touch_x, touch_y};
       computedPoints.push_back(ptComputed);
-    
+*/    
       Buzzer.buzz();
 
       if(chartPoints.size() >= MAX_POINTS_IN_CHART)
@@ -233,7 +235,7 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   drawGrid(menu); // рисуем сетку снова
 
   chartPoints.clear(); // очищаем список наших экранных точек
-  computedPoints.clear(); // очищаем список рассчитанных координат точек
+//  computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
@@ -266,8 +268,8 @@ void creteLinePoints(int x0, int x1, int y0, int y1, int pointsCount, Points& re
    int deltay = abs(y1 - y0); // 2
  
    double error = 0;
-   double deltaerr = (double(deltay + 0) / double(deltax + 0)) / (double(pointsCount)/deltax); // (2/10) / (100/10) = 0.02
    double xStep = double(x1-x0)/pointsCount; // 10/100 = 0.1
+   double deltaerr = (double(deltay + xStep) / double(deltax + xStep)) / (double(pointsCount)/deltax); // (2/10) / (100/10) = 0.02
  
    int y = y0;
    int diry = y1 - y0;
@@ -329,7 +331,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   }
 
   // ТЕСТОВЫЙ КОД - НАЧАЛО
-
+/*
   // выводим для теста список рассчитанных точек
   for(size_t i=0;i<computedPoints.size();i++)
   {
@@ -339,7 +341,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
       Serial.print(", pt.Y : ");
       Serial.println(pt.Y);    
   }
-
+*/
   // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
   // для упрощения теста считаем, что там 1 нас 100 точек.
 
