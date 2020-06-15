@@ -28,6 +28,8 @@ void CreateEncoderChartScreen::onActivate()
   chartPoints.clear(); // очищаем список наших экранных точек
   computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
+
+  screenButtons->disableButton(calculateButton);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
@@ -115,7 +117,10 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   	}
 	else if (pressedButton == calculateButton)
 	{
-		create_Schedule(menu);  //  Сформировать график
+    if(!(chartPoints.size() < MAX_POINTS_IN_CHART)) // формировать график, только если кол-во точек в списке необходимое
+    {
+		  create_Schedule(menu);  //  Сформировать график
+    }
 	}
 	else if (pressedButton == file1Button)
 	{
@@ -200,6 +205,11 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
       computedPoints.push_back(ptComputed);
     
       Buzzer.buzz();
+
+      if(chartPoints.size() >= MAX_POINTS_IN_CHART)
+      {
+        screenButtons->enableButton(calculateButton, !screenButtons->buttonEnabled(calculateButton));
+      }
       
 		}
 		while (tftTouch_point->dataAvailable() == true) {}
@@ -225,6 +235,8 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   chartPoints.clear(); // очищаем список наших экранных точек
   computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
+
+  screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
 
   /*
 	step_pount = 0;    //  Количество точек в начало
