@@ -1,17 +1,24 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include "CreateEncoderChartScreen.h"
-#include "Drawing.h"
 #include "Buzzer.h"
 
-int point_X[10] = { 0 };
-int point_Y[10] = { 0 };
-int pointF_X[10] = { 0 };
-int pointF_Y[10] = { 0 };
+const size_t MAX_POINTS_IN_CHART = 8; // максимальное кол-во точек на экране графика
+
+//int point_X[10] = { 0 };
+//int point_Y[10] = { 0 };
+//int pointF_X[10] = { 0 };
+//int pointF_Y[10] = { 0 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("CreateEncoderChartScreen")
 {
   
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::onActivate()
+{
+    // очищаем наш график при активации экрана
+    chartPoints.clear();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
@@ -44,7 +51,8 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
 {
-	if (step_pount < max_step_pount)
+	//if (step_pount < max_step_pount)
+  if(chartPoints.size() < MAX_POINTS_IN_CHART) // если кол-во точек не превысило максимальное
 	{
 		get_Point_Screen(menu); // Определить точку на сетке
 
@@ -53,7 +61,7 @@ void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
     // тут обновляем внутреннее состояние
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
+void CreateEncoderChartScreen::drawGrid(TFTMenu* menu)
 {
 
   UTFT* dc = menu->getDC();
@@ -74,7 +82,12 @@ void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
   int columnWidth = 50; // ширина столбца
   int rowHeight = 50; // высота строки
   
-  Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+  Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
+{
+  drawGrid(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
@@ -87,8 +100,8 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     }
     else if (pressedButton == clearButton)
     {
-		clear_Grid(menu);  //  "ОЧИСТИТЬ"
-	}
+		  clear_Grid(menu);  //  "ОЧИСТИТЬ"
+  	}
 	else if (pressedButton == calculateButton)
 	{
 		create_Schedule(menu);  //  Сформировать график
@@ -139,21 +152,29 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		int		touch_x = tftTouch_point->getX();
 		int		touch_y = tftTouch_point->getY();
 
+    /*
 		step_pount++; // Следующая точка
-
 		pointF_X[step_pount] = touch_x; // фактическая точко по X
 		pointF_Y[step_pount] = touch_y; // фактическая точко по Y
-
+   */
 
 		if ((touch_x > touch_x_min && touch_x < 321) && (touch_y > 30 && touch_y < 231)) //Вычислять только в пределах сетки с увеличением по Х
 		{
+
+      // добавляем новую точку в список точек
+      Point pt = {touch_x, touch_y};
+      chartPoints.push_back(pt);
+
 
 			menu->print("*", touch_x-2, touch_y - 3);  // Точка на графике
 			touch_x_min = touch_x;
 			menu->print(">", touch_x_min, 236);        // стрелка ограничения по Х на графике
 			dc->drawLine(20, 240, touch_x_min, 240);   // стрелка ограничения по Х на графике
 			dc->setFont(BigRusFont);
-			String stringVar = String(step_pount, DEC);
+      
+			//String stringVar = String(step_pount, DEC);
+     String stringVar = String(chartPoints.size(), DEC);
+     
 			menu->print(stringVar.c_str(), 320, 234);         // стрелка ограничения по Х на графике
 			dc->setFont(SmallRusFont);
 			touch_x -= 20;
@@ -169,37 +190,24 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		while (tftTouch_point->dataAvailable() == false) {}
 		delay(150);
 		//while (tftTouch_point->dataAvailable() == true) {}
-		
+
+    /*
 		point_X[step_pount] = touch_x;
 		point_Y[step_pount] = touch_y;
-	}
+    */
+    
+	} // dataAvailable
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 {
-	UTFT* dc = menu->getDC();
-	dc->setColor(VGA_WHITE);
-	dc->setBackColor(VGA_BLACK);
-	dc->setFont(BigRusFont);
-	// тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
-	menu->print("Экран создания графика", 70, 10);
-	dc->setFont(SmallRusFont);
+  drawGrid(menu); // рисуем сетку снова
 
-	// рисуем сетку
-	RGBColor gridColor = { 0,200,0 }; // цвет сетки
-	int gridX = 20;                   // стартовая координата по X для сетки
-	int gridY = 30;                   // стартовая координата по Y для сетки
-	int columnsCount = 6;             // количество столбцов сетки
-	int rowsCount = 4;                // количество строк сетки
-	int columnWidth = 50;             // ширина столбца
-	int rowHeight = 50;               // высота строки
-	touch_x_min = 20;                 // В начало графика
+  // очищаем список наших точек
+  chartPoints.clear();
 
-	dc->setColor(VGA_BLACK);
-	dc->fillRect(gridX, gridY, gridX + 15 + (columnWidth*columnsCount), gridY + 18 + (rowHeight*rowsCount)); // Очистить экран
-	Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor); // Нарисовать новую сетку
-
+  /*
 	step_pount = 0;    //  Количество точек в начало
 
 	for (int i = 0; i < max_step_pount+1; i++) // Очистить массив с данными по X,Y
@@ -209,7 +217,7 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 		pointF_X[i] = 0;
 		pointF_Y[i] = 0;
 	}
-
+  */
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
@@ -218,12 +226,31 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 	UTFT* dc = menu->getDC();
 	dc->setColor(VGA_WHITE);
 	dc->setBackColor(VGA_BLACK);
+
+  // рисуем наши точки. Начальная точка графика у нас в координатах 20,230, конечная точка графика у нас в координатах 320,230
+  if(chartPoints.size())
+  {
+    // рисуем, только если есть точки в списке
+    Point ptPrev = {20,230};
+
+    for(size_t i=0;i<chartPoints.size();i++)
+    {
+      Point ptNext = chartPoints[i];
+      dc->drawLine(ptPrev.X, ptPrev.Y, ptNext.X, ptNext.Y);
+
+      ptPrev = ptNext;
+    } // for
+
+    // рисуем окончание графика
+    dc->drawLine(ptPrev.X, ptPrev.Y, 320, 230);
+  }
+
+  /*
 	pointF_X[0] = 20;
 	pointF_X[max_step_pount + 1] = 320;
 	pointF_Y[0] = 230;
 	pointF_Y[max_step_pount + 1] = 230;
 
-	//dc->drawLine(point_X[0] + 20, pointF_Y[0], point_X[i + 1], pointF_Y[i + 1]);
 
 	for (int i = 0; i < max_step_pount+1; i++)
 	{
@@ -231,7 +258,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 		dc->drawLine(pointF_X[i], pointF_Y[i], pointF_X[i+1], pointF_Y[i+1]);
 
 	}
-
+  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
