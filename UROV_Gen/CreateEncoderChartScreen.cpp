@@ -176,7 +176,6 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
       Point pt = {touch_x, touch_y};
       chartPoints.push_back(pt);
 
-
 			menu->print("*", touch_x-2, touch_y - 3);  // Точка на графике
       
 			touch_x_min = touch_x; // запрещаем формировать точку по X меньше предыдущей
@@ -196,6 +195,11 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 			Serial.print(touch_x);
 			Serial.print(", touch_y : ");
 			Serial.println(touch_y);
+
+    // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
+    Point ptComputed = {touch_x, touch_y};
+    computedPoints.push_back(ptComputed);
+      
 		}
 		Buzzer.buzz();
 		while (tftTouch_point->dataAvailable() == true) {}
@@ -204,9 +208,6 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		delay(150);
 		//while (tftTouch_point->dataAvailable() == true) {}
 
-    // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
-    Point ptComputed = {touch_x, touch_y};
-    computedPoints.push_back(ptComputed);
 
     /*
 		point_X[step_pount] = touch_x;
