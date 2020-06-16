@@ -216,7 +216,7 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Points& resultPoints)
+void creteLinePoints(int x1, int x2, int y1, int y2/*, uint16_t pointsCount*/, Points& resultPoints)
 {
 
     unsigned int  dx = (x2 > x1 ? x2 - x1 : x1 - x2);
@@ -373,7 +373,9 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      }
 
      // теперь рассчитываем кол-во точек на каждом из отрезков
-     Vector<uint16_t> xPoints;
+     Vector<uint16_t> xPoints; // кол-во точек на часть графика
+     Vector<float> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
+     
      float deltaErr = 0.0; // ошибка накопления точек
 
      uint16_t pointsGenerated = 0;
@@ -387,6 +389,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         // x% = (xDelta*100)/totalDeltaX;
 
         float percents = (100.*xDelta)/totalDeltaX;
+        xPartPercents.push_back(percents);
 
         // теперь считаем кол-во точек на отрезок
         // TOTAL_POINTS_IN_CHART = 100%
@@ -413,7 +416,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      } // for
 
      // посчитали кол-во точек по частям, выводим это в Serial
-     uint16_t sumPoints = 0;
+     uint32_t sumPoints = 0;
      for(size_t i=0;i<xPoints.size();i++)
      {
         sumPoints += xPoints[i];
@@ -421,6 +424,28 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      }
 
      Serial.print("SUM of points: "); Serial.println(sumPoints);
+
+     // теперь считаем точки по частям
+     
+     Points resultPoints; // тут массив с конечными координатами рассчитанных точек
+     ptPrev = {START_POINT_X,START_POINT_Y};
+     Point ptLast = {END_POINT_X,END_POINT_Y};
+     chartPoints.push_back(ptLast);
+  
+      for(size_t i=0;i<chartPoints.size();i++)
+      {
+        resultPoints.clear();
+        Point ptNext = chartPoints[i];
+        // пытаемся посчитать точки, поместив их в массив resultPoints
+        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, resultPoints);
+        ptPrev = ptNext;
+
+        // выводим кол-во рассчитанных точек для части
+        Serial.print("SCREEN Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(resultPoints.size());
+      } // for
+
+      chartPoints.pop();
+     
     
   } // if(chartPoints.size())
 
