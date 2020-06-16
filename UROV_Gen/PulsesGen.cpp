@@ -9,7 +9,6 @@
 const uint8_t IMPULSE_PIN_A = 53;    // НОМЕР ПИНА A, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t IMPULSE_PIN_B = 49;    // НОМЕР ПИНА B, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t PULSE_ON_LEVEL = HIGH; // УРОВЕНЬ ВКЛЮЧЕННОГО ИМПУЛЬСА
-const uint16_t PULSE_WIDTH = 10;     // ДЛИТЕЛЬНОСТЬ ИМПУЛЬСА, МИКРОСЕКУНД
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass ImpulseGeneratorA(IMPULSE_PIN_A);
 ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
