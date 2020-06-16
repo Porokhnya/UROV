@@ -373,6 +373,10 @@ void ImpulseGeneratorClass::start()
   pinConfig();
   timerConfig();
   done = false;
+
+  pauseTime = getNextPauseTime(done);
+  machineState = onBetweenPulses;
+  
   lastMicros = micros(); // не забываем, что надо засечь текущее время
   timerStart();
     

@@ -18,12 +18,24 @@ CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("Create
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::onDeactivate()
+{
+  chartPoints.clear(); // очищаем список наших экранных точек
+  pulsesList.clear(); // очищаем список сгенерённых импульсов
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::onActivate()
 {
   chartPoints.clear(); // очищаем список наших экранных точек
+  pulsesList.clear(); // очищаем список сгенерённых импульсов
+  
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton);
+
+  enableFileButtons(false);
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
@@ -96,6 +108,92 @@ void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
   drawGrid(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::enableFileButtons(bool en, bool redraw)
+{
+  if(!en)
+  {
+    screenButtons->disableButton(file1Button, redraw && screenButtons->buttonEnabled(file1Button));
+    screenButtons->disableButton(file2Button, redraw && screenButtons->buttonEnabled(file2Button));
+    screenButtons->disableButton(file3Button, redraw && screenButtons->buttonEnabled(file3Button));
+  }
+  else
+  {
+    screenButtons->enableButton(file1Button, redraw && !screenButtons->buttonEnabled(file1Button));
+    screenButtons->enableButton(file2Button, redraw && !screenButtons->buttonEnabled(file2Button));
+    screenButtons->enableButton(file3Button, redraw && !screenButtons->buttonEnabled(file3Button));
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::writeToFile(SdFile& f, uint32_t rec)
+{
+  uint8_t* p = (uint8_t*) &rec;
+  for(size_t i=0;i<sizeof(rec);i++)
+  {
+    f.write(*p);
+    p++;
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::saveToFile(const char* fileName)
+{
+    enableFileButtons(false,true);
+  
+    // тут сохраняем список pulsesList в файлы
+    SdFile fileA, fileB; 
+    String fileAName, fileBName;
+
+    fileAName = fileName;
+    fileBName = fileName;
+
+    fileAName += ".A";
+    fileBName += ".B";
+    
+    
+    fileA.open(fileAName.c_str(),FILE_WRITE | O_TRUNC);
+    if(!fileA.isOpen())
+    {
+      enableFileButtons(true,true);
+      return;
+    }
+    
+    fileB.open(fileBName.c_str(),FILE_WRITE | O_TRUNC);
+    if(!fileB.isOpen())
+    {
+      fileA.close();
+      enableFileButtons(true,true);
+      return;
+    }
+
+    fileA.rewind();
+    fileB.rewind();
+    
+    // теперь пишем в файлы
+
+    // сначала записываем смещения, чтобы обеспечить эмуляцию энкодера
+    uint32_t rec = 0;
+    writeToFile(fileA,rec); // нулевое смещение для линии А
+
+    rec = 5;
+    writeToFile(fileB,rec); // смещение в 5 микросекунд для линии B
+
+    // теперь пишем все данные
+    for(size_t i=0;i<pulsesList.size();i++)
+    {
+      rec = pulsesList[i];
+      writeToFile(fileA,rec); // импульс линии А
+      writeToFile(fileB,rec); // импульс линии В
+    }
+
+    fileA.close();
+    fileB.close();
+    
+    // показываем сообщение, что данные сохранены
+    Vector<const char*> lines;
+    lines.push_back("Данные");
+    lines.push_back("сохранены.");    
+    MessageBox->show(lines,"CreateEncoderChartScreen");    
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
 	// обработчик нажатия на кнопку.
@@ -118,14 +216,17 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 	else if (pressedButton == file1Button)
 	{
 		// Сохранить в файл 1
+   saveToFile("/FILE1");
 	}
 	else if (pressedButton == file2Button)
 	{
 		// Сохранить в файл 2
+   saveToFile("/FILE2");
 	}
 	else if (pressedButton == file3Button)
 	{
 		// Сохранить в файл 3
+   saveToFile("/FILE3");
 	}
 	else if (pressedButton == mem1Button)
 	{
@@ -320,7 +421,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   // у нас ситуация: есть N точек, и M промежутков. Есть общее количество точек на графике. Есть общая дельта по X, соответственно, мы можем выяснить
   // кол-во точек на каждом участке графика по дельте Х этого участка.
 
-  Serial.println("====================================================================");
+//  Serial.println("====================================================================");
 
   // выводим общее количество точек, требуемое на графике
  // Serial.print("Total points needed: "); Serial.println(TOTAL_POINTS_IN_CHART);
@@ -554,7 +655,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
          pulseWidth -= (PULSE_WIDTH);
 
          // печатаем для теста
-         Serial.print("Pulse width: "); Serial.println(pulseWidth);
+ //        Serial.print("Pulse width: "); Serial.println(pulseWidth);
 
          // сохраняем в список
          pulsesList.push_back(pulseWidth);
@@ -565,8 +666,13 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     
   } // if(chartPoints.size())
 
+  if(pulsesList.size())
+  {
+    enableFileButtons(true,true);    
+  }
+
   
-  Serial.println("====================================================================");
+ // Serial.println("====================================================================");
 
 /*
   // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
