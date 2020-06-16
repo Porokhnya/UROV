@@ -13,6 +13,13 @@ typedef enum
 	
 } ImpulseGeneratorWorkMode;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+typedef enum
+{
+  onHighLevel, // обрабатываем высокий уровень на пине
+  onBetweenPulses, // находимся в паузе между импульсами
+  
+} ImpulseGeneratorMachineState;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImpulseGeneratorClass
 {
   public:
@@ -60,8 +67,10 @@ class ImpulseGeneratorClass
 	
 	uint32_t lastMicros;
   uint32_t pauseTime;
+  
 //	uint8_t currentPinLevel;
   bool inUpdateFlag;
+  ImpulseGeneratorMachineState machineState;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern ImpulseGeneratorClass ImpulseGeneratorA;

@@ -38,6 +38,7 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 //  currentPinLevel = !PULSE_ON_LEVEL;
   done = false;
   inUpdateFlag = false;
+  machineState = onBetweenPulses;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
@@ -204,6 +205,7 @@ void ImpulseGeneratorClass::wipe()
   
   //currentPinLevel = !PULSE_ON_LEVEL;  
   digitalWriteFast(pin,!PULSE_ON_LEVEL);
+  machineState = onBetweenPulses;
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -221,6 +223,7 @@ void ImpulseGeneratorClass::start(const String& fileName)
   
   workMode = igFile;
   done = false;
+  lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
 
@@ -245,6 +248,7 @@ void ImpulseGeneratorClass::start(int memAddr)
 
   workMode = igEEPROM;
   done = false;
+  lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
 }
@@ -258,6 +262,7 @@ void ImpulseGeneratorClass::start(const Vector<uint32_t>& list)
   listIterator = 0;
   workMode = igList;
   done = false;
+  lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
 }
@@ -269,15 +274,54 @@ void ImpulseGeneratorClass::stop()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()
 {
-  if(inUpdateFlag || workMode == igNothing || done) // не работаем никак, или уже закончили
+  if(inUpdateFlag || workMode == igNothing)// || done) // не работаем никак, или уже закончили
   {
     return;
   }
 
   inUpdateFlag = true;
+
+  // проверяем состояние конечного автомата
+  switch(machineState)
+  {
+      case onHighLevel: // обрабатываем высокий уровень на пине
+      {
+        if(micros() - lastMicros >= PULSE_WIDTH) // вышло время удержания высокого уровня на пине
+        {
+          digitalWriteFast(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
+          
+          if(!done) // получаем следующее время паузы
+          {
+            pauseTime = getNextPauseTime(done);
+            machineState = onBetweenPulses; // переключаемся на ожидание паузы между импульсами
+            lastMicros = micros(); // не забываем, что надо засечь текущее время
+          } // if
+          else
+          {
+            // всё, работа закончена, это был последний импульс, поскольку предыдущий вызов getNextPauseTime выставил done в true
+            wipe();
+          }
+        }
+      }
+      break; // onHighLevel
+
+      case onBetweenPulses: // находимся в паузе между импульсами
+      {
+        if(micros() - lastMicros >= pauseTime) // время паузы между импульсами вышло
+        {
+            digitalWriteFast(pin,PULSE_ON_LEVEL); // высокий уровень на пин
+            machineState = onHighLevel; // переключаемся в ветку ожидания окончания высокого уровня на пине
+            lastMicros = micros(); // не забываем, что надо засечь текущее время
+        }
+      }
+      break; // onBetweenPulses
+  } // switch
+
+  /*
   
   if(micros() - lastMicros >= pauseTime) // время паузы между сменой уровня вышло
   {
+    
     pauseTime = getNextPauseTime(done);
     
     if(!done) // ещё не закончили работу, время паузы вышло, меняем уровень на пине
@@ -298,6 +342,7 @@ void ImpulseGeneratorClass::update()
       wipe();
     }
   }
+  */
 
   inUpdateFlag = false;
 }
