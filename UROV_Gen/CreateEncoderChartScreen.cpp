@@ -420,10 +420,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      for(size_t i=0;i<xPoints.size();i++)
      {
         sumPoints += xPoints[i];
-        Serial.print("Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
+        Serial.print("Pulses per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
      }
 
-     Serial.print("SUM of points: "); Serial.println(sumPoints);
+     Serial.print("SUM of pulses: "); Serial.println(sumPoints);
 
      // теперь считаем точки по частям
      
