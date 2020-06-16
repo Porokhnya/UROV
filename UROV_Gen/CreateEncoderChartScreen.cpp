@@ -427,11 +427,13 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
      // теперь считаем точки по частям
      
-     Points resultPoints; // тут массив с конечными координатами рассчитанных точек
+     Points resultPoints; // тут массив с конечными ЭКРАННЫМИ координатами рассчитанных точек
      ptPrev = {START_POINT_X,START_POINT_Y};
      Point ptLast = {END_POINT_X,END_POINT_Y};
      chartPoints.push_back(ptLast);
-  
+
+
+      uint32_t sumScreenPoints = 0;
       for(size_t i=0;i<chartPoints.size();i++)
       {
         resultPoints.clear();
@@ -440,9 +442,13 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, resultPoints);
         ptPrev = ptNext;
 
-        // выводим кол-во рассчитанных точек для части
+        sumScreenPoints += resultPoints.size();
+
+        // выводим кол-во рассчитанных ЭКРАННЫХ точек для части
         Serial.print("SCREEN Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(resultPoints.size());
       } // for
+
+      Serial.print("SUM of SCREEN points: "); Serial.println(sumScreenPoints);
 
       chartPoints.pop();
      
