@@ -381,6 +381,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      for(size_t i=0;i<xDeltas.size();i++)
      {
         uint16_t xDelta = xDeltas[i];
+        
         // totalDeltaX = 100%
         // xDelta = x%
         // x% = (xDelta*100)/totalDeltaX;
@@ -412,10 +413,14 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      } // for
 
      // посчитали кол-во точек по частям, выводим это в Serial
+     uint16_t sumPoints = 0;
      for(size_t i=0;i<xPoints.size();i++)
      {
+        sumPoints += xPoints[i];
         Serial.print("Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
      }
+
+     Serial.print("SUM of points: "); Serial.println(sumPoints);
     
   } // if(chartPoints.size())
 
