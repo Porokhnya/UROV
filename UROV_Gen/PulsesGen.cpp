@@ -9,6 +9,7 @@
 const uint8_t IMPULSE_PIN_A = 53;    // НОМЕР ПИНА A, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t IMPULSE_PIN_B = 49;    // НОМЕР ПИНА B, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t PULSE_ON_LEVEL = HIGH; // УРОВЕНЬ ВКЛЮЧЕННОГО ИМПУЛЬСА
+const uint16_t PULSE_WIDTH = 10;     // ДЛИТЕЛЬНОСТЬ ИМПУЛЬСА, МИКРОСЕКУНД
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass ImpulseGeneratorA(IMPULSE_PIN_A);
 ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
@@ -34,15 +35,16 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
   lastMicros = 0;
   listIterator = 0;
   pauseTime = 0;
-  currentPinLevel = !PULSE_ON_LEVEL;
+//  currentPinLevel = !PULSE_ON_LEVEL;
   done = false;
+  inUpdateFlag = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
   pinModeFast(pin,OUTPUT);
-  currentPinLevel = !PULSE_ON_LEVEL;
-  digitalWriteFast(pin,currentPinLevel);
+  //currentPinLevel = !PULSE_ON_LEVEL;
+  digitalWriteFast(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::timerStart()
@@ -200,8 +202,8 @@ void ImpulseGeneratorClass::wipe()
   
   workMode = igNothing;
   
-  currentPinLevel = !PULSE_ON_LEVEL;  
-  digitalWriteFast(pin,currentPinLevel);
+  //currentPinLevel = !PULSE_ON_LEVEL;  
+  digitalWriteFast(pin,!PULSE_ON_LEVEL);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -267,10 +269,12 @@ void ImpulseGeneratorClass::stop()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()
 {
-  if(workMode == igNothing || done) // не работаем никак, или уже закончили
+  if(inUpdateFlag || workMode == igNothing || done) // не работаем никак, или уже закончили
   {
     return;
   }
+
+  inUpdateFlag = true;
   
   if(micros() - lastMicros >= pauseTime) // время паузы между сменой уровня вышло
   {
@@ -278,17 +282,24 @@ void ImpulseGeneratorClass::update()
     
     if(!done) // ещё не закончили работу, время паузы вышло, меняем уровень на пине
     {
-      currentPinLevel = !currentPinLevel;
       
-      digitalWriteFast(pin,currentPinLevel);
+      //currentPinLevel = !currentPinLevel;      
+      //digitalWriteFast(pin,currentPinLevel);
+      
+      digitalWriteFast(pin,PULSE_ON_LEVEL);
+      delayMicroseconds(PULSE_WIDTH);
+      digitalWriteFast(pin,!PULSE_ON_LEVEL);
 
       lastMicros = micros(); // не забываем, что надо засечь текущее время
+
     }
     else // работа закончена, список импульсов кончился
     {
       wipe();
     }
   }
+
+  inUpdateFlag = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

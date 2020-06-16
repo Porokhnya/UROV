@@ -60,7 +60,8 @@ class ImpulseGeneratorClass
 	
 	uint32_t lastMicros;
   uint32_t pauseTime;
-	uint8_t currentPinLevel;
+//	uint8_t currentPinLevel;
+  bool inUpdateFlag;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern ImpulseGeneratorClass ImpulseGeneratorA;
