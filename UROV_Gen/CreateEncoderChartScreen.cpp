@@ -12,10 +12,7 @@ const uint16_t START_POINT_Y = 230;  // начальная координата 
 const uint16_t END_POINT_X = 320; // конечная координата физической точки графика на экране по X
 const uint16_t END_POINT_Y = 230;  // конечная координата физической точки графика на экране по X
 
-//int point_X[10] = { 0 };
-//int point_Y[10] = { 0 };
-//int pointF_X[10] = { 0 };
-//int pointF_Y[10] = { 0 };
+const uint16_t TOTAL_POINTS_IN_CHART = 200; // сколько точек надо получить на графике?
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("CreateEncoderChartScreen")
@@ -26,7 +23,6 @@ CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("Create
 void CreateEncoderChartScreen::onActivate()
 {
   chartPoints.clear(); // очищаем список наших экранных точек
-//  computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton);
@@ -62,12 +58,11 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::doUpdate(TFTMenu* menu)
 {
-	//if (step_pount < max_step_pount)
   if(chartPoints.size() < MAX_POINTS_IN_CHART) // если кол-во точек не превысило максимальное
 	{
 		get_Point_Screen(menu); // Определить точку на сетке
 
-	}// 
+	}
 
     // тут обновляем внутреннее состояние
 }
@@ -167,12 +162,6 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		int		touch_x = tftTouch_point->getX();
 		int		touch_y = tftTouch_point->getY();
 
-    /*
-		step_pount++; // Следующая точка
-		pointF_X[step_pount] = touch_x; // фактическая точко по X
-		pointF_Y[step_pount] = touch_y; // фактическая точко по Y
-   */
-
 		if ((touch_x > touch_x_min && touch_x <= END_POINT_X) && (touch_y > TOUCH_Y_MIN && touch_y <= END_POINT_Y)) //Вычислять только в пределах сетки с увеличением по Х
 		{
 
@@ -188,8 +177,7 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 			dc->drawLine(20, 240, touch_x_min, 240);   // стрелка ограничения по Х на графике
 			dc->setFont(BigRusFont);
       
-			//String stringVar = String(step_pount, DEC);
-     String stringVar = String(chartPoints.size(), DEC);
+      String stringVar = String(chartPoints.size(), DEC);
      
 			menu->print(stringVar.c_str(), 320, 234);         // стрелка ограничения по Х на графике
 			dc->setFont(SmallRusFont);
@@ -201,11 +189,7 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 			Serial.print(touch_x);
 			Serial.print(", touch_y : ");
 			Serial.println(touch_y);
-/*
-      // у нас есть преобразованные координаты точки, помещаем её в список рассчитанных координат
-      Point ptComputed = {touch_x, touch_y};
-      computedPoints.push_back(ptComputed);
-*/    
+
       Buzzer.buzz();
 
       if(chartPoints.size() >= MAX_POINTS_IN_CHART)
@@ -216,15 +200,6 @@ void  CreateEncoderChartScreen::get_Point_Screen(TFTMenu* menu)
 		}
 		while (tftTouch_point->dataAvailable() == true) {}
     delay(500);
-
-//		while (tftTouch_point->dataAvailable() == false) {}
-//		delay(150);
-
-
-    /*
-		point_X[step_pount] = touch_x;
-		point_Y[step_pount] = touch_y;
-    */
     
 	} // dataAvailable
 
@@ -235,22 +210,9 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   drawGrid(menu); // рисуем сетку снова
 
   chartPoints.clear(); // очищаем список наших экранных точек
-//  computedPoints.clear(); // очищаем список рассчитанных координат точек
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
-
-  /*
-	step_pount = 0;    //  Количество точек в начало
-
-	for (int i = 0; i < max_step_pount+1; i++) // Очистить массив с данными по X,Y
-	{
-		point_X[i] = 0;
-		point_Y[i] = 0;
-		pointF_X[i] = 0;
-		pointF_Y[i] = 0;
-	}
-  */
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -373,17 +335,94 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   }
 
   // ТЕСТОВЫЙ КОД - НАЧАЛО
-/*
-  // выводим для теста список рассчитанных точек
-  for(size_t i=0;i<computedPoints.size();i++)
+
+  // у нас ситуация: есть N точек, и M промежутков. Есть общее количество точек на графике. Есть общая дельта по X, соответственно, мы можем выяснить
+  // кол-во точек на каждом участке графика по дельте Х этого участка.
+
+  Serial.println("====================================================================");
+
+  // выводим общее количество точек, требуемое на графике
+  Serial.print("Total points needed: "); Serial.println(TOTAL_POINTS_IN_CHART);
+
+  // получаем общую дельту по X
+  int totalDeltaX = abs(END_POINT_X - START_POINT_X);
+
+  Serial.print("Total X delta: "); Serial.println(totalDeltaX);
+
+  // теперь считаем дельты и кол-во точек, требуемых для каждого участка графика
+  if(chartPoints.size())
   {
-      Point pt = computedPoints[i];
-      Serial.print("pt.X : ");
-      Serial.print(pt.X);
-      Serial.print(", pt.Y : ");
-      Serial.println(pt.Y);    
-  }
-*/
+      Vector<uint16_t> xDeltas;
+      
+      Point ptPrev = {START_POINT_X,START_POINT_Y};
+      for(size_t i=0;i<chartPoints.size();i++)
+      {
+         Point ptNext = chartPoints[i];
+
+          xDeltas.push_back(abs(ptNext.X - ptPrev.X));
+         
+         ptPrev = ptNext;
+      }
+      
+     xDeltas.push_back(abs(END_POINT_X - ptPrev.X));
+
+     // выводим список всех дельт по X
+     for(size_t i=0;i<xDeltas.size();i++)
+     {
+        Serial.print("X delta #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xDeltas[i]);
+     }
+
+     // теперь рассчитываем кол-во точек на каждом из отрезков
+     Vector<uint16_t> xPoints;
+     float deltaErr = 0.0; // ошибка накопления точек
+
+     uint16_t pointsGenerated = 0;
+
+     for(size_t i=0;i<xDeltas.size();i++)
+     {
+        uint16_t xDelta = xDeltas[i];
+        // totalDeltaX = 100%
+        // xDelta = x%
+        // x% = (xDelta*100)/totalDeltaX;
+
+        float percents = (100.*xDelta)/totalDeltaX;
+
+        // теперь считаем кол-во точек на отрезок
+        // TOTAL_POINTS_IN_CHART = 100%
+        // x = percents
+        // x = (percents*TOTAL_POINTS_IN_CHART)/100;
+
+        float pointsPerPart = (percents*TOTAL_POINTS_IN_CHART)/100 + deltaErr;
+        uint16_t pppInt = pointsPerPart;
+        deltaErr = pointsPerPart - pppInt;
+
+        pointsGenerated += pppInt;
+
+        if(i == xDeltas.size() - 1) // добиваем до общего кол-ва точек в конце графика
+        {
+            while(pointsGenerated < TOTAL_POINTS_IN_CHART)
+            {
+              pointsGenerated++;
+              pppInt++;
+            }
+        }
+
+        xPoints.push_back(pppInt);
+        
+     } // for
+
+     // посчитали кол-во точек по частям, выводим это в Serial
+     for(size_t i=0;i<xPoints.size();i++)
+     {
+        Serial.print("Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
+     }
+    
+  } // if(chartPoints.size())
+
+  
+  Serial.println("====================================================================");
+
+/*
   // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
   // для упрощения теста считаем, что там 1 нас 100 точек.
 
@@ -414,23 +453,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     } // for
 
   } // if(chartPoints.size())
+  
+  */
 
   // ТЕСТОВЫЙ КОД - КОНЕЦ
-
-  /*
-	pointF_X[0] = 20;
-	pointF_X[max_step_pount + 1] = 320;
-	pointF_Y[0] = 230;
-	pointF_Y[max_step_pount + 1] = 230;
-
-
-	for (int i = 0; i < max_step_pount+1; i++)
-	{
-
-		dc->drawLine(pointF_X[i], pointF_Y[i], pointF_X[i+1], pointF_Y[i+1]);
-
-	}
-  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
