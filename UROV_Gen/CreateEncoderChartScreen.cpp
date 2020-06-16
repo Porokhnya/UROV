@@ -309,9 +309,11 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   drawGrid(menu); // рисуем сетку снова
 
   chartPoints.clear(); // очищаем список наших экранных точек
+  pulsesList.clear(); // очищаем список сгенеренных импульсов
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
+  enableFileButtons(false,true);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
