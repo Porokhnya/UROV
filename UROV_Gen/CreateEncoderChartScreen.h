@@ -42,7 +42,7 @@ private:
     Vector<uint32_t> pulsesList; // список длительностей импульсов
 
     void saveToFile(const char* fileName); // сохраняет список длительностей импульсов в файл
-    void enableFileButtons(bool en, bool redraw=false);
+    void enableSaveButtons(bool en, bool redraw=false);
     void writeToFile(SdFile& f, uint32_t rec);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

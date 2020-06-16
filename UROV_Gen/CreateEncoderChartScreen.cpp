@@ -34,7 +34,7 @@ void CreateEncoderChartScreen::onActivate()
 
   screenButtons->disableButton(calculateButton);
 
-  enableFileButtons(false);
+  enableSaveButtons(false);
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -108,19 +108,29 @@ void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
   drawGrid(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void CreateEncoderChartScreen::enableFileButtons(bool en, bool redraw)
+void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
 {
   if(!en)
   {
     screenButtons->disableButton(file1Button, redraw && screenButtons->buttonEnabled(file1Button));
     screenButtons->disableButton(file2Button, redraw && screenButtons->buttonEnabled(file2Button));
     screenButtons->disableButton(file3Button, redraw && screenButtons->buttonEnabled(file3Button));
+
+    screenButtons->disableButton(mem1Button, redraw && screenButtons->buttonEnabled(mem1Button));
+    screenButtons->disableButton(mem2Button, redraw && screenButtons->buttonEnabled(mem2Button));
+    screenButtons->disableButton(mem3Button, redraw && screenButtons->buttonEnabled(mem3Button));
+    
   }
   else
   {
     screenButtons->enableButton(file1Button, redraw && !screenButtons->buttonEnabled(file1Button));
     screenButtons->enableButton(file2Button, redraw && !screenButtons->buttonEnabled(file2Button));
     screenButtons->enableButton(file3Button, redraw && !screenButtons->buttonEnabled(file3Button));
+
+    screenButtons->enableButton(mem1Button, redraw && !screenButtons->buttonEnabled(mem1Button));
+    screenButtons->enableButton(mem2Button, redraw && !screenButtons->buttonEnabled(mem2Button));
+    screenButtons->enableButton(mem3Button, redraw && !screenButtons->buttonEnabled(mem3Button));
+    
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -136,7 +146,7 @@ void CreateEncoderChartScreen::writeToFile(SdFile& f, uint32_t rec)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::saveToFile(const char* fileName)
 {
-    enableFileButtons(false,true);
+    enableSaveButtons(false,true);
   
     // тут сохраняем список pulsesList в файлы
     SdFile fileA, fileB; 
@@ -152,7 +162,7 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
     fileA.open(fileAName.c_str(),FILE_WRITE | O_TRUNC);
     if(!fileA.isOpen())
     {
-      enableFileButtons(true,true);
+      enableSaveButtons(true,true);
       return;
     }
     
@@ -160,7 +170,7 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
     if(!fileB.isOpen())
     {
       fileA.close();
-      enableFileButtons(true,true);
+      enableSaveButtons(true,true);
       return;
     }
 
@@ -313,7 +323,7 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
   touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
 
   screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
-  enableFileButtons(false,true);
+  enableSaveButtons(false,true);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -670,7 +680,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
   if(pulsesList.size())
   {
-    enableFileButtons(true,true);    
+    enableSaveButtons(true,true);    
   }
 
   
