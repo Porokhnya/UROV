@@ -254,15 +254,57 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void creteLinePoints(int x0, int x1, int y0, int y1, uint16_t pointsCount, Points& resultPoints)
+void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Points& resultPoints)
 {
 
-  /*
-   рассматриваем на примере:
-    дельта по X = 2
-    дельта по Y = 10
-    кол-во точек = 100
-   */
+    unsigned int  dx = (x2 > x1 ? x2 - x1 : x1 - x2);
+    short     xstep =  x2 > x1 ? 1 : -1;
+    unsigned int  dy = (y2 > y1 ? y2 - y1 : y1 - y2);
+    short     ystep =  y2 > y1 ? 1 : -1;
+    int       col = x1, row = y1;
+
+    if (dx < dy)
+    {
+      int t = - (dy >> 1);
+      while (true)
+      {
+        Point pt = {col, row};
+        resultPoints.push_back(pt);
+        
+        if (row == y2)
+          return;
+          
+        row += ystep;
+        t += dx;
+        if (t >= 0)
+        {
+          col += xstep;
+          t   -= dy;
+        }
+      } 
+    }
+    else
+    {
+      int t = - (dx >> 1);
+      while (true)
+      {
+        Point pt = {col, row};
+        resultPoints.push_back(pt);
+        
+        if (col == x2)
+          return;
+          
+        col += xstep;
+        t += dy;
+        if (t >= 0)
+        {
+          row += ystep;
+          t   -= dx;
+        }
+      } 
+    }
+  
+/*
   
    int deltax = abs(x1 - x0); // 2
    int deltay = abs(y1 - y0); // 10
@@ -303,7 +345,7 @@ void creteLinePoints(int x0, int x1, int y0, int y1, uint16_t pointsCount, Point
    
    x += xStep;
  } // while
-   
+   */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
