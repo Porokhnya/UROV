@@ -216,9 +216,34 @@ void CreateEncoderChartScreen::clear_Grid(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void creteLinePoints(int x1, int x2, int y1, int y2/*, uint16_t pointsCount*/, Points& resultPoints)
+void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Points& resultPoints)
 {
 
+  // работаем с эквидистантами
+  /*
+   x = x1 + (x2-x1) * t
+   y = y1 + (y2-y1) * t
+
+   где t - шаг между точками, в диапазоне 0-1
+   */
+
+   float tStep = 1.0/pointsCount;
+   float t = 0;
+   
+   int deltax = (x2-x1);
+   int deltay = (y2-y1);
+
+   for(uint16_t i=0;i<pointsCount;i++)
+   {
+     int x = x1 + t * deltax;
+     int y = y1 + t * deltay;
+     t += tStep;
+
+     Point pt = {x,y};
+     resultPoints.push_back(pt);
+   } // for
+  
+/*
     unsigned int  dx = (x2 > x1 ? x2 - x1 : x1 - x2);
     short     xstep =  x2 > x1 ? 1 : -1;
     unsigned int  dy = (y2 > y1 ? y2 - y1 : y1 - y2);
@@ -265,49 +290,7 @@ void creteLinePoints(int x1, int x2, int y1, int y2/*, uint16_t pointsCount*/, P
         }
       } 
     }
-  
-/*
-  
-   int deltax = abs(x1 - x0); // 2
-   int deltay = abs(y1 - y0); // 10
- 
-   double error = 0;
-   double xStep = double(x1-x0)/pointsCount; // 2/100 = 0.02
-   double deltaerr = (double(deltay + 0) / double(deltax + 0)) / (double(pointsCount)/deltax); // (10/2) / (100/2) = 0.1
- 
-   int y = y0;
-   int diry = y1 - y0;
- 
-   if(diry > 0)
-       diry = 1;
- 
-   if(diry < 0)
-       diry = -1;
- 
- 
- double x = x0;
- while(x <= x1)
- {
-  
-  int pointX = x; // БЕЗ ROUND
-  int pointY = y;
-
-  Serial.print("X="); Serial.print(pointX); Serial.print("; Y="); Serial.println(pointY);
-
-  Point pt = {pointX, pointY};
-  resultPoints.push_back(pt);
-         
-  error += deltaerr;
-   
-    if(error >= 1.0)
-   {
-           y += diry;
-           error -= 1.0;
-   }
-   
-   x += xStep;
- } // while
-   */
+ */ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
@@ -439,20 +422,36 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         resultPoints.clear();
         Point ptNext = chartPoints[i];
         // пытаемся посчитать точки, поместив их в массив resultPoints
-        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, resultPoints);
+        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, xPoints[i],resultPoints);
         ptPrev = ptNext;
 
         sumScreenPoints += resultPoints.size();
 
         // выводим кол-во рассчитанных ЭКРАННЫХ точек для части
         Serial.print("SCREEN Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(resultPoints.size());
+
+        // теперь отрисуем точки на экране в виде кружочков
+        dc->setColor(VGA_YELLOW);
+        for(size_t k=0;k<resultPoints.size();k++)
+        {
+          Point pt = resultPoints[k];
+          dc->fillCircle(pt.X,pt.Y,2);
+        } // for        
       } // for
 
       Serial.print("SUM of SCREEN points: "); Serial.println(sumScreenPoints);
 
       chartPoints.pop();
+
+
+     /* 
+      если всё правильно, то у нас есть:
+      Vector<uint16_t> xPoints; // кол-во точек (импульсов) на часть графика
+      Vector<float> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
+
+      // части точек получаются в resultPoints, и ПОКА НЕ СОХРАНЯЮТСЯ !!!
      
-    
+    */
   } // if(chartPoints.size())
 
   
