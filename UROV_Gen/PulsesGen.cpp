@@ -30,10 +30,11 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
   
   workMode = igNothing;
   pList = NULL;
-  memAddress = 0;
-  memCount = 0;
-  lastMicros = 0;
   listIterator = 0;
+  
+//  memAddress = 0;
+//  memCount = 0;
+  lastMicros = 0;
   pauseTime = 0;
 //  currentPinLevel = !PULSE_ON_LEVEL;
   done = false;
@@ -87,7 +88,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 {
   done = false;
   uint32_t result = 0;
-  uint8_t* ptr = (uint8_t*)&result;
+ // uint8_t* ptr = (uint8_t*)&result;
 
  switch(workMode)
   {
@@ -96,7 +97,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
       done = true;
     }
     break;
-    
+/*    
     case igFile:
     {
         if(file.isOpen())
@@ -145,8 +146,9 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
       } // else
     }
     break;
-
-    case igList:
+*/
+    case igExternalList: // внешний список
+    case igInternalList: // внутренний список
     {
       if(!pList || listIterator >= pList->size()) // весь список пробежали
       {
@@ -166,9 +168,13 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::wipe()
 {
-
   timerStop();
+
+  internalList.clear(); // очищаем внутренний список
+  pList = NULL;
+  listIterator = 0;
   
+/*  
   switch(workMode)
   {
     case igNothing: 
@@ -197,7 +203,7 @@ void ImpulseGeneratorClass::wipe()
     }
     break;
   }
-
+*/
   pauseTime = 0;
   lastMicros = 0;
   
@@ -209,30 +215,109 @@ void ImpulseGeneratorClass::wipe()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ImpulseGeneratorClass::start(const String& fileName)
+void ImpulseGeneratorClass::prepare(const String& fileName)
 {
   wipe();
+  /*
   pinConfig();
   timerConfig();
+  */
+
 
 #ifndef _SD_OFF
+
+  SdFile file;
+  
   if(!file.open(fileName.c_str(),O_READ))
     return;  
 
   file.rewind();
+
+  bool canContinue = true;
   
+  while(canContinue)
+  {
+          uint32_t record = 0;
+          uint8_t* ptr = (uint8_t*)&record;
+          
+          for(size_t i=0;i<sizeof(record);i++)
+          {
+            int iCh = file.read();
+            if(iCh == -1) // конец файла или ошибка чтения
+            {
+              canContinue = false;
+              break;
+            }
+            else
+            {
+              *ptr++ = (uint8_t) iCh;
+            }
+          } // for
+      if(canContinue)
+      {
+          internalList.push_back(record);
+      }
+  } // while
+
+
+  file.close();
+
+  if(internalList.size())
+  {
+    workMode = igInternalList;
+    pList = &internalList;
+    listIterator = 0;
+  }
+  
+  /*
   workMode = igFile;
   done = false;
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
+  */
 
 #endif // _SD_OFF
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ImpulseGeneratorClass::start(int memAddr)
+void ImpulseGeneratorClass::prepare(int memAddr)
 {
+  wipe();
+
+  uint32_t totalRecords = 0;
+  uint8_t* ptr = (uint8_t*)&totalRecords;
+  for(size_t i=0;i<sizeof(totalRecords);i++)
+  {
+    *ptr++ = Settings.read(memAddr);
+    memAddr++;
+  }
+
+  if(totalRecords > 0)
+  {
+      for(uint32_t i=0;i<totalRecords;i++)
+      {
+        uint32_t record = 0; 
+        ptr = (uint8_t*)&record;
+
+        for(size_t k=0;k<sizeof(record);k++)
+        {
+          *ptr++ = Settings.read(memAddr);
+          memAddr++;
+        }
+
+        internalList.push_back(record);
+      } // for
+  } // if
+
+  if(internalList.size())
+  {
+    workMode = igInternalList;
+    pList = &internalList;
+    listIterator = 0;    
+  }
+  
+  /*
     pinConfig();
     timerConfig();
   
@@ -251,10 +336,21 @@ void ImpulseGeneratorClass::start(int memAddr)
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
+  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ImpulseGeneratorClass::start(const Vector<uint32_t>& list)
+void ImpulseGeneratorClass::prepare(const Vector<uint32_t>& list)
 {
+    wipe();
+    
+    if(list.size())
+    {
+      pList = &list;
+      listIterator = 0;
+      workMode = igExternalList;
+    }
+    
+  /*
   pinConfig();
   timerConfig();
   
@@ -265,6 +361,22 @@ void ImpulseGeneratorClass::start(const Vector<uint32_t>& list)
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 
   timerStart();
+  */
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseGeneratorClass::start()
+{
+  if(workMode == igNothing)
+  {
+    return;
+  }
+
+  pinConfig();
+  timerConfig();
+  done = false;
+  lastMicros = micros(); // не забываем, что надо засечь текущее время
+  timerStart();
+    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::stop()

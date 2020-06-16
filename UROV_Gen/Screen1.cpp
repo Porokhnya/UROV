@@ -264,8 +264,11 @@ void Screen1::startGeneratePulses()
 
 
   // запускаем генерацию импульсов
-  ImpulseGeneratorA.start(encoderAPulses);
-  ImpulseGeneratorB.start(encoderBPulses);
+  ImpulseGeneratorA.prepare(encoderAPulses);
+  ImpulseGeneratorB.prepare(encoderBPulses);
+
+  ImpulseGeneratorA.start();
+  ImpulseGeneratorB.start();
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

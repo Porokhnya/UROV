@@ -7,9 +7,10 @@
 typedef enum
 {
 	igNothing,
-	igFile,
-	igEEPROM,
-	igList
+//	igFile,
+//	igEEPROM,
+	igExternalList, // внешний список
+  igInternalList, // внутренний список
 	
 } ImpulseGeneratorWorkMode;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,10 +27,11 @@ class ImpulseGeneratorClass
 
   ImpulseGeneratorClass(uint8_t pin);
 	
-	void start(const String& fileName);
-	void start(int memAddr);
-	void start(const Vector<uint32_t>& list);
-	
+	void prepare(const String& fileName);
+	void prepare(int memAddr);
+	void prepare(const Vector<uint32_t>& list);
+
+  void start();
 	void stop();
 	
 	void update();
@@ -54,13 +56,16 @@ class ImpulseGeneratorClass
   uint32_t getNextPauseTime(bool& done);
 
   void wipe();
+  
   ImpulseGeneratorWorkMode workMode;
   bool done;
   
-	SdFile file;
+//	SdFile file;
   
-	int memAddress;
-  uint32_t memCount;
+//	int memAddress;
+//  uint32_t memCount;
+
+  Vector<uint32_t> internalList;
  
 	const Vector<uint32_t>* pList;
   size_t listIterator;
