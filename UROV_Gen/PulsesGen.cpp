@@ -36,7 +36,7 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
   pin = p;
   
   workMode = igNothing;
-  pList = NULL;
+  pList = &internalList;
   listIterator = 0;
   
   lastMicros = 0;
@@ -318,6 +318,10 @@ void ImpulseGeneratorClass::start()
   DBGLN("-----------------------------------------------------");
   DBGLN("");
   
+  #ifdef _DEBUG
+    Serial.flush();
+  #endif
+  
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 //  timerStart();
     
@@ -336,7 +340,9 @@ void ImpulseGeneratorClass::update()
     return;
   }
 
+noInterrupts();
   inUpdateFlag = true;
+interrupts();  
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -374,8 +380,9 @@ void ImpulseGeneratorClass::update()
       break; // onBetweenPulses
   } // switch
 
-
+noInterrupts();
   inUpdateFlag = false;
+interrupts();  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
