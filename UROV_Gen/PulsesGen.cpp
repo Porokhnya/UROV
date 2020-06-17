@@ -51,8 +51,8 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
-  pinModeFast(pin,OUTPUT);
-  digitalWriteFast(pin,!PULSE_ON_LEVEL);
+  pinMode/*Fast*/(pin,OUTPUT);
+  digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
@@ -134,7 +134,7 @@ void ImpulseGeneratorClass::wipe()
   pauseTime = 0;
   lastMicros = 0;
   
-  digitalWriteFast(pin,!PULSE_ON_LEVEL);
+  digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL);
   machineState = onBetweenPulses;
 
 }
@@ -340,9 +340,7 @@ void ImpulseGeneratorClass::update()
     return;
   }
 
-noInterrupts();
   inUpdateFlag = true;
-interrupts();  
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -351,7 +349,7 @@ interrupts();
       {
         if(micros() - lastMicros >= PULSE_WIDTH) // вышло время удержания высокого уровня на пине
         {
-          digitalWriteFast(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
+          digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
           
           if(!done) // получаем следующее время паузы
           {
@@ -372,7 +370,7 @@ interrupts();
       {
         if(micros() - lastMicros >= pauseTime) // время паузы между импульсами вышло
         {
-            digitalWriteFast(pin,PULSE_ON_LEVEL); // высокий уровень на пин
+            digitalWrite/*Fast*/(pin,PULSE_ON_LEVEL); // высокий уровень на пин
             machineState = onHighLevel; // переключаемся в ветку ожидания окончания высокого уровня на пине
             lastMicros = micros(); // не забываем, что надо засечь текущее время
         }
@@ -380,9 +378,7 @@ interrupts();
       break; // onBetweenPulses
   } // switch
 
-noInterrupts();
   inUpdateFlag = false;
-interrupts();  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
