@@ -329,7 +329,7 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   createEncoderChartButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "График создать");
   menu_height += BUTTON_HEIGHT + button_gap;
-  transformerButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Пороги транс.");
+  loadEncoderChartButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "График загруз.");
   menu_height += BUTTON_HEIGHT + button_gap;
   acsDelayButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
   menu_height += BUTTON_HEIGHT + button_gap;
@@ -352,15 +352,25 @@ void ParamsScreen::doDraw(TFTMenu* menu)
 void ParamsScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("Settings");
+  }
   else if(pressedButton == createEncoderChartButton)
+  {
     menu->switchToScreen("CreateEncoderChartScreen");
-  else if(pressedButton == transformerButton)
-    menu->switchToScreen("TransformerScreen");
+  }
+  else if(pressedButton == loadEncoderChartButton)
+  {
+    menu->switchToScreen("SelectEncoderChartScreen");
+  }
   else if(pressedButton == acsDelayButton)
+  {
     menu->switchToScreen("AcsDelayScreen");
+  }
   else if(pressedButton == relayDelayButton)
+  {
     menu->switchToScreen("RelayDelayScreen");
+  }
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
