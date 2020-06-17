@@ -269,9 +269,17 @@ void Screen1::startGeneratePulses()
   ImpulseGeneratorB.prepare(encoderBPulses);
 
 */  
+
+  DBGLN("START ENCODER PULSES...");
+
+  ImpulseGeneratorA.stop();
+  ImpulseGeneratorB.stop();
   
   ImpulseGeneratorA.start();
   ImpulseGeneratorB.start();
+
+  
+  DBGLN("START ENCODER PULSES STARTED.");
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
