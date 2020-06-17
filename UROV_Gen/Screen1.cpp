@@ -10,6 +10,7 @@
 #include "Relay.h"
 #include "Utils.h"
 #include "PulsesGen.h"
+#include "DueTimer.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Screen1* mainScreen = NULL;        
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -272,12 +273,17 @@ void Screen1::startGeneratePulses()
 
   DBGLN("START ENCODER PULSES...");
 
+  GEN_TIMER.stop();
+  
   ImpulseGeneratorA.stop();
   ImpulseGeneratorB.stop();
-  
+
   ImpulseGeneratorA.start();
   ImpulseGeneratorB.start();
 
+  GEN_TIMER.attachInterrupt(genUpdate);
+  GEN_TIMER.setPeriod(GEN_TIMER_PERIOD);
+  GEN_TIMER.start();
   
   DBGLN("START ENCODER PULSES STARTED.");
   

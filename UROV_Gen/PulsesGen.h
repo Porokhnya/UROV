@@ -36,10 +36,10 @@ class ImpulseGeneratorClass
 	
 	void update();
   
-  bool isDone() { return done; }
+  bool isDone() { return stopped; }
   bool isRunning()
   {
-    return (workMode != igNothing) && !done;
+    return (workMode != igNothing) && !stopped;
   }
 	
 	
@@ -48,10 +48,10 @@ class ImpulseGeneratorClass
   uint8_t pin;
   
   void pinConfig();
-  void timerConfig();
+//  void timerConfig();
 
-  void timerStart();
-  void timerStop();
+//  void timerStart();
+//  void timerStop();
 
   uint32_t getNextPauseTime(bool& done);
 
@@ -75,4 +75,5 @@ class ImpulseGeneratorClass
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern ImpulseGeneratorClass ImpulseGeneratorA;
 extern ImpulseGeneratorClass ImpulseGeneratorB;
+extern void genUpdate();
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

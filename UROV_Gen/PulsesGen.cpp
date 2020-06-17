@@ -13,12 +13,17 @@ const uint8_t PULSE_ON_LEVEL = HIGH; // УРОВЕНЬ ВКЛЮЧЕННОГО И
 ImpulseGeneratorClass ImpulseGeneratorA(IMPULSE_PIN_A);
 ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-volatile bool timerAttached = false;
-volatile bool timerStarted = false;
-volatile uint8_t timerUsed = 0;
+//volatile bool timerAttached = false;
+//volatile bool timerStarted = false;
+//volatile uint8_t timerUsed = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
+  if(ImpulseGeneratorA.isDone() && ImpulseGeneratorB.isDone())
+  {
+    GEN_TIMER.stop();
+    return;
+  }
   ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
 }
@@ -47,6 +52,7 @@ void ImpulseGeneratorClass::pinConfig()
   digitalWriteFast(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 void ImpulseGeneratorClass::timerStart()
 {
     timerUsed++;
@@ -82,6 +88,7 @@ void ImpulseGeneratorClass::timerConfig()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*/
 uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 {
   done = false;
@@ -117,7 +124,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::wipe()
 {
-  timerStop();
+//  timerStop();
   
   listIterator = 0;
   
@@ -262,7 +269,7 @@ void ImpulseGeneratorClass::start()
   }
 
   pinConfig();
-  timerConfig();
+//  timerConfig();
   done = false;
   stopped = false;
   listIterator = 0;
@@ -271,7 +278,7 @@ void ImpulseGeneratorClass::start()
   machineState = onBetweenPulses;
   
   lastMicros = micros(); // не забываем, что надо засечь текущее время
-  timerStart();
+//  timerStart();
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
