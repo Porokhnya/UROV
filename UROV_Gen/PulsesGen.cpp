@@ -25,7 +25,7 @@ void genUpdate()
     return;
   }
   ImpulseGeneratorA.update();
-  ImpulseGeneratorB.update();
+//  ImpulseGeneratorB.update();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)

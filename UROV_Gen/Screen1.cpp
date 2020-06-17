@@ -279,7 +279,7 @@ void Screen1::startGeneratePulses()
   ImpulseGeneratorB.stop();
 
   ImpulseGeneratorA.start();
-  ImpulseGeneratorB.start();
+//  ImpulseGeneratorB.start();
 
   GEN_TIMER.attachInterrupt(genUpdate);
   GEN_TIMER.setPeriod(GEN_TIMER_PERIOD);
