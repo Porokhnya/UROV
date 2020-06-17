@@ -419,13 +419,20 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     for(size_t i=0;i<chartPoints.size();i++)
     {
       Point ptNext = chartPoints[i];
-      dc->drawLine(ptPrev.X, ptPrev.Y, ptNext.X, ptNext.Y);
+
+      if(ptPrev.X != ptNext.X && ptPrev.Y != ptNext.Y)
+      {
+        dc->drawLine(ptPrev.X, ptPrev.Y, ptNext.X, ptNext.Y);
+      }
 
       ptPrev = ptNext;
     } // for
 
     // рисуем окончание графика
-    dc->drawLine(ptPrev.X, ptPrev.Y, END_POINT_X, END_POINT_Y);
+    if(ptPrev.X != END_POINT_X && ptPrev.Y != END_POINT_Y)
+    {
+      dc->drawLine(ptPrev.X, ptPrev.Y, END_POINT_X, END_POINT_Y);
+    }
   }
 
   // ТЕСТОВЫЙ КОД - НАЧАЛО
