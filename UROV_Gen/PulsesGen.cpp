@@ -268,6 +268,39 @@ void ImpulseGeneratorClass::start()
     return;
   }
 
+  #ifdef _DEBUG
+
+    if(!pList)
+    {
+      DBGLN("pList is NULL, AHTUNG PARTIZANEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+
+    DBGLN("-----------------------------------------------------");
+    DBG("COUNT OF PULSES FOR GENERATOR IS: ");
+    if(pList)
+    {
+      DBGLN(pList->size());
+    }
+    else
+    {
+      DBGLN(0);
+    }
+    DBGLN("LIST OF PULSES FOR GENERATOR IS:");
+    DBGLN("-----------------------------------------------------");
+
+    if(pList)
+    {
+      for(size_t i=0;i<pList->size();i++)
+      {
+        DBGLN((*pList)[i]);
+      }
+    }
+
+
+    
+    Serial.flush();
+  #endif
+
   pinConfig();
 //  timerConfig();
   done = false;
@@ -275,7 +308,14 @@ void ImpulseGeneratorClass::start()
   listIterator = 0;
 
   pauseTime = getNextPauseTime(done);
+
+  DBG("FIRST PAUSE TIME IS: ");
+  DBGLN(pauseTime);
+  
   machineState = onBetweenPulses;
+
+  DBGLN("-----------------------------------------------------");
+  DBGLN("");
   
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 //  timerStart();
