@@ -433,15 +433,15 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   // у нас ситуация: есть N точек, и M промежутков. Есть общее количество точек на графике. Есть общая дельта по X, соответственно, мы можем выяснить
   // кол-во точек на каждом участке графика по дельте Х этого участка.
 
-//  Serial.println("====================================================================");
+  Serial.println("====================================================================");
 
   // выводим общее количество точек, требуемое на графике
- // Serial.print("Total points needed: "); Serial.println(TOTAL_POINTS_IN_CHART);
+  Serial.print("Total points needed: "); Serial.println(TOTAL_POINTS_IN_CHART);
 
   // получаем общую дельту по X
   int totalDeltaX = abs(END_POINT_X - START_POINT_X);
 
-//  Serial.print("Total X delta: "); Serial.println(totalDeltaX);
+  Serial.print("Total X delta: "); Serial.println(totalDeltaX);
 
   // теперь считаем дельты и кол-во точек, требуемых для каждого участка графика
   if(chartPoints.size())
@@ -461,10 +461,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      xDeltas.push_back(abs(END_POINT_X - ptPrev.X));
 
      // выводим список всех дельт по X
- //    for(size_t i=0;i<xDeltas.size();i++)
- //    {
- //       Serial.print("X delta #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xDeltas[i]);
- //    }
+     for(size_t i=0;i<xDeltas.size();i++)
+     {
+        Serial.print("X delta #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xDeltas[i]);
+     }
 
      // теперь рассчитываем кол-во точек на каждом из отрезков
      Vector<uint16_t> xPoints; // кол-во точек на часть графика
@@ -510,15 +510,14 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      } // for
 
    //  // посчитали кол-во точек по частям, выводим это в Serial
-    // uint32_t sumPoints = 0;
-     
-  //   for(size_t i=0;i<xPoints.size();i++)
-//     {
-//        sumPoints += xPoints[i];
-//        Serial.print("Pulses per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
-//     }
+     uint32_t sumPoints = 0;
+     for(size_t i=0;i<xPoints.size();i++)
+     {
+        sumPoints += xPoints[i];
+        Serial.print("Pulses per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(xPoints[i]);
+     }
 
-//     Serial.print("SUM of pulses: "); Serial.println(sumPoints);
+     Serial.print("SUM of pulses: "); Serial.println(sumPoints);
 
      // теперь считаем точки по частям
      
@@ -530,8 +529,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      chartPoints.push_back(ptLast);
 
 
- //     uint32_t sumScreenPoints = 0;
-      
+      uint32_t sumScreenPoints = 0;
       for(size_t i=0;i<chartPoints.size();i++)
       {
         intermediatePoints.clear();
@@ -540,10 +538,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, xPoints[i],intermediatePoints);
         ptPrev = ptNext;
 
- //       sumScreenPoints += resultPoints.size();
+        sumScreenPoints += resultPoints.size();
 
         // выводим кол-во рассчитанных ЭКРАННЫХ точек для части
- //       Serial.print("SCREEN Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(resultPoints.size());
+        Serial.print("SCREEN Points per part #"); Serial.print((i+1)); Serial.print(": "); Serial.println(resultPoints.size());
 
         // теперь отрисуем точки на экране в виде кружочков
         dc->setColor(VGA_YELLOW);
@@ -557,7 +555,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
               
       } // for
 
- //     Serial.print("SUM of SCREEN points: "); Serial.println(sumScreenPoints);
+      Serial.print("SUM of SCREEN points: "); Serial.println(sumScreenPoints);
 
       chartPoints.pop();
 
@@ -667,7 +665,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
          pulseWidth -= (PULSE_WIDTH);
 
          // печатаем для теста
- //        Serial.print("Pulse width: "); Serial.println(pulseWidth);
+         Serial.print("Pulse width: "); Serial.println(pulseWidth);
 
          // сохраняем в список
          pulsesList.push_back(pulseWidth);
@@ -684,7 +682,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   }
 
   
- // Serial.println("====================================================================");
+ Serial.println("====================================================================");
 
 /*
   // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
