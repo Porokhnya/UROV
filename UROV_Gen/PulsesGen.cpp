@@ -19,13 +19,16 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
-  if(ImpulseGeneratorA.isDone() && ImpulseGeneratorB.isDone())
+  GEN_TIMER.stop();
+  
+  if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
-    GEN_TIMER.stop();
     return;
   }
   ImpulseGeneratorA.update();
 //  ImpulseGeneratorB.update();
+
+  GEN_TIMER.start();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
@@ -294,12 +297,10 @@ void ImpulseGeneratorClass::start()
       {
         DBGLN((*pList)[i]);
       }
-    }
-
-
-    
+    }   
     Serial.flush();
-  #endif
+    
+  #endif // _DEBUG
 
   pinConfig();
 //  timerConfig();
