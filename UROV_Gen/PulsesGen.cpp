@@ -19,24 +19,6 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
-  GEN_TIMER.stop();
-
-  // ТЕСТОВЫЙ КОД СМЕНЫ УРОВНЯ НА ВЫВОДЕ В, УБРАТЬ !!!
-  static bool bInited = false;
-  static uint32_t timer = 0;
-  static uint8_t level = LOW;
-  if(!bInited)
-  {
-    bInited = true;
-    pinModeFast(IMPULSE_PIN_B,OUTPUT);
-  }
-  if(micros() - timer >= PULSE_WIDTH)
-  {
-    level = !level;
-    digitalWriteFast(IMPULSE_PIN_B,level);
-    timer = micros();
-  }
-  // КОНЕЦ ТЕСТОВОГО КОДА
   
   if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
@@ -45,7 +27,6 @@ void genUpdate()
   ImpulseGeneratorA.update();
 //  ImpulseGeneratorB.update();
 
-  GEN_TIMER.start();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
@@ -109,7 +90,7 @@ void ImpulseGeneratorClass::timerConfig()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-uint32_t ImpulseGeneratorClass::getNextPauseTime(volatile bool& done)
+uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 {
   done = false;
   uint32_t result = 0;
