@@ -241,8 +241,8 @@ MessageBoxScreen::MessageBoxScreen() : AbstractTFTScreen("MessageBox")
 void MessageBoxScreen::doSetup(TFTMenu* menu)
 {
 
-  yesButton = screenButtons->addButton(5, 107, BUTTON_WIDTH, BUTTON_HEIGHT, "ДА");
-  noButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "НЕТ");
+  yesButton = screenButtons->addButton(100, 95, BUTTON_WIDTH, BUTTON_HEIGHT, "ДА");
+  noButton = screenButtons->addButton(100, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "НЕТ");
 
 
 }
@@ -265,7 +265,7 @@ void MessageBoxScreen::doDraw(TFTMenu* menu)
    int lineSpacing = 2;  
 
    int curX = 0;
-   int curY = 10;
+   int curY = 40;
 
     for(size_t i=0;i<lines.size();i++)
     {
