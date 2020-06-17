@@ -20,6 +20,23 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 void genUpdate()
 {  
   GEN_TIMER.stop();
+
+  // ТЕСТОВЫЙ КОД СМЕНЫ УРОВНЯ НА ВЫВОДЕ В, УБРАТЬ !!!
+  static bool bInited = false;
+  static uint32_t timer = 0;
+  static uint8_t level = LOW;
+  if(!bInited)
+  {
+    bInited = true;
+    pinModeFast(IMPULSE_PIN_B,OUTPUT);
+  }
+  if(micros() - timer >= PULSE_WIDTH)
+  {
+    level = !level;
+    digitalWriteFast(IMPULSE_PIN_B,level);
+    timer = micros();
+  }
+  // КОНЕЦ ТЕСТОВОГО КОДА
   
   if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
@@ -51,8 +68,8 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
-  pinMode/*Fast*/(pin,OUTPUT);
-  digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL);
+  pinModeFast(pin,OUTPUT);
+  digitalWriteFast(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
@@ -134,7 +151,7 @@ void ImpulseGeneratorClass::wipe()
   pauseTime = 0;
   lastMicros = 0;
   
-  digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL);
+  digitalWriteFast(pin,!PULSE_ON_LEVEL);
   machineState = onBetweenPulses;
 
 }
@@ -349,7 +366,7 @@ void ImpulseGeneratorClass::update()
       {
         if(micros() - lastMicros >= PULSE_WIDTH) // вышло время удержания высокого уровня на пине
         {
-          digitalWrite/*Fast*/(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
+          digitalWriteFast(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
           
           if(!done) // получаем следующее время паузы
           {
@@ -370,7 +387,7 @@ void ImpulseGeneratorClass::update()
       {
         if(micros() - lastMicros >= pauseTime) // время паузы между импульсами вышло
         {
-            digitalWrite/*Fast*/(pin,PULSE_ON_LEVEL); // высокий уровень на пин
+            digitalWriteFast(pin,PULSE_ON_LEVEL); // высокий уровень на пин
             machineState = onHighLevel; // переключаемся в ветку ожидания окончания высокого уровня на пине
             lastMicros = micros(); // не забываем, что надо засечь текущее время
         }
