@@ -26,6 +26,7 @@
 #include "DS18B20Query.h"
 #include "Buzzer.h"
 #include "CreateEncoderChartScreen.h"
+#include "SelectEncoderChartScreen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -182,6 +183,9 @@ void setup()
 
 
   Screen.addScreen(CreateEncoderChartScreen::create());
+  Screen.addScreen(LoadEncoderChartScreen::create());
+  Screen.addScreen(SelectEncoderChartScreen::create());
+  
 
   DBGLN(F("Add interrupt screen..."));
   // добавляем экран с графиком прерываний

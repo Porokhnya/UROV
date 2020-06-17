@@ -59,12 +59,8 @@ class ImpulseGeneratorClass
   
   ImpulseGeneratorWorkMode workMode;
   bool done;
+  bool stopped;
   
-//	SdFile file;
-  
-//	int memAddress;
-//  uint32_t memCount;
-
   Vector<uint32_t> internalList;
  
 	const Vector<uint32_t>* pList;
@@ -73,7 +69,6 @@ class ImpulseGeneratorClass
 	uint32_t lastMicros;
   uint32_t pauseTime;
   
-//	uint8_t currentPinLevel;
   bool inUpdateFlag;
   ImpulseGeneratorMachineState machineState;
 };

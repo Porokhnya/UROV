@@ -31,20 +31,19 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
   pList = NULL;
   listIterator = 0;
   
-//  memAddress = 0;
-//  memCount = 0;
   lastMicros = 0;
   pauseTime = 0;
-//  currentPinLevel = !PULSE_ON_LEVEL;
+  
   done = false;
   inUpdateFlag = false;
   machineState = onBetweenPulses;
+
+  stopped = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
   pinModeFast(pin,OUTPUT);
-  //currentPinLevel = !PULSE_ON_LEVEL;
   digitalWriteFast(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -87,65 +86,16 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 {
   done = false;
   uint32_t result = 0;
- // uint8_t* ptr = (uint8_t*)&result;
 
  switch(workMode)
   {
     case igNothing: 
     {
       done = true;
+      stopped = true;
     }
     break;
-/*    
-    case igFile:
-    {
-        if(file.isOpen())
-        {
-            for(size_t i=0;i<sizeof(result);i++)
-            {
-              int iCh = file.read();
-              if(iCh == -1) // конец файла или ошибка чтения
-              {
-                done = true;
-                break;
-              }
-              else
-              {
-                *ptr++ = (uint8_t) iCh;
-              }
-            } // for
-            
-        }
-        else
-        {
-          done = true;
-        }
-    }
-    break;
-
-    case igEEPROM:
-    {
-      if(!memCount) // все записи из EEPROM вычитаны
-      {
-        done = true;
-      }
-      else
-      {
-          for(size_t i=0;i<sizeof(result);i++)
-          {
-              *ptr++ = Settings.read(memAddress);
-              memAddress++;
-              
-          } // for
-          
-          if(memCount)
-          {
-            memCount--;
-          }
-      } // else
-    }
-    break;
-*/
+    
     case igExternalList: // внешний список
     case igInternalList: // внутренний список
     {
@@ -168,47 +118,12 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
 void ImpulseGeneratorClass::wipe()
 {
   timerStop();
-
-  internalList.clear(); // очищаем внутренний список
-  pList = NULL;
+  
   listIterator = 0;
   
-/*  
-  switch(workMode)
-  {
-    case igNothing: 
-    break;
-    
-    case igFile:
-    {
-        if(file.isOpen())
-        {
-          file.close();
-        }
-    }
-    break;
-
-    case igEEPROM:
-    {
-      memAddress = 0;
-      memCount = 0;
-    }
-    break;
-
-    case igList:
-    {
-      pList = NULL;
-      listIterator = 0;
-    }
-    break;
-  }
-*/
   pauseTime = 0;
   lastMicros = 0;
   
-  workMode = igNothing;
-  
-  //currentPinLevel = !PULSE_ON_LEVEL;  
   digitalWriteFast(pin,!PULSE_ON_LEVEL);
   machineState = onBetweenPulses;
 
@@ -217,10 +132,6 @@ void ImpulseGeneratorClass::wipe()
 void ImpulseGeneratorClass::prepare(const String& fileName)
 {
   wipe();
-  /*
-  pinConfig();
-  timerConfig();
-  */
 
 
 #ifndef _SD_OFF
@@ -233,6 +144,8 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
   file.rewind();
 
   bool canContinue = true;
+
+  internalList.clear();
   
   while(canContinue)
   {
@@ -267,14 +180,11 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
     pList = &internalList;
     listIterator = 0;
   }
+  else
+  {
+    workMode = igNothing;
+  }
   
-  /*
-  workMode = igFile;
-  done = false;
-  lastMicros = micros(); // не забываем, что надо засечь текущее время
-
-  timerStart();
-  */
 
 #endif // _SD_OFF
 
@@ -283,6 +193,9 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
 void ImpulseGeneratorClass::prepare(int memAddr)
 {
   wipe();
+
+
+  internalList.clear();
 
   uint32_t totalRecords = 0;
   uint8_t* ptr = (uint8_t*)&totalRecords;
@@ -315,32 +228,18 @@ void ImpulseGeneratorClass::prepare(int memAddr)
     pList = &internalList;
     listIterator = 0;    
   }
-  
-  /*
-    pinConfig();
-    timerConfig();
-  
-    memAddress = memAddr;
-    memCount = 0;
+  else
+  {
+    workMode = igNothing;
+  }
 
-    uint8_t* ptr = (uint8_t*)&memCount;
-    for(size_t i=0;i<sizeof(memCount);i++)
-    {
-      *ptr++ = Settings.read(memAddress);
-      memAddress++;
-    }
-
-  workMode = igEEPROM;
-  done = false;
-  lastMicros = micros(); // не забываем, что надо засечь текущее время
-
-  timerStart();
-  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::prepare(const Vector<uint32_t>& list)
 {
     wipe();
+
+    internalList.clear();
     
     if(list.size())
     {
@@ -348,19 +247,11 @@ void ImpulseGeneratorClass::prepare(const Vector<uint32_t>& list)
       listIterator = 0;
       workMode = igExternalList;
     }
+    else
+    {
+      workMode = igNothing;
+    }    
     
-  /*
-  pinConfig();
-  timerConfig();
-  
-  pList = &list;
-  listIterator = 0;
-  workMode = igList;
-  done = false;
-  lastMicros = micros(); // не забываем, что надо засечь текущее время
-
-  timerStart();
-  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::start()
@@ -373,6 +264,8 @@ void ImpulseGeneratorClass::start()
   pinConfig();
   timerConfig();
   done = false;
+  stopped = false;
+  listIterator = 0;
 
   pauseTime = getNextPauseTime(done);
   machineState = onBetweenPulses;
@@ -385,11 +278,12 @@ void ImpulseGeneratorClass::start()
 void ImpulseGeneratorClass::stop()
 {
   wipe();
+  stopped = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()
 {
-  if(inUpdateFlag || workMode == igNothing)// || done) // не работаем никак, или уже закончили
+  if(inUpdateFlag || workMode == igNothing || stopped) // не работаем никак, или уже закончили
   {
     return;
   }
@@ -414,7 +308,7 @@ void ImpulseGeneratorClass::update()
           else
           {
             // всё, работа закончена, это был последний импульс, поскольку предыдущий вызов getNextPauseTime выставил done в true
-            wipe();
+            stop();
           }
         }
       }
@@ -432,32 +326,6 @@ void ImpulseGeneratorClass::update()
       break; // onBetweenPulses
   } // switch
 
-  /*
-  
-  if(micros() - lastMicros >= pauseTime) // время паузы между сменой уровня вышло
-  {
-    
-    pauseTime = getNextPauseTime(done);
-    
-    if(!done) // ещё не закончили работу, время паузы вышло, меняем уровень на пине
-    {
-      
-      //currentPinLevel = !currentPinLevel;      
-      //digitalWriteFast(pin,currentPinLevel);
-      
-      digitalWriteFast(pin,PULSE_ON_LEVEL);
-      delayMicroseconds(PULSE_WIDTH);
-      digitalWriteFast(pin,!PULSE_ON_LEVEL);
-
-      lastMicros = micros(); // не забываем, что надо засечь текущее время
-
-    }
-    else // работа закончена, список импульсов кончился
-    {
-      wipe();
-    }
-  }
-  */
 
   inUpdateFlag = false;
 }

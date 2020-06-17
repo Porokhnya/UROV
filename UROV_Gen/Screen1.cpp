@@ -233,6 +233,7 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
 void Screen1::startGeneratePulses()
 {
   // делаем список импульсов энкодера
+  /*
   encoderAPulses.clear();
   encoderBPulses.clear();
 
@@ -267,6 +268,8 @@ void Screen1::startGeneratePulses()
   ImpulseGeneratorA.prepare(encoderAPulses);
   ImpulseGeneratorB.prepare(encoderBPulses);
 
+*/  
+  
   ImpulseGeneratorA.start();
   ImpulseGeneratorB.start();
   
