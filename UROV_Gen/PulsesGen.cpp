@@ -19,6 +19,7 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
+  GEN_TIMER.stop();
   
   if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
@@ -27,6 +28,7 @@ void genUpdate()
   ImpulseGeneratorA.update();
 //  ImpulseGeneratorB.update();
 
+  GEN_TIMER.start();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
@@ -90,7 +92,7 @@ void ImpulseGeneratorClass::timerConfig()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
+uint32_t ImpulseGeneratorClass::getNextPauseTime()
 {
   done = false;
   uint32_t result = 0;
@@ -303,7 +305,7 @@ void ImpulseGeneratorClass::start()
 //  timerConfig();
   listIterator = 0;
 
-  pauseTime = getNextPauseTime(done);
+  pauseTime = getNextPauseTime();
 
   DBG("FIRST PAUSE TIME IS: ");
   DBGLN(pauseTime);
@@ -351,7 +353,7 @@ void ImpulseGeneratorClass::update()
           
           if(!done) // получаем следующее время паузы
           {
-            pauseTime = getNextPauseTime(done);
+            pauseTime = getNextPauseTime();
             machineState = onBetweenPulses; // переключаемся на ожидание паузы между импульсами
             lastMicros = micros(); // не забываем, что надо засечь текущее время
           } // if

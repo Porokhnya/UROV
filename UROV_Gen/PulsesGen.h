@@ -53,7 +53,7 @@ class ImpulseGeneratorClass
 //  void timerStart();
 //  void timerStop();
 
-  uint32_t getNextPauseTime(bool& done);
+  uint32_t getNextPauseTime();
 
   void wipe();
   
