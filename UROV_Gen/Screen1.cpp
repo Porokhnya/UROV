@@ -234,42 +234,6 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
 void Screen1::startGeneratePulses()
 {
   // делаем список импульсов энкодера
-  /*
-  encoderAPulses.clear();
-  encoderBPulses.clear();
-
-  // импульсы по линии A энкодера, паузы между сменой уровня на выводе, в микросекундах
-  encoderAPulses.push_back(100);
-  encoderAPulses.push_back(200);
-  encoderAPulses.push_back(300);
-  encoderAPulses.push_back(400);
-  encoderAPulses.push_back(500);
-  encoderAPulses.push_back(600);
-  encoderAPulses.push_back(500);
-  encoderAPulses.push_back(400);
-  encoderAPulses.push_back(300);
-  encoderAPulses.push_back(200);
-  encoderAPulses.push_back(100);
-
-  // импульсы по линии B энкодера, паузы между сменой уровня на выводе, в микросекундах
-  encoderBPulses.push_back(200);
-  encoderBPulses.push_back(300);
-  encoderBPulses.push_back(400);
-  encoderBPulses.push_back(500);
-  encoderBPulses.push_back(600);
-  encoderBPulses.push_back(700);
-  encoderBPulses.push_back(600);
-  encoderBPulses.push_back(500);
-  encoderBPulses.push_back(400);
-  encoderBPulses.push_back(300);
-  encoderBPulses.push_back(200);
-
-
-  // запускаем генерацию импульсов
-  ImpulseGeneratorA.prepare(encoderAPulses);
-  ImpulseGeneratorB.prepare(encoderBPulses);
-
-*/  
 
   DBGLN("START ENCODER PULSES...");
 

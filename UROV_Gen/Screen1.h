@@ -38,8 +38,6 @@ private:
     int settingsButton,relAllButton, shunt1Button, shunt2Button, encoderButton, endButton;
 
     void startGeneratePulses();
-    Vector<uint32_t> encoderAPulses;
-    Vector<uint32_t> encoderBPulses;
 
     int oldFreeMemory;
     String oldFreeMemCaption;
