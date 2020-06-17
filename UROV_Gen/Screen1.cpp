@@ -283,6 +283,8 @@ void Screen1::startGeneratePulses()
 
   GEN_TIMER.attachInterrupt(genUpdate);
   GEN_TIMER.setPeriod(GEN_TIMER_PERIOD);
+
+  
   GEN_TIMER.start();
   
   DBGLN("ENCODER PULSES STARTED.");

@@ -89,7 +89,7 @@ void ImpulseGeneratorClass::timerConfig()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-uint32_t ImpulseGeneratorClass::getNextPauseTime(bool& done)
+uint32_t ImpulseGeneratorClass::getNextPauseTime(volatile bool& done)
 {
   done = false;
   uint32_t result = 0;
@@ -284,8 +284,10 @@ void ImpulseGeneratorClass::start()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::stop()
 {
-  wipe();
+  noInterrupts();
   stopped = true;
+  wipe();
+  interrupts();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()

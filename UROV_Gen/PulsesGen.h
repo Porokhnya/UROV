@@ -53,24 +53,24 @@ class ImpulseGeneratorClass
 //  void timerStart();
 //  void timerStop();
 
-  uint32_t getNextPauseTime(bool& done);
+  uint32_t getNextPauseTime(volatile bool& done);
 
   void wipe();
   
   ImpulseGeneratorWorkMode workMode;
-  bool done;
-  bool stopped;
+  volatile bool done;
+  volatile bool stopped;
   
   Vector<uint32_t> internalList;
  
 	const Vector<uint32_t>* pList;
-  size_t listIterator;
+  volatile size_t listIterator;
 	
-	uint32_t lastMicros;
-  uint32_t pauseTime;
+	volatile uint32_t lastMicros;
+  volatile uint32_t pauseTime;
   
-  bool inUpdateFlag;
-  ImpulseGeneratorMachineState machineState;
+  volatile bool inUpdateFlag;
+  volatile ImpulseGeneratorMachineState machineState;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern ImpulseGeneratorClass ImpulseGeneratorA;
