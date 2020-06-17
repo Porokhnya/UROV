@@ -276,7 +276,7 @@ void Screen1::startGeneratePulses()
   GEN_TIMER.stop();
   
   ImpulseGeneratorA.stop();
-  ImpulseGeneratorB.stop();
+//  ImpulseGeneratorB.stop();
 
   ImpulseGeneratorA.start();
 //  ImpulseGeneratorB.start();

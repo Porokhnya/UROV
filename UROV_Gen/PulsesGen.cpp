@@ -99,7 +99,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime(volatile bool& done)
 
  switch(workMode)
   {
-    case igNothing: 
+    case igNothing: // ничего не делаем
     {
       done = true;
       stopped = true;
@@ -204,7 +204,6 @@ void ImpulseGeneratorClass::prepare(int memAddr)
 {
   wipe();
 
-
   internalList.clear();
 
   uint32_t totalRecords = 0;
@@ -304,8 +303,6 @@ void ImpulseGeneratorClass::start()
 
   pinConfig();
 //  timerConfig();
-  done = false;
-  stopped = false;
   listIterator = 0;
 
   pauseTime = getNextPauseTime(done);
@@ -313,7 +310,6 @@ void ImpulseGeneratorClass::start()
   DBG("FIRST PAUSE TIME IS: ");
   DBGLN(pauseTime);
   
-  machineState = onBetweenPulses;
 
   DBGLN("-----------------------------------------------------");
   DBGLN("");
@@ -324,6 +320,10 @@ void ImpulseGeneratorClass::start()
   
   lastMicros = micros(); // не забываем, что надо засечь текущее время
 //  timerStart();
+
+  machineState = onBetweenPulses;
+  done = false;
+  stopped = false;
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
