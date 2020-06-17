@@ -558,7 +558,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         #endif
 
         // выводим кол-во рассчитанных ЭКРАННЫХ точек для части
-        DBG("SCREEN Points per part #"); DBG((i+1)); DBG(": "); DBGLN(resultPoints.size());
+        DBG("SCREEN Points per part #"); DBG((i+1)); DBG(": "); DBGLN(intermediatePoints.size());
 
         // теперь отрисуем точки на экране в виде кружочков
         dc->setColor(VGA_YELLOW);
