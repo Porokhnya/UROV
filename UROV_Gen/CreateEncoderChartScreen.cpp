@@ -670,6 +670,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
          // сохраняем в список
          pulsesList.push_back(pulseWidth);
       }
+
+      Serial.println();
       
       
     } // for
