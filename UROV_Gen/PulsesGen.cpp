@@ -20,21 +20,43 @@ volatile bool inTimer = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
+  static bool bInited = false;
+  static uint8_t level = LOW;
+  static uint16_t counter = 0;
+  if(!bInited)
+  {
+    bInited = true;
+    pinModeFast(IMPULSE_PIN_B,OUTPUT);
+  }
+
+  level = !level;
+  digitalWriteFast(IMPULSE_PIN_B,level);
+  counter++;
+
+  if(counter >= 1000)
+  {
+    counter = 0;
+    GEN_TIMER.stop();
+  }
+  
+  /*
   if(inTimer)
   {
     return;
   }
   inTimer = true;
-  
-  if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())
+
+  if(ImpulseGeneratorA.isDone() && ImpulseGeneratorB.isDone())
   {
     inTimer = false;
     return;
   }
-//  ImpulseGeneratorA.update();
+  ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
-
+  
   inTimer = false;
+*/
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
