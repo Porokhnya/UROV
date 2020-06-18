@@ -238,6 +238,16 @@ void ImpulseGeneratorClass::prepare(int memAddr)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ImpulseGeneratorClass::hasData()
+{
+  if(workMode == igNothing || !pList)
+  {
+    return false;
+  }
+
+  return (pList->size() > 0);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::prepare(const Vector<uint32_t>& list)
 {
     wipe();

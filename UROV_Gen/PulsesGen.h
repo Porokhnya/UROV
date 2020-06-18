@@ -39,6 +39,8 @@ class ImpulseGeneratorClass
   {
     return ( (workMode != igNothing) && !stopped );
   }
+
+  bool hasData();
 	
 	
   private:

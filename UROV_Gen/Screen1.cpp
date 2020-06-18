@@ -234,10 +234,16 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
 void Screen1::startGeneratePulses()
 {
   // делаем список импульсов энкодера
+  GEN_TIMER.stop();
+
+  if(/*!ImpulseGeneratorA.hasData() ||*/ !ImpulseGeneratorB.hasData())
+  {
+    DBGLN("NOTHING TO GENERATE !!!");
+    return;
+  }
 
   DBGLN("START ENCODER PULSES...");
 
-  GEN_TIMER.stop();
   
 //  ImpulseGeneratorA.stop();
   ImpulseGeneratorB.stop();
