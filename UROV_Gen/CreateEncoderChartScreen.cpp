@@ -506,7 +506,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
      
      ptPrev = {START_POINT_X,START_POINT_Y};
      Point ptLast = {END_POINT_X,END_POINT_Y};
-     chartPoints.push_back(ptLast);
+     
+     chartPoints.push_back(ptLast); // добавляем временную последнюю точку
 
       #ifdef _DEBUG
       uint32_t sumScreenPoints = 0;
@@ -540,10 +541,11 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
               
       } // for
 
+      chartPoints.pop(); // убираем последнюю временную точку
+      
       DBG("SUM of SCREEN points: "); DBGLN(sumScreenPoints);
     
     // 6. по опорным точкам строим график прерываний
-
 
     pulsesList.clear(); // очищаем результирующий список импульсов
 
@@ -606,7 +608,6 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
       double oneWeightXTime = fullWorkTime/weightXSum; // время на одну весовую долю, по X
 
 
-      chartPoints.pop();
 
       #ifdef _DEBUG
       uint32_t totalPulseWidth = 0;
