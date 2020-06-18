@@ -135,9 +135,6 @@ DueTimer& DueTimer::stop(void){
 	/*
 		Stop the timer
 	*/
-
-  //TODO: ДОБАВИЛ ЭТУ СТРОЧКУ !!!
-  NVIC_ClearPendingIRQ(Timers[timer].irq);
   
 	NVIC_DisableIRQ(Timers[timer].irq);
 	
