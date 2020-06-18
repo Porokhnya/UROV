@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "DelayedEvents.h"
 #include "ADCSampler.h"
+#include "CONFIG.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -151,6 +152,8 @@ InterruptHandlerClass::InterruptHandlerClass()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::begin()
 {
+ #ifndef _INTERRUPTS_OFF
+  
   // резервируем память
   list1.reserve(INTERRUPT_RESERVE_RECORDS);
 
@@ -181,7 +184,8 @@ void InterruptHandlerClass::begin()
 
   // считаем импульсы на штанге по прерыванию
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
-
+  
+#endif // _INTERRUPTS_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
@@ -345,6 +349,8 @@ void InterruptHandlerClass::writeToLog(
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
+
+#ifndef _INTERRUPTS_OFF
 
   static bool inProcess = false;
 
@@ -583,6 +589,7 @@ void InterruptHandlerClass::update()
 	// всё обработали
     inProcess = false;
 
+#endif // _INTERRUPTS_OFF
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
