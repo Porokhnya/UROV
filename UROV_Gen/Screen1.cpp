@@ -236,7 +236,7 @@ void Screen1::startGeneratePulses()
   // делаем список импульсов энкодера
   GEN_TIMER.stop();
 
-  if(!ImpulseGeneratorA.hasData() || !ImpulseGeneratorB.hasData())
+  if(/*!ImpulseGeneratorA.hasData() ||*/ !ImpulseGeneratorB.hasData())
   {
     DBGLN("NOTHING TO GENERATE !!!");
     return;
@@ -245,10 +245,10 @@ void Screen1::startGeneratePulses()
   DBGLN("START ENCODER PULSES...");
 
   
-  ImpulseGeneratorA.stop();
+//  ImpulseGeneratorA.stop();
   ImpulseGeneratorB.stop();
 
-  ImpulseGeneratorA.start();
+//  ImpulseGeneratorA.start();
   ImpulseGeneratorB.start();
 
   GEN_TIMER.attachInterrupt(genUpdate).setPeriod(GEN_TIMER_PERIOD).start();
