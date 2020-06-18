@@ -432,11 +432,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
      // теперь рассчитываем кол-во точек на каждом из отрезков
      Vector<uint16_t> xPoints; // кол-во точек на часть графика
-     Vector<double> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
      
      double deltaErr = 0.0; // ошибка накопления точек
-     double addTo100percents = 100.;
-
      uint16_t pointsGenerated = 0;
 
     // 2. считаем процентный вес участка к общему времени
@@ -449,10 +446,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         // totalDeltaX = 100%
         // xDelta = x%
         // x% = (xDelta*100)/totalDeltaX;
-
         double percents = (100.*xDelta)/totalDeltaX;
-        xPartPercents.push_back(percents);
-        addTo100percents -= percents;
 
         // теперь считаем кол-во точек на отрезок
         // TOTAL_POINTS_IN_CHART = 100%
@@ -478,11 +472,6 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         
      } // for
 
-     // добиваем до 100%
-     if(xPartPercents.size())
-     {
-      xPartPercents[xPartPercents.size()-1] += addTo100percents;
-     }
 
    //  посчитали кол-во точек по частям, выводим это в Serial
    #ifdef _DEBUG
@@ -551,99 +540,98 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     // вычисляем минимальную и максимальную координаты по Y из списка resultPoints
 
-    int minY, maxY;
+    int minY, maxY, minX, maxX;
     minY = maxY = resultPoints[0].Y;
+    minX = maxX = resultPoints[0].X;
 
     for(size_t z=0;z<resultPoints.size();z++)
     {
       Point pt = resultPoints[z];
+      
       minY = min(minY,pt.Y);
       maxY = max(maxY,pt.Y);
+      
+      minX = min(minX,pt.X);
+      maxX = max(maxX,pt.X);
 
       DBG("pt.X="); DBG(pt.X); DBG(", pt.Y="); DBGLN(pt.Y);
     } // for
-
-    // получили минимальную и максимальную координаты по Y, относительно которых будем потом рассчитывать длительность итерации цикла для одной опорной точки графика
     
-    int fullYDia = maxY - minY; // полная дельта размаха по Y, 100% ширины одного самого длительного импульса
-    double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
+    //int fullYDia = maxY - minY; // полная дельта размаха по Y
+    int fullXDia = maxX - minX; // полная дельта размаха по X
+    double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд    
 
-    // теперь считаем сумму весов всех точек по Y
-    double weightYSum = 0; // сумма весов всех точек, по Y
-     Vector<double> pointsYWeight; // список весов каждой точки части графика, по Y
-     
-     for(size_t z=0;z<resultPoints.size();z++)
-     {
-        Point pt = resultPoints[z];
-        double pointYWeight = (double(1.)*pt.Y)/fullYDia; // весовая доля точки по Y
-        
-        weightYSum += pointYWeight;
-        pointsYWeight.push_back(pointYWeight);  
-     } // for
+    // считаем веса точек по Y.
+    uint32_t weightYSum = 0; // сумма весов всех точек, по Y
 
-      // теперь нам надо просчитать вес каждой точки по X. это можно сделать, просчитам дельту от следующей точки до текущей, это и будет ширина импульса по X,
-      // следовательно, мы можем посчитать относительный вес этого импульса по X.      
-
-      double weightXSum = 0; // сумма весов всех точек, по X
-      Vector<double> pointsXWeight; // список весов каждой точки части графика, по X
-
-      for(size_t z=0;z<resultPoints.size()-1;z++)
-      {
+    // сумма весов считается как сумма Yi*dt, где dt = длительность участка графика по X
+    Vector<double> xDeltasWeights; // список дельт по X
+   
+    for(size_t z=0;z<resultPoints.size()-1;z++)
+    {
         Point ptCur = resultPoints[z];
         Point ptNext = resultPoints[z+1];
-        int dt = ptNext.X - ptCur.X;
 
-        double pointXWeight = (double(1.)*dt)/totalDeltaX; // весовая доля точки по X
-        weightXSum += pointXWeight;
-        pointsXWeight.push_back(pointXWeight);  
-      }
+        double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
+        double pointWeight = ptCur.Y; // вес точки по Y
+        double dt = (deltaX/fullXDia);
 
-      // добавляем последний, нулевой вес, для крайней правой точки
-      pointsXWeight.push_back(0.);
+        weightYSum += pointWeight*dt; // приплюсовали к сумме весов
+        
+        xDeltasWeights.push_back(deltaX); // запоминаем дельту по X для отрезка
+        
+    } // for
 
-      // теперь у нас есть веса по X и по Y, и мы можем ими оперировать при расчёте
+    // сумму весов высчитали, теперь считаем относительный вес каждой точки
+    Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
+    
+    for(size_t z=0;z<resultPoints.size()-1;z++)
+    {
+       Point ptCur = resultPoints[z];
+       double pointWeight = ptCur.Y; // вес точки по Y
+       double pulsesPerTimeUnit = (pointWeight/resultPoints.size())*weightYSum; // импульсов на единицу времени для точки
 
-      // средневзвешенные веса для точек по X и Y
-      double oneWeightYTime = fullWorkTime/weightYSum; // время на одну весовую долю, по Y
-      double oneWeightXTime = fullWorkTime/weightXSum; // время на одну весовую долю, по X
+       // timeUnit - единица времени
+       // pulsesPerTimeUnit - импульсов на единицу времени
+       double pointResultWeight = pulsesPerTimeUnit * xDeltasWeights[z]; // результирующий вес точки
+       relativePointsWeight.push_back(pointResultWeight);
+    } // for
 
+    // относительные веса посчитали, теперь преобразовываем их к единицам времени.
+    // для этого у нас есть weightYSum, и данные в массиве relativePointsWeight, которые показывают,
+    // какую часть от weightYSum занимает в процентах каждая точка. Соответственно, мы можем высчитать время,
+    // отталкиваясь от timeUnit.
 
+    for(size_t z=0;z<relativePointsWeight.size();z++)
+    {
+      double w = relativePointsWeight[z]; // относительный вес точки, по времени
+      // weightYSum = 100%
+      // w = x%
+      double percents = (w*100)/weightYSum; // процентный вес точки, от общего времени срабатывания
 
-      #ifdef _DEBUG
-      uint32_t totalPulseWidth = 0;
-      #endif
+      // fullWorkTime = 100%
+      // pulseWidth = percents
 
-      // теперь бежим по всем точкам, получаем их веса, и преобразуем в длительность импульса
-      for(size_t z=0;z<resultPoints.size();z++)
-      {
-         double xWeight = pointsXWeight[z];
-         double yWeight = pointsYWeight[z];
+      uint32_t pulseWidth = (fullWorkTime*percents)/100;
 
-         uint32_t pulseWidth = ((xWeight*oneWeightXTime) + (yWeight*oneWeightYTime))/2;
+     if(pulseWidth < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
+     {
+        pulseWidth = (PULSE_WIDTH)*2;
+     }
 
-         if(pulseWidth < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
-         {
-            pulseWidth = (PULSE_WIDTH)*2;
-         }
+     // отнимаем от ширины имппульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
+     pulseWidth -= (PULSE_WIDTH);
 
-          #ifdef _DEBUG
-            totalPulseWidth += pulseWidth;
-          #endif         
+     // печатаем для теста
+     DBG("Pulse width: "); DBGLN(pulseWidth);
 
-         // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-         pulseWidth -= (PULSE_WIDTH);
-
-         // печатаем для теста
-         DBG("Pulse width: "); DBGLN(pulseWidth);
-
-         // сохраняем в список
-         pulsesList.push_back(pulseWidth);         
-      } // for
-
-    #ifdef _DEBUG
-      DBG("TOTAL PULSES WIDTH: "); DBGLN(totalPulseWidth);
-    #endif         
-
+     // сохраняем в список
+     pulsesList.push_back(pulseWidth);
+     
+      // всё, посчитали ширину импульса
+      
+    } // for
+    
     
     /*
       Vector<uint16_t> xDeltas;
