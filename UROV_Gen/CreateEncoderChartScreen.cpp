@@ -338,8 +338,8 @@ void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Point
    где t - шаг между точками, в диапазоне 0-1
    */
 
-   float tStep = 1.0/pointsCount;
-   float t = 0;
+   double tStep = 1.0/pointsCount;
+   double t = 0;
    
    int deltax = (x2-x1);
    int deltay = (y2-y1);
@@ -354,54 +354,6 @@ void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Point
      resultPoints.push_back(pt);
    } // for
   
-/*
-    unsigned int  dx = (x2 > x1 ? x2 - x1 : x1 - x2);
-    short     xstep =  x2 > x1 ? 1 : -1;
-    unsigned int  dy = (y2 > y1 ? y2 - y1 : y1 - y2);
-    short     ystep =  y2 > y1 ? 1 : -1;
-    int       col = x1, row = y1;
-
-    if (dx < dy)
-    {
-      int t = - (dy >> 1);
-      while (true)
-      {
-        Point pt = {col, row};
-        resultPoints.push_back(pt);
-        
-        if (row == y2)
-          return;
-          
-        row += ystep;
-        t += dx;
-        if (t >= 0)
-        {
-          col += xstep;
-          t   -= dy;
-        }
-      } 
-    }
-    else
-    {
-      int t = - (dx >> 1);
-      while (true)
-      {
-        Point pt = {col, row};
-        resultPoints.push_back(pt);
-        
-        if (col == x2)
-          return;
-          
-        col += xstep;
-        t += dy;
-        if (t >= 0)
-        {
-          row += ystep;
-          t   -= dx;
-        }
-      } 
-    }
- */ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
@@ -477,9 +429,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
      // теперь рассчитываем кол-во точек на каждом из отрезков
      Vector<uint16_t> xPoints; // кол-во точек на часть графика
-     Vector<float> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
+     Vector<double> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
      
-     float deltaErr = 0.0; // ошибка накопления точек
+     double deltaErr = 0.0; // ошибка накопления точек
+     double addTo100percents = 100.;
 
      uint16_t pointsGenerated = 0;
 
@@ -491,15 +444,19 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         // xDelta = x%
         // x% = (xDelta*100)/totalDeltaX;
 
-        float percents = (100.*xDelta)/totalDeltaX;
+        double percents = (100.*xDelta)/totalDeltaX;
         xPartPercents.push_back(percents);
+        addTo100percents -= percents;
 
         // теперь считаем кол-во точек на отрезок
         // TOTAL_POINTS_IN_CHART = 100%
         // x = percents
         // x = (percents*TOTAL_POINTS_IN_CHART)/100;
 
-        float pointsPerPart = (percents*TOTAL_POINTS_IN_CHART)/100 + deltaErr;
+        // тут есть одна особенность - у нас кол-во точек между двумя отрезками распределено таким образом, что захватываются начальные и конечные точки отрезка.
+        // соответственно, общие точки промежуточных отрезков - пересекаются. Поэтому мы отнимаем 1 точку с конца.
+
+        double pointsPerPart = (percents*TOTAL_POINTS_IN_CHART)/100 + deltaErr - 1;
         uint16_t pppInt = pointsPerPart;
         deltaErr = pointsPerPart - pppInt;
 
@@ -517,6 +474,12 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         xPoints.push_back(pppInt);
         
      } // for
+
+     // добиваем до 100%
+     if(xPartPercents.size())
+     {
+      xPartPercents[xPartPercents.size()-1] += addTo100percents;
+     }
 
    //  // посчитали кол-во точек по частям, выводим это в Serial
    #ifdef _DEBUG
@@ -608,7 +571,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     // получили минимальную и максимальную координаты по Y, относительно которых будем потом рассчитывать длительность итерации цикла для одной опорной точки графика
     
     int fullYDia = maxY - minY; // полная дельта размаха по Y, 100% ширины одного самого длительного импульса
-    float fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
+    double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
         
 
     // теперь проходим по массиву xPoints, берём оттуда кол-во точек, пробегаемся по точкам, высчитываем паузы между импульсами
@@ -617,21 +580,21 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     for(size_t j=0;j<xPoints.size();j++)
     {
       size_t partPointsCount = xPoints[j]; // кол-во точек в текущей части
-      float partTimePercents = xPartPercents[j]; // процентовка по времени для текущей части
+      double partTimePercents = xPartPercents[j]; // процентовка по времени для текущей части
 
       // рассчитываем общее время в микросекундах для работы текущей части графика
       // fullWorkTime = 100%
       // x = partTimePercents
       // x = (partTimePercents*fullWorkTime)/100;
-      float partWorkTime = (partTimePercents*fullWorkTime)/100; // общее время работы части графика, микросекунд
+      double partWorkTime = (partTimePercents*fullWorkTime)/100; // общее время работы части графика, микросекунд
 
       // получили общую длительность работы части графика. у нас есть кол-во точек, усреднённая длительность итерации цикла для одной точки,
       // а также полный размах времени импульса по Y (в переменной fullYDia). Следовательно, мы можем вычислить, какой процент по размаху
       // от fullYDia занимает текущая координата по Y.      
       
       // пробегаемся по точкам текущей части, считая весовые доли каждой точки
-      Vector<float> partPointsWeight; // список весов каждой точки части графика
-      float weightSum = 0; // сумма весов всех точек
+      Vector<double> partPointsWeight; // список весов каждой точки части графика
+      double weightSum = 0; // сумма весов всех точек
       
       for(size_t k=0;k<partPointsCount;k++)
       {
@@ -644,7 +607,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         // pt.Y = x%
         // x = (pt.Y*100)/fullDia
 
-        float pointWeight = (1.*pt.Y)/fullYDia; // весовая доля точки
+        double pointWeight = (double(1.)*pt.Y)/fullYDia; // весовая доля точки
 
         /*
          допустим, у нас размах по Y - 10, длительность работы части графика - 3 секунды, точек - 3, первая и третья
@@ -665,12 +628,12 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
       // в weightSum у нас - сумма весов всех точек. теперь мы можем посчитать, сколько приходится на одну весовую долю времени.
       // для этого надо время работы части графика разделить на сумму весов точек.
-      float oneWeightTime = partWorkTime/weightSum;
+      double oneWeightTime = partWorkTime/weightSum;
 
       // теперь мы имеем общий расклад по весам для каждой точки, и можем вычислить время импульса для каждой точки
       for(size_t w=0;w<partPointsWeight.size();w++)
       {
-         float pWeight = partPointsWeight[w];
+         double pWeight = partPointsWeight[w];
          uint32_t pulseWidth = (pWeight*oneWeightTime);
 
          if(pulseWidth < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
@@ -702,40 +665,6 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
   
  DBGLN("====================================================================");
-
-/*
-  // теперь для теста просто рассчитываем кол-во точек между начальной точкой графика и первой точкой, поставленной пользователем
-  // для упрощения теста считаем, что там 1 нас 100 точек.
-
-  if(chartPoints.size())
-  {
-      Points resultPoints; // тут массив с конечными координатами рассчитанных точек
-      const uint8_t POINTS_PER_PART = 50; // сколько точек будет на один отрезок графика
-
-       Point ptPrev = {START_POINT_X,START_POINT_Y};
-  
-      for(size_t i=0;i<chartPoints.size();i++)
-      {
-        Point ptNext = chartPoints[i];
-        // пытаемся посчитать POINTS_PER_PART точек, поместив их в массив resultPoints
-        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, POINTS_PER_PART, resultPoints);
-        ptPrev = ptNext;
-      } // for
-
-    // формируем окончание графика
-    creteLinePoints(ptPrev.X, END_POINT_X, ptPrev.Y, END_POINT_Y, POINTS_PER_PART, resultPoints);      
-          
-    // теперь пытаемся отрисовать эти точки пикселями на экране
-    dc->setColor(VGA_YELLOW);
-    for(size_t i=0;i<resultPoints.size();i++)
-    {
-      Point pt = resultPoints[i];
-      dc->drawPixel(pt.X,pt.Y);
-    } // for
-
-  } // if(chartPoints.size())
-  
-  */
 
   // ТЕСТОВЫЙ КОД - КОНЕЦ
 }

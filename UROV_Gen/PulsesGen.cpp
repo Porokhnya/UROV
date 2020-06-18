@@ -90,7 +90,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime()
   done = false;
   uint32_t result = 0;
 
- switch(workMode)
+  switch(workMode)
   {
     case igNothing: // ничего не делаем
     {
