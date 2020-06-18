@@ -13,18 +13,15 @@ const uint8_t PULSE_ON_LEVEL = HIGH; // УРОВЕНЬ ВКЛЮЧЕННОГО И
 ImpulseGeneratorClass ImpulseGeneratorA(IMPULSE_PIN_A);
 ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//volatile bool timerAttached = false;
-//volatile bool timerStarted = false;
-//volatile uint8_t timerUsed = 0;
-volatile bool inTimer = false;
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
+  GEN_TIMER.stop();
+/*  
   static bool bInited = false;
   static uint8_t level = LOW;
   static uint32_t counter = 0;
   if(!bInited)
-  {
+  { 
     bInited = true;
     pinModeFast(IMPULSE_PIN_B,OUTPUT);
   }
@@ -38,30 +35,24 @@ void genUpdate()
     counter = 0;
     GEN_TIMER.stop();
   }
+ */
   
-  /*
-  if(inTimer)
-  {
-    return;
-  }
-  inTimer = true;
 
-  if(ImpulseGeneratorA.isDone() && ImpulseGeneratorB.isDone())
+  if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())
   {
-    inTimer = false;
     return;
   }
-  ImpulseGeneratorA.update();
+//  ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
-  
-  inTimer = false;
-*/
+
+  GEN_TIMER.start();
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 {
   pin = p;
+  pinInited = false;
   
   workMode = igNothing;
   pList = &internalList;
@@ -79,47 +70,17 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
-  pinModeFast(pin,OUTPUT);
+  if(pinInited)
+  {
+    digitalWriteFast(pin,!PULSE_ON_LEVEL);
+    return;
+  }
+
+  pinInited = true;
+  pinMode(pin,OUTPUT);
   digitalWriteFast(pin,!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void ImpulseGeneratorClass::timerStart()
-{
-    timerUsed++;
-    if(!timerStarted)
-    {
-      timerStarted = true;
-      GEN_TIMER.start();
-    }  
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ImpulseGeneratorClass::timerStop()
-{
-  if(timerUsed)
-  {
-    timerUsed--;
-  }
-  
-  if(!timerUsed)
-  {
-     GEN_TIMER.stop();
-     timerStarted = false;
-  }
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ImpulseGeneratorClass::timerConfig()
-{
-    if(!timerAttached)
-    {
-      timerAttached = true;
-      GEN_TIMER.attachInterrupt(genUpdate);
-      GEN_TIMER.setPeriod(GEN_TIMER_PERIOD);
-    }
-
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-*/
 uint32_t ImpulseGeneratorClass::getNextPauseTime()
 {
   done = false;
@@ -154,9 +115,7 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::wipe()
-{
-//  timerStop();
-  
+{  
   listIterator = 0;
   
   pauseTime = 0;
@@ -177,7 +136,9 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
   SdFile file;
   
   if(!file.open(fileName.c_str(),O_READ))
+  {
     return;  
+  }
 
   file.rewind();
 
@@ -200,9 +161,11 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
             }
             else
             {
-              *ptr++ = (uint8_t) iCh;
+              *ptr = (uint8_t) iCh;
+              ptr++;
             }
           } // for
+          
       if(canContinue)
       {
           internalList.push_back(record);
@@ -238,7 +201,8 @@ void ImpulseGeneratorClass::prepare(int memAddr)
   uint8_t* ptr = (uint8_t*)&totalRecords;
   for(size_t i=0;i<sizeof(totalRecords);i++)
   {
-    *ptr++ = Settings.read(memAddr);
+    *ptr = Settings.read(memAddr);
+    ptr++;
     memAddr++;
   }
 
@@ -251,7 +215,8 @@ void ImpulseGeneratorClass::prepare(int memAddr)
 
         for(size_t k=0;k<sizeof(record);k++)
         {
-          *ptr++ = Settings.read(memAddr);
+          *ptr = Settings.read(memAddr);
+          ptr++;
           memAddr++;
         }
 
@@ -330,7 +295,6 @@ void ImpulseGeneratorClass::start()
   #endif // _DEBUG
 
   pinConfig();
-//  timerConfig();
   listIterator = 0;
 
   pauseTime = getNextPauseTime();
@@ -347,8 +311,6 @@ void ImpulseGeneratorClass::start()
   #endif
   
   lastMicros = micros(); // не забываем, что надо засечь текущее время
-//  timerStart();
-
   machineState = onBetweenPulses;
   done = false;
   stopped = false;
@@ -363,7 +325,7 @@ void ImpulseGeneratorClass::stop()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()
 {
-  if(inUpdateFlag || workMode == igNothing || stopped) // не работаем никак, или уже закончили
+  if(stopped || workMode == igNothing || inUpdateFlag) // не работаем никак, или уже закончили
   {
     return;
   }

@@ -7,8 +7,6 @@
 typedef enum
 {
 	igNothing,
-//	igFile,
-//	igEEPROM,
 	igExternalList, // внешний список
   igInternalList, // внутренний список
 	
@@ -39,19 +37,16 @@ class ImpulseGeneratorClass
   bool isDone() { return stopped; }
   bool isRunning()
   {
-    return (workMode != igNothing) && !stopped;
+    return ( (workMode != igNothing) && !stopped );
   }
 	
 	
   private:
 
   uint8_t pin;
+  bool pinInited;
   
   void pinConfig();
-//  void timerConfig();
-
-//  void timerStart();
-//  void timerStop();
 
   uint32_t getNextPauseTime();
 
