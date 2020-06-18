@@ -38,11 +38,12 @@ void genUpdate()
  */
   
 
-  if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())
+  if(ImpulseGeneratorA.isDone() && ImpulseGeneratorB.isDone())
   {
     return;
   }
-//  ImpulseGeneratorA.update();
+  
+  ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
 
   GEN_TIMER.start();
