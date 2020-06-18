@@ -68,17 +68,20 @@ ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
   stopped = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseGeneratorClass::pinWrite(uint8_t level)
+{
+  pinConfig();
+  digitalWriteFast(pin,level);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::pinConfig()
 {
   if(pinInited)
   {
-    digitalWriteFast(pin,!PULSE_ON_LEVEL);
     return;
   }
-
   pinInited = true;
-  pinMode(pin,OUTPUT);
-  digitalWriteFast(pin,!PULSE_ON_LEVEL);
+  pinModeFast(pin,OUTPUT);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t ImpulseGeneratorClass::getNextPauseTime()
@@ -115,15 +118,13 @@ uint32_t ImpulseGeneratorClass::getNextPauseTime()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::wipe()
-{  
-  listIterator = 0;
-  
+{    
+  listIterator = 0;  
   pauseTime = 0;
-  lastMicros = 0;
-  
-  digitalWriteFast(pin,!PULSE_ON_LEVEL);
+  lastMicros = 0;  
   machineState = onBetweenPulses;
 
+  pinWrite(!PULSE_ON_LEVEL);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::prepare(const String& fileName)
@@ -294,7 +295,7 @@ void ImpulseGeneratorClass::start()
     
   #endif // _DEBUG
 
-  pinConfig();
+  pinWrite(!PULSE_ON_LEVEL);
   listIterator = 0;
 
   pauseTime = getNextPauseTime();
@@ -325,7 +326,7 @@ void ImpulseGeneratorClass::stop()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ImpulseGeneratorClass::update()
 {
-  if(stopped || workMode == igNothing || inUpdateFlag) // не работаем никак, или уже закончили
+  if(inUpdateFlag || !isRunning()) // не работаем никак, или уже закончили
   {
     return;
   }
@@ -339,7 +340,7 @@ void ImpulseGeneratorClass::update()
       {
         if(micros() - lastMicros >= PULSE_WIDTH) // вышло время удержания высокого уровня на пине
         {
-          digitalWriteFast(pin,!PULSE_ON_LEVEL); // низкий уровень на пин
+          pinWrite(!PULSE_ON_LEVEL); // низкий уровень на пин
           
           if(!done) // получаем следующее время паузы
           {
@@ -360,7 +361,7 @@ void ImpulseGeneratorClass::update()
       {
         if(micros() - lastMicros >= pauseTime) // время паузы между импульсами вышло
         {
-            digitalWriteFast(pin,PULSE_ON_LEVEL); // высокий уровень на пин
+            pinWrite(PULSE_ON_LEVEL); // высокий уровень на пин
             machineState = onHighLevel; // переключаемся в ветку ожидания окончания высокого уровня на пине
             lastMicros = micros(); // не забываем, что надо засечь текущее время
         }

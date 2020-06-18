@@ -47,6 +47,7 @@ class ImpulseGeneratorClass
   bool pinInited;
   
   void pinConfig();
+  void pinWrite(uint8_t level);
 
   uint32_t getNextPauseTime();
 
