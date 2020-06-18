@@ -28,6 +28,7 @@ void genUpdate()
   
   if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
+    inTimer = false;
     return;
   }
   ImpulseGeneratorA.update();
