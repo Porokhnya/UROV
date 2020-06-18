@@ -16,10 +16,15 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 //volatile bool timerAttached = false;
 //volatile bool timerStarted = false;
 //volatile uint8_t timerUsed = 0;
+volatile bool inTimer = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void genUpdate()
 {  
-  GEN_TIMER.stop();
+  if(inTimer)
+  {
+    return;
+  }
+  inTimer = true;
   
   if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
   {
@@ -28,7 +33,7 @@ void genUpdate()
   ImpulseGeneratorA.update();
 //  ImpulseGeneratorB.update();
 
-  GEN_TIMER.start();
+  inTimer = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ImpulseGeneratorClass::ImpulseGeneratorClass(uint8_t p)
