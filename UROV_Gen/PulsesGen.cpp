@@ -26,13 +26,13 @@ void genUpdate()
   }
   inTimer = true;
   
-  if(ImpulseGeneratorA.isDone())// && ImpulseGeneratorB.isDone())
+  if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())
   {
     inTimer = false;
     return;
   }
-  ImpulseGeneratorA.update();
-//  ImpulseGeneratorB.update();
+//  ImpulseGeneratorA.update();
+  ImpulseGeneratorB.update();
 
   inTimer = false;
 }
