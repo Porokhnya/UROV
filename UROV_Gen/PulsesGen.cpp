@@ -22,7 +22,7 @@ void genUpdate()
 {  
   static bool bInited = false;
   static uint8_t level = LOW;
-  static uint16_t counter = 0;
+  static uint32_t counter = 0;
   if(!bInited)
   {
     bInited = true;
@@ -33,7 +33,7 @@ void genUpdate()
   digitalWriteFast(IMPULSE_PIN_B,level);
   counter++;
 
-  if(counter >= 1000)
+  if(counter >= (1000ul*PULSE_CHART_WORK_TIME)/GEN_TIMER_PERIOD)
   {
     counter = 0;
     GEN_TIMER.stop();
