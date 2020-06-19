@@ -573,8 +573,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         Point ptNext = resultPoints[z+1];
 
         double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
-        //double pointWeight = ptCur.Y; // вес точки по Y
-        double pointWeight = (double(1.)*ptCur.Y)/fullYDia;
+        double pointWeight = ptCur.Y; // вес точки по Y
         
         double dt = (deltaX/fullXDia);
 
@@ -595,8 +594,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     for(size_t z=0;z<resultPoints.size()-1;z++)
     {
        Point ptCur = resultPoints[z];
-       //double pointWeight = ptCur.Y; // вес точки по Y
-       double pointWeight = (double(1.)*ptCur.Y)/fullYDia;
+       double pointWeight = ptCur.Y; // вес точки по Y
        double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
 
 /*
