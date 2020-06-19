@@ -607,15 +607,16 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         pulseWidthSum += pulseWidth; // сумма длительностей импульсов
       #endif
       
-       // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-       pulseWidth -= (PULSE_WIDTH);
   
        // печатаем для теста
        DBG("Point weight: "); DBG(pointWeight);
        DBG(", pulsesPerTimeUnit: "); DBG(pulsesPerTimeUnit);
        DBG(", weightYSum: "); DBG(weightYSum);
        DBG(", pulse width: "); DBGLN(pulseWidth);
-  
+
+         // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
+       pulseWidth -= (PULSE_WIDTH);
+
        // сохраняем в список
        pulsesList.push_back(pulseWidth);
        
