@@ -586,7 +586,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   //  Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
 
     #ifdef _DEBUG
-    uint32_t pulseWidthSum = 0; // сумма длительностей импульсов
+    double speedSum = 0; // сумма длительностей импульсов
     double pptSum = 0;
     #endif
     
@@ -605,7 +605,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         double speed = fullWorkTime/pulsesPerTimeUnit; // скорость импульса
   
         #ifdef _DEBUG
-          pulseWidthSum += speed; // сумма длительностей импульсов
+          speedSum += speed; // сумма длительностей импульсов
           pptSum += pulsesPerTimeUnit;
         #endif
       
@@ -631,7 +631,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     } // for
 
-    DBG("PULSES TOTAL TIME: "); DBGLN(pulseWidthSum);
+    DBG("SPEED SUM: "); DBGLN(speedSum);
     DBG("PPT SUM: "); DBGLN(pptSum);
     
 /*
