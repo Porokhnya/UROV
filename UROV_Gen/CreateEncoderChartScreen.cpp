@@ -540,16 +540,16 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     // вычисляем минимальную и максимальную координаты по Y из списка resultPoints
 
-    int minY, maxY, minX, maxX;
-    minY = maxY = resultPoints[0].Y;
+    int /*minY, maxY,*/ minX, maxX;
+//    minY = maxY = resultPoints[0].Y;
     minX = maxX = resultPoints[0].X;
 
     for(size_t z=0;z<resultPoints.size();z++)
     {
       Point pt = resultPoints[z];
       
-      minY = min(minY,pt.Y);
-      maxY = max(maxY,pt.Y);
+   //   minY = min(minY,pt.Y);
+    //  maxY = max(maxY,pt.Y);
       
       minX = min(minX,pt.X);
       maxX = max(maxX,pt.X);
@@ -573,7 +573,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         Point ptNext = resultPoints[z+1];
 
         double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
-        double pointWeight = (maxY - ptCur.Y) + 1; // вес точки по Y
+        double pointWeight = ptCur.Y; // вес точки по Y
         double dt = (deltaX/fullXDia);
 
         weightYSum += pointWeight*dt; // приплюсовали к сумме весов
@@ -592,7 +592,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     for(size_t z=0;z<resultPoints.size()-1;z++)
     {
        Point ptCur = resultPoints[z];
-       double pointWeight = (maxY - ptCur.Y) + 1; // вес точки по Y
+       double pointWeight = ptCur.Y; // вес точки по Y
        double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
 
 /*
@@ -611,7 +611,10 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
        pulseWidth -= (PULSE_WIDTH);
   
        // печатаем для теста
-       DBG("Pulse width: "); DBGLN(pulseWidth);
+       DBG("Point weight: "); DBG(pointWeight);
+       DBG(", pulsesPerTimeUnit: "); DBG(pulsesPerTimeUnit);
+       DBG(", weightYSum: "); DBG(weightYSum);
+       DBG(", pulse width: "); DBGLN(pulseWidth);
   
        // сохраняем в список
        pulsesList.push_back(pulseWidth);
