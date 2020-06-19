@@ -573,7 +573,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         Point ptNext = resultPoints[z+1];
 
         double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
-        double pointWeight = ptCur.Y; // вес точки по Y
+        double pointWeight = (maxY - ptCur.Y) + 1; // вес точки по Y
         double dt = (deltaX/fullXDia);
 
         weightYSum += pointWeight*dt; // приплюсовали к сумме весов
