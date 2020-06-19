@@ -583,20 +583,46 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     } // for
 
     // сумму весов высчитали, теперь считаем относительный вес каждой точки
-    Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
+  //  Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
+
+    #ifdef _DEBUG
+    uint32_t pulseWidthSum = 0; // сумма длительностей импульсов
+    #endif
     
     for(size_t z=0;z<resultPoints.size()-1;z++)
     {
        Point ptCur = resultPoints[z];
        double pointWeight = ptCur.Y; // вес точки по Y
-       double pulsesPerTimeUnit = (pointWeight/resultPoints.size())*weightYSum; // импульсов на единицу времени для точки
+       double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
 
-       // timeUnit - единица времени
+/*
        // pulsesPerTimeUnit - импульсов на единицу времени
        double pointResultWeight = pulsesPerTimeUnit * xDeltasWeights[z]; // результирующий вес точки
        relativePointsWeight.push_back(pointResultWeight);
+*/       
+  
+        uint32_t pulseWidth = fullWorkTime/pulsesPerTimeUnit; // ширина импульса
+  
+      #ifdef _DEBUG
+        pulseWidthSum += pulseWidth; // сумма длительностей импульсов
+      #endif
+      
+       // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
+       pulseWidth -= (PULSE_WIDTH);
+  
+       // печатаем для теста
+       DBG("Pulse width: "); DBGLN(pulseWidth);
+  
+       // сохраняем в список
+       pulsesList.push_back(pulseWidth);
+       
+        // всё, посчитали ширину импульса
+
     } // for
 
+    DBG("PULSES TOTAL TIME: "); DBGLN(pulseWidthSum);
+    
+/*
     // относительные веса посчитали, теперь преобразовываем их к единицам времени.
     // для этого у нас есть weightYSum, и данные в массиве relativePointsWeight, которые показывают,
     // какую часть от weightYSum занимает в процентах каждая точка. Соответственно, мы можем высчитать время
@@ -641,6 +667,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     DBG("PULSES TOTAL TIME: "); DBGLN(pulseWidthSum);
     
+*/      
     
     /*
       Vector<uint16_t> xDeltas;
