@@ -356,6 +356,12 @@ void creteLinePoints(int x1, int x2, int y1, int y2, uint16_t pointsCount, Point
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+double map(double x, double in_min, double in_max, double out_min, double out_max)
+{
+   // return x;
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформировать график
 {
 	UTFT* dc = menu->getDC();
@@ -556,15 +562,22 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
       DBG("pt.X="); DBG(pt.X); DBG(", pt.Y="); DBGLN(pt.Y);
     } // for
-    
+
+    /*
     int fullYDia = maxY - minY; // полная дельта размаха по Y
     int fullXDia = maxX - minX; // полная дельта размаха по X
     double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд    
+*/
+    int fullYDia = maxY - minY; // полная дельта размаха по Y
+    int fullXDia = maxX - minX; // полная дельта размаха по X
+    double fullWorkTime = 1000.0 * (PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
+//    double timeUnit = fullWorkTime / resultPoints.size();
 
     // считаем веса точек по Y.
-    uint32_t weightYSum = 0; // сумма весов всех точек, по Y
+    double weightYSum = 0; // сумма весов всех точек, по Y
 
     // сумма весов считается как сумма Yi*dt, где dt = длительность участка графика по X
+/*    
    // Vector<double> xDeltasWeights; // список дельт по X
    
     for(size_t z=0;z<resultPoints.size()-1;z++)
@@ -582,8 +595,87 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 //        xDeltasWeights.push_back(deltaX); // запоминаем дельту по X для отрезка
         
     } // for
+*/
+        for(size_t z=0;z<resultPoints.size()-1;z++)
+        {
+            Point ptCur = resultPoints[z];
+            Point ptNext = resultPoints[z + 1];
 
+            double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
+            double pointWeight = (1.0 * ptCur.Y) / maxY; // весовая доля точки
+            pointWeight = map(pointWeight, 0.0, 1.0, 1.0, 10.0);
+            double pointWeightMapped = map(pointWeight, 0.0, 1.0, 1.0, 10.0);
+
+            double dt = (deltaX / fullXDia);
+
+            weightYSum += pointWeightMapped * dt; // приплюсовали к сумме весов
+
+        } // for
+
+        DBG("weightYSum = "); DBGLN(weightYSum);
+        
     // сумму весов высчитали, теперь считаем относительный вес каждой точки
+        double relativePulseWidthSum = 0;
+
+            Vector<double> relativePulseWidthList; // список относительных ширин импульсов
+
+            for(size_t z=0;z<resultPoints.size()-1;z++)
+            {
+                Point ptCur = resultPoints[z];
+                double pointWeight = (1.0 * ptCur.Y) / maxY; // весовая доля точки
+                double pointWeightMapped = map(pointWeight, 0.0, 1.0, 1.0, 10.0);
+
+                double relativePulseWidth = (pointWeightMapped * resultPoints.size()) / weightYSum; // импульсов на единицу времени для точки
+                relativePulseWidth /= 10; // 10 - максимальная величина интервала весов точки
+
+                relativePulseWidthSum += relativePulseWidth;
+
+                relativePulseWidthList.push_back(relativePulseWidth);
+
+                // печатаем для теста
+                DBG("Point weight: "); DBG(pointWeight);
+                DBG(",\tpointWeightMapped: "); DBG(pointWeightMapped);
+                DBG(",\t\trelativePulseWidth: "); DBGLN(relativePulseWidth);
+
+
+            } // for
+
+            double relativeTimeUnit = fullWorkTime / relativePulseWidthSum; // относительная единица времени на график
+
+            DBG("SUM OF RELATIVE WIDTH: "); DBGLN(relativePulseWidthSum);
+            DBG("RELATIVE TIME UNIT: "); DBGLN(relativeTimeUnit);
+
+
+            // теперь высчитываем абсолютные ширины импульсов
+            double absPulseWidthSum = 0;
+
+            for(size_t i=0;i< relativePulseWidthList.size();i++)
+            {
+                double relW = relativePulseWidthList[i];
+
+                double pulseWidth = relW * relativeTimeUnit; // абсолютная нирина импульса для точки
+
+                absPulseWidthSum += pulseWidth;
+
+                DBG("PULSE WIDTH: "); DBGLN(pulseWidth);
+
+                if (pulseWidth < (PULSE_WIDTH) * 2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
+                {
+                    pulseWidth = (PULSE_WIDTH) * 2;
+                }
+
+                // отнимаем от ширины имппульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
+                pulseWidth -= (PULSE_WIDTH);
+
+                // сохраняем в список
+                pulsesList.push_back(pulseWidth);
+
+                // всё, посчитали ширину импульса
+            }
+
+            DBG("SUM OF ABSOLUTE WIDTH: "); DBGLN(absPulseWidthSum);
+    
+    /*
   //  Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
 
     #ifdef _DEBUG
@@ -596,12 +688,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
        Point ptCur = resultPoints[z];
        double pointWeight = ptCur.Y; // вес точки по Y
        double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
-
-/*
-       // pulsesPerTimeUnit - импульсов на единицу времени
-       double pointResultWeight = pulsesPerTimeUnit * xDeltasWeights[z]; // результирующий вес точки
-       relativePointsWeight.push_back(pointResultWeight);
-*/       
+    
   
         double speed = fullWorkTime/pulsesPerTimeUnit; // скорость импульса
   
@@ -634,6 +721,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     DBG("SPEED SUM: "); DBGLN(speedSum);
     DBG("PPT SUM: "); DBGLN(pptSum);
+*/    
     
 /*
     // относительные веса посчитали, теперь преобразовываем их к единицам времени.
