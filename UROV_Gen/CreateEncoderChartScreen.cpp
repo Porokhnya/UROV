@@ -540,16 +540,16 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     // вычисляем минимальную и максимальную координаты по Y из списка resultPoints
 
-    int /*minY, maxY,*/ minX, maxX;
-//    minY = maxY = resultPoints[0].Y;
+    int minY, maxY, minX, maxX;
+    minY = maxY = resultPoints[0].Y;
     minX = maxX = resultPoints[0].X;
 
     for(size_t z=0;z<resultPoints.size();z++)
     {
       Point pt = resultPoints[z];
       
-   //   minY = min(minY,pt.Y);
-    //  maxY = max(maxY,pt.Y);
+      minY = min(minY,pt.Y);
+      maxY = max(maxY,pt.Y);
       
       minX = min(minX,pt.X);
       maxX = max(maxX,pt.X);
@@ -557,7 +557,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
       DBG("pt.X="); DBG(pt.X); DBG(", pt.Y="); DBGLN(pt.Y);
     } // for
     
-    //int fullYDia = maxY - minY; // полная дельта размаха по Y
+    int fullYDia = maxY - minY; // полная дельта размаха по Y
     int fullXDia = maxX - minX; // полная дельта размаха по X
     double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд    
 
@@ -573,7 +573,9 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         Point ptNext = resultPoints[z+1];
 
         double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
-        double pointWeight = ptCur.Y; // вес точки по Y
+        //double pointWeight = ptCur.Y; // вес точки по Y
+        double pointWeight = (double(1.)*ptCur.Y)/fullYDia;
+        
         double dt = (deltaX/fullXDia);
 
         weightYSum += pointWeight*dt; // приплюсовали к сумме весов
@@ -593,7 +595,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     for(size_t z=0;z<resultPoints.size()-1;z++)
     {
        Point ptCur = resultPoints[z];
-       double pointWeight = ptCur.Y; // вес точки по Y
+       //double pointWeight = ptCur.Y; // вес точки по Y
+       double pointWeight = (double(1.)*ptCur.Y)/fullYDia;
        double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
 
 /*
