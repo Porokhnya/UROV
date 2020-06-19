@@ -540,16 +540,16 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     // вычисляем минимальную и максимальную координаты по Y из списка resultPoints
 
-    int minY, maxY, minX, maxX;
-    minY = maxY = resultPoints[0].Y;
+    int /*minY, maxY,*/ minX, maxX;
+//    minY = maxY = resultPoints[0].Y;
     minX = maxX = resultPoints[0].X;
 
     for(size_t z=0;z<resultPoints.size();z++)
     {
       Point pt = resultPoints[z];
       
-      minY = min(minY,pt.Y);
-      maxY = max(maxY,pt.Y);
+   //   minY = min(minY,pt.Y);
+    //  maxY = max(maxY,pt.Y);
       
       minX = min(minX,pt.X);
       maxX = max(maxX,pt.X);
