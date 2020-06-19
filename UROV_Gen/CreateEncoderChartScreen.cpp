@@ -565,7 +565,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     uint32_t weightYSum = 0; // сумма весов всех точек, по Y
 
     // сумма весов считается как сумма Yi*dt, где dt = длительность участка графика по X
-    Vector<double> xDeltasWeights; // список дельт по X
+   // Vector<double> xDeltasWeights; // список дельт по X
    
     for(size_t z=0;z<resultPoints.size()-1;z++)
     {
@@ -578,7 +578,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
         weightYSum += pointWeight*dt; // приплюсовали к сумме весов
         
-        xDeltasWeights.push_back(deltaX); // запоминаем дельту по X для отрезка
+//        xDeltasWeights.push_back(deltaX); // запоминаем дельту по X для отрезка
         
     } // for
 
