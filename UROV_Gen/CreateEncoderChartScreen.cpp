@@ -602,25 +602,30 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
        relativePointsWeight.push_back(pointResultWeight);
 */       
   
-        uint32_t pulseWidth = fullWorkTime/pulsesPerTimeUnit; // ширина импульса
+        double speed = fullWorkTime/pulsesPerTimeUnit; // скорость импульса
   
-      #ifdef _DEBUG
-        pulseWidthSum += pulseWidth; // сумма длительностей импульсов
-        pptSum += pulsesPerTimeUnit;
-      #endif
+        #ifdef _DEBUG
+          pulseWidthSum += speed; // сумма длительностей импульсов
+          pptSum += pulsesPerTimeUnit;
+        #endif
       
+       if(speed < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
+       {
+          speed = (PULSE_WIDTH)*2;
+       }
   
        // печатаем для теста
        DBG("Point weight: "); DBG(pointWeight);
        DBG(", pulsesPerTimeUnit: "); DBG(pulsesPerTimeUnit);
        DBG(", weightYSum: "); DBG(weightYSum);
-       DBG(", pulse width: "); DBGLN(pulseWidth);
+       DBG(", speed: "); DBGLN(speed);
 
+         
          // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-       pulseWidth -= (PULSE_WIDTH);
+       speed -= (PULSE_WIDTH);
 
        // сохраняем в список
-       pulsesList.push_back(pulseWidth);
+       pulsesList.push_back(speed);
        
         // всё, посчитали ширину импульса
 
