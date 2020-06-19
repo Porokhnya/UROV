@@ -587,6 +587,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
     #ifdef _DEBUG
     uint32_t pulseWidthSum = 0; // сумма длительностей импульсов
+    double pptSum = 0;
     #endif
     
     for(size_t z=0;z<resultPoints.size()-1;z++)
@@ -605,6 +606,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   
       #ifdef _DEBUG
         pulseWidthSum += pulseWidth; // сумма длительностей импульсов
+        pptSum += pulsesPerTimeUnit;
       #endif
       
   
@@ -625,6 +627,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     } // for
 
     DBG("PULSES TOTAL TIME: "); DBGLN(pulseWidthSum);
+    DBG("PPT SUM: "); DBGLN(pptSum);
     
 /*
     // относительные веса посчитали, теперь преобразовываем их к единицам времени.
