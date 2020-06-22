@@ -48,15 +48,14 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
 	
 	int menu_height = 30;
 	int button_gap = 5;
-	int height_button = 29;
+	int height_button = 25;
 	int width_button = 125;
 
   clearButton = screenButtons->addButton(5, 255, 150, 40, "ОЧИСТИТЬ");
   calculateButton = screenButtons->addButton(160, 255, 150, 40, "ВЫЧИСЛИТЬ");
   backButton = screenButtons->addButton( 315 ,  255, 150,  40, "ЗАВЕРШИТЬ");
 
-  // кнопка кол-ва импульсов
-  countPulsesButton = screenButtons->addButton( 100 ,  100, 150,  40, "");
+  
 
   file1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 1");
   menu_height += height_button + button_gap;
@@ -69,6 +68,10 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
   mem2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 2");
   menu_height += height_button + button_gap;
   mem3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 3");
+  menu_height += height_button + button_gap;
+  countPulsesButton = screenButtons->addButton(340, menu_height, width_button, height_button, ""); //  // кнопка кол-ва импульсов
+
+
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
