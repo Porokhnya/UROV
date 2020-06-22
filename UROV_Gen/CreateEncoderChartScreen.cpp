@@ -15,7 +15,7 @@ const uint16_t END_POINT_Y = 230;  // конечная координата фи
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CreateEncoderChartScreen::CreateEncoderChartScreen() : AbstractTFTScreen("CreateEncoderChartScreen")
 {
-  
+  countPulses = 200;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::onDeactivate()
@@ -34,6 +34,9 @@ void CreateEncoderChartScreen::onActivate()
 
   screenButtons->disableButton(calculateButton);
 
+  countPulsesCaption = countPulses;
+  screenButtons->relabelButton(countPulsesButton,countPulsesCaption.c_str());
+
   enableSaveButtons(false);
   
 }
@@ -51,6 +54,9 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
   clearButton = screenButtons->addButton(5, 255, 150, 40, "ОЧИСТИТЬ");
   calculateButton = screenButtons->addButton(160, 255, 150, 40, "ВЫЧИСЛИТЬ");
   backButton = screenButtons->addButton( 315 ,  255, 150,  40, "ЗАВЕРШИТЬ");
+
+  // кнопка кол-ва импульсов
+  countPulsesButton = screenButtons->addButton( 100 ,  100, 150,  40, "");
 
   file1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 1");
   menu_height += height_button + button_gap;
@@ -254,6 +260,17 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 	{
 		DBGLN("pressedButton");// 
 	}
+  else if (pressedButton == countPulsesButton)
+  {
+    countPulses += 50;
+    if(countPulses > 1000)
+    {
+      countPulses = 200;
+    }
+
+    countPulsesCaption = countPulses;
+    screenButtons->relabelButton(countPulsesButton,countPulsesCaption.c_str(),true);
+  }
 	
 
 }
@@ -401,7 +418,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   DBGLN("====================================================================");
 
   // выводим общее количество точек, требуемое на графике
-  DBG("Total points needed: "); DBGLN(TOTAL_POINTS_IN_CHART);
+  DBG("Total points needed: "); DBGLN(countPulses);
 
   // получаем общую дельту по X
   int totalDeltaX = abs(END_POINT_X - START_POINT_X);
@@ -455,11 +472,11 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
         double percents = (100.*xDelta)/totalDeltaX;
 
         // теперь считаем кол-во точек на отрезок
-        // TOTAL_POINTS_IN_CHART = 100%
+        // countPulses = 100%
         // x = percents
-        // x = (percents*TOTAL_POINTS_IN_CHART)/100;
+        // x = (percents*countPulses)/100;
 
-        double pointsPerPart = (percents*TOTAL_POINTS_IN_CHART)/100 + deltaErr;
+        double pointsPerPart = (percents*countPulses)/100 + deltaErr;
         uint16_t pppInt = pointsPerPart;
         deltaErr = pointsPerPart - pppInt;
 
@@ -467,7 +484,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
         if(i == xDeltas.size() - 1) // добиваем до общего кол-ва точек в конце графика
         {
-            while(pointsGenerated < TOTAL_POINTS_IN_CHART)
+            while(pointsGenerated < countPulses)
             {
               pointsGenerated++;
               pppInt++;
@@ -562,40 +579,16 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
       DBG("pt.X="); DBG(pt.X); DBG(", pt.Y="); DBGLN(pt.Y);
     } // for
-
-    /*
-    int fullYDia = maxY - minY; // полная дельта размаха по Y
-    int fullXDia = maxX - minX; // полная дельта размаха по X
-    double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд    
-*/
+    
     int fullYDia = maxY - minY; // полная дельта размаха по Y
     int fullXDia = maxX - minX; // полная дельта размаха по X
     double fullWorkTime = 1000.0 * (PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
-//    double timeUnit = fullWorkTime / resultPoints.size();
 
     // считаем веса точек по Y.
     double weightYSum = 0; // сумма весов всех точек, по Y
 
     // сумма весов считается как сумма Yi*dt, где dt = длительность участка графика по X
-/*    
-   // Vector<double> xDeltasWeights; // список дельт по X
-   
-    for(size_t z=0;z<resultPoints.size()-1;z++)
-    {
-        Point ptCur = resultPoints[z];
-        Point ptNext = resultPoints[z+1];
 
-        double deltaX = ptNext.X - ptCur.X; // промежуток времени для отрезка
-        double pointWeight = ptCur.Y; // вес точки по Y
-        
-        double dt = (deltaX/fullXDia);
-
-        weightYSum += pointWeight*dt; // приплюсовали к сумме весов
-        
-//        xDeltasWeights.push_back(deltaX); // запоминаем дельту по X для отрезка
-        
-    } // for
-*/
         for(size_t z=0;z<resultPoints.size()-1;z++)
         {
             Point ptCur = resultPoints[z];
@@ -674,351 +667,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
             }
 
             DBG("SUM OF ABSOLUTE WIDTH: "); DBGLN(absPulseWidthSum);
-    
-    /*
-  //  Vector<double> relativePointsWeight; // список относительных весов точек (импульсов на единицу времени)
-
-    #ifdef _DEBUG
-    double speedSum = 0; // сумма длительностей импульсов
-    double pptSum = 0;
-    #endif
-    
-    for(size_t z=0;z<resultPoints.size()-1;z++)
-    {
-       Point ptCur = resultPoints[z];
-       double pointWeight = ptCur.Y; // вес точки по Y
-       double pulsesPerTimeUnit = (pointWeight * resultPoints.size())/weightYSum; // импульсов на единицу времени для точки
-    
-  
-        double speed = fullWorkTime/pulsesPerTimeUnit; // скорость импульса
-  
-        #ifdef _DEBUG
-          speedSum += speed; // сумма длительностей импульсов
-          pptSum += pulsesPerTimeUnit;
-        #endif
-      
-       if(speed < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
-       {
-          speed = (PULSE_WIDTH)*2;
-       }
-  
-       // печатаем для теста
-       DBG("Point weight: "); DBG(pointWeight);
-       DBG(", pulsesPerTimeUnit: "); DBG(pulsesPerTimeUnit);
-       DBG(", weightYSum: "); DBG(weightYSum);
-       DBG(", speed: "); DBGLN(speed);
-
-         
-         // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-       speed -= (PULSE_WIDTH);
-
-       // сохраняем в список
-       pulsesList.push_back(speed);
-       
-        // всё, посчитали ширину импульса
-
-    } // for
-
-    DBG("SPEED SUM: "); DBGLN(speedSum);
-    DBG("PPT SUM: "); DBGLN(pptSum);
-*/    
-    
-/*
-    // относительные веса посчитали, теперь преобразовываем их к единицам времени.
-    // для этого у нас есть weightYSum, и данные в массиве relativePointsWeight, которые показывают,
-    // какую часть от weightYSum занимает в процентах каждая точка. Соответственно, мы можем высчитать время
-
-    #ifdef _DEBUG
-    uint32_t pulseWidthSum = 0; // сумма длительностей импульсов
-    #endif
-    
-    for(size_t z=0;z<relativePointsWeight.size();z++)
-    {
-      double w = relativePointsWeight[z]; // относительный вес точки, по времени
-      // weightYSum = 100%
-      // w = x%
-      double percents = (w*100)/weightYSum; // процентный вес точки, от общего времени срабатывания
-
-      // fullWorkTime = 100%
-      // pulseWidth = percents
-
-      uint32_t pulseWidth = (fullWorkTime*percents)/100;
-
-     if(pulseWidth < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
-     {
-        pulseWidth = (PULSE_WIDTH)*2;
-     }
-
-    #ifdef _DEBUG
-      pulseWidthSum += pulseWidth; // сумма длительностей импульсов
-    #endif
-    
-     // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-     pulseWidth -= (PULSE_WIDTH);
-
-     // печатаем для теста
-     DBG("Pulse width: "); DBGLN(pulseWidth);
-
-     // сохраняем в список
-     pulsesList.push_back(pulseWidth);
-     
-      // всё, посчитали ширину импульса
-      
-    } // for
-
-    DBG("PULSES TOTAL TIME: "); DBGLN(pulseWidthSum);
-    
-*/      
-    
-    /*
-      Vector<uint16_t> xDeltas;
-      
-      Point ptPrev = {START_POINT_X,START_POINT_Y};
-      for(size_t i=0;i<chartPoints.size();i++)
-      {
-         Point ptNext = chartPoints[i];
-
-          xDeltas.push_back(abs(ptNext.X - ptPrev.X));
-         
-         ptPrev = ptNext;
-      }
-      
-     xDeltas.push_back(abs(END_POINT_X - ptPrev.X));
-
-    #ifdef _DEBUG
-     // выводим список всех дельт по X
-     for(size_t i=0;i<xDeltas.size();i++)
-     {
-       DBG("X delta #"); DBG((i+1)); DBG(": "); DBGLN(xDeltas[i]);
-     }
-     #endif
-
-     // теперь рассчитываем кол-во точек на каждом из отрезков
-     Vector<uint16_t> xPoints; // кол-во точек на часть графика
-     Vector<double> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
-     
-     double deltaErr = 0.0; // ошибка накопления точек
-     double addTo100percents = 100.;
-
-     uint16_t pointsGenerated = 0;
-
-     for(size_t i=0;i<xDeltas.size();i++)
-     {
-        uint16_t xDelta = xDeltas[i];
-        
-        // totalDeltaX = 100%
-        // xDelta = x%
-        // x% = (xDelta*100)/totalDeltaX;
-
-        double percents = (100.*xDelta)/totalDeltaX;
-        xPartPercents.push_back(percents);
-        addTo100percents -= percents;
-
-        // теперь считаем кол-во точек на отрезок
-        // TOTAL_POINTS_IN_CHART = 100%
-        // x = percents
-        // x = (percents*TOTAL_POINTS_IN_CHART)/100;
-
-        double pointsPerPart = (percents*TOTAL_POINTS_IN_CHART)/100 + deltaErr;
-        uint16_t pppInt = pointsPerPart;
-        deltaErr = pointsPerPart - pppInt;
-
-        pointsGenerated += pppInt;
-
-        if(i == xDeltas.size() - 1) // добиваем до общего кол-ва точек в конце графика
-        {
-            while(pointsGenerated < TOTAL_POINTS_IN_CHART)
-            {
-              pointsGenerated++;
-              pppInt++;
-            }
-        }
-
-        xPoints.push_back(pppInt);
-        
-     } // for
-
-     // добиваем до 100%
-     if(xPartPercents.size())
-     {
-      xPartPercents[xPartPercents.size()-1] += addTo100percents;
-     }
-
-   //  // посчитали кол-во точек по частям, выводим это в Serial
-   #ifdef _DEBUG
-     uint32_t sumPoints = 0;
-     for(size_t i=0;i<xPoints.size();i++)
-     {
-        sumPoints += xPoints[i];
-        DBG("Pulses per part #"); DBG((i+1)); DBG(": "); DBGLN(xPoints[i]);
-     }
-
-     DBG("SUM of pulses: "); DBGLN(sumPoints);
-     
-     #endif
-
-     // теперь считаем точки по частям
-     
-     Points intermediatePoints; // тут массив с конечными ЭКРАННЫМИ координатами рассчитанных точек для части графика
-     Points resultPoints; // тут массив с конечными ЭКРАННЫМИ координатами ВСЕХ опорных точек графика
-     
-     ptPrev = {START_POINT_X,START_POINT_Y};
-     Point ptLast = {END_POINT_X,END_POINT_Y};
-     chartPoints.push_back(ptLast);
-
-
-      #ifdef _DEBUG
-      uint32_t sumScreenPoints = 0;
-      #endif
-      
-      for(size_t i=0;i<chartPoints.size();i++)
-      {
-        intermediatePoints.clear();
-        Point ptNext = chartPoints[i];
-        // пытаемся посчитать точки, поместив их в массив resultPoints
-        creteLinePoints(ptPrev.X, ptNext.X, ptPrev.Y, ptNext.Y, xPoints[i],intermediatePoints);
-        ptPrev = ptNext;
-
-        #ifdef _DEBUG
-        sumScreenPoints += intermediatePoints.size();
-        #endif
-
-        // выводим кол-во рассчитанных ЭКРАННЫХ точек для части
-        DBG("SCREEN Points per part #"); DBG((i+1)); DBG(": "); DBGLN(intermediatePoints.size());
-
-        // теперь отрисуем точки на экране в виде кружочков
-        dc->setColor(VGA_YELLOW);
-        for(size_t k=0;k<intermediatePoints.size();k++)
-        {
-          Point pt = intermediatePoints[k];
-          dc->fillCircle(pt.X,pt.Y,2);
-
-          resultPoints.push_back(pt);
-        } // for  
-              
-      } // for
-
-      DBG("SUM of SCREEN points: "); DBGLN(sumScreenPoints);
-
-      chartPoints.pop();
-
-
-//      у нас есть:
-      
-//      Vector<uint16_t> xPoints; // кол-во точек (импульсов) на часть графика
-//      Vector<float> xPartPercents; // процентное соотношение времени для части графика (от общего времени срабатывания всего графика)
-
-//      все опорные точки - расположены в resultPoints, их можно разбить на части, руководствуясь массивом кол-ва точек на часть xPoints.
-     
-
-
-    // теперь нам надо сформировать длительности импульсов, исходя из сгенерированных опорных точек.
-    // для каждой части у нас есть её временнОй вес (в списке xPartPercents), и N точек (N - в списке xPoints).
-    // координата по Y - чем меньше (у нас значения по Y инвертированы) - тем меньше общее время импульса.
-    
-    pulsesList.clear(); // очищаем результирующий список импульсов
-
-    // вычисляем минимальную и максимальную координаты по Y из списка resultPoints
-
-    int minY, maxY;
-    minY = maxY = resultPoints[0].Y;
-
-    for(size_t z=0;z<resultPoints.size();z++)
-    {
-      Point pt = resultPoints[z];
-      minY = min(minY,pt.Y);
-      maxY = max(maxY,pt.Y);
-    }
-
-    // получили минимальную и максимальную координаты по Y, относительно которых будем потом рассчитывать длительность итерации цикла для одной опорной точки графика
-    
-    int fullYDia = maxY - minY; // полная дельта размаха по Y, 100% ширины одного самого длительного импульса
-    double fullWorkTime = 1000.*(PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
-        
-
-    // теперь проходим по массиву xPoints, берём оттуда кол-во точек, пробегаемся по точкам, высчитываем паузы между импульсами
-    size_t listIterator = 0;
-
-    for(size_t j=0;j<xPoints.size();j++)
-    {
-      size_t partPointsCount = xPoints[j]; // кол-во точек в текущей части
-      double partTimePercents = xPartPercents[j]; // процентовка по времени для текущей части
-
-      // рассчитываем общее время в микросекундах для работы текущей части графика
-      // fullWorkTime = 100%
-      // x = partTimePercents
-      // x = (partTimePercents*fullWorkTime)/100;
-      double partWorkTime = (partTimePercents*fullWorkTime)/100; // общее время работы части графика, микросекунд
-
-      // получили общую длительность работы части графика. у нас есть кол-во точек, усреднённая длительность итерации цикла для одной точки,
-      // а также полный размах времени импульса по Y (в переменной fullYDia). Следовательно, мы можем вычислить, какой процент по размаху
-      // от fullYDia занимает текущая координата по Y.      
-      
-      // пробегаемся по точкам текущей части, считая весовые доли каждой точки
-      Vector<double> partPointsWeight; // список весов каждой точки части графика
-      double weightSum = 0; // сумма весов всех точек
-      
-      for(size_t k=0;k<partPointsCount;k++)
-      {
-        Point pt = resultPoints[listIterator];
-        listIterator++;
-
-        // получили текущую опорную точку. вычисляем, какой процент по размаху
-        // от fullYDia занимает текущая координата по Y.      
-        // fullYDia = 100%
-        // pt.Y = x%
-        // x = (pt.Y*100)/fullDia
-
-        double pointWeight = (double(1.)*pt.Y)/fullYDia; // весовая доля точки
-
-        
-       //  допустим, у нас размах по Y - 10, длительность работы части графика - 3 секунды, точек - 3, первая и третья
-       //  точки - имеют максимально длительный импульс, вторая - 50% длительности импульса, т.е. график имеет вид /\.
-       //  Среднее время длительности для одной точки - 1 секунда (3 секунды / 3 точки). Весовые доли точек распределяются таким образом:
-
-       //   1. 1
-       //   2. 0.5
-       //   3. 1
-
-       //   всего весовых долей - 2.5 на 3 секунды длительности работы отрезка графика, т.е. на 1 весовую долю приходится 3/2.5 = 1.2 секунды
-         
-
-        weightSum += pointWeight;
-        partPointsWeight.push_back(pointWeight); // запоминаем вес точки        
-        
-      } // for
-
-      // в weightSum у нас - сумма весов всех точек. теперь мы можем посчитать, сколько приходится на одну весовую долю времени.
-      // для этого надо время работы части графика разделить на сумму весов точек.
-      double oneWeightTime = partWorkTime/weightSum;
-
-      // теперь мы имеем общий расклад по весам для каждой точки, и можем вычислить время импульса для каждой точки
-      for(size_t w=0;w<partPointsWeight.size();w++)
-      {
-         double pWeight = partPointsWeight[w];
-         uint32_t pulseWidth = (pWeight*oneWeightTime);
-
-         if(pulseWidth < (PULSE_WIDTH)*2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
-         {
-            pulseWidth = (PULSE_WIDTH)*2;
-         }
-
-         // отнимаем от ширины имппульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-         pulseWidth -= (PULSE_WIDTH);
-
-         // печатаем для теста
-         DBG("Pulse width: "); DBGLN(pulseWidth);
-
-         // сохраняем в список
-         pulsesList.push_back(pulseWidth);
-      }
-
-      DBGLN("");
-      
-      
-    } // for
-
-    */
+            
     
   } // if(chartPoints.size())
 

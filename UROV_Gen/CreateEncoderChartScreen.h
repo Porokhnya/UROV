@@ -34,7 +34,11 @@ private:
 	  void clear_Grid(TFTMenu* menu);
    void drawGrid(TFTMenu* menu);
    
-    int clearButton, calculateButton, backButton, file1Button, file2Button, file3Button, mem1Button, mem2Button, mem3Button, grid_Button;
+    int clearButton, calculateButton, backButton, file1Button, file2Button, file3Button, mem1Button, mem2Button, mem3Button, grid_Button, countPulsesButton;
+
+
+    int countPulses;
+    String countPulsesCaption;
     
 	  int touch_x_min;      // Запрет формировать точку по Х меньше предыдущей   
     
