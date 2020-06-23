@@ -354,7 +354,7 @@ void KeyboardScreen::doSetup(TFTMenu* menu)
   const uint8_t btn_width = 50;
   const uint8_t btn_height = 25;
 
-  int curTop = 30;
+  int curTop = 60;
   int btnCntr = 0;
 
   int curLeft;
@@ -400,7 +400,7 @@ void KeyboardScreen::doDraw(TFTMenu* menu)
   UTFT* dc = menu->getDC();
   int screenW = dc->getDisplayXSize();
   int boxX = 4;
-  int boxY = 2;
+  int boxY = 32;
   int boxX2 = screenW - 8;
   int boxY2 = boxY + 20;
   
