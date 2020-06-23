@@ -25,7 +25,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 namespace Drawing
 {
-  void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
+  void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset, uint16_t _xPoints, uint16_t _yPoints, int _xCoord, int _yCoord, int _yStart, bool intervalsComputed)
   {
       // освобождаем серию
       serie.empty();
@@ -50,23 +50,54 @@ namespace Drawing
     
       // получаем максимальное время импульса - это будет 100% по оси Y
       uint32_t maxPulseTime = 0;
-      for(size_t i=1;i<timeList.size();i++)
-      {
-        maxPulseTime = max(maxPulseTime,(timeList[i] - timeList[i-1]));
-      } // for
 
-	  if (!maxPulseTime) // на случай, если там 0
-		  maxPulseTime = 1;
+      if(intervalsComputed)
+      {
+          for(size_t i=0;i<timeList.size();i++)
+          {
+            maxPulseTime = max(maxPulseTime,timeList[i]); 
+          }
+      }
+      else
+      {
+        for(size_t i=1;i<timeList.size();i++)
+        {
+          maxPulseTime = max(maxPulseTime,(timeList[i] - timeList[i-1]));
+        } // for
+      }
+
+	    if (!maxPulseTime) // на случай, если там 0
+      {
+		    maxPulseTime = 1;
+      }
     
   //    DBG("MAX PULSE TIME=");
   //    DBGLN(maxPulseTime);  
     
       // теперь вычисляем положение по X для каждой точки импульсов
-      uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
-      float xStep = (1.*pointsAvailable)/(totalPulses-1);
+      uint16_t pointsAvailable = /*INTERRUPT_CHART_X_POINTS*/ _xPoints - xOffset;
+      float xStep = 0.0;
+      if(intervalsComputed)
+      {
+        xStep = (1.*pointsAvailable)/totalPulses;
+      }
+      else
+      {
+        xStep = (1.*pointsAvailable)/(totalPulses-1);
+      }
     
       // сначала добавляем первую точку, у неё координаты по X - это 0, по Y - та же длительность импульса, что будет во второй точке
-      uint32_t firstPulseTime = timeList[1] - timeList[0];
+      uint32_t firstPulseTime = 0;
+      
+      if(intervalsComputed)
+      {
+        firstPulseTime = timeList[0];
+      }
+      else
+      {
+        firstPulseTime = timeList[1] - timeList[0];
+      }
+      
       firstPulseTime *= 100;
       uint16_t firstPointPercents = firstPulseTime/maxPulseTime;
     
@@ -77,18 +108,20 @@ namespace Drawing
    //   DBGLN(firstPointPercents);
     
       // теперь можем высчитать абсолютное значение по Y для первой точки  
-      float yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+      float yCoord = /*INTERRUPT_CHART_Y_COORD*/ _yCoord - (firstPointPercents*(/*INTERRUPT_CHART_Y_POINTS*/ _yPoints-yOffset))/100;
       // здесь мы получили значение в пикселях, соответствующее проценту от максимального значения Y.
       // от этого значения надо отнять сдвиг по Y
       yCoord -= yOffset;
     
       // чтобы за сетку не вылазило
-      if(yCoord < INTERRUPT_CHART_GRID_Y_START)
-        yCoord = INTERRUPT_CHART_GRID_Y_START;
+      if(yCoord < /*INTERRUPT_CHART_GRID_Y_START*/ _yStart)
+      {
+        yCoord = /*INTERRUPT_CHART_GRID_Y_START*/ _yStart;
+      }
     
 
       // добавляем первую точку
-      float xCoord = INTERRUPT_CHART_X_COORD;
+      float xCoord = /*INTERRUPT_CHART_X_COORD*/ _xCoord;
 
 
 	  uint16_t iXCoord = constrain(round(xCoord), 0, screenWidth);
@@ -108,7 +141,15 @@ namespace Drawing
       // теперь считаем все остальные точки
       for(size_t i=1;i<timeList.size();i++)
       {
-        uint32_t pulseTime = timeList[i] - timeList[i-1];
+        uint32_t pulseTime = 0;
+        if(intervalsComputed)
+        {
+          pulseTime = timeList[i];
+        }
+        else
+        {
+          pulseTime = timeList[i] - timeList[i-1];
+        }
         pulseTime *= 100;
         
         uint16_t pulseTimePercents = pulseTime/maxPulseTime;
@@ -118,12 +159,12 @@ namespace Drawing
    //     DBGLN(pulseTimePercents);
     
     
-        yCoord = INTERRUPT_CHART_Y_COORD - (pulseTimePercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+        yCoord = /*INTERRUPT_CHART_Y_COORD*/ _yCoord - (pulseTimePercents*(/*INTERRUPT_CHART_Y_POINTS*/ _yPoints-yOffset))/100;
         yCoord -= yOffset;
     
       // чтобы за сетку не вылазило
-      if(yCoord < INTERRUPT_CHART_GRID_Y_START)
-        yCoord = INTERRUPT_CHART_GRID_Y_START;
+      if(yCoord < /*INTERRUPT_CHART_GRID_Y_START*/ _yStart)
+        yCoord = /*INTERRUPT_CHART_GRID_Y_START*/ _yStart;
 
 	  iXCoord = constrain(round(xCoord), 0, screenWidth);
 	  iYCoord = constrain(round(yCoord), 0, screenHeight);
@@ -239,22 +280,14 @@ namespace Drawing
 	  DBGLN(F("RGBColor: СЕРИЯ ОТРИСОВАНА!"));
   }
 
-  void DrawChart(AbstractTFTScreen* caller, const Points& serie1, uint16_t serie1Color)
+  void DrawChart(AbstractTFTScreen* caller, const Points& serie1, uint16_t serie1Color, int gridX, int gridY, int colCount, int rowCount, int colWidth, int rowHeight)
   {
 	  DBGLN(F("DrawChart BEGIN"));
     
-    // рисуем сетку
-	const int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
-	const int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
-    const int columnsCount = 6; // 5 столбцов
-	const int rowsCount = 4; // 4 строки
-	const int columnWidth = INTERRUPT_CHART_X_POINTS/columnsCount; // ширина столбца
-	const int rowHeight = INTERRUPT_CHART_Y_POINTS/rowsCount; // высота строки 
-    RGBColor gridColor = { 0,200,0 }; // цвет сетки
-  
+    RGBColor gridColor = { 0,200,0 }; // цвет сетки  
   
     // вызываем функцию для отрисовки сетки, её можно вызывать из каждого класса экрана
-    Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+    Drawing::DrawGrid(gridX, gridY, colCount, rowCount, colWidth, rowHeight, gridColor);
   
     Drawing::DrawSerie(caller, serie1,serie1Color);
 
@@ -263,7 +296,7 @@ namespace Drawing
 	DBGLN(F("DrawChart END"));
   }
 
-  void ComputeChart(const InterruptTimeList& list1, Points& serie1)
+  void ComputeChart(const InterruptTimeList& list1, Points& serie1, uint16_t xPoints, uint16_t yPoints, int xCoord, int yCoord, int yStart,bool intervalsComputed)
   {
 	  DBGLN(F("ComputeChart BEGIN"));
      /*
@@ -281,7 +314,7 @@ namespace Drawing
       const uint16_t xOffset = 5; // первоначальный сдвиг графиков по X, чтобы первый пик начинался не с начала координат
 //      uint16_t xOffsetStep = 5; // шаг сдвига графиков по X, чтобы не пересекались
       
-      ComputeSerie(list1,serie1,xOffset, yOffset);
+      ComputeSerie(list1,serie1,xOffset, yOffset, xPoints, yPoints, xCoord, yCoord, yStart, intervalsComputed);
 //      yOffset += yOffsetStep;
 //      xOffset += xOffsetStep;
     

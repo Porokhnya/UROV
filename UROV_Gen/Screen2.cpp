@@ -1332,7 +1332,7 @@ void EthalonChartScreen::show(const String& fName)
       file.close();
     }
 
-    Drawing::ComputeChart(lst, serie);
+    Drawing::ComputeChart(lst, serie,INTERRUPT_CHART_X_POINTS,INTERRUPT_CHART_Y_POINTS,INTERRUPT_CHART_X_COORD,INTERRUPT_CHART_Y_COORD, INTERRUPT_CHART_GRID_Y_START);
     Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1460,7 +1460,7 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
   else
   if(state == recDone)
   {
-    Drawing::ComputeChart(list1, serie1);
+    Drawing::ComputeChart(list1, serie1,INTERRUPT_CHART_X_POINTS,INTERRUPT_CHART_Y_POINTS,INTERRUPT_CHART_X_COORD,INTERRUPT_CHART_Y_COORD, INTERRUPT_CHART_GRID_Y_START);
     
     Screen.getDC()->fillScr(TFT_BACK_COLOR);
     showButtons(true);    
@@ -1788,7 +1788,7 @@ void EthalonRecordScreen::OnHaveInterruptData()
 
   state = recDone;
 
-  Drawing::ComputeChart(list1, serie1);
+   Drawing::ComputeChart(list1, serie1,INTERRUPT_CHART_X_POINTS,INTERRUPT_CHART_Y_POINTS,INTERRUPT_CHART_X_COORD,INTERRUPT_CHART_Y_COORD, INTERRUPT_CHART_GRID_Y_START);
   
   Screen.getDC()->fillScr(TFT_BACK_COLOR);
   showButtons(true);  

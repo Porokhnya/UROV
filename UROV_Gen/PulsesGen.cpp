@@ -185,6 +185,7 @@ void ImpulseGeneratorClass::prepare(const String& fileName)
   }
   else
   {
+    pList = &internalList;
     workMode = igNothing;
   }
   
@@ -235,6 +236,7 @@ void ImpulseGeneratorClass::prepare(int memAddr)
   else
   {
     workMode = igNothing;
+    pList = &internalList;
   }
 
 }
@@ -264,6 +266,7 @@ void ImpulseGeneratorClass::prepare(const Vector<uint32_t>& list)
     else
     {
       workMode = igNothing;
+      pList = &internalList;
     }    
     
 }

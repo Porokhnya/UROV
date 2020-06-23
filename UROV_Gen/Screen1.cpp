@@ -959,12 +959,79 @@ void Screen1::drawRelayState(TFTMenu* menu, bool anyway)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawSelectedEncoderChart(TFTMenu* menu)
+{
+  if(!isActive())
+  {
+    return;
+  }
+
+  // рисуем сетку
+  const int columnsCount = 6; // 5 столбцов
+  const int rowsCount = 4; // 6 строк
+  const int columnWidth = 25; // ширина столбца
+  const int rowHeight = 25; // высота строки 
+  RGBColor gridColor = { 0,200,0 }; // цвет сетки
+  
+  eChartWidth = columnWidth*columnsCount;
+  eChartHeight = rowHeight*rowsCount;
+  eChartLeft = 10 + eChartWidth; // начальная координата сетки по X
+  eChartTop = 40; // начальная координата сетки по Y
+
+
+  if(!ImpulseGeneratorB.hasData())
+  {
+    Drawing::DrawGrid(eChartLeft, eChartTop, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+    drawSelectedEncoderChartPulses(menu,0);
+    return;
+  }
+
+  const Vector<uint32_t>* list = ImpulseGeneratorB.getData();
+
+  if(!list || !list->size())
+  {
+    Drawing::DrawGrid(eChartLeft, eChartTop, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+    drawSelectedEncoderChartPulses(menu,0);
+    return;
+  }
+
+  // тут рисуем график
+  encoderSerie.clear();
+  Drawing::ComputeChart(*list, encoderSerie, INTERRUPT_CHART_X_POINTS, INTERRUPT_CHART_Y_POINTS, eChartLeft, eChartTop+eChartHeight, eChartTop,true);
+  Drawing::DrawChart(this, encoderSerie, VGA_WHITE, eChartLeft, eChartTop, columnsCount, rowsCount,columnWidth,rowHeight);
+  
+
+  drawSelectedEncoderChartPulses(menu,list->size());
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Screen1::drawSelectedEncoderChartPulses(TFTMenu* menu, size_t pulsesCount)
+{
+  UTFT* dc = menu->getDC();
+  dc->setBackColor(VGA_BLACK);
+  dc->setFont(BigRusFont);
+
+  String toDraw;
+  toDraw = F("Импульсов: "); 
+  toDraw += pulsesCount;
+
+   dc->setColor(VGA_BLACK);
+
+   uint8_t fh = dc->getFontYsize();
+   int top = eChartTop + eChartHeight + 5;
+   dc->fillRect(eChartLeft,top,eChartLeft+eChartWidth,top+fh);
+  
+   dc->setColor(VGA_WHITE);
+   menu->print(toDraw.c_str(),eChartLeft,top);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
 {
   drawTime(menu);
   drawRelayState(menu,true);
   drawTemperature(menu,true);
   drawCurrent(menu);
+  drawSelectedEncoderChart(menu);
 
 #ifndef _DISABLE_DRAW_SOFTWARE_VERSION
   // рисуем версию ПО
@@ -980,8 +1047,8 @@ void Screen1::doDraw(TFTMenu* menu)
   int strL = menu->print(str.c_str(),0,0,0,true);
   int strW = strL*fw;
 
-  int top = 20;
-  int left = w - strW - 3;
+  int top = 1;
+  int left = w - strW - 3 - 100; // перемещаем ещё левее
 
   menu->print(str.c_str(),left,top);
 #endif // !_DISABLE_DRAW_SOFTWARE_VERSION

@@ -41,6 +41,10 @@ class ImpulseGeneratorClass
   }
 
   bool hasData();
+  const Vector<uint32_t>* getData()
+  {
+    return pList;
+  }
 	
 	
   private:

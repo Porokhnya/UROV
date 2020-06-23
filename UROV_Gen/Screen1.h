@@ -80,6 +80,13 @@ private:
 	  ChartSerie* serie3;
 
    uint16_t getSynchroPoint(uint16_t* points, uint16_t pointsCount);
+
+
+   int eChartLeft, eChartTop, eChartWidth, eChartHeight;
+   void drawSelectedEncoderChart(TFTMenu* menu);
+   void drawSelectedEncoderChartPulses(TFTMenu* menu, size_t pulsesCount);
+   Points encoderSerie;
+
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include "TinyVector.h"
 #include "InterruptHandler.h"
 #include "UTFTMenu.h"
+#include "CONFIG.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)
 typedef struct
@@ -48,8 +49,8 @@ class AbstractTFTScreen;
 namespace Drawing
 {
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor);
-  void ComputeChart(const InterruptTimeList& list1, Points& serie1);
-  void DrawChart(AbstractTFTScreen* caller, const Points& serie1,uint16_t serie1Color=VGA_WHITE);
+  void ComputeChart(const InterruptTimeList& list1, Points& serie1, uint16_t xPoints, uint16_t yPoints, int xCoord, int yCoord, int yStart,bool intervalsComputed=false);
+  void DrawChart(AbstractTFTScreen* caller, const Points& serie1,uint16_t serie1Color=VGA_WHITE, int gridX = INTERRUPT_CHART_GRID_X_START, int gridY = INTERRUPT_CHART_GRID_Y_START, int colCount=6, int rowCount=4, int colWidth=INTERRUPT_CHART_X_POINTS/6, int rowHeight=INTERRUPT_CHART_Y_POINTS/4);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)

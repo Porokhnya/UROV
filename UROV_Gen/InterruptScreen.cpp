@@ -51,7 +51,7 @@ void InterruptScreen::OnHaveInterruptData()
   // два - когда в списках прерываний точек заведомо меньше, чем точек на графике (например, 20 вместо 150) - без пересчёта получим
   // куцый график, в этом случае нам надо его растянуть по-максимуму.
 
-  Drawing::ComputeChart(list1, serie1);
+  Drawing::ComputeChart(list1, serie1,INTERRUPT_CHART_X_POINTS,INTERRUPT_CHART_Y_POINTS,INTERRUPT_CHART_X_COORD,INTERRUPT_CHART_Y_COORD, INTERRUPT_CHART_GRID_Y_START);
 
   // вычисляем моторесурс
   computeMotoresource();
