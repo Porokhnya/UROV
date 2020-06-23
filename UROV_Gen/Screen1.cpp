@@ -975,7 +975,7 @@ void Screen1::drawSelectedEncoderChart(TFTMenu* menu)
   
   eChartWidth = columnWidth*columnsCount;
   eChartHeight = rowHeight*rowsCount;
-  eChartLeft = 10 + eChartWidth; // начальная координата сетки по X
+  eChartLeft = 130 + eChartWidth; // начальная координата сетки по X
   eChartTop = 40; // начальная координата сетки по Y
 
 
@@ -1012,17 +1012,17 @@ void Screen1::drawSelectedEncoderChartPulses(TFTMenu* menu, size_t pulsesCount)
   dc->setFont(BigRusFont);
 
   String toDraw;
-  toDraw = F("Импульсов: "); 
+  toDraw = F("Импульсов:"); 
   toDraw += pulsesCount;
 
    dc->setColor(VGA_BLACK);
 
    uint8_t fh = dc->getFontYsize();
-   int top = eChartTop + eChartHeight + 5;
-   dc->fillRect(eChartLeft,top,eChartLeft+eChartWidth,top+fh);
+   int top = eChartTop + eChartHeight + 10;
+   dc->fillRect(eChartLeft-55,top,eChartLeft+eChartWidth,top+fh);
   
    dc->setColor(VGA_WHITE);
-   menu->print(toDraw.c_str(),eChartLeft,top);
+   menu->print(toDraw.c_str(),eChartLeft-50,top);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
