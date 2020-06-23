@@ -184,10 +184,10 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
 
     // сначала записываем смещения, чтобы обеспечить эмуляцию энкодера
     uint32_t rec = 0;
-    writeToFile(fileA,rec); // нулевое смещение для линии А
+ //   writeToFile(fileA,rec); // нулевое смещение для линии А
 
-    rec = 5;
-    writeToFile(fileB,rec); // смещение в 5 микросекунд для линии B
+//    rec = 5;
+//    writeToFile(fileB,rec); // смещение в 5 микросекунд для линии B
 
     // теперь пишем все данные
     for(size_t i=0;i<pulsesList.size();i++)
