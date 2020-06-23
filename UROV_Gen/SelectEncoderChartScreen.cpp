@@ -21,10 +21,6 @@ void SelectEncoderChartScreen::onActivate()
   // тут проверяем, какие кнопки активировать
 
 
-  screenButtons->disableButton(mem1Button);
-  screenButtons->disableButton(mem2Button);
-  screenButtons->disableButton(mem3Button);
-
   if(SD.exists("/FILE1.A") && SD.exists("/FILE1.B"))
   {
     screenButtons->enableButton(file1Button);
@@ -51,6 +47,22 @@ void SelectEncoderChartScreen::onActivate()
   {
     screenButtons->disableButton(file3Button);
   }  
+  if (SD.exists("/FILE4.A") && SD.exists("/FILE4.B"))
+  {
+	  screenButtons->enableButton(file4Button);
+  }
+  else
+  {
+	  screenButtons->disableButton(file4Button);
+  }
+  if (SD.exists("/FILE5.A") && SD.exists("/FILE5.B"))
+  {
+	  screenButtons->enableButton(file5Button);
+  }
+  else
+  {
+	  screenButtons->disableButton(file5Button);
+  }
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,24 +72,25 @@ void SelectEncoderChartScreen::doSetup(TFTMenu* menu)
 
 	
 	int menu_height = 30;
-	int button_gap = 5;
-	int height_button = 29;
+	int button_gap = 6;
+	int height_button = 35;
 	int width_button = 125;
 
-  backButton = screenButtons->addButton( 315 ,  255, 150,  40, "НАЗАД");
-
+ 
   file1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 1");
   menu_height += height_button + button_gap;
   file2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 2");
   menu_height += height_button + button_gap;
   file3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 3");
   menu_height += height_button + button_gap;
-  mem1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 1");
+  file4Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 4");
   menu_height += height_button + button_gap;
-  mem2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 2");
-  /*menu_height += height_button + button_gap;
-  mem3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 3");*/
-
+  file5Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 5");
+  menu_height += height_button + button_gap;
+  file_selection = screenButtons->addButton(340, menu_height, width_button, height_button, "ВЫБОР");
+  menu_height += height_button + button_gap;
+  backButton = screenButtons->addButton(340, menu_height, width_button, height_button, "НАЗАД");
+ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::doUpdate(TFTMenu* menu)
@@ -86,6 +99,35 @@ void SelectEncoderChartScreen::doUpdate(TFTMenu* menu)
     // тут обновляем внутреннее состояние
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SelectEncoderChartScreen::drawGrid(TFTMenu* menu)
+{
+
+	UTFT* dc = menu->getDC();
+	dc->setColor(VGA_WHITE);
+	dc->setBackColor(VGA_BLACK);
+
+	dc->setFont(BigRusFont);
+	// тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
+	menu->print("Экран выбора графика", 70, 10);
+	menu->print("Точек графика", 20, 245);
+	dc->setFont(SmallRusFont);
+
+	// рисуем сетку
+	RGBColor gridColor = { 0,200,0 }; // цвет сетки
+	int gridX = 20; // стартовая координата по X для сетки
+	int gridY = 30; // стартовая координата по Y для сетки
+	int columnsCount = 6; // количество столбцов сетки
+	int rowsCount = 4; // количество строк сетки
+	int columnWidth = 50; // ширина столбца
+	int rowHeight = 50; // высота строки
+
+	dc->setColor(VGA_BLACK);
+	dc->fillRect(gridX, gridY, gridX + 5 + (columnWidth*columnsCount), gridY + 5 + (rowHeight*rowsCount)); // Очистить экран
+	Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 void SelectEncoderChartScreen::doDraw(TFTMenu* menu)
 {
   UTFT* dc = menu->getDC();
@@ -94,7 +136,8 @@ void SelectEncoderChartScreen::doDraw(TFTMenu* menu)
 
   dc->setFont(BigRusFont);
   // тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
-  menu->print("Экран выбора графика", 70, 10);
+  //menu->print("Экран выбора графика", 70, 10);
+  drawGrid(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
@@ -120,22 +163,31 @@ void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 		// Загрузить файл 3
    chartLoader->LoadChart(lcmFromFile,3);
 	}
-	else if (pressedButton == mem1Button)
+	else if (pressedButton == file4Button)
 	{
-		// Загрузить память 1
-   chartLoader->LoadChart(lcmFromMemory,0);
+		// Загрузить файл 4
+		chartLoader->LoadChart(lcmFromFile, 4);
 	}
-	else if (pressedButton == mem2Button)
+	else if (pressedButton == file5Button)
 	{
-		// Загрузить память 2
-   chartLoader->LoadChart(lcmFromMemory,1);
+		// Загрузить файл 5
+		chartLoader->LoadChart(lcmFromFile, 5);
 	}
-	//else if (pressedButton == mem3Button)
-	//{
-	//	// Загрузить память 3
- //  chartLoader->LoadChart(lcmFromMemory,2);
-	//}
-	//
+
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void SelectEncoderChartScreen::clear_Grid(TFTMenu* menu)
+{
+	drawGrid(menu); // рисуем сетку снова
+
+	//chartPoints.clear(); // очищаем список наших экранных точек
+	//pulsesList.clear(); // очищаем список сгенеренных импульсов
+	//touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
+
+	//screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
+	//enableSaveButtons(false, true);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -28,6 +28,10 @@ private:
 
     int genPeriodButton , pulseWidthButton, workTimeButton; 
     int backButton;
+	int menu_height = 30;
+	int button_gap = 5;
+	int height_button = 29;
+	int width_button = 80;
     
     String genPeriodVal  , pulseWidthVal, workTimeVal;
       int currentEditedButton;

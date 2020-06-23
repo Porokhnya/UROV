@@ -64,9 +64,9 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
   menu_height += height_button + button_gap;
   file3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 3");
   menu_height += height_button + button_gap;
-  mem1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 1");
+  file4Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 4");
   menu_height += height_button + button_gap;
-  mem2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 2");
+  file5Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 5");
   menu_height += height_button + button_gap;
   countPulsesButton = screenButtons->addButton(340, menu_height, width_button, height_button, ""); //  // кнопка кол-ва импульсов
 
@@ -123,9 +123,8 @@ void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
     screenButtons->disableButton(file1Button, redraw && screenButtons->buttonEnabled(file1Button));
     screenButtons->disableButton(file2Button, redraw && screenButtons->buttonEnabled(file2Button));
     screenButtons->disableButton(file3Button, redraw && screenButtons->buttonEnabled(file3Button));
-
-    screenButtons->disableButton(mem1Button, redraw && screenButtons->buttonEnabled(mem1Button));
-    screenButtons->disableButton(mem2Button, redraw && screenButtons->buttonEnabled(mem2Button));
+    screenButtons->disableButton(file4Button, redraw && screenButtons->buttonEnabled(file4Button));
+    screenButtons->disableButton(file5Button, redraw && screenButtons->buttonEnabled(file5Button));
        
   }
   else
@@ -133,9 +132,8 @@ void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
     screenButtons->enableButton(file1Button, redraw && !screenButtons->buttonEnabled(file1Button));
     screenButtons->enableButton(file2Button, redraw && !screenButtons->buttonEnabled(file2Button));
     screenButtons->enableButton(file3Button, redraw && !screenButtons->buttonEnabled(file3Button));
-
-    screenButtons->enableButton(mem1Button, redraw && !screenButtons->buttonEnabled(mem1Button));
-    screenButtons->enableButton(mem2Button, redraw && !screenButtons->buttonEnabled(mem2Button));
+    screenButtons->enableButton(file4Button, redraw && !screenButtons->buttonEnabled(file4Button));
+    screenButtons->enableButton(file5Button, redraw && !screenButtons->buttonEnabled(file5Button));
     }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -243,13 +241,15 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 		// Сохранить в файл 3
    saveToFile("/FILE3");
 	}
-	else if (pressedButton == mem1Button)
+	else if (pressedButton == file4Button)
 	{
-		// Сохранить в память 1
+		// Сохранить в файл 3
+		saveToFile("/FILE4");
 	}
-	else if (pressedButton == mem2Button)
+	else if (pressedButton == file5Button)
 	{
-		// Сохранить в память 2
+		// Сохранить в файл 3
+		saveToFile("/FILE5");
 	}
 	else if (pressedButton == grid_Button)
 	{

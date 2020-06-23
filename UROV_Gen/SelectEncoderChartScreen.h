@@ -36,7 +36,10 @@ protected:
 
 private:
       SelectEncoderChartScreen();   
-      int backButton, file1Button, file2Button, file3Button, mem1Button, mem2Button, mem3Button;    
+
+	  void clear_Grid(TFTMenu* menu);
+	  void drawGrid(TFTMenu* menu);
+      int backButton, file1Button, file2Button, file3Button, file4Button, file5Button, file_selection;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class LoadEncoderChartScreen : public AbstractTFTScreen

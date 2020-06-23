@@ -27,13 +27,22 @@ void ChartSettingsScreen::doSetup(TFTMenu* menu)
 {
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
+ /* int menu_height = 30;
+  int button_gap = 5;
+  int height_button = 29;
+  int width_button = 80;*/
   
   // тут настраиваемся, например, можем добавлять кнопки
   //reserved = screenButtons->addButton(5, 2, BUTTON_WIDTH, 30, "reserved");
-  genPeriodButton = screenButtons->addButton(120, 30, 95, BUTTON_HEIGHT, "");
-  pulseWidthButton = screenButtons->addButton(120, 65, 95, 30, "");
-  workTimeButton = screenButtons->addButton(120, 100, 95, 30, "");
-  backButton = screenButtons->addButton(5, 142, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
+  menu_height += height_button + button_gap - 5; // Выравниваем кнопки относительно текста
+  genPeriodButton = screenButtons->addButton(370, menu_height, width_button, height_button, "");
+  menu_height += height_button + button_gap;
+  pulseWidthButton = screenButtons->addButton(370, menu_height, width_button, height_button, "");
+  menu_height += height_button + button_gap;
+  workTimeButton = screenButtons->addButton(370, menu_height, width_button, height_button, "");
+  menu_height += height_button + button_gap;
+  menu_height += height_button + button_gap;
+  backButton = screenButtons->addButton(20, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "ВЫХОД");
 
   screenButtons->setButtonBackColor(genPeriodButton,VGA_BLACK);
   screenButtons->setButtonBackColor(pulseWidthButton,VGA_BLACK);
@@ -80,11 +89,16 @@ void ChartSettingsScreen::doDraw(TFTMenu* menu)
 
   dc->setFont(BigRusFont);
   dc->setColor(VGA_WHITE);
-
-  menu->print("Настройки графика",2,2);
-  menu->print("Интервал таймера, мкс:", 2, 37);
-  menu->print("Ширина импульса, мкс:", 2, 72);
-  menu->print("Время работы, мс:", 2, 107);
+  menu_height = 30;
+  button_gap = 5;
+  
+  menu->print("Настройки графика",10, menu_height);
+  menu_height += height_button + button_gap;
+  menu->print("Интервал таймера, мкс:", 10, menu_height);
+  menu_height += height_button + button_gap;
+  menu->print("Ширина импульса, мкс:", 10, menu_height);
+  menu_height += height_button + button_gap;
+  menu->print("Время работы, мс:", 10, menu_height);
   
   dc->setFont(oldFont);
 }
