@@ -176,7 +176,6 @@ void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void SelectEncoderChartScreen::clear_Grid(TFTMenu* menu)
 {
 	drawGrid(menu); // рисуем сетку снова
