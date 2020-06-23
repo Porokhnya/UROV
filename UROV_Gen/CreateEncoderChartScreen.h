@@ -47,6 +47,7 @@ private:
 
     void saveToFile(const char* fileName); // сохраняет список длительностей импульсов в файл
     void enableSaveButtons(bool en, bool redraw=false);
+    void enableControlButtons(bool en, bool redraw=false);
     void writeToFile(SdFile& f, uint32_t rec);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

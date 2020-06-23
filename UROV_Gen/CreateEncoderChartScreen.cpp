@@ -116,6 +116,28 @@ void CreateEncoderChartScreen::doDraw(TFTMenu* menu)
   drawGrid(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CreateEncoderChartScreen::enableControlButtons(bool en, bool redraw)
+{
+  if(!en)
+  {
+    screenButtons->disableButton(clearButton, redraw && screenButtons->buttonEnabled(clearButton));
+    screenButtons->disableButton(calculateButton, redraw && screenButtons->buttonEnabled(calculateButton));
+    screenButtons->disableButton(backButton, redraw && screenButtons->buttonEnabled(backButton));
+    screenButtons->disableButton(grid_Button, redraw && screenButtons->buttonEnabled(grid_Button));
+    screenButtons->disableButton(countPulsesButton, redraw && screenButtons->buttonEnabled(countPulsesButton));
+       
+  }
+  else
+  {
+    screenButtons->enableButton(clearButton, redraw && !screenButtons->buttonEnabled(clearButton));
+    screenButtons->enableButton(calculateButton, redraw && !screenButtons->buttonEnabled(calculateButton));
+    screenButtons->enableButton(backButton, redraw && !screenButtons->buttonEnabled(backButton));
+    screenButtons->enableButton(grid_Button, redraw && !screenButtons->buttonEnabled(grid_Button));
+    screenButtons->enableButton(countPulsesButton, redraw && !screenButtons->buttonEnabled(countPulsesButton));
+    }
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
 {
   if(!en)
@@ -150,6 +172,7 @@ void CreateEncoderChartScreen::writeToFile(SdFile& f, uint32_t rec)
 void CreateEncoderChartScreen::saveToFile(const char* fileName)
 {
     enableSaveButtons(false,true);
+    enableControlButtons(false,true);
   
     // тут сохраняем список pulsesList в файлы
     SdFile fileA, fileB; 
@@ -166,6 +189,7 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
     if(!fileA.isOpen())
     {
       enableSaveButtons(true,true);
+      enableControlButtons(true,true);
       return;
     }
     
@@ -174,6 +198,7 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
     {
       fileA.close();
       enableSaveButtons(true,true);
+      enableControlButtons(true,true);
       return;
     }
 
@@ -199,6 +224,8 @@ void CreateEncoderChartScreen::saveToFile(const char* fileName)
 
     fileA.close();
     fileB.close();
+
+    enableControlButtons(true,true);
     
     // показываем сообщение, что данные сохранены
     Vector<const char*> lines;
