@@ -274,6 +274,8 @@ void Screen1::onDeactivate()
 	canLoopADC = false;
 #endif // !_ADC_OFF
 
+  encoderSerie.clear();
+
   DBGLN(F("MainScreen::onDeactivate()"));
   
 }
@@ -285,8 +287,8 @@ void Screen1::onActivate()
 #endif // !_ADC_OFF
 
 
-  oldChannel1Current = oldChannel2Current = oldChannel3Current = 0xFFFF;
-  oldCurrentString1 = oldCurrentString2 = oldCurrentString3 = "";
+    oldChannel1Current = oldChannel2Current = oldChannel3Current = 0xFFFF;
+    oldCurrentString1 = oldCurrentString2 = oldCurrentString3 = "";
 
 
     sensor1DisplayString = "";

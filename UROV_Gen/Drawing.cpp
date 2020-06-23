@@ -91,7 +91,7 @@ namespace Drawing
       
       if(intervalsComputed)
       {
-        firstPulseTime = timeList[0];
+        firstPulseTime = maxPulseTime;//timeList[0];
       }
       else
       {
@@ -139,7 +139,14 @@ namespace Drawing
       xCoord += xOffset;
     
       // теперь считаем все остальные точки
-      for(size_t i=1;i<timeList.size();i++)
+      int startIter = 1;
+      
+      if(intervalsComputed)
+      {
+        startIter = 0;
+      }
+      
+      for(size_t i=startIter;i<timeList.size();i++)
       {
         uint32_t pulseTime = 0;
         if(intervalsComputed)
