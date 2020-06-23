@@ -35,7 +35,63 @@ void SettingsClass::write(int addr, uint8_t val)
   eeprom->write(addr,val); 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+uint32_t SettingsClass::getChartGenPeriod()
+{
+  return chartGenPeriod;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setChartGenPeriod(uint32_t val)
+{
+  chartGenPeriod = val;
+  
+  uint16_t addr = CHART_PERIOD_STORE_ADDRESS;
+  
+  eeprom->write(addr,RECORD_HEADER1); addr++;
+  eeprom->write(addr,RECORD_HEADER2); addr++;
+  eeprom->write(addr,RECORD_HEADER3); addr++;
+  
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(addr,writePtr,sizeof(val)); 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::getChartPulseWidth()
+{
+  return chartPulseWidth;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setChartPulseWidth(uint32_t val)
+{
+  chartPulseWidth = val;
+  
+  uint16_t addr = CHART_PULSE_WIDTH_STORE_ADDRESS;
+  
+  eeprom->write(addr,RECORD_HEADER1); addr++;
+  eeprom->write(addr,RECORD_HEADER2); addr++;
+  eeprom->write(addr,RECORD_HEADER3); addr++;
+  
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(addr,writePtr,sizeof(val)); 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::getChartWorkTime()
+{
+  return chartWorkTime;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setChartWorkTime(uint32_t val)
+{
+  chartWorkTime = val;
+  
+  uint16_t addr = CHART_WORK_TIME_STORE_ADDRESS;
+  
+  eeprom->write(addr,RECORD_HEADER1); addr++;
+  eeprom->write(addr,RECORD_HEADER2); addr++;
+  eeprom->write(addr,RECORD_HEADER3); addr++;
+  
+  uint8_t* writePtr = (uint8_t*)&val;
+  eeprom->write(addr,writePtr,sizeof(val)); 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String SettingsClass::getUUID(const char* passedUUID)
 {
     String savedUUID;
@@ -122,14 +178,59 @@ void SettingsClass::begin()
   eeprom->read(RELAY_DELAY_STORE_ADDRESS,writePtr,sizeof(uint32_t));
   
   if(relayDelay == 0xFFFFFFFF)
+  {
     relayDelay = RELAY_WANT_DATA_AFTER;
+  }
 
   writePtr = (uint8_t*)&acsDelay;
   eeprom->read(ACS_DELAY_STORE_ADDRESS,writePtr,sizeof(uint16_t));
   
   if(acsDelay == 0xFFFF)
+  {
     acsDelay = ACS_SIGNAL_DELAY;    
-  
+  }
+
+    uint16_t addr = CHART_PERIOD_STORE_ADDRESS;
+    uint8_t header1 = eeprom->read(addr); addr++;
+    uint8_t header2 = eeprom->read(addr); addr++;
+    uint8_t header3 = eeprom->read(addr); addr++;
+    if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
+    {
+      writePtr = (uint8_t*)&chartGenPeriod;
+      eeprom->read(addr,writePtr,sizeof(uint32_t)); 
+    }
+    else
+    {
+      chartGenPeriod = 5; 
+    }
+
+    addr = CHART_PULSE_WIDTH_STORE_ADDRESS;
+    header1 = eeprom->read(addr); addr++;
+    header2 = eeprom->read(addr); addr++;
+    header3 = eeprom->read(addr); addr++;
+    if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
+    {
+      writePtr = (uint8_t*)&chartPulseWidth;
+      eeprom->read(addr,writePtr,sizeof(uint32_t)); 
+    }
+    else
+    {
+      chartPulseWidth = 20; 
+    }    
+
+    addr = CHART_WORK_TIME_STORE_ADDRESS;
+    header1 = eeprom->read(addr); addr++;
+    header2 = eeprom->read(addr); addr++;
+    header3 = eeprom->read(addr); addr++;
+    if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
+    {
+      writePtr = (uint8_t*)&chartWorkTime;
+      eeprom->read(addr,writePtr,sizeof(uint32_t)); 
+    }
+    else
+    {
+      chartWorkTime = 400; 
+    }      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set3V3RawVoltage(uint16_t raw)

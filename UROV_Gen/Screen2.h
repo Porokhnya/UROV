@@ -194,7 +194,7 @@ protected:
 private:
       ParamsScreen();
 
-      int createEncoderChartButton, loadEncoderChartButton, acsDelayButton, relayDelayButton, backButton;
+      int createEncoderChartButton, loadEncoderChartButton, chartSettingsButton, relayDelayButton, backButton;
   
   
 };

@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include "CreateEncoderChartScreen.h"
 #include "Buzzer.h"
-
+#include "Settings.h"
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const size_t MAX_POINTS_IN_CHART = 8; // максимальное кол-во точек на экране графика
 const uint16_t TOUCH_X_MIN = 20; // минимальная координата обработки тача по X
 const uint16_t TOUCH_Y_MIN = 30; // минимальная координата обработки тача по Y
@@ -48,7 +49,7 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
 	
 	int menu_height = 30;
 	int button_gap = 5;
-	int height_button = 25;
+	int height_button = 29;
 	int width_button = 125;
 
   clearButton = screenButtons->addButton(5, 255, 150, 40, "ОЧИСТИТЬ");
@@ -66,8 +67,6 @@ void CreateEncoderChartScreen::doSetup(TFTMenu* menu)
   mem1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 1");
   menu_height += height_button + button_gap;
   mem2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 2");
-  menu_height += height_button + button_gap;
-  mem3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 3");
   menu_height += height_button + button_gap;
   countPulsesButton = screenButtons->addButton(340, menu_height, width_button, height_button, ""); //  // кнопка кол-ва импульсов
 
@@ -127,8 +126,7 @@ void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
 
     screenButtons->disableButton(mem1Button, redraw && screenButtons->buttonEnabled(mem1Button));
     screenButtons->disableButton(mem2Button, redraw && screenButtons->buttonEnabled(mem2Button));
-    screenButtons->disableButton(mem3Button, redraw && screenButtons->buttonEnabled(mem3Button));
-    
+       
   }
   else
   {
@@ -138,9 +136,7 @@ void CreateEncoderChartScreen::enableSaveButtons(bool en, bool redraw)
 
     screenButtons->enableButton(mem1Button, redraw && !screenButtons->buttonEnabled(mem1Button));
     screenButtons->enableButton(mem2Button, redraw && !screenButtons->buttonEnabled(mem2Button));
-    screenButtons->enableButton(mem3Button, redraw && !screenButtons->buttonEnabled(mem3Button));
-    
-  }
+    }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void CreateEncoderChartScreen::writeToFile(SdFile& f, uint32_t rec)
@@ -254,10 +250,6 @@ void CreateEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 	else if (pressedButton == mem2Button)
 	{
 		// Сохранить в память 2
-	}
-	else if (pressedButton == mem3Button)
-	{
-		// Сохранить в память 3
 	}
 	else if (pressedButton == grid_Button)
 	{
@@ -585,7 +577,7 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
     
     int fullYDia = maxY - minY; // полная дельта размаха по Y
     int fullXDia = maxX - minX; // полная дельта размаха по X
-    double fullWorkTime = 1000.0 * (PULSE_CHART_WORK_TIME); // полное время работы графика (100%), микросекунд
+    double fullWorkTime = 1000.0 * Settings.getChartWorkTime(); // полное время работы графика (100%), микросекунд
 
     // считаем веса точек по Y.
     double weightYSum = 0; // сумма весов всех точек, по Y
@@ -645,6 +637,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
             // теперь высчитываем абсолютные ширины импульсов
             double absPulseWidthSum = 0;
 
+            uint32_t pulseWidthSetting = Settings.getChartPulseWidth();
+
             for(size_t i=0;i< relativePulseWidthList.size();i++)
             {
                 double relW = relativePulseWidthList[i];
@@ -655,13 +649,13 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
 
                 DBG("PULSE WIDTH: "); DBGLN(pulseWidth);
 
-                if (pulseWidth < (PULSE_WIDTH) * 2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
+                if (pulseWidth < pulseWidthSetting * 2) // минимальная ширина импульса - двойная ширина высокого уровня, т.е. минимальное заполнение - 50%
                 {
-                    pulseWidth = (PULSE_WIDTH) * 2;
+                    pulseWidth = pulseWidthSetting * 2;
                 }
 
-                // отнимаем от ширины имппульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
-                pulseWidth -= (PULSE_WIDTH);
+                // отнимаем от ширины импульса ширину высокого уровня, чтобы обеспечить правильность по длительности времени
+                pulseWidth -= pulseWidthSetting;
 
                 // сохраняем в список
                 pulsesList.push_back(pulseWidth);

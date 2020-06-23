@@ -331,7 +331,7 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   menu_height += BUTTON_HEIGHT + button_gap;
   loadEncoderChartButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "График загруз.");
   menu_height += BUTTON_HEIGHT + button_gap;
-  acsDelayButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка АСУ");
+  chartSettingsButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "График парам.");
   menu_height += BUTTON_HEIGHT + button_gap;
   relayDelayButton = screenButtons->addButton(100, menu_height, BUTTON_WIDTH, BUTTON_HEIGHT, "Задержка имп.");
   menu_height += BUTTON_HEIGHT + button_gap;
@@ -363,9 +363,9 @@ void ParamsScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   {
     menu->switchToScreen("SelectEncoderChartScreen");
   }
-  else if(pressedButton == acsDelayButton)
+  else if(pressedButton == chartSettingsButton)
   {
-    menu->switchToScreen("AcsDelayScreen");
+    menu->switchToScreen("ChartSettingsScreen");
   }
   else if(pressedButton == relayDelayButton)
   {

@@ -309,6 +309,7 @@ void ImpulseGeneratorClass::start()
   pinWrite(!PULSE_ON_LEVEL);
   listIterator = 0;
 
+  pulseWidthSetting = Settings.getChartPulseWidth();
   pauseTime = getNextPauseTime();
 
   DBG("FIRST PAUSE TIME IS: ");
@@ -349,7 +350,7 @@ void ImpulseGeneratorClass::update()
   {
       case onHighLevel: // обрабатываем высокий уровень на пине
       {
-        if(micros() - lastMicros >= PULSE_WIDTH) // вышло время удержания высокого уровня на пине
+        if(micros() - lastMicros >= pulseWidthSetting) // вышло время удержания высокого уровня на пине
         {
           pinWrite(!PULSE_ON_LEVEL); // низкий уровень на пин
           

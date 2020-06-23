@@ -66,6 +66,8 @@ class ImpulseGeneratorClass
 	
 	uint32_t lastMicros;
   uint32_t pauseTime;
+
+  uint32_t pulseWidthSetting;
   
   bool inUpdateFlag;
   ImpulseGeneratorMachineState machineState;

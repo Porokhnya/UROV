@@ -75,8 +75,8 @@ void SelectEncoderChartScreen::doSetup(TFTMenu* menu)
   mem1Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 1");
   menu_height += height_button + button_gap;
   mem2Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 2");
-  menu_height += height_button + button_gap;
-  mem3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 3");
+  /*menu_height += height_button + button_gap;
+  mem3Button = screenButtons->addButton(340, menu_height, width_button, height_button, "MEMO 3");*/
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -130,12 +130,12 @@ void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 		// Загрузить память 2
    chartLoader->LoadChart(lcmFromMemory,1);
 	}
-	else if (pressedButton == mem3Button)
-	{
-		// Загрузить память 3
-   chartLoader->LoadChart(lcmFromMemory,2);
-	}
-	
+	//else if (pressedButton == mem3Button)
+	//{
+	//	// Загрузить память 3
+ //  chartLoader->LoadChart(lcmFromMemory,2);
+	//}
+	//
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

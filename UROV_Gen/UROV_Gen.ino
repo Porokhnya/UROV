@@ -27,6 +27,7 @@
 #include "Buzzer.h"
 #include "CreateEncoderChartScreen.h"
 #include "SelectEncoderChartScreen.h"
+#include "ChartSettingsScreen.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -185,6 +186,7 @@ void setup()
   Screen.addScreen(CreateEncoderChartScreen::create());
   Screen.addScreen(LoadEncoderChartScreen::create());
   Screen.addScreen(SelectEncoderChartScreen::create());
+  Screen.addScreen(ChartSettingsScreen::create());
   
 
   DBGLN(F("Add interrupt screen..."));

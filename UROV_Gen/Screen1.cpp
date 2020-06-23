@@ -251,7 +251,8 @@ void Screen1::startGeneratePulses()
 //  ImpulseGeneratorA.start();
   ImpulseGeneratorB.start();
 
-  GEN_TIMER.attachInterrupt(genUpdate).setPeriod(GEN_TIMER_PERIOD).start();
+  uint32_t genPeriodSetting = Settings.getChartGenPeriod();  
+  GEN_TIMER.attachInterrupt(genUpdate).setPeriod(genPeriodSetting).start();
   
   DBGLN("ENCODER PULSES STARTED.");
   

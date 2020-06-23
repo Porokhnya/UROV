@@ -78,10 +78,24 @@ public:
 	void setRodDirection(RodDirection val) { rodDirection = val; }
 
 
+  uint32_t getChartGenPeriod();
+  void setChartGenPeriod(uint32_t val);
+  
+  uint32_t getChartPulseWidth();
+  void setChartPulseWidth(uint32_t val);
+
+  uint32_t getChartWorkTime();
+  void setChartWorkTime(uint32_t val);
+
   uint8_t read(int addr);
   void write(int addr, uint8_t val);
     
   private:
+
+
+    uint32_t chartGenPeriod;
+    uint32_t chartPulseWidth;
+    uint32_t chartWorkTime;
 
 	  RodDirection rodDirection;
 
