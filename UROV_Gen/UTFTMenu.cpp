@@ -493,7 +493,7 @@ void KeyboardScreen::drawValue(TFTMenu* menu)
 {
   //тут рисуем то, что введено
  int textX = 6;
- int textY = 4;
+ int textY = 34;
 
  UTFT* dc = menu->getDC();
 
