@@ -79,9 +79,8 @@ void TFTMenu::setup()
 
   controller = new GxCTRL_Class(io);   
 
-  //tftDC = new UTFT(TFT_MODEL,TFT_RS_PIN,TFT_WR_PIN,TFT_CS_PIN,TFT_RST_PIN);
-   tftDC = new TFT_Class(io, *controller, 221, 176);   // landscape 220x176
-  tftTouch = new TOUCH_Class(TFT_TOUCH_CS_PIN);//(TFT_TOUCH_CLK_PIN,TFT_TOUCH_CS_PIN,TFT_TOUCH_DIN_PIN,TFT_TOUCH_DOUT_PIN,TFT_TOUCH_IRQ_PIN);
+  tftDC = new TFT_Class(io, *controller, 221, 176);   // landscape 220x176
+  tftTouch = new TOUCH_Class(TFT_TOUCH_CS_PIN,-1,TOUCH_SCALE_X,TOUCH_SCALE_Y,TOUCH_MIN_RAW_X,TOUCH_MAX_RAW_X,TOUCH_MIN_RAW_Y,TOUCH_MAX_RAW_Y);
 
   #if TFT_INIT_DELAY > 0
   delay(TFT_INIT_DELAY);
