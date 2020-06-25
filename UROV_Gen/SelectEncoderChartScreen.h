@@ -51,6 +51,7 @@ private:
     void enableControlButtons(bool en, bool redraw=false);
 
     Points encoderSerie;
+    String pulsesToDraw;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class LoadEncoderChartScreen : public AbstractTFTScreen

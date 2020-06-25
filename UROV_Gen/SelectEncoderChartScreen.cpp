@@ -14,6 +14,7 @@ SelectEncoderChartScreen::SelectEncoderChartScreen() : AbstractTFTScreen("Select
 void SelectEncoderChartScreen::onDeactivate()
 {
   encoderSerie.clear();
+  pulsesToDraw = "";
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::onActivate()
@@ -199,12 +200,20 @@ void SelectEncoderChartScreen::loadPreview(TFTMenu* menu,int idx)
   dc->setColor(VGA_BLACK);
   dc->fillRect(eChartLeft, eChartTop, eChartLeft + eChartWidth, eChartTop + eChartHeight); // Очистить экран
 
-   String toDraw;
-   toDraw = list.size();
-
    // рисуем кол-во импульсов
+   int pulsesX = eChartLeft;
+   int pulsesY = 300;
+   
+   if(pulsesToDraw  != "")
+   {
+     dc->setColor(VGA_BLACK);
+     menu->print(pulsesToDraw.c_str(),pulsesX,pulsesY);      
+   }
+
+   pulsesToDraw = list.size();
+   
    dc->setColor(VGA_WHITE);
-   menu->print(toDraw.c_str(),eChartLeft,300);
+   menu->print(pulsesToDraw.c_str(),pulsesX,pulsesY);
 
 
   if(list.size())
