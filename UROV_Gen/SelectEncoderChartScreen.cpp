@@ -202,8 +202,8 @@ void SelectEncoderChartScreen::loadPreview(TFTMenu* menu,int idx)
   dc->fillRect(eChartLeft, eChartTop, eChartLeft + eChartWidth, eChartTop + eChartHeight); // Очистить экран
 
    // рисуем кол-во импульсов
-   int pulsesX = eChartLeft;
-   int pulsesY = 300;
+   int pulsesX = 270;
+   int pulsesY = 245;
    
    if(pulsesToDraw  != "")
    {
