@@ -99,7 +99,7 @@ void SelectEncoderChartScreen::doSetup(TFTMenu* menu)
   menu_height += height_button + button_gap;
   file5Button = screenButtons->addButton(340, menu_height, width_button, height_button, "FILE 5");
   menu_height += height_button + button_gap;
-  file_selection = screenButtons->addButton(340, menu_height, width_button, height_button, "ВЫБОР");
+  fileSelectionButton = screenButtons->addButton(340, menu_height, width_button, height_button, "ВЫБОР");
   menu_height += height_button + button_gap;
   backButton = screenButtons->addButton(340, menu_height, width_button, height_button, "НАЗАД");
  
@@ -232,7 +232,7 @@ void SelectEncoderChartScreen::enableControlButtons(bool en, bool redraw)
     screenButtons->disableButton(file3Button, redraw && screenButtons->buttonEnabled(file3Button));
     screenButtons->disableButton(file4Button, redraw && screenButtons->buttonEnabled(file4Button));
     screenButtons->disableButton(file5Button, redraw && screenButtons->buttonEnabled(file5Button));
-    screenButtons->disableButton(file_selection, redraw && screenButtons->buttonEnabled(file_selection));
+    screenButtons->disableButton(fileSelectionButton, redraw && screenButtons->buttonEnabled(fileSelectionButton));
        
   }
   else
@@ -243,7 +243,7 @@ void SelectEncoderChartScreen::enableControlButtons(bool en, bool redraw)
     screenButtons->enableButton(file3Button, redraw && !screenButtons->buttonEnabled(file3Button));
     screenButtons->enableButton(file4Button, redraw && !screenButtons->buttonEnabled(file4Button));
     screenButtons->enableButton(file5Button, redraw && !screenButtons->buttonEnabled(file5Button));
-    screenButtons->enableButton(file_selection, redraw && !screenButtons->buttonEnabled(file_selection));
+    screenButtons->enableButton(fileSelectionButton, redraw && !screenButtons->buttonEnabled(fileSelectionButton));
     }
   
 }
@@ -286,7 +286,7 @@ void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 		//chartLoader->LoadChart(lcmFromFile, 5);
    loadPreview(menu,5);
 	}
- else if(pressedButton == file_selection)
+ else if(pressedButton == fileSelectionButton)
  {
     //Тут загрузка файла
     if(previewIndex != -1)

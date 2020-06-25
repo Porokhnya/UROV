@@ -38,7 +38,7 @@ private:
       SelectEncoderChartScreen();   
 
 	  void drawGrid(TFTMenu* menu);
-    int backButton, file1Button, file2Button, file3Button, file4Button, file5Button, file_selection;
+    int backButton, file1Button, file2Button, file3Button, file4Button, file5Button, fileSelectionButton;
 
     int previewIndex;
     int eChartLeft, eChartTop, eChartWidth, eChartHeight;
