@@ -197,6 +197,7 @@ void SelectEncoderChartScreen::loadPreview(TFTMenu* menu,int idx)
 
   // загрузили список, можно строить по нему график
   UTFT* dc = menu->getDC();
+  dc->setFont(BigRusFont);
   dc->setColor(VGA_BLACK);
   dc->fillRect(eChartLeft, eChartTop, eChartLeft + eChartWidth, eChartTop + eChartHeight); // Очистить экран
 
