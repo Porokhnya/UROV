@@ -563,8 +563,8 @@ void Screen1::drawTime(TFTMenu* menu)
       String strTime = RealtimeClock.getTimeStr(tm);
   
       // печатаем их
-      dc->print(strDate.c_str(), 5, 21);
-      dc->print(strTime.c_str(), 90, 21);
+      dc->print(strDate.c_str(), 7, 21);
+      dc->print(strTime.c_str(), 92, 21);
         
     }
 
@@ -968,6 +968,12 @@ void Screen1::drawSelectedEncoderChart(TFTMenu* menu)
     return;
   }
 
+  UTFT* dc = menu->getDC();
+  dc->setBackColor(VGA_BLACK);
+  dc->setFont(SmallRusFont);
+  menu->print("График энкодера", 295, 21);
+
+
   // рисуем сетку
   const int columnsCount = 6; // 5 столбцов
   const int rowsCount = 4; // 6 строк
@@ -980,6 +986,7 @@ void Screen1::drawSelectedEncoderChart(TFTMenu* menu)
   eChartLeft = 130 + eChartWidth; // начальная координата сетки по X
   eChartTop = 40; // начальная координата сетки по Y
 
+  
 
   if(!ImpulseGeneratorB.hasData())
   {
@@ -1024,7 +1031,7 @@ void Screen1::drawSelectedEncoderChartPulses(TFTMenu* menu, size_t pulsesCount)
    dc->fillRect(eChartLeft-55,top,eChartLeft+eChartWidth,top+fh);
   
    dc->setColor(VGA_WHITE);
-   menu->print(toDraw.c_str(),eChartLeft-50,top);
+   menu->print(toDraw.c_str(),eChartLeft-30,top);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::doDraw(TFTMenu* menu)
