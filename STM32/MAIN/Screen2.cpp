@@ -413,7 +413,7 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   
   // тут настраиваемся, например, можем добавлять кнопки
   inductiveSensorButton = screenButtons->addButton(5, 2, 210, 30, "Инд. датчик");
-  transformerButton = screenButtons->addButton(5, 37, 210, 30, "Пороги транс.");
+  transformerButton = screenButtons->addButton(5, 37, 210, 30, "Калибровка");
   acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
   relayDelayButton = screenButtons->addButton( 5, 107, 210, 30, "Задержка имп.");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
@@ -913,7 +913,7 @@ void TransformerScreen::doSetup(TFTMenu* menu)
   borderMaxButton = screenButtons->addButton(5, 2, 210, 30, "Порог макс.");
   borderMinButton = screenButtons->addButton(5, 37, 210, 30, "Порог мин.");
 //  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
-//  reserved = screenButtons->addButton(5, 107, 210, 30, "reserved");
+  koeffTokButton = screenButtons->addButton(5, 107, 210, 30, "Коэфф.тока");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
 }
@@ -936,6 +936,12 @@ void TransformerScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     menu->switchToScreen("BorderMaxScreen");
   else if(pressedButton == borderMinButton)
     menu->switchToScreen("BorderMinScreen");
+ /* else if (pressedButton == borderMinButton)
+	  menu->switchToScreen("BorderMinScreen");*/
+  else if (pressedButton == koeffTokButton)
+  {
+	  // Меню ввода коэффициентов тока (был const float COEFF_2)
+  }
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

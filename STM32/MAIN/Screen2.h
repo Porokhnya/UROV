@@ -388,7 +388,7 @@ protected:
 private:
       TransformerScreen();
 
-      int borderMaxButton, borderMinButton, acsDelayButton, backButton;
+      int borderMaxButton, borderMinButton, acsDelayButton, backButton, koeffTokButton;
   
   
 };
