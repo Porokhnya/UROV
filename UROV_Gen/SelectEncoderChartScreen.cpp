@@ -220,7 +220,7 @@ void SelectEncoderChartScreen::loadPreview(TFTMenu* menu,int idx)
   {
      // теперь рисуем график
     encoderSerie.clear();
-    Drawing::ComputeChart(list, encoderSerie, INTERRUPT_CHART_X_POINTS, INTERRUPT_CHART_Y_POINTS, eChartLeft, eChartTop+eChartHeight, eChartTop,true);
+    Drawing::ComputeChart(list, encoderSerie, eChartWidth, eChartHeight, eChartLeft, eChartTop+eChartHeight, eChartTop,true);
     Drawing::DrawChart(this, encoderSerie, VGA_WHITE, eChartLeft, eChartTop, columnsCount, rowsCount,columnWidth,rowHeight);
   }
   else
