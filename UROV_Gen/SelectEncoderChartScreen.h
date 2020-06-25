@@ -37,9 +37,20 @@ protected:
 private:
       SelectEncoderChartScreen();   
 
-	  void clear_Grid(TFTMenu* menu);
 	  void drawGrid(TFTMenu* menu);
-      int backButton, file1Button, file2Button, file3Button, file4Button, file5Button, file_selection;
+    int backButton, file1Button, file2Button, file3Button, file4Button, file5Button, file_selection;
+
+    int previewIndex;
+    int eChartLeft, eChartTop, eChartWidth, eChartHeight;
+    int columnsCount; // количество столбцов сетки
+    int rowsCount; // количество строк сетки
+    int columnWidth; // ширина столбца
+    int rowHeight; // высота строки
+
+    void loadPreview(TFTMenu* menu,int idx);
+    void enableControlButtons(bool en, bool redraw=false);
+
+    Points encoderSerie;
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class LoadEncoderChartScreen : public AbstractTFTScreen

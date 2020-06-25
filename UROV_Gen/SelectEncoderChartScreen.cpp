@@ -13,15 +13,16 @@ SelectEncoderChartScreen::SelectEncoderChartScreen() : AbstractTFTScreen("Select
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::onDeactivate()
 {
-  
+  encoderSerie.clear();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::onActivate()
 {
   // тут проверяем, какие кнопки активировать
+  previewIndex = -1;
 
 
-  if(SD.exists("/FILE1.A") && SD.exists("/FILE1.B"))
+  if(/*SD.exists("/FILE1.A") && */SD.exists("/FILE1.B"))
   {
     screenButtons->enableButton(file1Button);
   }
@@ -30,7 +31,7 @@ void SelectEncoderChartScreen::onActivate()
     screenButtons->disableButton(file1Button);
   }
 
-  if(SD.exists("/FILE2.A") && SD.exists("/FILE2.B"))
+  if(/*SD.exists("/FILE2.A") && */SD.exists("/FILE2.B"))
   {
     screenButtons->enableButton(file2Button);
   }
@@ -39,7 +40,7 @@ void SelectEncoderChartScreen::onActivate()
     screenButtons->disableButton(file2Button);
   }  
 
-  if(SD.exists("/FILE3.A") && SD.exists("/FILE3.B"))
+  if(/*SD.exists("/FILE3.A") && */SD.exists("/FILE3.B"))
   {
     screenButtons->enableButton(file3Button);
   }
@@ -47,7 +48,7 @@ void SelectEncoderChartScreen::onActivate()
   {
     screenButtons->disableButton(file3Button);
   }  
-  if (SD.exists("/FILE4.A") && SD.exists("/FILE4.B"))
+  if (/*SD.exists("/FILE4.A") && */SD.exists("/FILE4.B"))
   {
 	  screenButtons->enableButton(file4Button);
   }
@@ -55,7 +56,7 @@ void SelectEncoderChartScreen::onActivate()
   {
 	  screenButtons->disableButton(file4Button);
   }
-  if (SD.exists("/FILE5.A") && SD.exists("/FILE5.B"))
+  if (/*SD.exists("/FILE5.A") && */SD.exists("/FILE5.B"))
   {
 	  screenButtons->enableButton(file5Button);
   }
@@ -70,7 +71,18 @@ void SelectEncoderChartScreen::doSetup(TFTMenu* menu)
 {
   // тут настраиваемся, например, можем добавлять кнопки
 
-	
+  columnsCount = 6; // количество столбцов сетки
+  rowsCount = 4; // количество строк сетки
+  columnWidth = 50; // ширина столбца
+  rowHeight = 50; // высота строки
+
+  eChartWidth = columnWidth*columnsCount;
+  eChartHeight = rowHeight*rowsCount;
+  eChartLeft = 20; // начальная координата сетки по X
+  eChartTop = 30; // начальная координата сетки по Y
+
+
+  
 	int menu_height = 30;
 	int button_gap = 6;
 	int height_button = 35;
@@ -114,29 +126,126 @@ void SelectEncoderChartScreen::drawGrid(TFTMenu* menu)
 
 	// рисуем сетку
 	RGBColor gridColor = { 0,200,0 }; // цвет сетки
-	int gridX = 20; // стартовая координата по X для сетки
-	int gridY = 30; // стартовая координата по Y для сетки
-	int columnsCount = 6; // количество столбцов сетки
-	int rowsCount = 4; // количество строк сетки
-	int columnWidth = 50; // ширина столбца
-	int rowHeight = 50; // высота строки
+  
 
 	dc->setColor(VGA_BLACK);
-	dc->fillRect(gridX, gridY, gridX + 5 + (columnWidth*columnsCount), gridY + 5 + (rowHeight*rowsCount)); // Очистить экран
-	Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+	dc->fillRect(eChartLeft, eChartTop, eChartLeft + eChartWidth, eChartTop + eChartHeight); // Очистить экран
+	Drawing::DrawGrid(eChartLeft, eChartTop, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void SelectEncoderChartScreen::doDraw(TFTMenu* menu)
 {
-  UTFT* dc = menu->getDC();
-  dc->setColor(VGA_WHITE);
-  dc->setBackColor(VGA_BLACK);
-
-  dc->setFont(BigRusFont);
-  // тут рисуем, что надо именно нам, кнопки прорисуются сами после того, как мы тут всё отрисуем
-  //menu->print("Экран выбора графика", 70, 10);
   drawGrid(menu);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SelectEncoderChartScreen::loadPreview(TFTMenu* menu,int idx)
+{
+  previewIndex = idx;
+  enableControlButtons(false,true);
+
+  // тут загружаем превью
+  encoderSerie.clear();
+
+  String fileNameB;
+  fileNameB = "/FILE";
+  fileNameB += previewIndex;
+  fileNameB += ".B";
+
+
+  SdFile file;
+  Vector<uint32_t> list;
+  
+  if(!file.open(fileNameB.c_str(),O_READ))
+  {
+    enableControlButtons(true,true);
+    return;  
+  }
+
+  file.rewind();
+
+  bool canContinue = true;
+  
+  while(canContinue)
+  {
+          uint32_t record = 0;
+          uint8_t* ptr = (uint8_t*)&record;
+          
+          for(size_t i=0;i<sizeof(record);i++)
+          {
+            int iCh = file.read();
+            if(iCh == -1) // конец файла или ошибка чтения
+            {
+              canContinue = false;
+              break;
+            }
+            else
+            {
+              *ptr = (uint8_t) iCh;
+              ptr++;
+            }
+          } // for
+          
+      if(canContinue)
+      {
+          list.push_back(record);
+      }
+  } // while
+
+
+  file.close();
+
+  // загрузили список, можно строить по нему график
+  UTFT* dc = menu->getDC();
+  dc->setColor(VGA_BLACK);
+  dc->fillRect(eChartLeft, eChartTop, eChartLeft + eChartWidth, eChartTop + eChartHeight); // Очистить экран
+
+   String toDraw;
+   toDraw = list.size();
+
+   // рисуем кол-во импульсов
+   dc->setColor(VGA_WHITE);
+   menu->print(toDraw.c_str(),eChartLeft,300);
+
+
+  if(list.size())
+  {
+     // теперь рисуем график
+    encoderSerie.clear();
+    Drawing::ComputeChart(list, encoderSerie, INTERRUPT_CHART_X_POINTS, INTERRUPT_CHART_Y_POINTS, eChartLeft, eChartTop+eChartHeight, eChartTop,true);
+    Drawing::DrawChart(this, encoderSerie, VGA_WHITE, eChartLeft, eChartTop, columnsCount, rowsCount,columnWidth,rowHeight);
+  }
+  else
+  {
+    drawGrid(menu);    
+  }
+
+  enableControlButtons(true,true);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SelectEncoderChartScreen::enableControlButtons(bool en, bool redraw)
+{
+  if(!en)
+  {
+    screenButtons->disableButton(backButton, redraw && screenButtons->buttonEnabled(backButton));
+    screenButtons->disableButton(file1Button, redraw && screenButtons->buttonEnabled(file1Button));
+    screenButtons->disableButton(file2Button, redraw && screenButtons->buttonEnabled(file2Button));
+    screenButtons->disableButton(file3Button, redraw && screenButtons->buttonEnabled(file3Button));
+    screenButtons->disableButton(file4Button, redraw && screenButtons->buttonEnabled(file4Button));
+    screenButtons->disableButton(file5Button, redraw && screenButtons->buttonEnabled(file5Button));
+    screenButtons->disableButton(file_selection, redraw && screenButtons->buttonEnabled(file_selection));
+       
+  }
+  else
+  {
+    screenButtons->enableButton(backButton, redraw && !screenButtons->buttonEnabled(backButton));
+    screenButtons->enableButton(file1Button, redraw && !screenButtons->buttonEnabled(file1Button));
+    screenButtons->enableButton(file2Button, redraw && !screenButtons->buttonEnabled(file2Button));
+    screenButtons->enableButton(file3Button, redraw && !screenButtons->buttonEnabled(file3Button));
+    screenButtons->enableButton(file4Button, redraw && !screenButtons->buttonEnabled(file4Button));
+    screenButtons->enableButton(file5Button, redraw && !screenButtons->buttonEnabled(file5Button));
+    screenButtons->enableButton(file_selection, redraw && !screenButtons->buttonEnabled(file_selection));
+    }
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
@@ -150,42 +259,42 @@ void SelectEncoderChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 	else if (pressedButton == file1Button)
 	{
 		// Загрузить файл 1
-   chartLoader->LoadChart(lcmFromFile,1);
+   //chartLoader->LoadChart(lcmFromFile,1);
+   loadPreview(menu,1);
 	}
 	else if (pressedButton == file2Button)
 	{
 		// СЗагрузить файл 2
-   chartLoader->LoadChart(lcmFromFile,2);
+   //chartLoader->LoadChart(lcmFromFile,2);
+   loadPreview(menu,2);
 	}
 	else if (pressedButton == file3Button)
 	{
 		// Загрузить файл 3
-   chartLoader->LoadChart(lcmFromFile,3);
+   //chartLoader->LoadChart(lcmFromFile,3);
+   loadPreview(menu,3);   
 	}
 	else if (pressedButton == file4Button)
 	{
 		// Загрузить файл 4
-		chartLoader->LoadChart(lcmFromFile, 4);
+		//chartLoader->LoadChart(lcmFromFile, 4);
+   loadPreview(menu,4);
 	}
 	else if (pressedButton == file5Button)
 	{
 		// Загрузить файл 5
-		chartLoader->LoadChart(lcmFromFile, 5);
+		//chartLoader->LoadChart(lcmFromFile, 5);
+   loadPreview(menu,5);
 	}
+ else if(pressedButton == file_selection)
+ {
+    //Тут загрузка файла
+    if(previewIndex != -1)
+    {
+       chartLoader->LoadChart(lcmFromFile, previewIndex);
+    }
+ }
 
-
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SelectEncoderChartScreen::clear_Grid(TFTMenu* menu)
-{
-	drawGrid(menu); // рисуем сетку снова
-
-	//chartPoints.clear(); // очищаем список наших экранных точек
-	//pulsesList.clear(); // очищаем список сгенеренных импульсов
-	//touch_x_min = TOUCH_X_MIN; // сбрасываем начальную координату по X
-
-	//screenButtons->disableButton(calculateButton, screenButtons->buttonEnabled(calculateButton));
-	//enableSaveButtons(false, true);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -268,22 +377,22 @@ void LoadEncoderChartScreen::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void LoadEncoderChartScreen::prepareFromFile()
 {
-  ImpulseGeneratorA.stop();
+//  ImpulseGeneratorA.stop();
   ImpulseGeneratorB.stop();
 
   String fileNameA, fileNameB;
 
-  fileNameA = "/FILE";
+//  fileNameA = "/FILE";
   fileNameB = "/FILE";
 
-  fileNameA += loadIndex;
+//  fileNameA += loadIndex;
   fileNameB += loadIndex;
 
 
-  fileNameA += ".A";
+//  fileNameA += ".A";
   fileNameB += ".B";
 
-  ImpulseGeneratorA.prepare(fileNameA);
+//  ImpulseGeneratorA.prepare(fileNameA);
   ImpulseGeneratorB.prepare(fileNameB);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
