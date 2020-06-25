@@ -120,7 +120,11 @@ void SettingsClass::begin()
       {
         uint8_t* writePtr = (uint8_t*)&currentCoeff;
         eeprom->read(readAddr,writePtr,sizeof(uint32_t));
-      }      
+      }
+      else
+      {
+        currentCoeff = CURRENT_COEFF_DEFAULT;      
+      }
     
       skipCounter = readSkipCounter();
   
