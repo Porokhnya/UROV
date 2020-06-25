@@ -1169,6 +1169,8 @@ namespace UROVConfig
             //DEPRECATED: nudPulses2.Value = 0;
             //DEPRECATED: nudPulses3.Value = 0;
 
+            nudCurrentCoeff.Value = 1;
+
             nudACSDelay.Value = 0;
             nudRelayDelay.Value = 0;
             nudHighBorder.Value = 0;
@@ -1208,6 +1210,7 @@ namespace UROVConfig
             inSetMotoresourceCurrentToController = true;
             inSetMotoresourceMaxToController = true;
             inSetPulsesToController = true;
+            inSetCurrentCoeffToController = true;
             inSetBordersToController = true;
             inSetRelayDelayToController = true;
             inSetDeltaToController = true;
@@ -1232,6 +1235,7 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "RES_CUR", ParseAskMotoresurceCurrent, BeforeAskMotoresourceCurrent);
                 PushCommandToQueue(GET_PREFIX + "RES_MAX", ParseAskMotoresurceMax, BeforeAskMotoresourceMax);
                 PushCommandToQueue(GET_PREFIX + "PULSES", ParseAskPulses, BeforeAskPulses);
+                PushCommandToQueue(GET_PREFIX + "CCOEFF", ParseAskCurrentCoeff, BeforeAskCurrentCoeff);
                 PushCommandToQueue(GET_PREFIX + "TBORDERS", ParseAskBorders, BeforeAskBorders);
                 PushCommandToQueue(GET_PREFIX + "RDELAY", ParseAskRelayDelay, BeforeAskRelayDelay);
 
@@ -1320,6 +1324,10 @@ namespace UROVConfig
         {
             this.inSetPulsesToController = true;
         }
+        private void BeforeAskCurrentCoeff()
+        {
+            this.inSetCurrentCoeffToController = true;
+        }
         private void BeforeAskBorders()
         {
             this.inSetBordersToController = true;
@@ -1351,7 +1359,7 @@ namespace UROVConfig
 
         private void ParseAskDelta(Answer a)
         {
-            this.inSetDeltaToController = false;
+//            this.inSetDeltaToController = false;
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Delta1 = Convert.ToInt32(a.Params[1]); }
@@ -1374,6 +1382,31 @@ namespace UROVConfig
             {
                 nudDelta1.Value = 0;
                 Config.Instance.Delta1 = 0;
+            }
+        }
+
+        private void ParseAskCurrentCoeff(Answer a)
+        {
+            this.inSetCurrentCoeffToController = false;
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.CurrentCoeff = Convert.ToInt32(a.Params[1]); }
+                catch { Config.Instance.CurrentCoeff = 1; }
+
+            }
+            else
+            {
+                Config.Instance.CurrentCoeff = 1;
+            }
+
+            try
+            {
+                nudCurrentCoeff.Value = Config.Instance.CurrentCoeff;
+            }
+            catch
+            {
+                nudCurrentCoeff.Value = 1;
+                Config.Instance.CurrentCoeff = 1;
             }
         }
 
@@ -1772,6 +1805,7 @@ namespace UROVConfig
             this.btnSetMotoresourceCurrent.Enabled = bConnected && !inSetMotoresourceCurrentToController;
             this.btnSetMotoresourceMax.Enabled = bConnected && !inSetMotoresourceMaxToController;
             this.btnSetPulses.Enabled = bConnected && !inSetPulsesToController;
+            this.btnCurrentCoeff.Enabled = bConnected && !inSetCurrentCoeffToController;
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
             this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
@@ -4124,6 +4158,37 @@ namespace UROVConfig
             sdTestForm.lblCurrentAction.Text = "Тестирование SD-карты, подождите...";
             sdTestForm.ShowDialog();
 
+        }
+
+        private void ParseSetCurrentCoeff(Answer a)
+        {
+            inSetCurrentCoeffToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.CurrentCoeff = Convert.ToInt32(nudCurrentCoeff.Value);
+
+                MessageBox.Show("Коэффициент тока обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                nudCurrentCoeff.Value = Config.Instance.CurrentCoeff;
+
+                MessageBox.Show("Ошибка обновления коэффициента!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool inSetCurrentCoeffToController = true;
+        private void btnCurrentCoeff_Click(object sender, EventArgs e)
+        {
+            inSetCurrentCoeffToController = true;
+            ShowWaitCursor(true);
+
+            string s = "";
+            s += Convert.ToString(nudCurrentCoeff.Value);
+
+            PushCommandToQueue(SET_PREFIX + "CCOEFF" + PARAM_DELIMITER + s, ParseSetCurrentCoeff);
         }
     }
 

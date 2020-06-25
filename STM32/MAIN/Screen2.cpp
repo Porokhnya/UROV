@@ -55,6 +55,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(AcsDelayScreen::create());
   Screen.addScreen(RelayDelayScreen::create());
   Screen.addScreen(RS485Screen::create());
+  Screen.addScreen(CurrentCoeffScreen::create());
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -940,7 +941,7 @@ void TransformerScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 	  menu->switchToScreen("BorderMinScreen");*/
   else if (pressedButton == koeffTokButton)
   {
-	  // Меню ввода коэффициентов тока (был const float COEFF_2)
+	  menu->switchToScreen("CurrentCoeffScreen");
   }
     
 }
@@ -1019,6 +1020,91 @@ void BorderMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
       screenButtons->relabelButton(channel1Button,channel1BorderVal.c_str(),true);
       
       Settings.setTransformerHighBorder(channel1BorderVal.toInt());    
+  }  
+  else
+  {
+    currentEditedButton = pressedButton;
+    String strValToEdit = screenButtons->getLabel(currentEditedButton);
+    ScreenKeyboard->show(ktDigits,strValToEdit,this,this, 8);
+  }
+    
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// CurrentCoeffScreen
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CurrentCoeffScreen::CurrentCoeffScreen() : AbstractTFTScreen("CurrentCoeffScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::onActivate()
+{
+  currentCoeffVal = Settings.getCurrentCoeff();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::doSetup(TFTMenu* menu)
+{
+  screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
+  
+  currentEditedButton = -1;
+  onActivate();
+  
+  // тут настраиваемся, например, можем добавлять кнопки
+  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
+  currentCoeffButton = screenButtons->addButton(120, 30, 95, 30, currentCoeffVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+
+  screenButtons->setButtonBackColor(currentCoeffButton,BLACK);
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
+{
+  if(!enterPressed)
+  {
+    return;
+  }
+
+    if(currentEditedButton == currentCoeffButton)
+    {
+      currentCoeffVal = enteredValue;
+      screenButtons->relabelButton(currentCoeffButton,currentCoeffVal.c_str());
+      Settings.setCurrentCoeff(currentCoeffVal.toInt());
+    }
+   
+  currentEditedButton = -1;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::doUpdate(TFTMenu* menu)
+{
+    // тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::doDraw(TFTMenu* menu)
+{
+  TFT_Class* dc = menu->getDC();
+
+  dc->setFreeFont(TFT_FONT);
+
+  menu->print("Коэфф.тока",2,2);
+  menu->print("Коэфф:", 2, 37);
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void CurrentCoeffScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+  if(pressedButton == backButton)
+  {
+    menu->switchToScreen("TransformerScreen");
+  }
+  else if(pressedButton == resetButton)
+  {
+      currentCoeffVal = CURRENT_COEFF_DEFAULT;
+      
+      screenButtons->relabelButton(currentCoeffButton,currentCoeffVal.c_str(),true);
+      
+      Settings.setCurrentCoeff(currentCoeffVal.toInt());    
   }  
   else
   {

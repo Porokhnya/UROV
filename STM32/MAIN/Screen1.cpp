@@ -14,7 +14,6 @@ extern "C" char* sbrk(int i);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
 const float COEFF_1 = 5.0; // первый коэффициент по пересчёту тока
-const float COEFF_2 = 3.186; // второй коэффициент по пересчёту тока Певый прибор 3.16, второй прибор 3.186
 const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
 const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 100; // минимальное значение тока, которое интерпретируется как 0
 
@@ -155,10 +154,13 @@ void loopADC()
       uint32_t channel3Avg = yellowCurrentInfoMax/CURRENT_NUM_SAMPLES - yellowCurrentInfoMin/CURRENT_NUM_SAMPLES;
 
       // вычислили напряжение, теперь вычисляем ток по формуле: 3В = 5А. Для этого напряжение надо умножить на 5, и разделить на 3
+
+      float currentCoeff = Settings.getCurrentCoeff();
+      currentCoeff /= 1000; // у нас в тысячных долях
       
-      channel1Current = (COEFF_1*channel1Avg)/COEFF_2;
-      channel2Current = (COEFF_1*channel2Avg)/COEFF_2;
-      channel3Current = (COEFF_1*channel3Avg)/COEFF_2;
+      channel1Current = (COEFF_1*channel1Avg)/currentCoeff;
+      channel2Current = (COEFF_1*channel2Avg)/currentCoeff;
+      channel3Current = (COEFF_1*channel3Avg)/currentCoeff;
 
       // отсекаем минимальный нижний порог
       if(channel1Current <= CURRENT_MIN_TREAT_AS_ZERO)

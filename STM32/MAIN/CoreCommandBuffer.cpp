@@ -36,6 +36,7 @@ const char VERSION_COMMAND[] PROGMEM = "VER"; // отдать информаци
 const char LAST_TRIG_COMMAND[] PROGMEM = "LASTTRIG"; // отдать содержимое последнего срабатывания защиты
 const char SKIPCOUNTER_COMMAND[] PROGMEM = "SKIPC"; // настройка пропусков импульсов
 const char SDTEST_COMMAND[] PROGMEM = "SDTEST"; // запустить тест SD
+const char CURRENT_COEFF_COMMAND[] PROGMEM = "CCOEFF"; // коэффициент пересчёта по току
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -276,6 +277,19 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // RDELAY_COMMAND               
         else
+        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND))
+        {
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setCCOEFF(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // CURRENT_COEFF_COMMAND               
+        else
         if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
         {
             if(cParser.argsCount() > 1)
@@ -418,6 +432,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             commandHandled = getRDELAY(commandName,cParser,pStream);                    
           
         } // RDELAY_COMMAND       
+        else
+        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND))
+        {
+            commandHandled = getCCOEFF(commandName,cParser,pStream);                    
+          
+        } // CURRENT_COEFF_COMMAND       
         else
         if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
         {
@@ -921,6 +941,41 @@ bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
   pStream->println(Settings.getUUID(parser.getArg(1)));
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+    return false;  
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getCurrentCoeff());
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 2)
+    return false;
+  
+  uint32_t cCoeff = atoi(parser.getArg(1));
+
+  Settings.setCurrentCoeff(cCoeff);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
 
   return true;
 }

@@ -421,6 +421,34 @@ private:
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class CurrentCoeffScreen : public AbstractTFTScreen, public KeyboardInputTarget
+{
+  public:
+
+  static AbstractTFTScreen* create()
+  {
+    return new CurrentCoeffScreen();
+  }
+
+  virtual void onKeyboardInput(bool enterPressed, const String& enteredValue);
+    
+protected:
+
+    virtual void doSetup(TFTMenu* menu);
+    virtual void doUpdate(TFTMenu* menu);
+    virtual void doDraw(TFTMenu* menu);
+    virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+    virtual void onActivate();
+
+private:
+      CurrentCoeffScreen();
+
+      int currentCoeffButton, backButton, resetButton;
+      String currentCoeffVal;
+      int currentEditedButton;
+  
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class BorderMinScreen : public AbstractTFTScreen, public KeyboardInputTarget
 {
   public:

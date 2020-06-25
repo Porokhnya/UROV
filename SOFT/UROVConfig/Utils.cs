@@ -769,6 +769,7 @@ namespace UROVConfig
         [XmlElement("delta3")]
         public int Delta3 { get { return delta3; } set { delta3 = value; } }
 
+
         public void ApplyFromConfig()
         {
             Config c = Config.Instance;
@@ -787,6 +788,7 @@ namespace UROVConfig
             this.delta1 = c.Delta1;
             //DEPRECATED: this.delta2 = c.Delta2;
             //DEPRECATED: this.delta3 = c.Delta3;
+
         }
 
         public ArchiveSettings Load(string filename)
@@ -892,6 +894,8 @@ namespace UROVConfig
             acsDelay = 0;
 
             skipCounter = 1;
+
+            currentCoeff = 1;
         }
 
         private int skipCounter = 1;
@@ -941,6 +945,9 @@ namespace UROVConfig
 
         private int relayDelay = 0;
         public int RelayDelay { get { return relayDelay; } set { relayDelay = value; } }
+
+        private int currentCoeff = 0;
+        public int CurrentCoeff { get { return currentCoeff; } set { currentCoeff = value; } }
 
         private int acsDelay = 0;
         public int ACSDelay { get { return acsDelay; } set { acsDelay = value; } }

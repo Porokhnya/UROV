@@ -100,6 +100,9 @@ class CommandHandlerClass
   bool setRDELAY(CommandParser& parser, Stream* pStream);
   bool getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool setCCOEFF(CommandParser& parser, Stream* pStream);
+  bool getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+
   bool getEREC(const CommandParser& cParser, Stream* pStream);
 
   bool getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream);

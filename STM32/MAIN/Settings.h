@@ -80,6 +80,9 @@ public:
   uint32_t getSkipCounter() {return skipCounter; }
   void setSkipCounter(uint32_t val);
 
+
+  uint32_t getCurrentCoeff();
+  void setCurrentCoeff(uint32_t c);
     
   private:
 
@@ -98,6 +101,8 @@ public:
 
     uint32_t relayDelay;
     uint16_t acsDelay;
+
+    uint32_t currentCoeff; // коэффициент по току
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

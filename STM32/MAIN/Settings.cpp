@@ -17,6 +17,8 @@ SettingsClass::SettingsClass()
   relayDelay = RELAY_WANT_DATA_AFTER;
   acsDelay = ACS_SIGNAL_DELAY;
 
+  currentCoeff = CURRENT_COEFF_DEFAULT; // коэффициент тока по умолчанию
+
 #ifndef DISABLE_CATCH_ENCODER_DIRECTION
   rodDirection = rpBroken;
 #else
@@ -109,6 +111,16 @@ void SettingsClass::begin()
       {
         acsDelay = ACS_SIGNAL_DELAY;
       }
+
+      readAddr = CURRENT_COEFF_STORE_ADDRESS;
+      header1 = eeprom->read(readAddr++);
+      header2 = eeprom->read(readAddr++);
+    
+      if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+      {
+        uint8_t* writePtr = (uint8_t*)&currentCoeff;
+        eeprom->read(readAddr,writePtr,sizeof(uint32_t));
+      }      
     
       skipCounter = readSkipCounter();
   
@@ -147,6 +159,26 @@ void SettingsClass::update()
   }
 
 #endif // !_CORE_TEMP_OFF  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::getCurrentCoeff()
+{
+  return currentCoeff;  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setCurrentCoeff(uint32_t val)
+{
+  currentCoeff = val;
+
+  if(eeprom)
+  {
+      int writeaddr = CURRENT_COEFF_STORE_ADDRESS;
+      eeprom->write(writeaddr++,RECORD_HEADER1);
+      eeprom->write(writeaddr++,RECORD_HEADER2);
+      uint8_t* writePtr = (uint8_t*)&val;
+      eeprom->write(writeaddr,writePtr,sizeof(uint32_t)); 
+  }
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getRelayDelay()
