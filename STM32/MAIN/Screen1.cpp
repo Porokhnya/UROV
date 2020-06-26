@@ -644,7 +644,13 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
   const uint16_t lowBorder = 1730; // нижняя граница, по которой ищем начало
   const uint16_t wantedBorder = 1800; // граница синхронизации
-  const uint8_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
+  uint16_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
+
+
+  for(uint16_t i=0;i<pointsCount;i++)
+  {
+    Serial.print("Point #"); Serial.print((i+1)); Serial.print("="); Serial.println(points[i]);
+  }
 
   if(pointsCount <= CHART_POINTS_COUNT || pointsCount <= maxPointToSeek)
   {
@@ -656,7 +662,7 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
   // если не найдено - просто выводим первые 150 точек
   
 
-  uint8_t iterator = 0;
+  uint16_t iterator = 0;
   bool found = false;
   for(; iterator < maxPointToSeek; iterator++)
   {
