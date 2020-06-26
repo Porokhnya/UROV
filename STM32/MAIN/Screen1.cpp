@@ -722,7 +722,7 @@ void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint
   points2 = _points2;
   points3 = _points3;
 
-  int shift = getSynchroPoint(points1,pointsCount);
+  int shift = getSynchroPoint(points2,pointsCount);
   int totalPoints = min(CHART_POINTS_COUNT, (pointsCount - shift));
 
   serie1->setPoints(&(points1[shift]), totalPoints);
