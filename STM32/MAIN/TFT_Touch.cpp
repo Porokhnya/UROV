@@ -5,8 +5,10 @@
 #define Z_THRESHOLD_INT  75
 #define MSEC_THRESHOLD  3
 
-#define READ_X 0x91
-#define READ_Y 0xD1
+#define READ_X 0x90
+#define READ_Y 0xD0
+//#define READ_X 0x91
+//#define READ_Y 0xD1
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static MyTFTTouch   *isrPinptr;
 void isrPin(void);
@@ -233,9 +235,9 @@ TS_Point MyTFTTouch::getPoint()
     //data[0], data[1], data[2], data[3], data[4], data[5]);
   int16_t x = besttwoavg( data[0], data[2], data[4] );
   int16_t y = besttwoavg( data[1], data[3], data[5] );
-  
-  //Serial.printf("    %d,%d", x, y);
-  //Serial.println();
+  /*
+  Serial.printf("    %d,%d", x, y);
+  Serial.println();*/
   if (z >= Z_THRESHOLD) 
   {
     msraw = now;  // good read completed, set wait
@@ -268,8 +270,8 @@ TS_Point MyTFTTouch::getPoint()
       break;
     }
 
-  //  Serial.print("xraw: "); Serial.println(xraw);
- //   Serial.print("yraw: "); Serial.println(yraw);
+   /* Serial.print("xraw: "); Serial.println(xraw);
+    Serial.print("yraw: "); Serial.println(yraw);*/
 
     // измерения есть, надо конвертировать их в реальные координаты экрана
 
@@ -283,7 +285,11 @@ TS_Point MyTFTTouch::getPoint()
     _point.x = (xraw - touchMinRawX) * touchScaleX / (touchMaxRawX - touchMinRawX);
     _point.y = (yraw - touchMinRawY) * touchScaleY / (touchMaxRawY - touchMinRawY);    
 
-    _point.z = zraw;
+    //_point.z = zraw;
+
+	//Serial.print("_point.x: "); Serial.println(_point.x);
+	//Serial.print("_point.y: "); Serial.println(_point.y);
+
   } // if(z)
   
 

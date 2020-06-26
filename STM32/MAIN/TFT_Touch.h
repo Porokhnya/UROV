@@ -39,7 +39,7 @@ private:
   uint32_t touchMinRawY, touchMaxRawY;
 
   int16_t xraw=0, yraw=0, zraw=0;
-  uint8_t rotation = 1;
+  uint8_t rotation = 4;
   uint32_t msraw=0x80000000;  
 
 	TS_Point _point = { 0, 0, 0 };
