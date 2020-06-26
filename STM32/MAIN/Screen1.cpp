@@ -644,7 +644,7 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
   const uint16_t lowBorder = 1730; // нижняя граница, по которой ищем начало
   const uint16_t wantedBorder = 1800; // граница синхронизации
-  uint16_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
+  const uint16_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
 
 
   for(uint16_t i=0;i<pointsCount;i++)
