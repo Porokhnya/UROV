@@ -280,10 +280,14 @@ void MessageBoxScreen::doDraw(TFTMenu* menu)
 void MessageBoxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == noButton && targetCancelScreen)
+  {
     menu->switchToScreen(targetCancelScreen);
-  else
+  }
+  else  
   if(pressedButton == yesButton && targetOkScreen)
+  {
     menu->switchToScreen(targetOkScreen);
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget)
@@ -298,7 +302,7 @@ void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget)
   }
   else
   {
-    screenButtons->hideButton(yesButton);      
+    screenButtons->showButton(yesButton);      
   }
   
   targetOkScreen = okTarget;
