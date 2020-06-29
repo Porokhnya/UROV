@@ -8,6 +8,7 @@ Relay Relay_LineB(rele_lineB);
 Relay Relay_LineC(rele_lineC);
 Relay Relay_Shunt1(rele_shunt1);
 Relay Relay_Shunt2(rele_shunt2);
+Relay Relay_Alarm(rele_protect1);
 //--------------------------------------------------------------------------------------------------
 Relay::Relay(uint8_t p)
 {

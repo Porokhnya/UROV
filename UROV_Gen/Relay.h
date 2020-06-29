@@ -26,5 +26,6 @@ extern Relay Relay_LineB;
 extern Relay Relay_LineC;
 extern Relay Relay_Shunt1;
 extern Relay Relay_Shunt2;
+extern Relay Relay_Alarm;
 //--------------------------------------------------------------------------------------------------
 

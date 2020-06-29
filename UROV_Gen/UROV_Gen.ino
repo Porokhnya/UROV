@@ -28,6 +28,7 @@
 #include "CreateEncoderChartScreen.h"
 #include "SelectEncoderChartScreen.h"
 #include "ChartSettingsScreen.h"
+#include "TestRoutine.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t screenIdleTimer = 0;
 bool setupDone = false;
@@ -240,6 +241,8 @@ void loop()
   Screen.update();
 
   InterruptHandler.update();
+
+  TestRoutine.update();
 
   // проверяем, какой экран активен. Если активен главный экран - сбрасываем таймер ожидания. Иначе - проверяем, не истекло ли время ничегонеделанья.
   AbstractTFTScreen* activeScreen = Screen.getActiveScreen();

@@ -3,6 +3,7 @@
 #include "Feedback.h"
 #include "CONFIG.h"
 #include "Relay.h"
+#include "TestRoutine.h"
 //--------------------------------------------------------------------------------------------------
 ButtonsList Buttons;
 //--------------------------------------------------------------------------------------------------
@@ -55,8 +56,17 @@ void ButtonsList::update()
   if (blackButton.isClicked())
   {
 	  DBGLN(F("BLACK BUTTON CLICKED!"));
-	  // Запускаем тест 
-   	  Relay_LineALL.switchState();
+
+      if(TestRoutine.isDone())
+      {
+	      // Запускаем тест 
+   	    TestRoutine.start();
+      }
+      else
+      {
+        // останавливаем тест
+        TestRoutine.stop();
+      }
   }
 }
 //--------------------------------------------------------------------------------------------------
