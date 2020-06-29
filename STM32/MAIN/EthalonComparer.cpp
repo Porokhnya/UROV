@@ -120,6 +120,8 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   
   if(file.isOpen())
   {
+    file.rewind();
+    
     uint32_t curRec;
     while(1)
     {
