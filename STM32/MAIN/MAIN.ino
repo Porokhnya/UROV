@@ -39,7 +39,6 @@ Vector<uint8_t> LastTriggeredInterruptRecord; // список последнег
 bool isBadSDDetected = false;
 bool isBadSDLedOn = false;
 uint32_t badSDBlinkTimer = 0;
-SDSpeedResults sdSpeed;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_EXTERNAL_WATCHDOG
   ExternalWatchdogSettings watchdogSettings;

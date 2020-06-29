@@ -4,7 +4,13 @@
 #include "DS3231.h"
 #include "TFTMenu.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SdFatSdio SD_CARD;
+SDSpeedResults sdSpeed;
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifdef USE_SDFAT
+  SdFat SD_CARD;
+#else
+  SdFatSdio SD_CARD;
+#endif
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool SDInit::sdInitFlag = false;
 bool SDInit::sdInitResult = false;
@@ -33,7 +39,9 @@ void FileUtils::deleteFile(const String& fileName)
 uint32_t FileUtils::getFileSize(const String& fileName)
 {
   if(!SDInit::sdInitResult)
+  {
     return 0;
+  }
       
   uint32_t result = 0;
   SdFile f;
@@ -49,11 +57,15 @@ uint32_t FileUtils::getFileSize(const String& fileName)
 int FileUtils::CountFiles(const String& dirName)
 {
   if(!SDInit::sdInitResult)
+  {
     return 0;
+  }
 
   SdFile root;
   if(!root.open(dirName.c_str(),O_READ))
+  {
     return 0;
+  }
 
   int result = 0;
   root.rewind();
@@ -78,7 +90,9 @@ void FileUtils::SendToStream(Stream& s, const String& fileName)
 void FileUtils::SendToStream(Stream* s, const String& fileName)
 {
   if(!SDInit::sdInitResult)
+  {
     return;
+  }
       
   SdFile file;
   file.open(fileName.c_str(),FILE_READ);
@@ -114,13 +128,17 @@ String FileUtils::getFileName(SdFile &f)
 void FileUtils::printFilesNames(const String& dirName, bool recursive, Stream* outStream)
 {  
   if(!SDInit::sdInitResult)
+  {
     return;
+  }
       
   const char* dirP = dirName.c_str(); 
 
   SdFile root;
   if(!root.open(dirP,O_READ))
+  {
     return;
+  }
 
   root.rewind();
 
@@ -167,11 +185,32 @@ bool SDInit::InitSD()
   DBGLN(F("[SD] begin..."));
   
   SDInit::sdInitFlag = true;
-  SDInit::sdInitResult = SD_CARD.begin();
+  
+  #ifdef USE_SDFAT
+  
+    SDInit::sdInitResult = SD_CARD.begin(SDCARD_CS_PIN);
+    if(!SDInit::sdInitResult)
+    {
+      delay(50);
+      SDInit::sdInitResult = SD_CARD.begin(SDCARD_CS_PIN, SPI_HALF_SPEED);
+      if(!SDInit::sdInitResult)
+        {
+          delay(50);
+          SDInit::sdInitResult = SD_CARD.begin(SDCARD_CS_PIN, SPI_QUARTER_SPEED); // пробуем инициализировать SD-модуль
+        }
+    }
+  #else
+  
+    delay(50);
+    SDInit::sdInitResult = SD_CARD.begin();
+    
+  #endif
+  
+  
  // SdFile::dateTimeCallback(setFileDateTime);
 
   DBG(F("[SD] inited? "));
-  DBGLN(sdInitResult ? "true" : "false");
+  DBGLN(SDInit::sdInitResult ? "true" : "false");
   
   return SDInit::sdInitResult;
 #else
