@@ -5,7 +5,7 @@
 #include <Wire.h>
 #include "TinyVector.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//#define _MY_DEBUG // закомментировать для выключения отладочной информации
+#define _MY_DEBUG // закомментировать для выключения отладочной информации
 #define DEBUG_SERIAL Serial // какой Serial использовать для дебаг-режима
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // НАСТРОЙКИ SD
@@ -424,8 +424,11 @@ extern bool HasRS485Link; // флаг, есть ли связь по RS-485
 extern void updateExternalWatchdog();
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef _MY_DEBUG
-#define DBG(s) { DEBUG_SERIAL << (s); DEBUG_SERIAL.flush(); }
-  #define DBGLN(s) { DEBUG_SERIAL << (s) << ENDL; DEBUG_SERIAL.flush(); }
+//  #define DBG(s) { DEBUG_SERIAL << (s); DEBUG_SERIAL.flush(); }
+//  #define DBGLN(s) { DEBUG_SERIAL << (s) << ENDL; DEBUG_SERIAL.flush(); }
+  #define DBG(s) { delayMicroseconds(1000); }
+  #define DBGLN(s) { delayMicroseconds(1000); }
+
 #else
   #define DBG(s) (void) 0
   #define DBGLN(s) (void) 0
