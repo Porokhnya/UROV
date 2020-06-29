@@ -611,17 +611,23 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
           }
         }
         if(wantBreak)
+        {
           break;
+        }
           
         startReadingTime = millis();        
         uint8_t curByte = pStream->read();
         
         if(f.isOpen())
+        {
           f.write(curByte);
+        }
       }
             
       if(f.isOpen())
+      {
         f.close(); 
+      }
  } // if(SDInit::sdInitResult)
  else
  {
@@ -1587,9 +1593,13 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 	fileName += ETHALON_NAME_PREFIX;
 	fileName += 0;
 	if (direction == dirUp)
+  {
 		fileName += ETHALON_UP_POSTFIX;
+  }
 	else
+  {
 		fileName += ETHALON_DOWN_POSTFIX;
+  }
 
 	fileName += ETHALON_FILE_EXT;
 

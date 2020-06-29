@@ -31,7 +31,9 @@ void setFileDateTime(uint16_t* date, uint16_t* time)
 void FileUtils::deleteFile(const String& fileName)
 {
   if(!SDInit::sdInitResult)
+  {
     return;
+  }
       
   SD_CARD.remove(fileName.c_str());
 }
@@ -361,7 +363,8 @@ if(withBenchFile && !dontReadSavedBenchFile)
 SD_OUTLN(F("[SD TEST] create test file..."));
 
   // open or create file - truncate existing file.
-  if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) {
+  if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) 
+  {
     SD_OUTLN(F("[SD TEST] create failed !!!"));
 
     Screen.switchToScreen("Main");

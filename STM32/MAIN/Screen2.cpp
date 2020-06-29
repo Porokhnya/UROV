@@ -1713,10 +1713,15 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
   String fileName = ETHALONS_DIRECTORY;
   fileName += ETHALON_NAME_PREFIX;
   fileName += saveChannel;
+  
   if(direction == dirUp)
+  {
     fileName += ETHALON_UP_POSTFIX;
+  }
   else
+  {
     fileName += ETHALON_DOWN_POSTFIX;
+  }
 
   fileName += ETHALON_FILE_EXT;
 
