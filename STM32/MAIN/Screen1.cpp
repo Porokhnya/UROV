@@ -642,16 +642,16 @@ void Screen1::doUpdate(TFTMenu* menu)
 uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
 {
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
-  const uint16_t lowBorder = 1730; // нижняя граница, по которой ищем начало
-  const uint16_t wantedBorder = 1800; // граница синхронизации
+  const uint16_t lowBorder = 100; // нижняя граница, по которой ищем начало
+  const uint16_t wantedBorder = 2048; // граница синхронизации
   const uint16_t maxPointToSeek = 48; // сколько точек просматриваем вперёд, для поиска значения синхронизации
 
-/*
-  for(uint16_t i=0;i<pointsCount;i++)
+
+  /*for(uint16_t i=0;i<pointsCount;i++)
   {
     Serial.print("Point #"); Serial.print((i+1)); Serial.print("="); Serial.println(points[i]);
-  }
-*/
+  }*/
+
   if(pointsCount <= CHART_POINTS_COUNT || pointsCount <= maxPointToSeek)
   {
     // кол-во точек уже равно кол-ву точек на графике, синхронизировать начало - не получится
@@ -722,7 +722,7 @@ void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint
   points2 = _points2;
   points3 = _points3;
 
-  int shift = getSynchroPoint(points2,pointsCount);
+  int shift = getSynchroPoint(points1,pointsCount);
   int totalPoints = min(CHART_POINTS_COUNT, (pointsCount - shift));
 
   serie1->setPoints(&(points1[shift]), totalPoints);
