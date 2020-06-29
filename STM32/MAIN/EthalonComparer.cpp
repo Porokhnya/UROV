@@ -174,9 +174,13 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     uint32_t highVal = ethalonPulseDuration + ETHALON_COMPARE_DELTA;
 
     if(ethalonPulseDuration >= ETHALON_COMPARE_DELTA)
+    {
       lowVal = ethalonPulseDuration - ETHALON_COMPARE_DELTA;
+    }
     else
+    {
       lowVal = 0;
+    }
 
     // и если длительность между импульсами различается от эталонной больше, чем на нужную дельту - эталон не совпадает
     if(!(passedPulseDuration >= lowVal && passedPulseDuration <= highVal))
@@ -186,7 +190,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     }
   }
 
-  DBGLN(F("полное сомпадение с эталоном!"));
+  DBGLN(F("полное совпадение с эталоном!"));
   DBGLN("");
   return COMPARE_RESULT_MatchEthalon;    // результат соответствует эталону
 }
