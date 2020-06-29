@@ -73,6 +73,7 @@ void LoggerClass::write(uint8_t* data,size_t dataLength)
 	}
 
   workFile.write(data,dataLength);
+  workFile.sync();
 
   closeWorkFile();
 }
