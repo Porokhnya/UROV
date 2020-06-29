@@ -95,7 +95,7 @@ void TestRoutineClass::update()
       {
         if(ImpulseGeneratorB.isDone())
         {
-          machineState = trmIdle;
+          stop();
         }
       }
       break;
