@@ -17,7 +17,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     
     if(list.size() < 2)
     {
-      DBGLN(F("пустой исходный список, нет ничего к сравлению"));
+      DBGLN(F("пустой исходный список, нет ничего к сравнению"));
       return COMPARE_RESULT_NoSourcePulses; // нет исходных данных в списке
     }
 
