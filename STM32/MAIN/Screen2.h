@@ -388,7 +388,7 @@ protected:
 private:
       TransformerScreen();
 
-      int borderMaxButton, borderMinButton, acsDelayButton, backButton, koeffTokButton;
+      int borderMaxButton, borderMinButton, skipCounterButton, backButton, koeffTokButton;
   
   
 };
@@ -445,6 +445,34 @@ private:
 
       int currentCoeffButton, backButton, resetButton;
       String currentCoeffVal;
+      int currentEditedButton;
+  
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class SkipCounterScreen : public AbstractTFTScreen, public KeyboardInputTarget
+{
+  public:
+
+  static AbstractTFTScreen* create()
+  {
+    return new SkipCounterScreen();
+  }
+
+  virtual void onKeyboardInput(bool enterPressed, const String& enteredValue);
+    
+protected:
+
+    virtual void doSetup(TFTMenu* menu);
+    virtual void doUpdate(TFTMenu* menu);
+    virtual void doDraw(TFTMenu* menu);
+    virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+    virtual void onActivate();
+
+private:
+      SkipCounterScreen();
+
+      int skipCounterButton, backButton, resetButton;
+      String skipCounterVal;
       int currentEditedButton;
   
 };

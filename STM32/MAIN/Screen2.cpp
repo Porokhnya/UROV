@@ -56,6 +56,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(RelayDelayScreen::create());
   Screen.addScreen(RS485Screen::create());
   Screen.addScreen(CurrentCoeffScreen::create());
+  Screen.addScreen(SkipCounterScreen::create());
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -811,7 +812,7 @@ void TransformerScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   borderMaxButton = screenButtons->addButton(5, 2, 210, 30, "Порог макс.");
   borderMinButton = screenButtons->addButton(5, 37, 210, 30, "Порог мин.");
-//  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
+  skipCounterButton = screenButtons->addButton( 5, 72, 210, 30, "Пропуск имп.");
   koeffTokButton = screenButtons->addButton(5, 107, 210, 30, "Коэфф.тока");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
@@ -830,13 +831,21 @@ void TransformerScreen::doDraw(TFTMenu* menu)
 void TransformerScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("ParamsScreen");
+  }
   else if(pressedButton == borderMaxButton)
+  {
     menu->switchToScreen("BorderMaxScreen");
+  }
   else if(pressedButton == borderMinButton)
+  {
     menu->switchToScreen("BorderMinScreen");
- /* else if (pressedButton == borderMinButton)
-	  menu->switchToScreen("BorderMinScreen");*/
+  }
+  else if (pressedButton == skipCounterButton)
+  {
+	  menu->switchToScreen("SkipCounterScreen");
+  }
   else if (pressedButton == koeffTokButton)
   {
 	  menu->switchToScreen("CurrentCoeffScreen");
@@ -918,6 +927,91 @@ void BorderMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
       screenButtons->relabelButton(channel1Button,channel1BorderVal.c_str(),true);
       
       Settings.setTransformerHighBorder(channel1BorderVal.toInt());    
+  }  
+  else
+  {
+    currentEditedButton = pressedButton;
+    String strValToEdit = screenButtons->getLabel(currentEditedButton);
+    ScreenKeyboard->show(ktDigits,strValToEdit,this,this, 8);
+  }
+    
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// SkipCounterScreen
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SkipCounterScreen::SkipCounterScreen() : AbstractTFTScreen("SkipCounterScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::onActivate()
+{
+  skipCounterVal = Settings.getSkipCounter();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::doSetup(TFTMenu* menu)
+{
+  screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
+  
+  currentEditedButton = -1;
+  onActivate();
+  
+  // тут настраиваемся, например, можем добавлять кнопки
+  //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
+  skipCounterButton = screenButtons->addButton(120, 30, 95, 30, skipCounterVal.c_str());
+  backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
+  resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
+
+  screenButtons->setButtonBackColor(skipCounterButton,BLACK);
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
+{
+  if(!enterPressed)
+  {
+    return;
+  }
+
+    if(currentEditedButton == skipCounterButton)
+    {
+      skipCounterVal = enteredValue;
+      screenButtons->relabelButton(skipCounterButton,skipCounterVal.c_str());
+      Settings.setSkipCounter(skipCounterVal.toInt());
+    }
+   
+  currentEditedButton = -1;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::doUpdate(TFTMenu* menu)
+{
+    // тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::doDraw(TFTMenu* menu)
+{
+  TFT_Class* dc = menu->getDC();
+
+  dc->setFreeFont(TFT_FONT);
+
+  menu->print("Импульсы",2,2);
+  menu->print("Пропуск:", 2, 37);
+  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SkipCounterScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+  if(pressedButton == backButton)
+  {
+    menu->switchToScreen("TransformerScreen");
+  }
+  else if(pressedButton == resetButton)
+  {
+      skipCounterVal = 1;
+      
+      screenButtons->relabelButton(skipCounterButton,skipCounterVal.c_str(),true);
+      
+      Settings.setCurrentCoeff(skipCounterVal.toInt());    
   }  
   else
   {
