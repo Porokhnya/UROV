@@ -18,6 +18,13 @@ SettingsClass::SettingsClass()
   acsDelay = ACS_SIGNAL_DELAY;
 
   currentCoeff = CURRENT_COEFF_DEFAULT; // коэффициент тока по умолчанию
+  channelPulses = 0;
+  channelDelta = 0;
+  motoresource = 0;
+  motoresourceMax = 0;
+  transformerHighBorder = TRANSFORMER_HIGH_DEFAULT_BORDER;
+  transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
+  skipCounter = INTERRUPT_SKIP_COUNTER;
 
 #ifndef DISABLE_CATCH_ENCODER_DIRECTION
   rodDirection = rpBroken;
