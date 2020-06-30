@@ -436,7 +436,7 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   
 
   // пишем кол-во срабатываний канала
-  uint32_t motoresource = Settings.getMotoresource(CHANNEL_NUM); // ВСЕГДА ПЕРВЫЙ КАНАЛ
+  uint32_t motoresource = Settings.getMotoresource(); // ВСЕГДА ПЕРВЫЙ КАНАЛ
 
   workBuff[0] = recordMotoresource;
   memcpy(&(workBuff[1]),&motoresource,4);
@@ -1144,9 +1144,9 @@ void InterruptHandlerClass::update()
 
 
         // обновляем моторесурс, т.к. было срабатывание защиты
-        uint32_t motoresource = Settings.getMotoresource(0);
+        uint32_t motoresource = Settings.getMotoresource();
         motoresource++;
-        Settings.setMotoresource(0, motoresource);
+        Settings.setMotoresource(motoresource);
 
         // проверяем, авария ли?
         hasAlarm = !encoderList.size();

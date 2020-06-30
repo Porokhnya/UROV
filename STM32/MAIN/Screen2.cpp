@@ -501,20 +501,14 @@ void PulsesCountScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   currentEditedButton = -1;
-  channel1PulsesVal = Settings.getChannelPulses(0);
-  //DEPRECATED: channel2PulsesVal = Settings.getChannelPulses(1);
-  //DEPRECATED: channel3PulsesVal = Settings.getChannelPulses(2);
+  channel1PulsesVal = Settings.getPulses();
   
   // тут настраиваемся, например, можем добавлять кнопки
   //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
   channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1PulsesVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2PulsesVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3PulsesVal.c_str());
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
   screenButtons->setButtonBackColor(channel1Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3Button,BLACK);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -527,23 +521,9 @@ void PulsesCountScreen::onKeyboardInput(bool enterPressed, const String& entered
     {
       channel1PulsesVal = enteredValue;
       screenButtons->relabelButton(channel1Button,channel1PulsesVal.c_str());
-      Settings.setChannelPulses(0,channel1PulsesVal.toInt());
+      Settings.setPulses(channel1PulsesVal.toInt());
     }
-	/*
-	//DEPRECATED:
-    else if(currentEditedButton == channel2Button)
-    {
-      channel2PulsesVal = enteredValue;
-      screenButtons->relabelButton(channel2Button,channel2PulsesVal.c_str());
-      Settings.setChannelPulses(1,channel2PulsesVal.toInt());
-    }
-    else if(currentEditedButton == channel3Button)
-    {
-      channel3PulsesVal = enteredValue;
-      screenButtons->relabelButton(channel3Button,channel3PulsesVal.c_str());
-      Settings.setChannelPulses(2,channel3PulsesVal.toInt());
-    }
-	*/
+
 
   currentEditedButton = -1;
 }
@@ -563,8 +543,6 @@ void PulsesCountScreen::doDraw(TFTMenu* menu)
 
   menu->print("Импульсы",2,2);
   menu->print("Канал 1:", 2, 37);
-  //DEPRECATED: menu->print("Канал 2:", 2, 72);
-  //DEPRECATED: menu->print("Канал 3:", 2, 107);
   
 //  dc->setFont(oldFont);
 }
@@ -594,20 +572,14 @@ void PulsesDeltaScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   currentEditedButton = -1;
-  channel1DeltaVal = Settings.getChannelDelta(0);
-  //DEPRECATED: channel2DeltaVal = Settings.getChannelDelta(1);
-  //DEPRECATED: channel3DeltaVal = Settings.getChannelDelta(2);
+  channel1DeltaVal = Settings.getPulsesDelta();
   
   // тут настраиваемся, например, можем добавлять кнопки
   //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
   channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1DeltaVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2DeltaVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3DeltaVal.c_str());
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
   screenButtons->setButtonBackColor(channel1Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3Button,BLACK);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -620,23 +592,9 @@ void PulsesDeltaScreen::onKeyboardInput(bool enterPressed, const String& entered
     {
       channel1DeltaVal = enteredValue;
       screenButtons->relabelButton(channel1Button,channel1DeltaVal.c_str());
-      Settings.setChannelDelta(0,channel1DeltaVal.toInt());
+      Settings.setPulsesDelta(channel1DeltaVal.toInt());
     }
-	/*
-	//DEPRECATED:
-    else if(currentEditedButton == channel2Button)
-    {
-      channel2DeltaVal = enteredValue;
-      screenButtons->relabelButton(channel2Button,channel2DeltaVal.c_str());
-      Settings.setChannelDelta(1,channel2DeltaVal.toInt());
-    }
-    else if(currentEditedButton == channel3Button)
-    {
-      channel3DeltaVal = enteredValue;
-      screenButtons->relabelButton(channel3Button,channel3DeltaVal.c_str());
-      Settings.setChannelDelta(2,channel3DeltaVal.toInt());
-    }
-	*/
+
 
   currentEditedButton = -1;
 }
@@ -656,8 +614,6 @@ void PulsesDeltaScreen::doDraw(TFTMenu* menu)
 
   menu->print("Дельты",2,2);
   menu->print("Канал 1:", 2, 37);
-  //DEPRECATED: menu->print("Канал 2:", 2, 72);
-  //DEPRECATED: menu->print("Канал 3:", 2, 107);
   
 //  dc->setFont(oldFont);
 }
@@ -684,9 +640,7 @@ MotoresourceScreen::MotoresourceScreen() : AbstractTFTScreen("MotoresourceScreen
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MotoresourceScreen::onActivate()
 {
-  channel1MotoresourceVal = Settings.getMotoresource(0);
-  //DEPRECATED: channel2MotoresourceVal = Settings.getMotoresource(1);
-  //DEPRECATED: channel3MotoresourceVal = Settings.getMotoresource(2);  
+  channel1MotoresourceVal = Settings.getMotoresource();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MotoresourceScreen::doSetup(TFTMenu* menu)
@@ -699,14 +653,10 @@ void MotoresourceScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
   channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1MotoresourceVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2MotoresourceVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3MotoresourceVal.c_str());
   backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
   resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3Button,BLACK);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -719,23 +669,8 @@ void MotoresourceScreen::onKeyboardInput(bool enterPressed, const String& entere
     {
       channel1MotoresourceVal = enteredValue;
       screenButtons->relabelButton(channel1Button,channel1MotoresourceVal.c_str());
-      Settings.setMotoresource(0,channel1MotoresourceVal.toInt());
+      Settings.setMotoresource(channel1MotoresourceVal.toInt());
     }
-	/*
-	//DEPRECATED:
-    else if(currentEditedButton == channel2Button)
-    {
-      channel2MotoresourceVal = enteredValue;
-      screenButtons->relabelButton(channel2Button,channel2MotoresourceVal.c_str());
-      Settings.setMotoresource(1,channel2MotoresourceVal.toInt());
-    }
-    else if(currentEditedButton == channel3Button)
-    {
-      channel3MotoresourceVal = enteredValue;
-      screenButtons->relabelButton(channel3Button,channel3MotoresourceVal.c_str());
-      Settings.setMotoresource(2,channel3MotoresourceVal.toInt());
-    }
-	*/
 
   currentEditedButton = -1;
 }
@@ -755,8 +690,6 @@ void MotoresourceScreen::doDraw(TFTMenu* menu)
 
   menu->print("Ресурс тек.",2,2);
   menu->print("Канал 1:", 2, 37);
-  //DEPRECATED: menu->print("Канал 2:", 2, 72);
-  //DEPRECATED: menu->print("Канал 3:", 2, 107);
   
 //  dc->setFont(oldFont);
 }
@@ -768,16 +701,10 @@ void MotoresourceScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   else if(pressedButton == resetButton)
   {
       channel1MotoresourceVal = '0';
-	  //DEPRECATED: channel2MotoresourceVal = '0';
-	  //DEPRECATED: channel3MotoresourceVal = '0';
       
       screenButtons->relabelButton(channel1Button,channel1MotoresourceVal.c_str(),true);
-	  //DEPRECATED: screenButtons->relabelButton(channel2Button,channel2MotoresourceVal.c_str(),true);
-	  //DEPRECATED: screenButtons->relabelButton(channel3Button,channel3MotoresourceVal.c_str(),true);
       
-      Settings.setMotoresource(0,channel1MotoresourceVal.toInt());    
-	  //DEPRECATED: Settings.setMotoresource(1,channel2MotoresourceVal.toInt());    
-	  //DEPRECATED: Settings.setMotoresource(2,channel3MotoresourceVal.toInt());    
+      Settings.setMotoresource(channel1MotoresourceVal.toInt());    
   }
   else
   {
@@ -797,9 +724,7 @@ MotoresourceMaxScreen::MotoresourceMaxScreen() : AbstractTFTScreen("Motoresource
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MotoresourceMaxScreen::onActivate()
 {
-  channel1MotoresourceVal = Settings.getMotoresourceMax(0);
-  //DEPRECATED: channel2MotoresourceVal = Settings.getMotoresourceMax(1);
-  //DEPRECATED: channel3MotoresourceVal = Settings.getMotoresourceMax(2);
+  channel1MotoresourceVal = Settings.getMotoresourceMax();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MotoresourceMaxScreen::doSetup(TFTMenu* menu)
@@ -812,14 +737,10 @@ void MotoresourceMaxScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   //reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
   channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1MotoresourceVal.c_str());
-  //DEPRECATED: channel2Button = screenButtons->addButton(120, 65, 95, 30, channel2MotoresourceVal.c_str());
-  //DEPRECATED: channel3Button = screenButtons->addButton(120, 100, 95, 30, channel3MotoresourceVal.c_str());
   backButton = screenButtons->addButton(5, 142, 100, 30, "ВЫХОД");
   resetButton = screenButtons->addButton(113, 142, 100, 30, "СБРОС");
 
   screenButtons->setButtonBackColor(channel1Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3Button,BLACK);
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -832,23 +753,8 @@ void MotoresourceMaxScreen::onKeyboardInput(bool enterPressed, const String& ent
     {
       channel1MotoresourceVal = enteredValue;
       screenButtons->relabelButton(channel1Button,channel1MotoresourceVal.c_str());
-      Settings.setMotoresourceMax(0,channel1MotoresourceVal.toInt());
+      Settings.setMotoresourceMax(channel1MotoresourceVal.toInt());
     }
-	/*
-	//DEPRECATED:
-    else if(currentEditedButton == channel2Button)
-    {
-      channel2MotoresourceVal = enteredValue;
-      screenButtons->relabelButton(channel2Button,channel2MotoresourceVal.c_str());
-      Settings.setMotoresourceMax(1,channel2MotoresourceVal.toInt());
-    }
-    else if(currentEditedButton == channel3Button)
-    {
-      channel3MotoresourceVal = enteredValue;
-      screenButtons->relabelButton(channel3Button,channel3MotoresourceVal.c_str());
-      Settings.setMotoresourceMax(2,channel3MotoresourceVal.toInt());
-    }
-	*/
 
   currentEditedButton = -1;
 }
@@ -868,8 +774,6 @@ void MotoresourceMaxScreen::doDraw(TFTMenu* menu)
 
   menu->print("Ресурс макс.",2,2);
   menu->print("Канал 1:", 2, 37);
-  //DEPRECATED: menu->print("Канал 2:", 2, 72);
-  //DEPRECATED: menu->print("Канал 3:", 2, 107);
   
 //  dc->setFont(oldFont);
 }
@@ -881,16 +785,10 @@ void MotoresourceMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   else if(pressedButton == resetButton)
   {
       channel1MotoresourceVal = '0';
-	  //DEPRECATED: channel2MotoresourceVal = '0';
-	  //DEPRECATED: channel3MotoresourceVal = '0';
       
       screenButtons->relabelButton(channel1Button,channel1MotoresourceVal.c_str(),true);
-	  //DEPRECATED: screenButtons->relabelButton(channel2Button,channel2MotoresourceVal.c_str(),true);
-	  //DEPRECATED: screenButtons->relabelButton(channel3Button,channel3MotoresourceVal.c_str(),true);
       
-      Settings.setMotoresourceMax(0,channel1MotoresourceVal.toInt());    
-	  //DEPRECATED: Settings.setMotoresourceMax(1,channel2MotoresourceVal.toInt());    
-	  //DEPRECATED: Settings.setMotoresourceMax(2,channel3MotoresourceVal.toInt());    
+      Settings.setMotoresourceMax(channel1MotoresourceVal.toInt());    
   }  
   else
   {

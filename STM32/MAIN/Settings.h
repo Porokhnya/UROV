@@ -21,6 +21,14 @@ class SettingsClass
 {
 public:
 
+  bool read8(int addr, uint8_t& val);
+  bool read16(int addr, uint16_t& val);
+  bool read32(int addr, uint32_t& val);
+
+  void write8(int addr, uint8_t val);
+  void write16(int addr, uint16_t val);
+  void write32(int addr, uint32_t val);
+
 	SettingsClass();
 
 	void begin();
@@ -29,22 +37,22 @@ public:
 
   AT24CX* getEEPROM() {return eeprom;}
 
-	// возвращает настройку кол-ва импульсов на канал
-	uint16_t getChannelPulses(uint8_t channelNum);
+	// возвращает настройку кол-ва импульсов
+	uint16_t getPulses();
 
-	// сохраняет настройку кол-ва импульсов на канал
-	void setChannelPulses(uint8_t channelNum, uint16_t val);
+	// сохраняет настройку кол-ва импульсов
+	void setPulses(uint16_t val);
 
-	// работа с дельтами импульсов по каналам
-	uint8_t getChannelDelta(uint8_t channelNum);
-	void setChannelDelta(uint8_t channelNum, uint8_t val);
+	// работа с дельтами импульсов
+	uint8_t getPulsesDelta();
+	void setPulsesDelta(uint8_t val);
 
 	// работа с моторесурсом системы
-	uint32_t getMotoresource(uint8_t channelNum);
-	void setMotoresource(uint8_t channelNum, uint32_t val);
+	uint32_t getMotoresource();
+	void setMotoresource(uint32_t val);
 
-	uint32_t getMotoresourceMax(uint8_t channelNum);
-	void setMotoresourceMax(uint8_t channelNum, uint32_t val);
+	uint32_t getMotoresourceMax();
+	void setMotoresourceMax(uint32_t val);
 
 	DS3231Temperature getTemperature() { return coreTemp; }
 
@@ -55,10 +63,6 @@ public:
 	VoltageData get3V3Voltage() { return voltage3V3; }
 	VoltageData get5Vvoltage() { return voltage5V; }
 	VoltageData get200Vvoltage() { return voltage200V; }
-
-	// состояние индуктивных датчиков
-	//DEPRECATED: uint8_t getInductiveSensorState(uint8_t channelNum);
-	//DEPRECATED: void setInductiveSensorState(uint8_t channelNum, uint8_t val);
 
 	String getUUID(const char* passedUUID);
 
@@ -86,7 +90,12 @@ public:
     
   private:
 
-    uint32_t readSkipCounter();
+    uint16_t channelPulses;
+    uint8_t channelDelta;
+    uint32_t motoresource, motoresourceMax;
+
+    uint32_t transformerHighBorder, transformerLowBorder;
+
     uint32_t skipCounter;
 
 	  RodDirection rodDirection;
@@ -95,7 +104,6 @@ public:
     DS3231Temperature coreTemp;
     uint32_t timer;
 
-	//DEPRECATED: uint8_t inductiveSensorState1, inductiveSensorState2, inductiveSensorState3;
 
     VoltageData voltage3V3, voltage5V, voltage200V;
 

@@ -208,8 +208,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 //  word oldBackColor = dc->getBackColor();
 //  dc->setBackColor(BLACK);
 
-  uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);  
-  uint32_t channelResourceMax1 = Settings.getMotoresourceMax(0);
+  uint32_t channelResourceCurrent1 = Settings.getMotoresource();  
+  uint32_t channelResourceMax1 = Settings.getMotoresourceMax();
 
   // рисуем моторесурс системы по каналам
   uint16_t curX = 5;
@@ -238,8 +238,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 void InterruptScreen::computeMotoresource()
 {
   
-  uint32_t channelResourceCurrent1 = Settings.getMotoresource(0);
-  uint32_t channelResourceMax1 = Settings.getMotoresourceMax(0);
+  uint32_t channelResourceCurrent1 = Settings.getMotoresource();
+  uint32_t channelResourceMax1 = Settings.getMotoresourceMax();
   channelMotoresourcePercents1 = (channelResourceCurrent1*100)/(channelResourceMax1 ? channelResourceMax1 : 1);
   motoresourceLastFontColor1 = channelMotoresourcePercents1 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? WHITE : RED;
   timerDelta = millis();

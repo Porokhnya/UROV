@@ -72,9 +72,9 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 
 	// обновляем моторесурс, т.к. было срабатывание защиты
 	//DBGLN(F("processInterruptFromModule: INC motoresource!"));
-	uint32_t motoresource = Settings.getMotoresource(0);
+	uint32_t motoresource = Settings.getMotoresource();
 	motoresource++;
-	Settings.setMotoresource(0, motoresource);
+	Settings.setMotoresource(motoresource);
 
 	bool hasAlarm = !interruptsList.size(); // авария, если в списке нет данных
 	if (hasAlarm)

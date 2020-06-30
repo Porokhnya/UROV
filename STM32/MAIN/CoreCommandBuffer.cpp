@@ -1148,9 +1148,10 @@ bool CommandHandlerClass::getTBORDERS(const char* commandPassed, const CommandPa
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::setTBORDERS(CommandParser& parser, Stream* pStream)
 {
-
   if(parser.argsCount() < 3)
+  {
     return false;
+  }
   
   uint32_t lowBorder = atoi(parser.getArg(1));
   uint32_t highBorder = atoi(parser.getArg(2));
@@ -1171,7 +1172,9 @@ bool CommandHandlerClass::setTBORDERS(CommandParser& parser, Stream* pStream)
 bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -1179,30 +1182,21 @@ bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParse
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->println(Settings.getChannelDelta(0));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->print(Settings.getChannelDelta(1));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->println(Settings.getChannelDelta(2));
+  pStream->println(Settings.getPulsesDelta());
 
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
 {
-
   if(parser.argsCount() < 2)
+  {
     return false;
+  }
   
   uint8_t resCurrent1 = atoi(parser.getArg(1));
-  //DEPRECATED: uint8_t resCurrent2 = atoi(parser.getArg(2));
-  //DEPRECATED: uint8_t resCurrent3 = atoi(parser.getArg(3));
 
-  Settings.setChannelDelta(0,resCurrent1);
-  //DEPRECATED: Settings.setChannelDelta(1,resCurrent2);
-  //DEPRECATED: Settings.setChannelDelta(2,resCurrent3);
+  Settings.setPulsesDelta(resCurrent1);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1217,7 +1211,9 @@ bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
 bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -1225,13 +1221,7 @@ bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandPars
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->println(Settings.getChannelPulses(0));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->print(Settings.getChannelPulses(1));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->println(Settings.getChannelPulses(2));
+  pStream->println(Settings.getPulses());
 
   return true;
 }
@@ -1240,15 +1230,13 @@ bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream)
 {
 
   if(parser.argsCount() < 2)
+  {
     return false;
+  }
   
   uint16_t resCurrent1 = atoi(parser.getArg(1));
-  //DEPRECATED: uint16_t resCurrent2 = atoi(parser.getArg(2));
-  //DEPRECATED: uint16_t resCurrent3 = atoi(parser.getArg(3));
 
-  Settings.setChannelPulses(0,resCurrent1);
-  //DEPRECATED: Settings.setChannelPulses(1,resCurrent2);
-  //DEPRECATED: Settings.setChannelPulses(2,resCurrent3);
+  Settings.setPulses(resCurrent1);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1263,7 +1251,9 @@ bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream)
 bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -1271,13 +1261,7 @@ bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const C
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->println(Settings.getMotoresourceMax(0));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->print(Settings.getMotoresourceMax(1));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->println(Settings.getMotoresourceMax(2));
+  pStream->println(Settings.getMotoresourceMax());
 
   return true;
 }
@@ -1286,15 +1270,13 @@ bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pSt
 {
 
   if(parser.argsCount() < 2)
+  {
     return false;
+  }
   
   uint32_t resCurrent1 = atoi(parser.getArg(1));
-  //DEPRECATED: uint32_t resCurrent2 = atoi(parser.getArg(2));
-  //DEPRECATED: uint32_t resCurrent3 = atoi(parser.getArg(3));
 
-  Settings.setMotoresourceMax(0,resCurrent1);
-  //DEPRECATED: Settings.setMotoresourceMax(1,resCurrent2);
-  //DEPRECATED: Settings.setMotoresourceMax(2,resCurrent3);
+  Settings.setMotoresourceMax(resCurrent1);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1309,7 +1291,9 @@ bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pSt
 bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -1317,30 +1301,21 @@ bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, con
   pStream->print(commandPassed);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
   
-  pStream->println(Settings.getMotoresource(0));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->print(Settings.getMotoresource(1));
-  //DEPRECATED: pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-
-  //DEPRECATED: pStream->println(Settings.getMotoresource(2));
+  pStream->println(Settings.getMotoresource());
 
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream* pStream)
 {
-
   if(parser.argsCount() < 2)
+  {
     return false;
+  }
   
   uint32_t resCurrent1 = atoi(parser.getArg(1));
-  //DEPRECATED: uint32_t resCurrent2 = atoi(parser.getArg(2));
-  //DEPRECATED: uint32_t resCurrent3 = atoi(parser.getArg(3));
 
-  Settings.setMotoresource(0,resCurrent1);
-  //DEPRECATED: Settings.setMotoresource(1,resCurrent2);
-  //DEPRECATED: Settings.setMotoresource(2,resCurrent3);
+  Settings.setMotoresource(resCurrent1);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1355,7 +1330,9 @@ bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream*
 bool CommandHandlerClass::getPIN(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 2)
+  {
     return false;  
+  }
 
    int16_t pinNumber = atoi(parser.getArg(1));   
    int16_t pinState = getPinState(pinNumber);
