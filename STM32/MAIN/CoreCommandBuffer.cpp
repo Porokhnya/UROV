@@ -860,7 +860,7 @@ bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandP
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getVER(Stream* pStream)
-{
+{  
   pStream->print(F("UROV "));
   pStream->println(SOFTWARE_VERSION);
 
@@ -939,7 +939,12 @@ bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandPars
 bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 2)
+  {
     return false;  
+  }
+
+  // нас попросили отдать GUID, перезагружаем настройки из EEPROM
+  Settings.reloadSettings();
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

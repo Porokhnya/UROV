@@ -35,6 +35,8 @@ public:
 
 	void update();
 
+  void reloadSettings();
+
   AT24CX* getEEPROM() {return eeprom;}
 
 	// возвращает настройку кол-ва импульсов

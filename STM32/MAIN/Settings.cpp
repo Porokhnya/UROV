@@ -199,11 +199,8 @@ bool SettingsClass::read32(int addr, uint32_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::begin()
+void SettingsClass::reloadSettings()
 {
-#ifndef _WIRE1_OFF  
-  eeprom = new AT24C128(Wire1);
-#endif  
 
   if(eeprom)
   {
@@ -267,7 +264,16 @@ void SettingsClass::begin()
         transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
       }
       
-  } // if(eeprom)
+  } // if(eeprom)  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::begin()
+{
+#ifndef _WIRE1_OFF  
+  eeprom = new AT24C128(Wire1);
+#endif  
+
+  reloadSettings();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::set3V3RawVoltage(uint16_t raw)
