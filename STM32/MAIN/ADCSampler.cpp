@@ -240,8 +240,8 @@ void ADCSampler::getComputedRMS(uint32_t& result1, uint32_t& result2, uint32_t& 
 {
 	rmsComputeMode = false;
 	result1 = rmsData1;
-	result1 = rmsData2;
-	result1 = rmsData3;
+	result2 = rmsData2;
+	result3 = rmsData3;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::end()
