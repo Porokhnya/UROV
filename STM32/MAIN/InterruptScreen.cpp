@@ -201,12 +201,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 	DBGLN("Рисуем моторесурс...");
 
   TFT_Class* dc = menu->getDC();
-  //uint8_t* oldFont = dc->getFont();
   dc->setFreeFont(TFT_SMALL_FONT);
 
-//  word oldColor = dc->getColor();
-//  word oldBackColor = dc->getBackColor();
-//  dc->setBackColor(BLACK);
 
   uint32_t channelResourceCurrent1 = Settings.getMotoresource();  
   uint32_t channelResourceMax1 = Settings.getMotoresourceMax();
@@ -214,25 +210,27 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   // рисуем моторесурс системы по каналам
   uint16_t curX = 5;
   uint16_t curY = 130;
-  uint8_t fontHeight = FONT_HEIGHT(dc);//dc->getFontYsize();
+  uint8_t fontHeight = FONT_HEIGHT(dc);
 
-//  dc->setColor(motoresourceLastFontColor1);
 
-  String str = F("Ресурс 1: ");
-  str += channelResourceCurrent1;
-  str += F("/");
-  str += channelResourceMax1;
-  str += F(" (");
+  String str;
+
+  str = F("Импульсов: ");
+  str += list1.size();
+  
+  
+  str += F("; ресурс: ");
+//  str += channelResourceCurrent1;
+//  str += F("/");
+//  str += channelResourceMax1;
+//  str += F(" (");
   str += channelMotoresourcePercents1;
-  str += F("%)");
+//  str += F("%)");
+  str += "%";
 
   menu->getRusPrinter()->print(str.c_str(),curX,curY,BLACK,motoresourceLastFontColor1);
   curY += fontHeight + 4;
 
-  
-//  dc->setFont(oldFont);
-//  dc->setColor(oldColor);
-//  dc->setBackColor(oldBackColor);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::computeMotoresource()
