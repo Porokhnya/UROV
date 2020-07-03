@@ -217,7 +217,7 @@ bool SDInit::InitSD()
   return SDInit::sdInitResult;
 #else
 	return false;
-#endif;
+#endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void showSDStats(const SDSpeedResults& info, Stream* showIn)
@@ -302,6 +302,7 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontR
 
   SD_OUTLN(F("[SD TEST] begin..."));
 
+  sdInitFlag = false;
   InitSD();
 
 
