@@ -263,6 +263,12 @@ void SettingsClass::reloadSettings()
       {
         transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
       }
+
+       // читаем дельту времени импульса для эталона
+      if(!read32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta))
+      {
+        ethalonPulseDelta = 50;
+      }
       
   } // if(eeprom)  
 }
@@ -308,6 +314,17 @@ void SettingsClass::update()
   }
 
 #endif // !_CORE_TEMP_OFF  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint32_t SettingsClass::getEthalonPulseDelta()
+{
+  return ethalonPulseDelta;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setEthalonPulseDelta(uint32_t val)
+{
+  ethalonPulseDelta = val;
+  write32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getCurrentCoeff()

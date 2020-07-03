@@ -45,6 +45,11 @@ public:
 	// сохраняет настройку кол-ва импульсов
 	void setPulses(uint16_t val);
 
+
+ // работа с дельтами импульсов для сравнения эталона
+ uint32_t getEthalonPulseDelta();
+ void setEthalonPulseDelta(uint32_t val);
+
 	// работа с дельтами импульсов
 	uint8_t getPulsesDelta();
 	void setPulsesDelta(uint8_t val);
@@ -91,6 +96,8 @@ public:
   void setCurrentCoeff(uint32_t c);
     
   private:
+
+    uint32_t ethalonPulseDelta;
 
     uint16_t channelPulses;
     uint8_t channelDelta;

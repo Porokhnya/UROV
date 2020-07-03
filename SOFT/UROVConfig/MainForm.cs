@@ -642,7 +642,7 @@ namespace UROVConfig
                 return;
             }
 
-            if (targetGrid != null)
+            if (targetGrid != null && gridToListCollection[targetGrid].list != null)
             {
                 if (gridToListCollection.ContainsKey(targetGrid))
                 {
@@ -676,10 +676,14 @@ namespace UROVConfig
         {
             // Тут очистка таблицы
             targetGrid.RowCount = 0;
-            if (gridToListCollection.ContainsKey(targetGrid))
+            try
             {
-                gridToListCollection[targetGrid].list.Clear();
+                if (gridToListCollection.ContainsKey(targetGrid))
+                {
+                    gridToListCollection[targetGrid].list.Clear();
+                }
             }
+            catch { }
         }
 
         private void SaveEthalon(string fname, List<byte> content)
@@ -1207,8 +1211,7 @@ namespace UROVConfig
 
             dateTimeFromControllerReceived = false;
             inSetDateTimeToController = true;
-            inSetMotoresourceCurrentToController = true;
-            inSetMotoresourceMaxToController = true;
+            inSetMotoresourceToController = true;
             inSetPulsesToController = true;
             inSetCurrentCoeffToController = true;
             inSetBordersToController = true;
@@ -1232,14 +1235,15 @@ namespace UROVConfig
 
                 PushCommandToQueue(GET_PREFIX + "DATETIME", ParseAskDatetime);
                 PushCommandToQueue(GET_PREFIX + "FREERAM", ParseAskFreeram);
-                PushCommandToQueue(GET_PREFIX + "RES_CUR", ParseAskMotoresurceCurrent, BeforeAskMotoresourceCurrent);
-                PushCommandToQueue(GET_PREFIX + "RES_MAX", ParseAskMotoresurceMax, BeforeAskMotoresourceMax);
+                PushCommandToQueue(GET_PREFIX + "RES_CUR", ParseAskMotoresurceCurrent, BeforeAskMotoresource);
+                PushCommandToQueue(GET_PREFIX + "RES_MAX", ParseAskMotoresurceMax, BeforeAskMotoresource);
                 PushCommandToQueue(GET_PREFIX + "PULSES", ParseAskPulses, BeforeAskPulses);
                 PushCommandToQueue(GET_PREFIX + "CCOEFF", ParseAskCurrentCoeff, BeforeAskCurrentCoeff);
                 PushCommandToQueue(GET_PREFIX + "TBORDERS", ParseAskBorders, BeforeAskBorders);
                 PushCommandToQueue(GET_PREFIX + "RDELAY", ParseAskRelayDelay, BeforeAskRelayDelay);
 
-                PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskDelta);
+                PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskPulses);
+                PushCommandToQueue(GET_PREFIX + "ECDELTA", ParseAskECDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "SKIPC", ParseAskSkipCounter, BeforeAskDelta);
                 //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
@@ -1337,15 +1341,11 @@ namespace UROVConfig
             this.inSetRelayDelayToController = true;
         }
 
-        private void BeforeAskMotoresourceCurrent()
+        private void BeforeAskMotoresource()
         {
-            this.inSetMotoresourceCurrentToController = true;
+            this.inSetMotoresourceToController = true;
         }
 
-        private void BeforeAskMotoresourceMax()
-        {
-            this.inSetMotoresourceMaxToController = true;
-        }
 
         private void ClearAllData()
         {
@@ -1359,7 +1359,7 @@ namespace UROVConfig
 
         private void ParseAskDelta(Answer a)
         {
-//            this.inSetDeltaToController = false;
+            this.inSetPulsesToController = false;
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Delta1 = Convert.ToInt32(a.Params[1]); }
@@ -1412,7 +1412,6 @@ namespace UROVConfig
 
         private void ParseAskPulses(Answer a)
         {
-            this.inSetPulsesToController = false;
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Pulses1 = Convert.ToInt32(a.Params[1]); }
@@ -1509,6 +1508,30 @@ namespace UROVConfig
             }
         }
 
+        private void ParseAskECDelta(Answer a)
+        {
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.EthalonCompareDelta = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.EthalonCompareDelta = 50; }
+
+            }
+            else
+            {
+                Config.Instance.EthalonCompareDelta = 50;
+            }
+
+            try
+            {
+                nudEthalonCompareDelta.Value = Config.Instance.EthalonCompareDelta;
+            }
+            catch
+            {
+                nudEthalonCompareDelta.Value = 50;
+                Config.Instance.EthalonCompareDelta = 50;
+            }
+
+        }
+
         private void ParseAskSkipCounter(Answer a)
         {
             this.inSetDeltaToController = false;
@@ -1536,8 +1559,7 @@ namespace UROVConfig
 
         private void ParseAskMotoresurceCurrent(Answer a)
         {
-            this.inSetMotoresourceCurrentToController = false;
-            if(a.IsOkAnswer)
+            if (a.IsOkAnswer)
             {
                 try { Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(a.Params[1]);  } catch { Config.Instance.MotoresourceCurrent1 = 0; }
 
@@ -1562,7 +1584,7 @@ namespace UROVConfig
 
         private void UpdateMotoresourcePercents()
         {
-            if (this.inSetMotoresourceMaxToController || this.inSetMotoresourceCurrentToController)
+            if (this.inSetMotoresourceToController)
                 return;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
@@ -1579,32 +1601,13 @@ namespace UROVConfig
             lblMotoresourcePercents1.ForeColor = foreColor;
             lblMotoresourcePercents1.Text = percents.ToString("n1", nfi) + "%";
 
-            /*
-            //DEPRECATED: 
-            foreColor = Color.Green;
-            percents = (Config.Instance.MotoresourceCurrent2 * 100.0f) / Config.Instance.MotoresourceMax2;
 
-            if (percents >= 90.0f)
-                foreColor = Color.Red;
-
-            lblMotoresourcePercents2.ForeColor = foreColor;
-            lblMotoresourcePercents2.Text = percents.ToString("n1", nfi) + "%";
-
-            foreColor = Color.Green;
-            percents = (Config.Instance.MotoresourceCurrent3 * 100.0f) / Config.Instance.MotoresourceMax3;
-
-            if (percents >= 90.0f)
-                foreColor = Color.Red;
-
-            lblMotoresourcePercents3.ForeColor = foreColor;
-            lblMotoresourcePercents3.Text = percents.ToString("n1", nfi) + "%";
-            */
 
         }
 
         private void ParseAskMotoresurceMax(Answer a)
         {
-            this.inSetMotoresourceMaxToController = false;
+            this.inSetMotoresourceToController = false;
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.MotoresourceMax1 = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.MotoresourceMax1 = 0; }
@@ -1802,8 +1805,7 @@ namespace UROVConfig
             btnSetDateTime2.Enabled = bConnected && !inSetDateTimeToController;
             this.btnDisconnect.Enabled = bConnected && currentTransport != null;
 
-            this.btnSetMotoresourceCurrent.Enabled = bConnected && !inSetMotoresourceCurrentToController;
-            this.btnSetMotoresourceMax.Enabled = bConnected && !inSetMotoresourceMaxToController;
+            this.btnSetMotoresourceCurrent.Enabled = bConnected && !inSetMotoresourceToController;
             this.btnSetPulses.Enabled = bConnected && !inSetPulsesToController;
             this.btnCurrentCoeff.Enabled = bConnected && !inSetCurrentCoeffToController;
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
@@ -2176,6 +2178,18 @@ namespace UROVConfig
 
         }
 
+        private void ParseSetECDelta(Answer a)
+        {
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.EthalonCompareDelta = Convert.ToInt32(nudEthalonCompareDelta.Value);
+            }
+            else
+            {
+                nudEthalonCompareDelta.Value = Config.Instance.EthalonCompareDelta;
+            }
+        }
+
         private void ParseSetSkipCounter(Answer a)
         {
             inSetDeltaToController = false;
@@ -2183,22 +2197,32 @@ namespace UROVConfig
 
             if (a.IsOkAnswer)
             {
-                Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Value);
                 Config.Instance.SkipCounter = Convert.ToInt32(nudSkipCounter.Value);
 
-                MessageBox.Show("Дельты обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Параметры обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                nudDelta1.Value = Config.Instance.Delta1;
+                nudSkipCounter.Value = Config.Instance.SkipCounter;
 
-                MessageBox.Show("Ошибка обновления дельт!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка обновления параметров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
 
         private void ParseSetDelta(Answer a)
         {
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.Delta1 = Convert.ToInt32(nudDelta1.Value);
+
+            }
+            else
+            {
+                nudDelta1.Value = Config.Instance.Delta1;
+            }
+                
         }
 
 
@@ -2265,20 +2289,14 @@ namespace UROVConfig
 
         private void ParseSetMotoresourceCurrent(Answer a)
         {
-            inSetMotoresourceCurrentToController = false;
-            ShowWaitCursor(false);
-
             if (a.IsOkAnswer)
             {
                 Config.Instance.MotoresourceCurrent1 = Convert.ToInt32(nudMotoresourceCurrent1.Value);
 
-                MessageBox.Show("Текущий моторесурс обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
-
-                MessageBox.Show("Ошибка обновления текущего моторесурса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             UpdateMotoresourcePercents();
@@ -2286,20 +2304,20 @@ namespace UROVConfig
 
         private void ParseSetMotoresourceMax(Answer a)
         {
-            inSetMotoresourceMaxToController = false;
+            inSetMotoresourceToController = false;
             ShowWaitCursor(false);
 
             if (a.IsOkAnswer)
             {
                 Config.Instance.MotoresourceMax1 = Convert.ToInt32(nudMotoresourceMax1.Value);
 
-                MessageBox.Show("Максимальный моторесурс обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Моторесурс обновлён.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 nudMotoresourceMax1.Value = Config.Instance.MotoresourceMax1;
 
-                MessageBox.Show("Ошибка обновления максимального моторесурса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка обновления моторесурса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             UpdateMotoresourcePercents();
@@ -3147,10 +3165,10 @@ namespace UROVConfig
             selItem.Checked = true;
         }
 
-        private bool inSetMotoresourceCurrentToController = true;
+        private bool inSetMotoresourceToController = true;
         private void btnSetMotoresourceCurrent_Click(object sender, EventArgs e)
         {
-            inSetMotoresourceCurrentToController = true;
+            inSetMotoresourceToController = true;
             ShowWaitCursor(true);
 
             string s = "";
@@ -3159,21 +3177,13 @@ namespace UROVConfig
             //DEPRECATED: s += Convert.ToString(nudMotoresourceCurrent3.Value);
 
             PushCommandToQueue(SET_PREFIX + "RES_CUR" + PARAM_DELIMITER + s, ParseSetMotoresourceCurrent);
-        }
 
-        private bool inSetMotoresourceMaxToController = true;
-        private void btnSetMotoresourceMax_Click(object sender, EventArgs e)
-        {
-            inSetMotoresourceMaxToController = true;
-            ShowWaitCursor(true);
-
-            string s = "";
+            s = "";
             s += Convert.ToString(nudMotoresourceMax1.Value);//DEPRECATED:  + PARAM_DELIMITER;
             //DEPRECATED: s += Convert.ToString(nudMotoresourceMax2.Value) + PARAM_DELIMITER;
             //DEPRECATED: s += Convert.ToString(nudMotoresourceMax3.Value);
 
             PushCommandToQueue(SET_PREFIX + "RES_MAX" + PARAM_DELIMITER + s, ParseSetMotoresourceMax);
-
         }
 
         private bool inSetPulsesToController = true;
@@ -3183,9 +3193,14 @@ namespace UROVConfig
             ShowWaitCursor(true);
 
             string s = "";
-            s += Convert.ToString(nudPulses1.Value);//DEPRECATED:  + PARAM_DELIMITER;
-            //DEPRECATED: s += Convert.ToString(nudPulses2.Value) + PARAM_DELIMITER;
-            //DEPRECATED: s += Convert.ToString(nudPulses3.Value);
+            s += Convert.ToString(nudDelta1.Value);
+
+            PushCommandToQueue(SET_PREFIX + "DELTA" + PARAM_DELIMITER + s, ParseSetDelta);
+
+
+            s = "";
+            s += Convert.ToString(nudPulses1.Value);
+
 
             PushCommandToQueue(SET_PREFIX + "PULSES" + PARAM_DELIMITER + s, ParseSetPulses);
         }
@@ -3198,11 +3213,9 @@ namespace UROVConfig
             ShowWaitCursor(true);
 
             string s = "";
-            s += Convert.ToString(nudDelta1.Value);//DEPRECATED:  + PARAM_DELIMITER;
-            //DEPRECATED: s += Convert.ToString(nudDelta2.Value) + PARAM_DELIMITER;
-            //DEPRECATED: s += Convert.ToString(nudDelta3.Value);
+            s += Convert.ToString(nudEthalonCompareDelta.Value);
+            PushCommandToQueue(SET_PREFIX + "ECDELTA" + PARAM_DELIMITER + s, ParseSetECDelta);
 
-            PushCommandToQueue(SET_PREFIX + "DELTA" + PARAM_DELIMITER + s, ParseSetDelta);
 
             s = "";
             s += Convert.ToString(nudSkipCounter.Value);
@@ -3223,20 +3236,11 @@ namespace UROVConfig
 
         }
 
-        private void GetMotoresourceCurrent()
-        {
-            if (this.inSetMotoresourceCurrentToController)
-                return;
-
-            PushCommandToQueue(GET_PREFIX + "RES_CUR", ParseAskMotoresurceCurrent, BeforeAskMotoresourceCurrent);
-
-        }
 
         private void tmInductiveTimer_Tick(object sender, EventArgs e)
         {
             //DEPRECATED: GetInductiveSensors();
             GetVoltage();
-            GetMotoresourceCurrent();
         }
 
         private void ResetVoltage()

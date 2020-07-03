@@ -294,17 +294,20 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontR
   lines.push_back("ПОДОЖДИТЕ...");
   MessageBox->show(lines,NULL);
   Screen.update();
+
   
   SDSpeedResults results;
   memset(&results,0,sizeof(results));
 
+
   SD_OUTLN(F("[SD TEST] begin..."));
 
-  SDInit::sdInitResult = SD_CARD.begin();
-  SDInit::sdInitFlag = true;
+  InitSD();
+
 
   if(!SDInit::sdInitResult) // не удалось инициализировать SD
   {
+    Screen.switchToScreen("Main");    
     SD_OUTLN(F("[SD TEST] card not found!"));
     return results;
   }
@@ -321,18 +324,6 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontR
   uint32_t maxLatencyAccum = 0;
   uint32_t minLatencyAccum = 0;
   uint32_t avgLatencyAccum = 0;  
-
-/*
-  // Discard any input.
-  do {
-    delay(10);
-  } while (Serial.available() && Serial.read() >= 0);
-
-  SD_OUTLN(F("TYPE ANY CHARACTER TO START BENCH TEST\n"));
-  while (!Serial.available()) {
-    SysCall::yield();
-  }
-*/
 
   SD_OUT(F("Type is FAT")); SD_OUTLN(int(SD_CARD.vol()->fatType()));
   SD_OUT(F("Card size: ")); SD_OUT(SD_CARD.card()->cardSize()*512E-9);
@@ -355,6 +346,7 @@ if(withBenchFile && !dontReadSavedBenchFile)
     showSDStats(results,outS);
 
     Screen.switchToScreen("Main");
+
     return results;
   }
 } // if(withBenchFile)

@@ -103,6 +103,9 @@ class CommandHandlerClass
   bool setCCOEFF(CommandParser& parser, Stream* pStream);
   bool getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool setECDELTA(CommandParser& parser, Stream* pStream);
+  bool getECDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+
   bool getEREC(const CommandParser& cParser, Stream* pStream);
 
   bool getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream);

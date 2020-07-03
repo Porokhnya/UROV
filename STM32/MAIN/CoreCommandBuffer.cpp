@@ -37,6 +37,7 @@ const char LAST_TRIG_COMMAND[] PROGMEM = "LASTTRIG"; // отдать содер�
 const char SKIPCOUNTER_COMMAND[] PROGMEM = "SKIPC"; // настройка пропусков импульсов
 const char SDTEST_COMMAND[] PROGMEM = "SDTEST"; // запустить тест SD
 const char CURRENT_COEFF_COMMAND[] PROGMEM = "CCOEFF"; // коэффициент пересчёта по току
+const char ECDELTA_COMMAND[] PROGMEM = "ECDELTA"; // дельта времени сравнения импульсов эталона
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -288,7 +289,20 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
               // недостаточно параметров
               commandHandled = printBackSETResult(false,commandName,pStream);
             }
-        } // CURRENT_COEFF_COMMAND               
+        } // CURRENT_COEFF_COMMAND
+        else
+        if(!strcmp_P(commandName, ECDELTA_COMMAND))
+        {
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setECDELTA(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // ECDELTA_COMMAND
         else
         if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
         {
@@ -437,7 +451,13 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         {
             commandHandled = getCCOEFF(commandName,cParser,pStream);                    
           
-        } // CURRENT_COEFF_COMMAND       
+        } // CURRENT_COEFF_COMMAND
+        else
+        if(!strcmp_P(commandName, ECDELTA_COMMAND))
+        {
+            commandHandled = getECDELTA(commandName,cParser,pStream);                    
+          
+        } // ECDELTA_COMMAND     
         else
         if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
         {
@@ -956,10 +976,51 @@ bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getECDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+  {
+    return false;  
+  }
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getEthalonPulseDelta());
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setECDELTA(CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 2)
+  {
+    return false;
+  }
+  
+  uint32_t cVal = atoi(parser.getArg(1));
+
+  Settings.setEthalonPulseDelta(cVal);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -976,7 +1037,9 @@ bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandPars
 bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 2)
+  {
     return false;
+  }
   
   uint32_t cCoeff = atoi(parser.getArg(1));
 
@@ -994,7 +1057,9 @@ bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream)
 bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);

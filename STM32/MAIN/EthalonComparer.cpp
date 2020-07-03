@@ -127,7 +127,9 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     {
       int readResult = file.read(&curRec,sizeof(curRec));
       if(readResult == -1 || size_t(readResult) < sizeof(curRec))
+      {
         break;
+      }
   
         ethalonData.push_back(curRec);
     }
@@ -156,8 +158,11 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
 
   DBG(F("Импульсов к сравнению: "));
   DBGLN(toCompare);
-  
+
+  uint32_t ethalonCompareDelta = Settings.getEthalonPulseDelta();
+
   // потом проходим по каждому импульсу
+  
   for(size_t i=1;i<toCompare;i++)
   {
     uint32_t ethalonPulseDuration = ethalonData[i] - ethalonData[i-1];
@@ -170,12 +175,12 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     DBG("=");
     DBGLN(passedPulseDuration);
     
-    uint32_t lowVal;
-    uint32_t highVal = ethalonPulseDuration + ETHALON_COMPARE_DELTA;
+    uint32_t lowVal;    
+    uint32_t highVal = ethalonPulseDuration + ethalonCompareDelta;
 
-    if(ethalonPulseDuration >= ETHALON_COMPARE_DELTA)
+    if(ethalonPulseDuration >= ethalonCompareDelta)
     {
-      lowVal = ethalonPulseDuration - ETHALON_COMPARE_DELTA;
+      lowVal = ethalonPulseDuration - ethalonCompareDelta;
     }
     else
     {

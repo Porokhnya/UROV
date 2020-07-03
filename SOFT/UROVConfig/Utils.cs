@@ -905,6 +905,13 @@ namespace UROVConfig
             set { skipCounter = value; }
         }
 
+        private int ethalonCompareDelta = 50;
+        public int EthalonCompareDelta
+        {
+            get { return ethalonCompareDelta; }
+            set { ethalonCompareDelta = value; }
+        }
+
         private int motoresourceCurrent1 = 0;
         //DEPRECATED: private int motoresourceCurrent2 = 0;
         //DEPRECATED: private int motoresourceCurrent3 = 0;
