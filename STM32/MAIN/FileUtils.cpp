@@ -287,14 +287,6 @@ ArduinoOutStream cout(Serial);
 SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontReadSavedBenchFile)
 {
 
-  Vector<const char*> lines;
-  lines.push_back("");
-  lines.push_back("");
-  lines.push_back("ИДЁТ ТЕСТ SD!");
-  lines.push_back("ПОДОЖДИТЕ...");
-  MessageBox->show(lines,NULL);
-  Screen.update();
-
   
   SDSpeedResults results;
   memset(&results,0,sizeof(results));
@@ -308,7 +300,7 @@ SDSpeedResults SDInit::MeasureSpeed(Stream* outS, bool withBenchFile, bool dontR
 
   if(!SDInit::sdInitResult) // не удалось инициализировать SD
   {
-    Screen.switchToScreen("Main");    
+  //  Screen.switchToScreen("Main");    
     SD_OUTLN(F("[SD TEST] card not found!"));
     return results;
   }
@@ -346,11 +338,12 @@ if(withBenchFile && !dontReadSavedBenchFile)
 
     showSDStats(results,outS);
 
-    Screen.switchToScreen("Main");
+//    Screen.switchToScreen("Main");
 
     return results;
   }
 } // if(withBenchFile)
+
 
 
   SD_OUTLN(F("[SD TEST] create test file..."));
@@ -360,11 +353,20 @@ if(withBenchFile && !dontReadSavedBenchFile)
   {
     SD_OUTLN(F("[SD TEST] create failed !!!"));
 
-    Screen.switchToScreen("Main");
+//    Screen.switchToScreen("Main");
     return results;
   }
 
   SD_OUTLN(F("[SD TEST] test file created."));  
+
+  Vector<const char*> lines;
+  lines.push_back("");
+  lines.push_back("");
+  lines.push_back("ИДЁТ ТЕСТ SD!");
+  lines.push_back("ПОДОЖДИТЕ...");
+  MessageBox->show(lines,NULL);
+  Screen.update();
+  
 
   // fill buf with known data
   for (uint16_t i = 0; i < (BUF_SIZE-2); i++) 

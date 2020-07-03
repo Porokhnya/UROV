@@ -147,11 +147,15 @@ void TFTMenu::update()
   if(currentScreenIndex == -1) // ни разу не рисовали ещё ничего, исправляемся
   {
     if(screens.size())
+    {
      switchToScreen((unsigned int)0); // переключаемся на первый экран, если ещё ни разу не показали ничего     
+    }
   }
 
   if(currentScreenIndex == -1)
+  {
     return;
+  }
 
   // обновляем текущий экран
   AbstractTFTScreen* currentScreen = screens[currentScreenIndex];
@@ -206,7 +210,9 @@ void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
 void TFTMenu::switchToScreen(unsigned int screenIndex)
 {
   if(screenIndex < screens.size())
+  {
       switchToScreen(screens[screenIndex]);
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void TFTMenu::switchToScreen(const char* screenName)
