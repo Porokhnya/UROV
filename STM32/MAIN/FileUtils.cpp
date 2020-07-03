@@ -353,10 +353,10 @@ if(withBenchFile && !dontReadSavedBenchFile)
 } // if(withBenchFile)
 
 
-SD_OUTLN(F("[SD TEST] create test file..."));
+  SD_OUTLN(F("[SD TEST] create test file..."));
 
   // open or create file - truncate existing file.
-  if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) 
+  if (!file.open("speed.tst", O_CREAT | O_TRUNC | O_RDWR)) 
   {
     SD_OUTLN(F("[SD TEST] create failed !!!"));
 
@@ -364,12 +364,14 @@ SD_OUTLN(F("[SD TEST] create test file..."));
     return results;
   }
 
-SD_OUTLN(F("[SD TEST] test file created."));  
+  SD_OUTLN(F("[SD TEST] test file created."));  
 
   // fill buf with known data
-  for (uint16_t i = 0; i < (BUF_SIZE-2); i++) {
+  for (uint16_t i = 0; i < (BUF_SIZE-2); i++) 
+  {
     sdTestBuf[i] = 'A' + (i % 26);
   }
+  
   sdTestBuf[BUF_SIZE-2] = '\r';
   sdTestBuf[BUF_SIZE-1] = '\n';
 
@@ -378,34 +380,44 @@ SD_OUTLN(F("[SD TEST] test file created."));
   SD_OUTLN(F("Starting write test, please wait..."));
 
   // do write test
-  uint32_t n = FILE_SIZE/sizeof(sdTestBuf);
+  uint32_t nPasses = FILE_SIZE/sizeof(sdTestBuf);
+  
 //  cout <<F("write speed and latency") << endl;
 //  cout << F("speed,max,min,avg") << endl;
 //  cout << F("KB/Sec,usec,usec,usec") << endl;
-  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) {
+  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) 
+  {
     file.truncate(0);
     maxLatency = 0;
     minLatency = 9999999;
     totalLatency = 0;
     t = millis();
-    for (uint32_t i = 0; i < n; i++) {
+    for (uint32_t i = 0; i < nPasses; i++) 
+    {
       uint32_t m = micros();
-      if (file.write(sdTestBuf, sizeof(sdTestBuf)) != sizeof(sdTestBuf)) {
+      if (file.write(sdTestBuf, sizeof(sdTestBuf)) != sizeof(sdTestBuf)) 
+      {
         SD_OUTLN(F("[SD TEST] write failed!!!"));
         file.close();
         
         Screen.switchToScreen("Main");
         return results;
       }
+      
       m = micros() - m;
-      if (maxLatency < m) {
+      
+      if (maxLatency < m) 
+      {
         maxLatency = m;
       }
-      if (minLatency > m) {
+      
+      if (minLatency > m) 
+      {
         minLatency = m;
       }
       totalLatency += m;
-    }
+    } // for
+    
     file.sync();
     t = millis() - t;
     s = file.fileSize();
@@ -415,8 +427,10 @@ SD_OUTLN(F("[SD TEST] test file created."));
     speedAccum += s/t;
     maxLatencyAccum += maxLatency;
     minLatencyAccum += minLatency;
-    avgLatencyAccum += totalLatency/n;    
-  }
+    avgLatencyAccum += totalLatency/nPasses;    
+    
+  } // for
+  
   SD_OUTLN(F("Starting read test, please wait..."));
 //  cout << endl <<F("read speed and latency") << endl;
 //  cout << F("speed,max,min,avg") << endl;
@@ -436,35 +450,47 @@ SD_OUTLN(F("[SD TEST] test file created."));
   minLatencyAccum = 0;
   avgLatencyAccum = 0;
     
-  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) {
+  for (uint8_t nTest = 0; nTest < TEST_COUNT; nTest++) 
+  {
     file.rewind();
     maxLatency = 0;
     minLatency = 9999999;
     totalLatency = 0;
     t = millis();
-    for (uint32_t i = 0; i < n; i++) {
+    
+    for (uint32_t i = 0; i < nPasses; i++) 
+    {
       sdTestBuf[BUF_SIZE-1] = 0;
       uint32_t m = micros();
       int32_t nr = file.read(sdTestBuf, sizeof(sdTestBuf)); 
-      if (nr != sizeof(sdTestBuf)) {   
+      
+      if (nr != sizeof(sdTestBuf)) 
+      {   
         SD_OUTLN(F("[SD TEST] read failed !!!"));
         file.close();
 
         Screen.switchToScreen("Main");
         return results;
       }
+      
       m = micros() - m;
-      if (maxLatency < m) {
+      if (maxLatency < m) 
+      {
         maxLatency = m;
       }
-      if (minLatency > m) {
+      if (minLatency > m) 
+      {
         minLatency = m;
       }
       totalLatency += m;
-      if (sdTestBuf[BUF_SIZE-1] != '\n') {
+      
+      if (sdTestBuf[BUF_SIZE-1] != '\n') 
+      {
         SD_OUTLN(F("[SD TEST] data check error!"));
       }
-    }
+      
+    } // for
+    
     s = file.fileSize();
     t = millis() - t;
 //    cout << s/t <<',' << maxLatency << ',' << minLatency;
@@ -473,8 +499,9 @@ SD_OUTLN(F("[SD TEST] test file created."));
     speedAccum += s/t;
     maxLatencyAccum += maxLatency;
     minLatencyAccum += minLatency;
-    avgLatencyAccum += totalLatency/n;        
-  }
+    avgLatencyAccum += totalLatency/nPasses;        
+    
+  } // for
 
   results.readSpeed = speedAccum/results.numPasses;
   results.maxReadLatency = maxLatencyAccum/results.numPasses;
