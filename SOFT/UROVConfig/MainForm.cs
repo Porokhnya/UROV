@@ -3716,6 +3716,11 @@ namespace UROVConfig
 
 
                 // добавляем графики тока
+                const int approximatePasses = 500;
+
+                approximate(approximatePasses, ref YValuesChannel1);
+                approximate(approximatePasses, ref YValuesChannel2);
+                approximate(approximatePasses, ref YValuesChannel3);
 
 
                 channel1Current.Points.DataBindXY(XValuesOfCurrent1, YValuesChannel1);
@@ -3739,6 +3744,20 @@ namespace UROVConfig
                 vcf.BringToFront();
             }
 
+        }
+
+        private void approximate(int countPasses, ref List<double> lst)
+        {
+            if (lst.Count < 3)
+                return;
+            for (int k = 0; k < countPasses; k++)
+            {
+
+                for (int i = 1; i < lst.Count - 1; i++)
+                {
+                    lst[i] = (lst[i - 1] + lst[i + 1]) / 2.0;
+                }
+            }   
         }
 
         private long map(long x, long in_min, long in_max, long out_min, long out_max)
