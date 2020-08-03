@@ -6,4 +6,3 @@ extern void SetupEndstops();
 extern bool RodUpEndstopTriggered(bool noInt);
 extern bool RodDownEndstopTriggered(bool noInt);
 //--------------------------------------------------------------------------------------------------------------------------------
-

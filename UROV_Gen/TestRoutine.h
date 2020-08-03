@@ -9,6 +9,8 @@ typedef enum
   trmWaitShult1Done,
   trmWaitShunt2Done,
   trmWaitProtectDone,
+  trmWaitShunt2Off,
+  trmWaitShunt1Off,
   trmWaitPulsesDone
   
 } TestRoutineMachineState;
@@ -33,4 +35,3 @@ class TestRoutineClass
 //--------------------------------------------------------------------------------------------------
 extern TestRoutineClass TestRoutine;
 //--------------------------------------------------------------------------------------------------
-

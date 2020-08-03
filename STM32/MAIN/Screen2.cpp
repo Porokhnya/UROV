@@ -1471,6 +1471,8 @@ void EthalonChartScreen::show(const String& fName)
     serie.clear();
     InterruptTimeList lst;
 
+    PAUSE_ADC; // останавливаем АЦП
+    
     SdFile file;
     file.open(fileName.c_str(),FILE_READ);
     if(file.isOpen())
@@ -1720,6 +1722,7 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
   DBG(F("WRITE ETHALON TO FILE "));
   DBGLN(fileName);
 
+  PAUSE_ADC; // останавливаем АЦП
   SdFile file;
   file.open(fileName.c_str(),FILE_WRITE | O_CREAT | O_TRUNC);
   
@@ -1955,7 +1958,7 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Drawing::DrawChart(this, serie1, RED);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
@@ -2006,6 +2009,7 @@ uint32_t FileEntry::getTimestamp(const char* fileRootDir)
 {
   uint32_t result = 0;
 
+  PAUSE_ADC; // останавливаем АЦП
   SdFile root, file;
   root.open(fileRootDir,O_READ);
   if(root.isOpen())
@@ -2028,6 +2032,8 @@ String FileEntry::getName(const char* fileRootDir)
 {
   String result;
 
+  PAUSE_ADC; // останавливаем АЦП
+  
   SdFile root, file;
   root.open(fileRootDir,O_READ);
   if(root.isOpen())
@@ -2185,6 +2191,8 @@ void ListFilesScreen::rescanFiles()
       files[i] = new  FileEntry;
     } // for
 
+    PAUSE_ADC; // останавливаем АЦП
+    
     root.open(dirName.c_str(),O_READ);
 
     int cntr = 0;
@@ -3174,5 +3182,3 @@ void SDFormatter::eraseCard()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-
-

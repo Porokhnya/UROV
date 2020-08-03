@@ -85,11 +85,33 @@ void TestRoutineClass::update()
          if(millis() - lastMillis >= RELAY_PROTECT_WAIT_INTERVAL)
           {
             startGeneratePulses();
-            machineState = trmWaitPulsesDone;
+            machineState = trmWaitShunt2Off;
             lastMillis = millis();
           }
       }
       break;
+
+      case trmWaitShunt2Off:
+      {
+        if(millis() - lastMillis >= RELAY_SHUNT2_OFF_INTERVAL)
+        {
+            Relay_Shunt2.off();
+            machineState = trmWaitShunt1Off;
+            lastMillis = millis();
+        }
+      }
+      break;
+
+      case trmWaitShunt1Off:
+      {
+        if(millis() - lastMillis >= RELAY_SHUNT1_OFF_INTERVAL)
+        {
+            Relay_Shunt1.off();
+            machineState = trmWaitPulsesDone;
+            lastMillis = millis();
+        }
+      }
+      break;      
 
       case trmWaitPulsesDone:
       {
@@ -103,4 +125,3 @@ void TestRoutineClass::update()
     } // switch
 }
 //--------------------------------------------------------------------------------------------------
-

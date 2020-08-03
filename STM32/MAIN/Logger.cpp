@@ -13,7 +13,6 @@ bool LoggerClass::openWorkFile()
 {
   closeWorkFile();
 
-
  // пишем в лог-файл дату/время срабатывания системы
   SD_CARD.mkdir(LOGS_DIRECTORY);
 
@@ -78,4 +77,3 @@ void LoggerClass::write(uint8_t* data,size_t dataLength)
   closeWorkFile();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

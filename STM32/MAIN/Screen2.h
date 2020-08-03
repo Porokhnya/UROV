@@ -600,7 +600,7 @@ class EthalonRecordScreen : public AbstractTFTScreen, public InterruptEventSubsc
     return new EthalonRecordScreen();
   }
 
-  void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult);
+  void OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult);
   void OnHaveInterruptData();
     
 protected:
@@ -885,4 +885,3 @@ private:
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

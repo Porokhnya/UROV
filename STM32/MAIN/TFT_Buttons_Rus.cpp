@@ -519,4 +519,3 @@ void TFT_Buttons_Rus::setButtonColors(word atxt, word iatxt, word brd, word brdh
 	_color_hilite			= brdhi;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-

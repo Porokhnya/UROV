@@ -27,6 +27,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 namespace Drawing
 {
+
   void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
   {
       // освобождаем серию
@@ -45,20 +46,30 @@ namespace Drawing
     
       // получаем максимальное время импульса - это будет 100% по оси Y
       uint32_t maxPulseTime = 0;
+      uint32_t totalPulsesTime = 0;
       for(size_t i=1;i<timeList.size();i++)
       {
-        maxPulseTime = max(maxPulseTime,(timeList[i] - timeList[i-1]));
+        uint32_t pulseWidth = timeList[i] - timeList[i-1];
+        maxPulseTime = max(maxPulseTime,pulseWidth);
+        totalPulsesTime += pulseWidth;
       } // for
 
 	  if (!maxPulseTime) // на случай, если там 0
-		  maxPulseTime = 1;
+		  maxPulseTime = 1;     
     
   //    DBG("MAX PULSE TIME=");
   //    DBGLN(maxPulseTime);  
     
       // теперь вычисляем положение по X для каждой точки импульсов
       uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
-      float xStep = (1.*pointsAvailable)/(totalPulses-1);
+     // double xStep = double(pointsAvailable)/(totalPulses-1);
+
+/*
+      Serial.print("pointsAvailable=");Serial.println(pointsAvailable);
+      Serial.print("totalPulses-1=");Serial.println(totalPulses-1);
+      Serial.print("maxPulseTime=");Serial.println(maxPulseTime);
+      Serial.print("totalPulsesTime=");Serial.println(totalPulsesTime);
+*/
     
       // сначала добавляем первую точку, у неё координаты по X - это 0, по Y - та же длительность импульса, что будет во второй точке
       uint32_t firstPulseTime = timeList[1] - timeList[0];
@@ -72,7 +83,7 @@ namespace Drawing
    //   DBGLN(firstPointPercents);
     
       // теперь можем высчитать абсолютное значение по Y для первой точки  
-      float yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+      double yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
       // здесь мы получили значение в пикселях, соответствующее проценту от максимального значения Y.
       // от этого значения надо отнять сдвиг по Y
       yCoord -= yOffset;
@@ -83,7 +94,7 @@ namespace Drawing
     
 
       // добавляем первую точку
-      float xCoord = INTERRUPT_CHART_X_COORD;
+      double xCoord = INTERRUPT_CHART_X_COORD;
 
 
 	  uint16_t iXCoord = constrain(round(xCoord), 0, screenWidth);
@@ -98,16 +109,29 @@ namespace Drawing
       Point pt = {iXCoord,iYCoord};
       serie.push_back(pt);
     
-      xCoord += xOffset;
+      xCoord += xOffset;      
     
       // теперь считаем все остальные точки
       for(size_t i=1;i<timeList.size();i++)
       {
         uint32_t pulseTime = timeList[i] - timeList[i-1];
+
+
+        double pulseTimeXWeight = double(pulseTime)/totalPulsesTime;
+        double pulseXOffset = pulseTimeXWeight*pointsAvailable;
+/*
+       Serial.println();
+       Serial.print("xCoord=");Serial.println(xCoord);
+       Serial.print("round(xCoord)=");Serial.println(round(xCoord));
+       Serial.print("pulseTime=");Serial.println(pulseTime);
+       Serial.print("pulseTimeXWeight=");Serial.println(pulseTimeXWeight);
+       Serial.print("pulseXOffset=");Serial.println(pulseXOffset);
+*/        
         pulseTime *= 100;
         
         uint16_t pulseTimePercents = pulseTime/maxPulseTime;
         pulseTimePercents = 100 - pulseTimePercents;
+
     
    //     DBG("pulseTimePercents=");
    //     DBGLN(pulseTimePercents);
@@ -133,9 +157,11 @@ namespace Drawing
         Point ptNext = { iXCoord,iYCoord };
         serie.push_back(ptNext);
         
-        xCoord += xStep;
+        xCoord += pulseXOffset;
         
       } // for
+
+ //     Serial.print("xCoord LAST=");Serial.println(xCoord);
     
       // подсчёты завершены
   }
@@ -508,5 +534,3 @@ void Chart::setPoints(uint16_t pX, uint16_t pY)
     yPoints = pY;  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-

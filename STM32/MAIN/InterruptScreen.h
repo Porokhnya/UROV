@@ -25,7 +25,7 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
 
   static AbstractTFTScreen* create();  
 
-  void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult result);
+  void OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult result);
   void OnHaveInterruptData();
     
 protected:
@@ -52,7 +52,7 @@ private:
     InterruptTimeList list1;
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-	CurrentOscillData oscillData; // данные по току
+	CurrentOscillData* oscillData; // данные по току
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
   EthalonCompareBox compareBox;
@@ -76,4 +76,3 @@ private:
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern InterruptScreen* ScreenInterrupt;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

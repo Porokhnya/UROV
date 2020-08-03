@@ -66,7 +66,7 @@ DS3231Time rsRelTrigTime; // время срабатывания защиты
 bool HasRS485Link = false;
 uint32_t lastRS485PacketSeenAt = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
+void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
 {
 	// тут обрабатываем результаты срабатывания защиты от модуля
 
@@ -125,7 +125,7 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	// получаем список данных по току
-	CurrentOscillData oscillData = InterruptHandlerClass::getCurrentData();
+	CurrentOscillData oscillData = adcSampler.getListOfCurrent();//InterruptHandlerClass::getCurrentData();
 	// нормализуем список времён
 	InterruptHandlerClass::normalizeList(oscillData.times);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
@@ -135,7 +135,7 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
 	if (wantToInformSubscriber)
 	{
 	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
-		InterruptHandler.informSubscriber(oscillData,interruptsList, compareRes1/*, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime*/);
+		InterruptHandler.informSubscriber(&oscillData,interruptsList, compareRes1/*, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime*/);
 
    // обновляем экран, чтобы график появился сразу
    Screen.update();
@@ -144,13 +144,13 @@ void processInterruptFromModule(uint32_t dataArrivedTime, DS3231Time& tm, Interr
   if (needToLog)
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1,true);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog
@@ -185,7 +185,7 @@ void OnRS485IncomingData(RS485* Sender)
       rsRelTrigTime = RealtimeClock.getTime();
 
 			// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
+//			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
 			// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 			//TODO: ТУТ МОЖНО ЧТО-ТО ДЕЛАТЬ ПО ФАКТУ СРАБАТЫВАНИЯ ЗАЩИТЫ, НАПРИМЕР - НАЧИНАТЬ ПРОВЕРКУ ТОКОВЫХ ТРАНСФОРМАТОРОВ.
@@ -224,7 +224,7 @@ void OnRS485IncomingData(RS485* Sender)
        // запоминаем время, когда данные пришли
        rs485DataArrivedTime = millis();
 
-       uint32_t dataArriveTime = rs485DataArrivedTime - rs485RelayTriggeredTime;
+       int32_t dataArriveTime = rs485DataArrivedTime - rs485RelayTriggeredTime;
 
 
 				// выводим их для теста
@@ -240,7 +240,7 @@ void OnRS485IncomingData(RS485* Sender)
 */
 				// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 				// говорим, что хватит нам собирать данные по току
-				InterruptHandlerClass::stopCollectCurrentData();
+			//	InterruptHandlerClass::stopCollectCurrentData();
 				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 				// обрабатываем список прерываний  
@@ -415,15 +415,16 @@ void setup()
   {
     DBGLN(F("SD INIT ERROR!!!"));
   }
-
-  sdSpeed = SDInit::MeasureSpeed(&Serial,
+  Test_SD(
+  &Serial,
   #ifdef DISABLE_SAVE_BENCH_FILE
   false // no save bench results
   #else
   true // save bench results
   #endif
-  ,false // read saved bench file, if exists, and return results
-  );
+  ,false // read saved bench file, if exists, and return results    
+    );
+    
   isBadSDDetected = !sdSpeed.testSucceeded || sdSpeed.writeSpeed < MIN_SD_WRITE_SPEED || sdSpeed.readSpeed < MIN_SD_READ_SPEED;  
   
 #endif // !_SD_OFF   
@@ -461,6 +462,15 @@ void setup()
 
   // настраиваем железные кнопки
   Buttons.begin();
+
+// поднимаем АЦП
+#ifndef _ADC_OFF
+
+  adcSampler.setLowBorder(Settings.getTransformerLowBorder());
+  adcSampler.setHighBorder(Settings.getTransformerHighBorder());
+  
+  adcSampler.begin();  
+#endif  
 
   // поднимаем наши прерывания
   InterruptHandler.begin();
@@ -537,7 +547,24 @@ void loop()
     HasRS485Link = false; // долго не было пакетов по RS-485
     lastRS485PacketSeenAt = millis(); // чтобы часто не дёргать
   }
- 
+
+/*
+  //////////// test begin //////
+  static uint32_t t = millis();
+  if(millis() - t >= 5000)
+  {
+    Serial.println("CURRENT DATA:");
+    
+    CurrentOscillData od = adcSampler.getListOfCurrent();
+    for(size_t i=0;i<od.data1.size();i++)
+    {
+      Serial.println(od.data1[i]);
+    }
+    Serial.println();
+    t = millis();
+  }
+  /////////// test end ///////
+*/ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool nestedYield = false;
@@ -572,4 +599,247 @@ void yield()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // _YIELD_OFF
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Size of read/write.
+const size_t BUF_SIZE = 32768;
 
+// File size in MB where MB = 1,000,000 bytes.
+const uint32_t FILE_SIZE_MB = 5;
+
+// Write pass count.
+const uint8_t WRITE_COUNT = 1;
+
+// Read pass count.
+const uint8_t READ_COUNT = 1;
+//==============================================================================
+// End of configuration constants.
+//------------------------------------------------------------------------------
+// File size in bytes.
+const uint32_t FILE_SIZE = 1000000UL * FILE_SIZE_MB;
+
+uint8_t sdTestBuf[BUF_SIZE];
+
+// file system
+
+//SdFatSdio SD_CARD;
+
+
+// test file
+SdFile file;
+
+// Serial output stream
+ArduinoOutStream cout(Serial);
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#define SD_OUT(s) if(outS) { outS->print(s); }
+#define SD_OUTLN(s) if(outS) { outS->println(s); }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Test_SD(Stream* outS, bool withBenchFile, bool dontReadSavedBenchFile)
+{
+  PAUSE_ADC; // останавливаем АЦП
+  
+  float s;
+  uint32_t t;
+  uint32_t maxLatency;
+  uint32_t minLatency;
+  uint32_t totalLatency;
+  uint32_t writeSpeed;
+  uint32_t readSpeed;
+
+  // Discard any input.
+
+
+/*
+  if (!SD_CARD.begin()) {
+    SD_CARD.initErrorHalt();
+  }
+*/
+  SD_OUTLN(("[SD TEST] begin..."));
+  
+  memset(&sdSpeed,0,sizeof(sdSpeed));
+
+  // принудительно переинициализируем SD
+  SDInit::sdInitFlag = false;
+  SDInit::InitSD();
+
+
+  if(!SDInit::sdInitResult) // не удалось инициализировать SD
+  {
+    SD_OUTLN(("[SD TEST] card not found!"));
+    return;
+  }
+
+
+  SD_OUT(("Type is FAT")); SD_OUTLN(int(SD_CARD.vol()->fatType()));
+  SD_OUT(("Card size: ")); SD_OUT(SD_CARD.card()->cardSize()*512E-9);
+  SD_OUTLN((" GB (GB = 1E9 bytes)"));
+
+
+if(withBenchFile && !dontReadSavedBenchFile)
+{
+
+  
+  if(file.open(BENCH_RESULTS_FILENAME,O_READ))
+  {
+    file.rewind();
+
+     SD_OUTLN(("[SD TEST] found old bench file, read test results..."));
+
+     file.read(&sdSpeed,sizeof(sdSpeed));
+     file.close();
+
+    showSDStats(sdSpeed,outS);
+    return;
+  }
+} // if(withBenchFile)  
+
+   // open or create file - truncate existing file.
+   SD_OUTLN(("[SD TEST] create test file..."));
+
+  const char* benchfilename = "sd_bnc.dat";
+  
+  if (!file.open(benchfilename, O_CREAT | O_TRUNC | O_RDWR)) {
+    SD_OUTLN(("[SD TEST] create failed !!!"));
+
+    adcSampler.resume();
+    return;
+  }
+
+  SD_OUTLN(("[SD TEST] test file created."));
+
+  Vector<const char*> lines;
+  lines.push_back("");
+  lines.push_back("");
+  lines.push_back("ИДЁТ ТЕСТ SD!");
+  lines.push_back("ПОДОЖДИТЕ...");
+  MessageBox->show(lines,NULL);
+  Screen.update();
+  
+  // fill sdTestBuf with known data
+  for (uint16_t i = 0; i < (BUF_SIZE - 2); i++) {
+    sdTestBuf[i] = 'A' + (i % 26);
+  }
+  sdTestBuf[BUF_SIZE - 2] = '\r';
+  sdTestBuf[BUF_SIZE - 1] = '\n';
+
+  //cout << F("File size ") << FILE_SIZE_MB << F(" MB\n");
+  //cout << F("Buffer size ") << BUF_SIZE << F(" bytes\n");
+  
+
+SD_OUTLN(("Starting write test, please wait..."));
+
+  // do write test
+  uint32_t n = FILE_SIZE / sizeof(sdTestBuf);
+  //cout << F("write speed and latency") << endl;
+  //cout << F("speed,max,min,avg") << endl;
+  //cout << F("KB/Sec,usec,usec,usec") << endl;
+  for (uint8_t nTest = 0; nTest < WRITE_COUNT; nTest++) {
+    file.truncate(0);
+    maxLatency = 0;
+    minLatency = 9999999;
+    totalLatency = 0;
+    t = millis();
+
+    for (uint32_t i = 0; i < n; i++) {
+      uint32_t m = micros();
+      if (file.write(sdTestBuf, sizeof(sdTestBuf)) != sizeof(sdTestBuf)) {
+        SD_OUTLN(("[SD TEST] write failed!!!"));
+        file.close();
+        Screen.switchToScreen("Main");
+
+        return;
+      }
+
+
+      m = micros() - m;
+      if (maxLatency < m) {
+        maxLatency = m;
+      }
+      if (minLatency > m) {
+        minLatency = m;
+      }
+      totalLatency += m;
+    }
+
+    file.sync();
+    t = millis() - t;
+    s = file.fileSize();
+    //cout << s / t << ',' << maxLatency << ',' << minLatency;
+    //cout << ',' << totalLatency / n << endl;
+  }
+  writeSpeed = s / t;
+
+  //cout << endl << F("Starting read test, please wait.") << endl;
+  //cout << endl << F("read speed and latency") << endl;
+  //cout << F("speed,max,min,avg") << endl;
+  //cout << F("KB/Sec,usec,usec,usec") << endl;
+
+  // do read test
+  for (uint8_t nTest = 0; nTest < READ_COUNT; nTest++) {
+    file.rewind();
+    maxLatency = 0;
+    minLatency = 9999999;
+    totalLatency = 0;
+    t = millis();
+    for (uint32_t i = 0; i < n; i++) {
+      sdTestBuf[BUF_SIZE - 1] = 0;
+      uint32_t m = micros();
+      int32_t nr = file.read(sdTestBuf, sizeof(sdTestBuf));
+      if (nr != sizeof(sdTestBuf)) {
+        SD_OUTLN(("[SD TEST] read failed!!!"));
+        file.close();
+        Screen.switchToScreen("Main");
+
+        return;
+      }
+      m = micros() - m;
+      if (maxLatency < m) {
+        maxLatency = m;
+      }
+      if (minLatency > m) {
+        minLatency = m;
+      }
+      totalLatency += m;
+      if (sdTestBuf[BUF_SIZE - 1] != '\n') {
+        SD_OUTLN(("[SD TEST] data check error!"));
+      }
+    }
+    s = file.fileSize();
+    t = millis() - t;
+  /*  cout << s / t << ',' << maxLatency << ',' << minLatency;
+    cout << ',' << totalLatency / n << endl;*/
+  }
+  readSpeed = s / t;
+
+  file.close();
+
+  //Serial.println(writeSpeed);
+  //Serial.println(readSpeed);
+
+  sdSpeed.numPasses = WRITE_COUNT;
+  sdSpeed.writeSpeed = writeSpeed;
+  sdSpeed.readSpeed = readSpeed;
+  sdSpeed.testSucceeded = true;
+
+  if (!SD_CARD.remove(benchfilename))
+  {
+    SD_OUTLN("[SD TEST] delete failed!");
+  }
+
+
+  showSDStats(sdSpeed,outS);
+
+  if(withBenchFile)
+  {
+    if (file.open(BENCH_RESULTS_FILENAME, O_CREAT | O_TRUNC | O_RDWR)) 
+    {
+      // теперь записываем результаты тестирования в файл, чтобы потом повторно не дёргаться
+      file.truncate(0);
+      file.write(&sdSpeed, sizeof(sdSpeed));
+      file.sync();
+      file.close();
+    }  
+  } // if(withBenchFile)
+
+  SD_OUTLN(("[SD TEST] done."));
+
+  Screen.switchToScreen("Main");
+}

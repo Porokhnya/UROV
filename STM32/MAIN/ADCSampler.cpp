@@ -1,11 +1,24 @@
 ﻿
 #include "ADCSampler.h"
 #include "CONFIG.h"
+#include "Feedback.h"
+#include "Settings.h"
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ADCStopper::ADCStopper()
+{
+  adcSampler.pause(); // останавливаем АЦП
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ADCStopper::~ADCStopper()
+{
+  adcSampler.resume(); // запускаем АЦП
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler adcSampler;
 static ADC_HandleTypeDef hadc1;
 static DMA_HandleTypeDef hdma_adc1;
 static TIM_HandleTypeDef htim3 = {0};
+//static ADC_AnalogWDGConfTypeDef AnalogWDGConfig = { 0 };  // АЦП сторожевой таймер
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MX_DMA_Init(void)  // Enable DMA controller clock
 {
@@ -21,6 +34,38 @@ DBGLN("MX_DMA_Init START.");
 
 DBGLN("MX_DMA_Init END.");
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+void AnalogWDGInit()
+{
+// Настройка сторожевого таймера порогов АЦП
+// настроены по ссылке https ://www.stm32duino.com/viewtopic.php?t=110
+//https://github.com/STMicroelectronics/STM32CubeF1/blob/master/Projects/STM32F103RB-Nucleo/Examples/ADC/ADC_AnalogWatchdog/Src/main.c
+//https://github.com/STMicroelectronics/STM32CubeF1/tree/master/Projects/STM32F103RB-Nucleo/Examples/ADC/ADC_AnalogWatchdog
+
+ 
+ // HAL_NVIC_SetPriority(ADC_IRQn, 0, 1);
+//  HAL_NVIC_EnableIRQ(ADC_IRQn);
+
+
+  AnalogWDGConfig.Channel = ADC_CHANNEL_4;// | ADC_CHANNEL_5 | ADC_CHANNEL_6;
+  AnalogWDGConfig.ITMode = ENABLE;   // Разрешить прерывание при пересечении порога
+
+  AnalogWDGConfig.HighThreshold = 1500;//adcSampler._compare_High;
+  AnalogWDGConfig.LowThreshold = 500;//adcSampler._compare_Low;
+
+  AnalogWDGConfig.WatchdogMode = ADC_ANALOGWATCHDOG_ALL_REG; // Уточнить применение
+
+  if (HAL_ADC_AnalogWDGConfig(&hadc1, &AnalogWDGConfig) != HAL_OK)
+  {
+  // Channel Configuration Error 
+    Serial.println("AnalogWDGConfig Error");
+    return;//Error_Handler();
+  }
+
+ 
+}
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void MX_ADC1_Init(void) // Init ADC1
 {
@@ -58,6 +103,7 @@ DBGLN("MX_ADC1_Init START.");
 
   /* USER CODE BEGIN ADC1_Init 0 */
 
+
   /* USER CODE END ADC1_Init 0 */
 
   ADC_ChannelConfTypeDef sConfig = {0};
@@ -83,6 +129,8 @@ DBGLN("MX_ADC1_Init START.");
   {
     return;
   }
+
+  
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
   /*
@@ -129,6 +177,9 @@ DBGLN("MX_ADC1_Init START.");
   }
 
     __HAL_LINKDMA(&hadc1,DMA_Handle,hdma_adc1);
+
+   //  AnalogWDGInit();
+ 
  
 DBGLN("MX_ADC1_Init END.");
 }
@@ -179,6 +230,18 @@ void MX_TIM3_Init(void)
  DBGLN("MX_TIM3_Init END.");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+extern "C" void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
+{
+   /// Serial.println("@@@@@@@@@@@@@@@@");
+    Feedback.readyDiode(true);
+    Feedback.testDiode(true);
+    Feedback.failureDiode(true);
+
+  //  while(1);
+}
+*/
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 extern "C"  void TIM3_IRQHandler(void) // обработчик тика таймера
 {
   
@@ -190,19 +253,39 @@ extern "C"  void TIM3_IRQHandler(void) // обработчик тика тайм
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler::ADCSampler()
 {
+  /*
 	rmsComputeMode = false;
 	rmsStartComputeTime = 0;
+  */
   dataReady = false;
   filledBufferIndex = 0;
   workingBufferIndex = 0;
   countOfSamples = 0;
+  currentOscillTimer = 0;
+  machineState = checkCurrentBorder;
 }
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::setLowBorder(uint32_t val) 
+{
+  _compare_Low = val; 
+  /////////AnalogWDGInit(); 
+} 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::setHighBorder(uint32_t val) 
+{
+  _compare_High = val; 
+  ////////////AnalogWDGInit(); 
+} 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::begin()
 {  
 DBGLN("ADCSampler::begin START.");  
 
   dataReady = false;
+  compareTimerEnabled = false;
+
+  oscillData.init();
+  currentOscillTimer = 0;
 
   filledBufferIndex = 0;
   workingBufferIndex = 0;
@@ -215,18 +298,20 @@ DBGLN("ADCSampler::begin START.");
  MX_DMA_Init();
  MX_ADC1_Init();
  MX_TIM3_Init();
- 
- // говорим АЦП собирать данные по каналам в наш буфер
+
+
+  // говорим АЦП собирать данные по каналам в наш буфер
  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
-
-
- // запускаем таймер
-// HAL_TIM_Base_Start(&htim3);
+  
+  // запускаем таймер
   HAL_TIM_Base_Start_IT ( &htim3 ); 
+ 
+
  
 DBGLN("ADCSampler::begin END.");   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 void ADCSampler::startComputeRMS()
 {
 	rmsData1 = 0;
@@ -243,10 +328,160 @@ void ADCSampler::getComputedRMS(uint32_t& result1, uint32_t& result2, uint32_t& 
 	result2 = rmsData2;
 	result3 = rmsData3;
 }
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::end()
 {
 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef _CURRENT_COLLECT_OFF
+volatile uint32_t previewTimer = 0; // таймер для сбора превью по току
+volatile uint16_t recordsAvailable = 0;
+volatile uint16_t writeIterator = 0;
+volatile int16_t firstRecordIndex = -1;
+
+//volatile bool listTimerEnabled = false;
+//volatile uint32_t listTimer = 0;
+//volatile bool canCollectPreviewOfCurrent = true;
+//volatile bool canCheckBorder = true;
+
+volatile uint32_t stateTimer = 0; // таймер для различных состояний конечного автомата
+
+volatile uint32_t cTimes[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
+volatile uint16_t cData1[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
+volatile uint16_t cData2[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
+volatile uint16_t cData3[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
+
+volatile uint16_t avgSamplesDone = 0; // кол-во собранных семплов для усреднения
+
+// списки для усреднения
+volatile uint16_t avgChannel1[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgChannel2[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgChannel3[CURRENT_AVG_SAMPLES] = {0};
+
+
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ADCSampler::putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3)
+{
+#ifndef _CURRENT_COLLECT_OFF  
+      avgChannel1[avgSamplesDone] = raw1;
+      avgChannel2[avgSamplesDone] = raw2;
+      avgChannel3[avgSamplesDone] = raw3;
+
+      avgSamplesDone++;
+      
+      if(avgSamplesDone >= CURRENT_AVG_SAMPLES)
+      {
+          avgSamplesDone = 0;
+          return true;
+      }
+#endif // #ifndef _CURRENT_COLLECT_OFF      
+ return false;     
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
+{
+#ifndef _CURRENT_COLLECT_OFF  
+  avg1 = avg2 = avg3 = 0;
+
+  uint32_t chMin1 = 0xFFFFFFFF;
+  uint32_t chMin2 = 0xFFFFFFFF;
+  uint32_t chMin3 = 0xFFFFFFFF;
+
+  uint32_t chMax1 = 0;
+  uint32_t chMax2 = 0;
+  uint32_t chMax3 = 0;
+  
+  for(uint16_t i=0;i<CURRENT_AVG_SAMPLES;i++)
+  {
+   // avg1 += avgChannel1[i];
+   // avg2 += avgChannel2[i];
+   // avg3 += avgChannel3[i];
+    chMin1 = min(chMin1,avgChannel1[i]);
+    chMin2 = min(chMin2,avgChannel2[i]);
+    chMin3 = min(chMin3,avgChannel3[i]);
+
+    chMax1 = max(chMax1,avgChannel1[i]);
+    chMax2 = max(chMax2,avgChannel2[i]);
+    chMax3 = max(chMax3,avgChannel3[i]);
+  }
+
+  if(chMin1 == 0xFFFFFFFF)
+  {
+    chMin1 = chMax1;
+  }
+
+  if(chMin2 == 0xFFFFFFFF)
+  {
+    chMin2 = chMax2;
+  }
+
+  if(chMin3 == 0xFFFFFFFF)
+  {
+    chMin3 = chMax3;
+  }
+
+  avg1 = chMax1/CURRENT_AVG_SAMPLES - chMin1/CURRENT_AVG_SAMPLES;
+  avg2 = chMax2/CURRENT_AVG_SAMPLES - chMin2/CURRENT_AVG_SAMPLES;
+  avg3 = chMax3/CURRENT_AVG_SAMPLES - chMin3/CURRENT_AVG_SAMPLES;
+
+  //avg1 /= CURRENT_AVG_SAMPLES;
+  //avg2 /= CURRENT_AVG_SAMPLES;
+  //avg3 /= CURRENT_AVG_SAMPLES; 
+
+  #endif // #ifndef _CURRENT_COLLECT_OFF
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::savePreviewOfCurrent(uint16_t raw1, uint16_t raw2, uint16_t raw3)
+{
+    // сохраняем превью по току
+ #ifndef _CURRENT_COLLECT_OFF   
+    if(micros() - previewTimer >= CURRENT_OSCILL_FREQ)
+    {
+      if(putAVG(raw1,raw2,raw3))
+      {
+            // список усреднения полон, надо усреднять
+            uint16_t avg1 = 0, avg2 = 0, avg3 = 0;
+           getAVG(avg1,avg2,avg3);
+      
+            cTimes[writeIterator] = micros();
+            cData1[writeIterator] = avg1;//raw1;
+            cData2[writeIterator] = avg2;//raw2;
+            cData3[writeIterator] = avg3;//raw3;
+      
+            writeIterator++;
+            
+            if(writeIterator >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
+            {
+              writeIterator = 0;
+            }
+            
+      
+            recordsAvailable++;
+            
+            if(recordsAvailable >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
+            {
+              recordsAvailable = COUNT_OF_CURRENT_PREVIEW_RECORDS;
+              
+              firstRecordIndex++;
+              if(firstRecordIndex >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
+              {
+                firstRecordIndex = 0;
+              }
+            }
+      } // if(putAVG(raw1,raw2,raw3))
+
+      previewTimer = micros();
+    } // if 
+    #endif // #ifndef _CURRENT_COLLECT_OFF 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ADCSampler::hasBorderAlert(uint16_t raw1, uint16_t raw2, uint16_t raw3)
+{
+  return (raw1 > _compare_High || raw2 > _compare_High || raw3 > _compare_High);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::handleInterrupt()
@@ -278,6 +513,137 @@ void ADCSampler::handleInterrupt()
         adcBuffer[workingBufferIndex][writeIndex++] = tempADCBuffer[i];
     } // for
 
+      // данные по осциллограмме тока
+
+      // считаем показания по трём каналам        
+        uint32_t raw1 = 0;
+        uint32_t raw2 = 0;
+        uint32_t raw3 = 0;
+
+        float currentCoeff = Settings.getCurrentCoeff();
+        currentCoeff /= 1000; // у нас в тысячных долях
+
+        raw1 = (COEFF_1*(tempADCBuffer[0]))/currentCoeff;
+        raw2 = (COEFF_1*(tempADCBuffer[1]))/currentCoeff;
+        raw3 = (COEFF_1*(tempADCBuffer[2]))/currentCoeff;
+
+        #ifndef _CURRENT_COLLECT_OFF
+          
+          // теперь смотрим, что там с конечным автоматом?
+          switch(machineState)
+          {
+            case checkCurrentBorder: // проверяем пороги
+            {
+             #ifndef _CURRENT_COLLECT_OFF 
+              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
+             #endif 
+              
+              if(hasBorderAlert(raw1,raw2,raw3))
+              {
+                // порог превышен, взводим таймер проверки порогов
+                machineState = waitForBorderAlert;
+                stateTimer = micros();
+                
+              } // if
+            }
+            break; // checkCurrentBorder
+
+            case waitForBorderAlert: // ждём, чтобы проверить порог ещё раз
+            {
+              #ifndef _CURRENT_COLLECT_OFF
+              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
+              #endif
+              
+              if(micros() - stateTimer >= 20000ul)
+              {
+                // время ожидания вышло, можно проверять пороги
+                if(hasBorderAlert(raw1,raw2,raw3))
+                {
+                  // по прежнему есть превышение порога
+                  #ifndef _CURRENT_COLLECT_OFF
+                  // запоминаем превью по току, переключаемся на сбор информации, пока список не будет заполнен
+                  oscillData.clear();
+
+                  // нашли первую запись, проходим
+                  int16_t iter = firstRecordIndex;
+                  while(recordsAvailable > 0)
+                  {
+    
+                    oscillData.add(cTimes[iter],cData1[iter],cData2[iter],cData3[iter]);
+    
+                    recordsAvailable--;
+                    iter++;
+                    
+                    if(iter >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
+                    {
+                      iter = 0;
+                    }
+                  } // while
+                  
+    
+                  writeIterator = 0;
+                  firstRecordIndex = -1;
+                  #endif // #ifndef _CURRENT_COLLECT_OFF
+                  
+                  stateTimer = micros();
+                  machineState = collectCurrentData;
+                } // if
+                else
+                {
+                  // превышения порога нет
+                  machineState = checkCurrentBorder; // переключаемся на проверку порогов
+                } // else
+              } // if
+              
+            }
+            break; // waitForBorderAlert
+
+            case collectCurrentData: // собираем данные по току
+            {
+              #ifndef _CURRENT_COLLECT_OFF
+                if(micros() - stateTimer >= CURRENT_OSCILL_FREQ)
+                {
+
+                  if(putAVG(raw1,raw2,raw3))
+                  {
+                    uint16_t avg1 = 0, avg2 = 0, avg3 = 0;
+                    getAVG(avg1,avg2,avg3);
+                  
+                      oscillData.add(micros(),avg1,avg2,avg3);
+                      
+                      if(oscillData.times.size() >= oscillData.MAX_RECORDS)
+                      {
+                        // собрали, всё
+                        machineState = waitForTakeData; // ждём, пока данные не заберут
+                      }
+                  } // if(putAVG(raw1,raw2,raw3))
+                  stateTimer = micros();
+                }
+               #else
+                machineState = checkCurrentBorder;
+               #endif 
+            }
+            break; // collectCurrentData
+
+            case waitForTakeData: // ждём, когда данные заберут
+            {
+              #ifndef _CURRENT_COLLECT_OFF
+              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
+              #endif
+              
+              if(micros() - stateTimer >= 10000000ul)
+              {
+                // если в течение N секунд не забрали - переключаемся на проверку порогов
+                machineState = checkCurrentBorder;
+              }
+            }
+            break; // waitForTakeData
+            
+          } // switch
+          
+        #endif // #ifndef _CURRENT_COLLECT_OFF
+
+
     countOfSamples++;
 
     if(countOfSamples >= ADC_BUFFER_SIZE/NUM_CHANNELS)
@@ -295,68 +661,26 @@ void ADCSampler::handleInterrupt()
       }
 
 
-      if (rmsComputeMode)
-        {
-          // нас попросили считать РМС, считаем
-      
-          int bufferLength = 0;
-          uint16_t* cBuf = adcSampler.getADCBuffer(&bufferLength);
-          uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
-      
-          uint32_t serie1=0, serie2=0, serie3=0;
-      
-          for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS) // получить результат измерения поканально, с интервалом 3
-          {
-            serie1 += cBuf[i + 0];        // Данные 1 графика  (красный)
-            serie2 += cBuf[i + 1];        // Данные 2 графика  (синий)
-            serie3 += cBuf[i + 2];        // Данные 3 графика  (желтый)
-          }
-      
-          // получаем средние значения за серию
-          serie1 /= countOfPoints;
-          serie2 /= countOfPoints;
-          serie3 /= countOfPoints;
-      
-          // складываем полученные средние с ранее высчитанными, и делим на 2, поскольку в высчитанном значении у нас тоже хранится среднее
-          if (rmsData1)
-          {
-            rmsData1 += serie1;
-            rmsData1 /= 2;
-          }
-          else
-            rmsData1 = serie1;
-      
-          if (rmsData2)
-          {
-            rmsData2 += serie2;
-            rmsData2 /= 2;
-          }
-          else
-            rmsData2 = serie2;
-      
-          if (rmsData3)
-          {
-            rmsData3 += serie3;
-            rmsData3 /= 2;
-          }
-          else
-            rmsData3 = serie3;
-      
-          if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
-          {
-            // время подсчёта вышло, больше не считаем
-            rmsComputeMode = false;
-            rmsStartComputeTime = 0;
-          }
-      
-        } // if(rmsComputeMode)
-
-
       dataReady = true; // Данные сформированы
       
       
     } // if(countOfSamples >= ADC_BUFFER_SIZE/NUM_CHANNELS)
 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::pause()
+{
+  // останавливаем таймер
+  //HAL_TIM_Base_Stop_IT ( &htim3 );
+  HAL_NVIC_DisableIRQ  ( TIM3_IRQn );
+ HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::resume()
+{
+
+  HAL_NVIC_EnableIRQ  ( TIM3_IRQn );
+ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::available()
@@ -375,6 +699,3 @@ void ADCSampler::reset()
   dataReady = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-

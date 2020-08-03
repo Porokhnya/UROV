@@ -605,6 +605,8 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
   
  if(SDInit::sdInitResult)
  {
+    PAUSE_ADC; // останавливаем АЦП
+    
     String dirOnly;
     int idx = filePath.lastIndexOf("/");
     if(idx != -1)
@@ -932,10 +934,12 @@ bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandParser& parser, Stream* pStream)
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
   // измеряем скорость работы с SD, никуда не выводим, создаём файл отчёта, не читаем перед началом теста ранее сохранённый файл отчёта
-  sdSpeed = SDInit::MeasureSpeed(NULL,true,true);
+  Test_SD(NULL,true,true);
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
@@ -1650,7 +1654,8 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
 	fileName += ETHALON_FILE_EXT;
 
-
+  PAUSE_ADC; // останавливаем АЦП
+  
 	SdFile file;
 	file.open(fileName.c_str(), FILE_WRITE | O_CREAT | O_TRUNC);
 
@@ -1690,7 +1695,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& _list, EthalonCompareResult result)
+void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& _list, EthalonCompareResult result)
 {
 	list = _list;
 }
@@ -1700,8 +1705,3 @@ void ExternalEthalonCommandHandler::OnHaveInterruptData()
 	done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-

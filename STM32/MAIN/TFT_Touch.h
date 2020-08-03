@@ -44,4 +44,3 @@ private:
 
 	TS_Point _point = { 0, 0, 0 };
 };
-

@@ -9,6 +9,7 @@
 #include "ADCSampler.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
+CurrentOscillData     OscillData; // данные по току, актуальные на момент прерывания
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptTimeList encoderList; // список времён срабатываний прерываний на энкодере штанги
 MachineState machineState = msIdle; // состояние конечного автомата
@@ -17,9 +18,11 @@ volatile uint32_t timer = 0; // служебный таймер
 DS3231Time relayTriggeredTime; // время срабатывания защиты
 volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 
+/*
 volatile uint32_t currentOscillTimer = 0; // таймер для сбора информации по току
 volatile bool currentOscillTimerActive = false; // флаг активности таймера сбора информации по току
 CurrentOscillData oscillData; // информация по току
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool relayTriggeredAtStart = false; // флаг, что защита сработала при старте (это срабатывание мы игнорируем)
 volatile uint16_t interruptSkipCounter = 0; // счётчик пойманных импульсов, для пропуска лишних
@@ -42,6 +45,7 @@ bool hasRelayTriggered()
   return false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 // RMS
 //--------------------------------------------------------------------------------------------------------------------------------------
 #ifndef _RMS_OFF
@@ -50,6 +54,7 @@ volatile bool inComputeRMSMode = false; // флаг, что мы считаем 
 volatile uint32_t rmsStartComputeTime = 0; // начало времени подсчёта РМС
 volatile bool computeRMSCalled = false; // флаг, что мы попросили АЦП подсчитать РМС
 #endif // _RMS_OFF
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 // ПРЕДСКАЗАНИЯ
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -175,6 +180,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
        
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void computeRMS()
 {
 #ifndef _RMS_OFF
@@ -231,33 +237,6 @@ void checkRMS()
 	}
 
 #endif // _RMS_OFF
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-volatile bool relayTriggeredAtStart = true;
-//--------------------------------------------------------------------------------------------------------------------------------------
-void RelayTriggered() // обработчик срабатывания защиты
-{
-	if (relayTriggeredAtStart) // убираем первое срабатывание при старте
-	{
-		relayTriggeredAtStart = false;
-		return;
-	}
-  // запоминаем время срабатывания защиты
-  relayTriggeredTime = micros();
-  trigTime = RealtimeClock.getTime();
-  hasRelayTriggered = true;
-  hasRelayTriggeredTime = true;
-
-#ifndef _RMS_OFF
-  wantComputeRMS = true; // говорим, что надо посчитать РМС
-#endif // _RMS_OFF
-
-  timeBeforeInterruptsBegin = 0; // сбрасываем время до начала импульсов
-
-  // сохраняем состояние нижнего концевика 
-  downEndstopTriggered = RodDownEndstopTriggered(false);
-
 }
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -330,7 +309,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+int InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, InterruptTimeList& ethalonData, bool toEEPROM, int curEEPROMWriteAddress)
 {
 
@@ -631,10 +610,10 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
   }
 
   // пишем данные по току
-  if (oscData.times.size() > 1)
+  if (oscData->times.size() > 1)
   {
 	  workBuff[0] = recordOscDataFollow;
-	  uint16_t dataLen = oscData.times.size();
+	  uint16_t dataLen = oscData->times.size();
 	  memcpy(&(workBuff[1]), &dataLen, 2);
 
     if(toEEPROM)
@@ -648,13 +627,13 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
       LastTriggeredInterruptRecord.push_back(workBuff[c]);
     }         
     
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.times.pData(), oscData.times.size()*sizeof(uint32_t));
-    written += oscData.times.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += oscData.times.size()*sizeof(uint32_t);
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->times.pData(), oscData->times.size()*sizeof(uint32_t));
+    written += oscData->times.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += oscData->times.size()*sizeof(uint32_t);
 
-    for(size_t k=0;k<oscData.times.size();k++)
+    for(size_t k=0;k<oscData->times.size();k++)
     {
-       uint32_t rec = oscData.times[k];
+       uint32_t rec = oscData->times[k];
        uint8_t* ptr = (uint8_t*)&rec;
        for(size_t c=0;c<sizeof(uint32_t);c++)
        {
@@ -662,43 +641,43 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
        }
     }       
 
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data1.pData(), oscData.data1.size()*sizeof(uint32_t));
-    written += oscData.data1.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += oscData.data1.size()*sizeof(uint32_t);
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data1.pData(), oscData->data1.size()*sizeof(uint16_t));
+    written += oscData->data1.size()*sizeof(uint16_t);
+    curEEPROMWriteAddress += oscData->data1.size()*sizeof(uint16_t);
 
-    for(size_t k=0;k<oscData.data1.size();k++)
+    for(size_t k=0;k<oscData->data1.size();k++)
     {
-       uint32_t rec = oscData.data1[k];
+       uint16_t rec = oscData->data1[k];
        uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
+       for(size_t c=0;c<sizeof(rec);c++)
        {
           LastTriggeredInterruptRecord.push_back(*ptr++);
        }
     }         
 
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data2.pData(), oscData.data2.size()*sizeof(uint32_t));
-    written += oscData.data2.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += oscData.data2.size()*sizeof(uint32_t);
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data2.pData(), oscData->data2.size()*sizeof(uint16_t));
+    written += oscData->data2.size()*sizeof(uint16_t);
+    curEEPROMWriteAddress += oscData->data2.size()*sizeof(uint16_t);
 
-    for(size_t k=0;k<oscData.data2.size();k++)
+    for(size_t k=0;k<oscData->data2.size();k++)
     {
-       uint32_t rec = oscData.data2[k];
+       uint16_t rec = oscData->data2[k];
        uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
+       for(size_t c=0;c<sizeof(rec);c++)
        {
           LastTriggeredInterruptRecord.push_back(*ptr++);
        }
     }       
 
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData.data3.pData(), oscData.data3.size()*sizeof(uint32_t));
-    written += oscData.data3.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += oscData.data3.size()*sizeof(uint32_t);
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data3.pData(), oscData->data3.size()*sizeof(uint16_t));
+    written += oscData->data3.size()*sizeof(uint16_t);
+    curEEPROMWriteAddress += oscData->data3.size()*sizeof(uint16_t);
 
-    for(size_t k=0;k<oscData.data3.size();k++)
+    for(size_t k=0;k<oscData->data3.size();k++)
     {
-       uint32_t rec = oscData.data3[k];
+       uint16_t rec = oscData->data3[k];
        uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
+       for(size_t c=0;c<sizeof(rec);c++)
        {
           LastTriggeredInterruptRecord.push_back(*ptr++);
        }
@@ -709,10 +688,10 @@ int InterruptHandlerClass::writeLogRecord(uint32_t dataArrivedTime, CurrentOscil
     {
       #ifndef _SD_OFF
 	    Logger.write(workBuff, 3);
-	    Logger.write((uint8_t*)oscData.times.pData(), oscData.times.size() * sizeof(uint32_t));
-	    Logger.write((uint8_t*)oscData.data1.pData(), oscData.data1.size() * sizeof(uint32_t));
-	    Logger.write((uint8_t*)oscData.data2.pData(), oscData.data2.size() * sizeof(uint32_t));
-	    Logger.write((uint8_t*)oscData.data3.pData(), oscData.data3.size() * sizeof(uint32_t));
+	    Logger.write((uint8_t*)oscData->times.pData(), oscData->times.size() * sizeof(uint32_t));
+	    Logger.write((uint8_t*)oscData->data1.pData(), oscData->data1.size() * sizeof(uint16_t));
+	    Logger.write((uint8_t*)oscData->data2.pData(), oscData->data2.size() * sizeof(uint16_t));
+	    Logger.write((uint8_t*)oscData->data3.pData(), oscData->data3.size() * sizeof(uint16_t));
      #endif
     }
   }
@@ -743,9 +722,9 @@ return written;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
-  uint32_t dataArrivedTime, 
+  int32_t dataArrivedTime, 
   DS3231Time& tm,
-	CurrentOscillData& oscData,
+	CurrentOscillData* oscData,
 	InterruptTimeList& lst1, 
 	EthalonCompareResult res1, 
 	EthalonCompareNumber num1,
@@ -753,6 +732,8 @@ void InterruptHandlerClass::writeToLog(
   bool toEEPROM
 )
 {
+
+  PAUSE_ADC; // останавливаем АЦП
 
   uint8_t workBuff[10] = {0};
   int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS;
@@ -917,6 +898,7 @@ void InterruptHandlerClass::writeToLog(
 //--------------------------------------------------------------------------------------------------------------------------------------
 // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void InterruptHandlerClass::startCollectCurrentData()
 {
 #ifndef CURRENT_OSCILL_OFF
@@ -941,12 +923,13 @@ CurrentOscillData& InterruptHandlerClass::getCurrentData()
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 // ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
 
   // собираем данные по току, если необходимо
-  
+/*  
 	#ifndef CURRENT_OSCILL_OFF
 	if (currentOscillTimerActive)
 	{
@@ -968,15 +951,6 @@ void InterruptHandlerClass::update()
 				uint32_t raw2 = 0;
 				uint32_t raw3 = 0;
 
-          /*
-            Буфер у нас для четырёх каналов, индексы:
-        
-            0 -  Аналоговый вход трансформатора №1
-            1 - Аналоговый вход трансформатора №2
-            2 -  Аналоговый вход трансформатора №3
-            3 - Аналоговый вход контроль питания 3.3в
-        
-        */  
 
 				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS)                // получить результат измерения поканально, с интервалом 3
 				{
@@ -1007,8 +981,9 @@ void InterruptHandlerClass::update()
 
 	} // if(currentOscillTimerActive)
 	#endif // #ifndef CURRENT_OSCILL_OFF
+*/  
 
-
+/*
   // считаем RMS, если это необходимо
   #ifndef _RMS_OFF
 
@@ -1026,6 +1001,7 @@ void InterruptHandlerClass::update()
   
     }  
   #endif // _RMS_OFF
+  */
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -1037,14 +1013,14 @@ void InterruptHandlerClass::update()
       if(hasRelayTriggered())
       {
         // сработало реле защиты
-
+/*
         #ifndef _RMS_OFF
           // считаем РМС
             computeRMS();
         #endif
-
+*/
         // сработала защита, нам надо собирать данные по току с определённым интервалом
-        startCollectCurrentData();  
+    //    startCollectCurrentData();  
         
         #ifdef PREDICT_ENABLED
         noInterrupts();
@@ -1071,14 +1047,14 @@ void InterruptHandlerClass::update()
         downEndstopTriggered = RodDownEndstopTriggered(true);
 
       //  DBGLN(F("PREDICT TRIGGERED, COLLECT PULSES..."));
-      
+     /* 
         #ifndef _RMS_OFF
           // считаем РМС
             computeRMS();
         #endif
-
+*/
         // сработало предсказание, нам надо собирать данные по току с определённым интервалом
-        startCollectCurrentData();  
+     //   startCollectCurrentData();  
         
         noInterrupts();
         
@@ -1165,21 +1141,24 @@ void InterruptHandlerClass::update()
             encoderList.empty();        
             
             // заканчиваем сбор данных по току, копируем данные по току в локальный список
-            stopCollectCurrentData();
-            CurrentOscillData copyOscillData = oscillData;
-            oscillData.clear();
+         //   stopCollectCurrentData();
+           // CurrentOscillData copyOscillData = oscillData;
+          //  oscillData.clear();
+
+         OscillData.clear();
+         OscillData = adcSampler.getListOfCurrent();
         
         interrupts();
 
         // вычисляем смещение от начала записи по току до начала поступления данных
-        uint32_t datArrivTm = 0;
-        if(copyOscillData.times.size() > 0 && copyList1.size() > 0)
+        int32_t datArrivTm = 0;
+        if(OscillData.times.size() > 0 && copyList1.size() > 0)
         {
-          datArrivTm = copyList1[0] - copyOscillData.times[0];
+          datArrivTm = copyList1[0] - OscillData.earlierRecord();
         }
 
         // нормализуем список времен записей по току
-        normalizeList(copyOscillData.times);
+        normalizeList(OscillData.times);
 
          // нормализуем список прерываний
          normalizeList(copyList1);
@@ -1218,12 +1197,12 @@ void InterruptHandlerClass::update()
             if(needToLog)
             {              
               // записываем последнее срабатывание в EEPROM
-              writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1,true);
+              writeToLog(datArrivTm, relayTriggeredTime, &OscillData,copyList1, compareRes1, compareNumber1, ethalonData1,true);
               
               #ifndef _SD_OFF
                   //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
                   // надо записать в лог дату срабатывания системы
-                  writeToLog(datArrivTm, relayTriggeredTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
+                  writeToLog(datArrivTm, relayTriggeredTime, &OscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
               #endif // !_SD_OFF
               
             } // needToLog
@@ -1239,7 +1218,7 @@ void InterruptHandlerClass::update()
             //  DBGLN(F("Подписчик найден!"));  
               
             // уведомляем подписчика
-            informSubscriber(copyOscillData,copyList1, compareRes1/*, thisTm, thisHasRelayTriggeredTime*/);
+            informSubscriber(&OscillData,copyList1, compareRes1/*, thisTm, thisHasRelayTriggeredTime*/);
     
           } // if(subscriber)
           
@@ -1266,274 +1245,6 @@ void InterruptHandlerClass::update()
     break;
     
   } // switch  
-  
-
-  
-
-/*
-  static bool inProcess = false;
-
-  noInterrupts();
-    bool thisHasEncoderInterrupt = hasEncoderInterrupt;
-    uint32_t thisLastEncoderInterruptTime = lastEncoderInterruptTime;
-    
-    bool thisHasRelayTriggered = hasRelayTriggered;
-    uint32_t thisRelayTriggeredTime = relayTriggeredTime;
-
-#ifndef _RMS_OFF
-	bool thisWantComputeRMS = wantComputeRMS;
-	wantComputeRMS = false;
-#endif // _RMS_OFF
-
-  interrupts();
-
-#ifndef _RMS_OFF
-  if (thisWantComputeRMS) // надо считать РМС
-  {
-	//  DBGLN(F("Надо считать RMS!"));
-	  thisWantComputeRMS = false;
-	  inComputeRMSMode = true;
-
-	  rmsStartComputeTime = 0;
-	  // считаем РМС
-	  computeRMS();
-
-  } // if(wantComputeRMS)
-
-  if (inComputeRMSMode)
-  {
-	  if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
-	  {
-	//	  DBGLN(F("RMS собрано, проверяем!"));
-		  inComputeRMSMode = false;
-		  // время подсчёта РМС вышло, надо проверять
-		  checkRMS(); // проверяем РМС
-	  }
-
-  }
-#endif // _RMS_OFF
-
-
-  // проверяем факт срабатывания защиты
-  if(thisHasRelayTriggered)
-  {
-
-	// защита сработала, надо считать РМС !!!
-//	DBGLN(F("СРАБОТАЛО РЕЛЕ ЗАЩИТЫ!"));
-
-#ifndef _RMS_OFF
-	wantComputeRMS = true;
-
-	if (!rmsStartComputeTime)
-		rmsStartComputeTime = millis();
-#endif // _RMS_OFF
-
-    // было прерывание срабатывания защиты - проверяем время c момента срабатывания
-    if(micros() - thisRelayTriggeredTime >= Settings.getRelayDelay())
-    {      
-      // время ожидания прошло
-	//	DBGLN(F("Время ожидания после срабатывания реле вышло, продолжаем..."));
-      // проверяем - если данные в одном из списков есть - ничего не делаем.
-      // если ни в одном из списков нет данных - значит, это авария.
-      // в любом другом случае флаг аварии выставится после того, как будет принято решение
-      // о том, что пачки импульсов закончились.
-      
-      noInterrupts();
-
-       hasRelayTriggered = false;
-       relayTriggeredTime = micros();
-	   hasAlarm = !(list1.size());
-       
-       if(hasAlarm)
-       {
-        // есть тревога, надо подождать окончания прерываний c энкодера
-        thisHasEncoderInterrupt = true;
-        thisLastEncoderInterruptTime = micros();
-
-		hasEncoderInterrupt = true;
-		lastEncoderInterruptTime = micros();
-
-        timeBeforeInterruptsBegin = micros() - thisRelayTriggeredTime;
-       }
-
-      interrupts();      
-
-	  // обновляем моторесурс, т.к. было срабатывание защиты
-	  uint32_t motoresource = Settings.getMotoresource(0);
-	  motoresource++;
-	  Settings.setMotoresource(0, motoresource);
-
-      // выставляем флаг аварии, в зависимости от наличия данных в списках
-      if(hasAlarm)
-      {
-	//	  DBGLN(F("Взведён флаг аварии!"));
-		  // сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
-        Feedback.alarm(true);
-      }
-    } // if
-
-	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-	// сработала защита, нам надо собирать данные по току с определённым интервалом
-	startCollectCurrentData();	
-	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-    
-  } // if(thisHasRelayTriggered)
-
-
-  // работаем с энкодером, а именно - ожидаем окончание сбора с него данных
-
-  if (!thisHasEncoderInterrupt || inProcess)
-  {
-	  return;
-  }
-  
-      if(!(micros() - thisLastEncoderInterruptTime > INTERRUPT_MAX_IDLE_TIME)) // ещё не вышло максимальное время ожидания окончания прерываний на энкодере
-      {
-        return;
-      }
-
-    noInterrupts();
-
-      inProcess = true;
-	  hasEncoderInterrupt = false;
-      
-      InterruptTimeList copyList1 = list1; // копируем данные в локальный список
-      // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
-      list1.empty();
-
-	  // копируем данные по току в локальный список
-	  stopCollectCurrentData();
-	  CurrentOscillData copyOscillData = oscillData;
-	  oscillData.clear();
-
-          
-    interrupts();
-
-
-
-    // вычисляем смещение от начала записи по току до начала поступления данных
-    uint32_t datArrivTm = 0;
-    if(copyOscillData.times.size() > 0 && copyList1.size() > 0)
-    {
-      datArrivTm = copyList1[0] - copyOscillData.times[0];
-    }
-
-	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-	// нормализуем список времен записей по току
-	InterruptHandlerClass::normalizeList(copyOscillData.times);
-	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-
-	// здесь мы получили список прерываний, и можно с ним что-то делать
-     InterruptHandlerClass::normalizeList(copyList1);
-
-     
-     EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
-
-	 EthalonCompareNumber compareNumber1;
-	 InterruptTimeList ethalonData1;
-     
-    bool needToLog = false;
-
-    // теперь смотрим - надо ли нам самим чего-то обрабатывать?
-    if(copyList1.size() > 1)
-    {
-	//	DBG("Прерывание содержит данные: ");
-  //    DBGLN(copyList1.size());
-
-      // зажигаем светодиод "ТЕСТ"
-      Feedback.testDiode();
-
-      needToLog = true;
-        
-       // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-       compareRes1 = EthalonComparer::Compare(copyList1, 0,compareNumber1, ethalonData1);
-
-       if(compareRes1 == COMPARE_RESULT_MatchEthalon)
-        {}
-       else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
-       {
-          Feedback.failureDiode();
-          Feedback.alarm();
-       }
-    }
-	else
-	{
-	//	DBGLN(F("Прерывание НЕ содержит данных!!!"));
-	}
-    
-
-    if(needToLog)
-    {
-#ifndef _SD_OFF
-	//	DBGLN(F("Надо сохранить в лог, пишем на SD!"));
-      // надо записать в лог дату срабатывания системы
-      InterruptHandlerClass::writeToLog(datArrivTm, trigTime, copyOscillData,copyList1, compareRes1, compareNumber1, ethalonData1);
-#endif // !_SD_OFF
-    } // needToLog
-    
-
-    // если в каком-то из списков есть данные - значит, одно из прерываний сработало,
-    // в этом случае мы должны сообщить обработчику, что данные есть. При этом мы
-    // не в ответе за то, что делает сейчас обработчик - пускай сам разруливает ситуацию
-    // так, как нужно ему.
-
-    bool wantToInformSubscriber = ( hasAlarm || (copyList1.size() > 1));
-
-    if(wantToInformSubscriber)
-    { 
-	//	DBGLN(F("Надо уведомить подписчика прерываний!"));
-      if(subscriber)
-      {
-		//  DBGLN(F("Подписчик найден!"));
-        noInterrupts();
-        uint32_t thisTm = timeBeforeInterruptsBegin;
-        bool thisHasRelayTriggeredTime = hasRelayTriggeredTime;
-        
-        timeBeforeInterruptsBegin = 0;
-        hasRelayTriggeredTime = false;
-        relayTriggeredTime = micros();
-        interrupts();
-
-#ifdef _FAKE_CHART_DRAW
-		////////////////////////////////////////////////////////////////////////////////////
-		// тут тупо пытаемся сделать кучу данных в списке
-		////////////////////////////////////////////////////////////////////////////////////
-
-		const int TO_GENERATE = FAKE_POINTS_TO_GENERATE; // сколько тестовых точек генерировать?
-		copyList1.clear();
-		copyList1.reserve(TO_GENERATE);
-		uint32_t val = 0;
-		uint32_t spacer = 0;
-
-		while (copyList1.size() < TO_GENERATE)
-		{
-			val += spacer;
-			spacer++;
-			copyList1.push_back(val);
-		}
-		////////////////////////////////////////////////////////////////////////////////////
-#endif // _FAKE_CHART_DRAW
-
-		// уведомляем подписчика
-		informSubscriber(copyOscillData,copyList1, compareRes1, thisTm, thisHasRelayTriggeredTime);
-
-      } // if(subscriber)
-      else
-      {
-		// подписчика нет, просто очищаем переменные
-	//	  DBGLN(F("!!! ПОДПИСЧИКА НЕТ !!!"));
-        noInterrupts();
-        timeBeforeInterruptsBegin = 0;
-        relayTriggeredTime = micros();
-        interrupts();
-      }
-      
-    }    
-
-	// всё обработали
-    inProcess = false;
-*/    
-
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* InterruptHandlerClass::getSubscriber()
@@ -1547,7 +1258,7 @@ void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
   subscriber = h;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
+void InterruptHandlerClass::informSubscriber(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 	if (subscriber)
 	{
@@ -1561,4 +1272,3 @@ void InterruptHandlerClass::informSubscriber(CurrentOscillData& oscData, Interru
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-

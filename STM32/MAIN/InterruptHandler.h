@@ -4,6 +4,7 @@
 #include "CONFIG.h"
 #include "TinyVector.h"
 #include "DS3231.h"
+#include "ADCSampler.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 typedef Vector<uint32_t> InterruptTimeList;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -56,36 +57,10 @@ typedef enum
   
 } MachineState;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-struct CurrentOscillData // данные по току, по трём каналам
-{
-	void clear() // очищает данные без освобождения памяти под них
-	{
-		times.empty();
-		data1.empty();
-		data2.empty();
-		data3.empty();
-	}
-
-	void erase() // очищает данные вместе с памятью, выделенной под них
-	{
-		times.clear();
-		data1.clear();
-		data2.clear();
-		data3.clear();
-	}
-	InterruptTimeList times; // время занесения записи, micros()
-
-	// данные по АЦП
-	InterruptTimeList data1;
-	InterruptTimeList data2;
-	InterruptTimeList data3;
-
-};
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 struct InterruptEventSubscriber
 {
   // вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
-  virtual void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult result) = 0;
+  virtual void OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult result) = 0;
 
   // вызывается, когда есть хотя бы один список с прерываниями - закончен
   virtual void OnHaveInterruptData() = 0;
@@ -102,27 +77,27 @@ class InterruptHandlerClass
 
    void setSubscriber(InterruptEventSubscriber* h);
    InterruptEventSubscriber* getSubscriber();
-   void informSubscriber(CurrentOscillData& oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
+   void informSubscriber(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
    
-   static void writeToLog(uint32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData& oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1, bool toEEPROM=false);
+   static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1, bool toEEPROM=false);
 
+/*
    // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
    static void startCollectCurrentData();
    static void stopCollectCurrentData();
    static CurrentOscillData& getCurrentData();
    // ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-
+*/
    static void normalizeList(InterruptTimeList& list);
 
 private:
 
   bool hasAlarm;
   
-   static int writeLogRecord(uint32_t dataArrivedTime, CurrentOscillData& oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData, bool toEEPROM=false, int curEEPROMWriteAddress=0);
+   static int writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData, bool toEEPROM=false, int curEEPROMWriteAddress=0);
 
 
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern InterruptHandlerClass InterruptHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
-

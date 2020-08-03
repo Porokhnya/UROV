@@ -307,4 +307,3 @@ void AT24CX::read(unsigned int address, byte *data, int offset, int n) {
     	}
     }
 }
-

@@ -87,4 +87,3 @@ class TFT_Buttons_Rus
 		FONTTYPE _font_symbol;
     FONTTYPE _font_icon;
 };
-

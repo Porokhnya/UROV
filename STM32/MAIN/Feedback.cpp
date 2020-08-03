@@ -44,4 +44,3 @@ void FeedbackList::testDiode(bool on)
   digitalWrite(LED_TEST, on ? LED_ON_LEVEL : !LED_ON_LEVEL);
 }
 //--------------------------------------------------------------------------------------------------
-

@@ -129,7 +129,7 @@ public:
 	ExternalEthalonCommandHandler();
 
 	// вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
-	virtual void OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult result);
+	virtual void OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult result);
 
 	// вызывается, когда есть хотя бы один список с прерываниями - закончен
 	virtual void OnHaveInterruptData();
@@ -148,4 +148,3 @@ private:
 	InterruptEventSubscriber* oldSubscriber; // старый подписчик
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
-

@@ -150,6 +150,14 @@ namespace UROVConfig
 
     };
 
+    public class CurrentInfo
+    {
+        public int Time;
+        public int Channel1;
+        public int Channel2;
+        public int Channel3;
+    }
+
     public class InterruptRecord
     {
         public InterruptInfo InterruptInfo;

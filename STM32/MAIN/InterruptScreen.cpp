@@ -61,7 +61,7 @@ void InterruptScreen::OnHaveInterruptData()
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(const CurrentOscillData& oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -74,7 +74,7 @@ void InterruptScreen::OnInterruptRaised(const CurrentOscillData& oscData, const 
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
   list1 = list;
-  oscillData = oscData; // копируем данные по току себе
+  oscillData = oscData;
   box.chartColor = LGRAY;
   box.compareColor = LGRAY;
   box.foreCompareColor = LGRAY;
@@ -286,7 +286,7 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
 	Drawing::DrawChart(this, serie1);
-
+/*
 	#ifndef CURRENT_OSCILL_OFF
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	// тут отрисовываем графики тока
@@ -297,26 +297,26 @@ void InterruptScreen::doDraw(TFTMenu* menu)
 
 	Points serie;
 
-	Drawing::ComputeSerie(oscillData.data1, serie, xOffset, yOffset);
+	Drawing::ComputeSerie(oscillData->data1, serie, xOffset, yOffset);
 	Drawing::DrawSerie(this, serie, CYAN);
 	xOffset += xOffsetStep;
 	yOffset += yOffsetStep;
 
-	Drawing::ComputeSerie(oscillData.data2, serie, xOffset, yOffset);
+	Drawing::ComputeSerie(oscillData->data2, serie, xOffset, yOffset);
 	Drawing::DrawSerie(this, serie, GREEN);
 	xOffset += xOffsetStep;
 	yOffset += yOffsetStep;
 
-	Drawing::ComputeSerie(oscillData.data3, serie, xOffset, yOffset);
+	Drawing::ComputeSerie(oscillData->data3, serie, xOffset, yOffset);
 	Drawing::DrawSerie(this, serie, PURPLE);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 	#endif // CURRENT_OSCILL_OFF
-
-	oscillData.erase(); // чистим память за собой
-
+*/
 	drawTime(menu);
 	drawMotoresource(menu);
 	drawCompareResult(menu);
+
+  //TODO: ОЧИЩАТЬ ПАМЯТЬ СПИСКА ПО ТОКУ!!!
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
@@ -332,4 +332,3 @@ void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 */    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

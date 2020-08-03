@@ -545,7 +545,10 @@ namespace UROVConfig
 
             ChartArea area = chart.ChartAreas[0];
 
-            area.AxisX.IntervalType = DateTimeIntervalType.Number;
+            area.AxisX.LabelStyle.Format = "dd.MM.yyyy HH:mm"; // задаём формат отображения меток
+                                                               // area.AxisX.IntervalType = DateTimeIntervalType.Number;
+            area.AxisX.Interval = 1;
+            area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
             area.AxisX.ScaleView.Zoomable = true;
             area.CursorX.AutoScroll = true;
 

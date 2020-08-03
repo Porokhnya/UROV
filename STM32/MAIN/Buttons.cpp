@@ -2,6 +2,7 @@
 #include "Buttons.h"
 #include "Feedback.h"
 #include "CONFIG.h"
+#include "ADCSampler.h"
 //--------------------------------------------------------------------------------------------------
 ButtonsList Buttons;
 //--------------------------------------------------------------------------------------------------
@@ -36,6 +37,14 @@ void ButtonsList::update()
     Feedback.readyDiode(false); // гасим светодиод УСПЕХ
 
     Feedback.alarm(false); // сбрасываем сигнал АВАРИЯ
+/*
+    static bool b = true;
+    b = !b;
+    if(!b)
+      adcSampler.pause();
+    else
+      adcSampler.resume();
+*/      
   }
 
   if(redButton.isClicked())
@@ -50,4 +59,3 @@ void ButtonsList::update()
  
 }
 //--------------------------------------------------------------------------------------------------
-

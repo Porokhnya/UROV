@@ -664,6 +664,8 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
             // теперь высчитываем абсолютные ширины импульсов
             double absPulseWidthSum = 0;
 
+           // double maxPulseWidth = 0;
+
             uint32_t pulseWidthSetting = Settings.getChartPulseWidth();
 
             for(size_t i=0;i< relativePulseWidthList.size();i++)
@@ -687,7 +689,15 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
                 // сохраняем в список
                 pulsesList.push_back(pulseWidth);
 
+              //  maxPulseWidth = max(maxPulseWidth,pulseWidth);
+
                 // всё, посчитали ширину импульса
+            } // for
+
+            // убираем последний пик
+            if(pulsesList.size() > 1)
+            {
+              pulsesList[pulsesList.size()-1] = pulsesList[pulsesList.size()-2];
             }
 
             DBG("SUM OF ABSOLUTE WIDTH: "); DBGLN(absPulseWidthSum);
@@ -706,4 +716,3 @@ void CreateEncoderChartScreen::create_Schedule(TFTMenu* menu)  //  Сформи�
   // ТЕСТОВЫЙ КОД - КОНЕЦ
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

@@ -12,11 +12,6 @@
 Screen1* mainScreen = NULL;
 extern "C" char* sbrk(int i);
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-const uint8_t CURRENT_NUM_SAMPLES = 10; // за сколько измерений вычислять ток?
-const float COEFF_1 = 5.0; // первый коэффициент по пересчёту тока
-const uint32_t CURRENT_DIVIDER = 1000; // делитель для пересчёта напряжения в ток
-const uint32_t CURRENT_MIN_TREAT_AS_ZERO = 100; // минимальное значение тока, которое интерпретируется как 0
-
 uint32_t redCurrentInfoMax = 0; // макс. данные по току, канал 1 (красный)
 uint32_t redCurrentInfoMin = 0; // мин. данные по току, канал 1 (красный)
 
@@ -504,13 +499,7 @@ void Screen1::doSetup(TFTMenu* menu)
 	serie2 = chart.addSerie({ 0,0,255 });     // второй график - голубого цвета
 	serie3 = chart.addSerie({ 255,255,0 });   // третий график - желтого цвета
 
-#ifndef _ADC_OFF
 
-	adcSampler.setLowBorder(Settings.getTransformerLowBorder());
-	adcSampler.setHighBorder(Settings.getTransformerHighBorder());
-  
-	adcSampler.begin();  
-#endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen1::drawTime(TFTMenu* menu)

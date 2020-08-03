@@ -114,7 +114,9 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     compareNumber = ecnNoEthalon;
     return COMPARE_RESULT_NoEthalonFound; // не найдено эталона для канала
   }
-   
+
+  PAUSE_ADC; // останавливаем АЦП
+  
   SdFile file;
   file.open(fileName.c_str(),FILE_READ);
   
@@ -200,4 +202,3 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   return COMPARE_RESULT_MatchEthalon;    // результат соответствует эталону
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-

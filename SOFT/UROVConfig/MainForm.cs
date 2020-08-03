@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Globalization;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace UROVConfig
 {
@@ -317,6 +318,10 @@ namespace UROVConfig
         private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm, ShowInterruptInfo callback, bool stopAfterFirstRecord)
         {
 
+            string myString = System.Text.Encoding.UTF8.GetString(content.ToArray());
+            System.Diagnostics.Debug.Print(myString);
+
+
             if (targetGrid != null)
             {
                 ClearInterruptsList(targetGrid);
@@ -357,7 +362,12 @@ namespace UROVConfig
 
                         case LogRecordType.InterruptTime:
                             {
-                                System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идут 7 байт времени
                                 byte dayOfMonth = content[readed]; readed++;
@@ -376,7 +386,12 @@ namespace UROVConfig
 
                         case LogRecordType.SystemTemperature:
                             {
-                                System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идут два байта температуры
                                 byte value = content[readed]; readed++;
@@ -391,7 +406,12 @@ namespace UROVConfig
 
                         case LogRecordType.InterruptRecordBegin:
                             {
-                                System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 curRecord = new InterruptRecord();
                                 curRecord.InterruptInfo = currentInterruptInfo;
@@ -400,7 +420,12 @@ namespace UROVConfig
 
                         case LogRecordType.ChannelNumber:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идёт байт номера канала
                                 curRecord.ChannelNumber = content[readed]; readed++;
@@ -409,7 +434,12 @@ namespace UROVConfig
 
                         case LogRecordType.ChannelInductiveSensorState:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идёт байт номера канала
                                 //DEPRECATED: curRecord.InductiveSensorState = (InductiveSensorState) content[readed]; readed++;
@@ -419,7 +449,12 @@ namespace UROVConfig
 
                         case LogRecordType.RodPosition:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идёт позиция штанги
                                 curRecord.RodPosition = (RodPosition)content[readed]; readed++;
@@ -428,7 +463,12 @@ namespace UROVConfig
 
                         case LogRecordType.MoveTime:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                // System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идут четыре байта времени движения штанги
                                 curRecord.MoveTime = Read32(content, readed); readed += 4;
@@ -452,7 +492,12 @@ namespace UROVConfig
 
                         case LogRecordType.Motoresource:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идут 4 байта моторесурса
                                 curRecord.Motoresource = Read32(content, readed); readed += 4;
@@ -462,7 +507,12 @@ namespace UROVConfig
 
                         case LogRecordType.EthalonNumber:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // байт номера эталона
                                 curRecord.EthalonCompareNumber = (EthalonCompareNumber)content[readed]; readed++;
@@ -472,7 +522,12 @@ namespace UROVConfig
 
                         case LogRecordType.CompareResult:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // байт результатов сравнения с эталоном
                                 curRecord.EthalonCompareResult = (EthalonCompareResult)content[readed]; readed++;
@@ -482,7 +537,12 @@ namespace UROVConfig
                         case LogRecordType.EthalonDataFollow:
                             {
                                 // следом идут данные эталона, с которым сравнивали
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 curRecord.EthalonData.Clear();
 
@@ -512,7 +572,12 @@ namespace UROVConfig
 
                         case LogRecordType.DataArrivedTime: // смещение от начала данных по току до начала данных по прерываниям
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // далее идёт смещение, в миллисекундах, 4 байта
                                 curRecord.DataArrivedTime = Read32(content, readed); readed += 4;
@@ -521,7 +586,12 @@ namespace UROVConfig
 
                         case LogRecordType.OscDataFollow: // идут данные по току для канала
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 curRecord.CurrentTimes.Clear();
                                 curRecord.CurrentData1.Clear();
@@ -539,26 +609,26 @@ namespace UROVConfig
 
                                 } // for
 
-                                // далее идут пачки по 4 байта записей по току канала 1
+                                // далее идут пачки по 2 байта записей по току канала 1
                                 for (int k = 0; k < dataLen; k++)
                                 {
-                                    int curData = Read32(content, readed); readed += 4;
+                                    int curData = Read16(content, readed); readed += 2;
                                     curRecord.CurrentData1.Add(curData);
 
                                 } // for
 
-                                // далее идут пачки по 4 байта записей по току канала 2
+                                // далее идут пачки по 2 байта записей по току канала 2
                                 for (int k = 0; k < dataLen; k++)
                                 {
-                                    int curData = Read32(content, readed); readed += 4;
+                                    int curData = Read16(content, readed); readed += 2;
                                     curRecord.CurrentData2.Add(curData);
 
                                 } // for
 
-                                // далее идут пачки по 4 байта записей по току канала 3
+                                // далее идут пачки по 2 байта записей по току канала 3
                                 for (int k = 0; k < dataLen; k++)
                                 {
-                                    int curData = Read32(content, readed); readed += 4;
+                                    int curData = Read16(content, readed); readed += 2;
                                     curRecord.CurrentData3.Add(curData);
 
                                 } // for
@@ -568,7 +638,12 @@ namespace UROVConfig
 
                         case LogRecordType.InterruptDataBegin:
                             {
-                                System.Diagnostics.Debug.Assert(curRecord != null);
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if(curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
 
                                 // начало данных по прерыванию
                                 curRecord.InterruptData.Clear();
@@ -616,8 +691,16 @@ namespace UROVConfig
 
                                 if (callback != null)
                                 {
-                                    System.Diagnostics.Debug.Assert(curRecord != null);
-                                    callback(curRecord);
+                                    //System.Diagnostics.Debug.Assert(curRecord != null);
+                                    if (curRecord != null)
+                                    {
+                                        callback(curRecord);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Неправильный формат записи срабатывания защиты!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
                                 }
 
                             }
@@ -2355,7 +2438,7 @@ namespace UROVConfig
 
         private void ShowWaitCursor(bool show)
         {
-            Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
+            System.Windows.Forms.Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
             Application.UseWaitCursor = show;
             Application.DoEvents();
 
@@ -3427,7 +3510,9 @@ namespace UROVConfig
 
         private void ShowChart(InterruptRecord record, string stationID, string stationName, bool modal)
         {
-            System.Diagnostics.Debug.Assert(record != null);
+            //  System.Diagnostics.Debug.Assert(record != null);
+            if (record == null)
+                return;
 
             ViewChartForm vcf = new ViewChartForm(record, stationID, stationName);
 
@@ -3441,11 +3526,24 @@ namespace UROVConfig
             System.Windows.Forms.DataVisualization.Charting.Series interruptSerie = vcf.chart.Series[1];
             interruptSerie.Points.Clear();
 
+            Series channel1Current = vcf.chart.Series[2];
+            channel1Current.Points.Clear();
 
+            Series channel2Current = vcf.chart.Series[3];
+            channel2Current.Points.Clear();
 
-            int xStep = 1;
+            Series channel3Current = vcf.chart.Series[4];
+            channel3Current.Points.Clear();
 
+            // время наступления прерывания
+            DateTime interruptTime = record.InterruptInfo.InterruptTime;
 
+            // смещение в микросекундах от данных по току до начала списка прерываний
+            int pulsesOffset = record.DataArrivedTime;
+
+            //int xStep = 1;
+
+            // СПИСОК ПРИХОДИТ НОРМАЛИЗОВАННЫМ ОТНОСИТЕЛЬНО ПЕРВОЙ ЗАПИСИ !!!
             List<int> timeList = record.InterruptData;
 
             // получаем максимальное время импульса - это будет 100% по оси Y
@@ -3468,65 +3566,168 @@ namespace UROVConfig
                 endStop = timeList.Count;
 
 
-            double xCoord = 0;
+            //double xCoord = 0;
+            // DateTime xCoord = interruptTime;
+            //xCoord = xCoord.AddMilliseconds(pulsesOffset);
+            int xCoord = pulsesOffset;
+             List<int> XValuesInterrupt = new List<int>();
+             List<double> YValuesInterrupt = new List<double>();
 
             // добавляем фейковые начальные точки
-            System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-            ptFake1.XValue = xCoord;
-            ptFake1.SetValueY(0);
-            xCoord += xStep;
-            interruptSerie.Points.Add(ptFake1);
+            //System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+            //ptFake1.XValue = xCoord;
+            //ptFake1.SetValueY(0);
+            //xCoord += xStep;
+            //interruptSerie.Points.Add(ptFake1);
+
+            XValuesInterrupt.Add(xCoord);
+            YValuesInterrupt.Add(0);
 
             // теперь считаем все остальные точки
             for (int i = 1; i < endStop; i++)
             {
                 int pulseTime = timeList[i] - timeList[i - 1];
-                pulseTime *= 100;
+                //pulseTime *= 100;
 
-                int pulseTimePercents = pulseTime / maxPulseTime;
+                int pulseTimePercents = (pulseTime*100) / maxPulseTime;
                 pulseTimePercents = 100 - pulseTimePercents;
 
-
-                System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                pt.XValue = xCoord;
-                pt.SetValueY(pulseTimePercents);
-
-                xCoord += xStep;
-
-                interruptSerie.Points.Add(pt);
+                xCoord += pulseTime;
+                XValuesInterrupt.Add(xCoord);
+                YValuesInterrupt.Add(pulseTimePercents);
 
             } // for
 
+            
+            // убираем последний пик вверх
+            
+            if(YValuesInterrupt.Count > 1)
+            {
+                YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;// YValuesInterrupt[YValuesInterrupt.Count - 2];
+            }
+            
+            
 
-                xCoord = 0;
+            interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
 
-                // добавляем фейковые начальные точки
-                System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                ptFake2.XValue = xCoord;
-                ptFake2.SetValueY(0);
-                xCoord += xStep;
-                ethalonSerie.Points.Add(ptFake2);
+            //xCoord =  interruptTime;
+            xCoord = pulsesOffset;
+            //xCoord = xCoord.AddMilliseconds(pulsesOffset);
+            List<int> XValuesEthalon = new List<int>();
+            List<double> YValuesEthalon = new List<double>();
 
+            // добавляем фейковые начальные точки
+            //System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+            //ptFake2.XValue = xCoord;
+            //ptFake2.SetValueY(0);
+            //xCoord += xStep;
+            //ethalonSerie.Points.Add(ptFake2);
+
+            XValuesEthalon.Add(xCoord);
+            YValuesEthalon.Add(0);
 
             // считаем график эталона
             for (int i = 1; i < record.EthalonData.Count; i++)
                 {
                     int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
-                    pulseTime *= 100;
+                    //pulseTime *= 100;
 
-                    int pulseTimePercents = pulseTime / maxPulseTime;
+                    int pulseTimePercents = (pulseTime*100) / maxPulseTime;
                     pulseTimePercents = 100 - pulseTimePercents;
 
 
-                    System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    pt.XValue = xCoord;
-                    pt.SetValueY(pulseTimePercents);
+                // System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+                // pt.XValue = xCoord;
+                // pt.SetValueY(pulseTimePercents);
 
-                    xCoord += xStep;
+                //  xCoord += xStep;
 
-                    ethalonSerie.Points.Add(pt);
+                //  ethalonSerie.Points.Add(pt);
+
+                //xCoord = xCoord.AddMilliseconds(pulseTime);
+                xCoord += pulseTime;
+                XValuesEthalon.Add(xCoord);
+                YValuesEthalon.Add(pulseTimePercents);
+
+            } // for
+
+            ethalonSerie.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
+
+            // теперь создаём графики по току
+            if(record.CurrentTimes.Count > 0)
+            {
+                // СПИСОК СОДЕРЖИТ ВРЕМЕНА micros(), И ЯВЛЯЕТСЯ НОРМАЛИЗОВАННЫМ !!!
+                List<int> XValuesOfCurrent1 = new List<int>();
+                List<int> XValuesOfCurrent2 = new List<int>();
+                List<int> XValuesOfCurrent3 = new List<int>();
+                List<double> YValuesChannel1 = new List<double>();
+                List<double> YValuesChannel2 = new List<double>();
+                List<double> YValuesChannel3 = new List<double>();
+
+                List<int> currentTimesList = record.CurrentTimes;
+                xCoord = 0;
+                int maxCurrentValue = 0;
+
+                for (int i = 1; i < currentTimesList.Count; i++)
+                {
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData1[i]);
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData2[i]);
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData3[i]);
+
+                }
+
+                int phaseOffset = 20000; // пофазный сдвиг
+
+
+                XValuesOfCurrent1.Add(xCoord);
+                XValuesOfCurrent2.Add(xCoord + phaseOffset);
+                XValuesOfCurrent3.Add(xCoord + phaseOffset*2);
+
+
+                YValuesChannel1.Add(0);
+                YValuesChannel2.Add(0);
+                YValuesChannel3.Add(0);
+
+                // теперь считаем все остальные точки
+                for (int i = 1; i < currentTimesList.Count; i++)
+                {
+                    int pulseTime = currentTimesList[i] - currentTimesList[i - 1];
+                    //pulseTime *= 100;
+
+                    int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 90);
+                    YValuesChannel1.Add(percents);
+
+                    percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 80);
+                    YValuesChannel2.Add(percents);
+
+                    percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 70);
+                    YValuesChannel3.Add(percents);
+
+
+
+                    xCoord += pulseTime;
+
+                    XValuesOfCurrent1.Add(xCoord);
+                    XValuesOfCurrent2.Add(xCoord + phaseOffset);
+                    XValuesOfCurrent3.Add(xCoord + phaseOffset*2);
 
                 } // for
+
+
+
+                // добавляем графики тока
+
+
+                channel1Current.Points.DataBindXY(XValuesOfCurrent1, YValuesChannel1);
+                channel2Current.Points.DataBindXY(XValuesOfCurrent2, YValuesChannel2);
+                channel3Current.Points.DataBindXY(XValuesOfCurrent3, YValuesChannel3);
+                
+
+                // графики тока добавлены.
+
+            } // if(record.CurrentTimes.Count > 0)
+
+        
 
             if (modal)
             {
@@ -3538,6 +3739,16 @@ namespace UROVConfig
                 vcf.BringToFront();
             }
 
+        }
+
+        private long map(long x, long in_min, long in_max, long out_min, long out_max)
+        {
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+        }
+
+        private int map(int x, int in_min, int in_max, int out_min, int out_max)
+        {
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
 
         private void logDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
