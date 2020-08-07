@@ -3676,8 +3676,12 @@ namespace UROVConfig
 
                 }
 
-                int phaseOffset = 20000; // пофазный сдвиг
+                int phaseOffset = 10000; // пофазный сдвиг
 
+
+                /*
+                  
+                // начальные точки по току
 
                 XValuesOfCurrent1.Add(xCoord);
                 XValuesOfCurrent2.Add(xCoord + phaseOffset);
@@ -3687,6 +3691,7 @@ namespace UROVConfig
                 YValuesChannel1.Add(0);
                 YValuesChannel2.Add(0);
                 YValuesChannel3.Add(0);
+                */
 
                 // теперь считаем все остальные точки
                 for (int i = 1; i < currentTimesList.Count; i++)
@@ -3694,13 +3699,13 @@ namespace UROVConfig
                     int pulseTime = currentTimesList[i] - currentTimesList[i - 1];
                     //pulseTime *= 100;
 
-                    int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 90);
+                    int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 80);
                     YValuesChannel1.Add(percents);
 
-                    percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 80);
+                    percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 78);
                     YValuesChannel2.Add(percents);
 
-                    percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 70);
+                    percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 76);
                     YValuesChannel3.Add(percents);
 
 
@@ -3708,19 +3713,32 @@ namespace UROVConfig
                     xCoord += pulseTime;
 
                     XValuesOfCurrent1.Add(xCoord);
-                    XValuesOfCurrent2.Add(xCoord + phaseOffset);
-                    XValuesOfCurrent3.Add(xCoord + phaseOffset*2);
+
+                    if (i > 1)
+                    {
+                        XValuesOfCurrent2.Add(xCoord + phaseOffset);
+                        XValuesOfCurrent3.Add(xCoord + phaseOffset * 2);
+                    }
+                    else
+                    {
+                        XValuesOfCurrent2.Add(xCoord);
+                        XValuesOfCurrent3.Add(xCoord);
+                    }
 
                 } // for
 
 
 
                 // добавляем графики тока
+
+                /*
+                // сглаживание
                 const int approximatePasses = 500;
 
                 approximate(approximatePasses, ref YValuesChannel1);
                 approximate(approximatePasses, ref YValuesChannel2);
                 approximate(approximatePasses, ref YValuesChannel3);
+                */
 
 
                 channel1Current.Points.DataBindXY(XValuesOfCurrent1, YValuesChannel1);
