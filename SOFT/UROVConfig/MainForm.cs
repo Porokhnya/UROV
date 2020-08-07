@@ -725,7 +725,7 @@ namespace UROVConfig
                 return;
             }
 
-            if (targetGrid != null && gridToListCollection[targetGrid].list != null)
+            if (targetGrid != null && gridToListCollection.ContainsKey(targetGrid) && gridToListCollection[targetGrid].list != null)
             {
                 if (gridToListCollection.ContainsKey(targetGrid))
                 {
@@ -3732,7 +3732,42 @@ namespace UROVConfig
 
             } // if(record.CurrentTimes.Count > 0)
 
-        
+
+            // тут добавляем кастомные метки на ось X - времена
+            int maxTime = record.DataArrivedTime;
+            if(record.InterruptData.Count > 0)
+            {
+                maxTime += record.InterruptData[record.InterruptData.Count - 1];
+            }
+
+            if (record.CurrentTimes.Count > 0)
+            {
+                maxTime = Math.Max(maxTime, record.CurrentTimes[record.CurrentTimes.Count - 1]);
+            }
+
+            // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
+            const int customLabelsCount = 15; // сколько всего наших меток будет на оси X
+
+            ChartArea area = vcf.chart.ChartAreas[0];
+            area.AxisX.CustomLabels.Clear();
+
+            int step = maxTime / customLabelsCount;
+            int startOffset = -step/2;
+            int endOffset = step/2;
+            int counter = 0;
+
+            for(int i=0;i< customLabelsCount;i++)
+            {
+                string labelText = String.Format("{0}ms", counter/1000);
+                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                area.AxisX.CustomLabels.Add(monthLabel);
+                startOffset = startOffset + step;
+                endOffset = endOffset + step;
+                counter += step;
+            }
+
+            // устанавливаем интервал для меток на графике
+            vcf.setInterval(step);
 
             if (modal)
             {

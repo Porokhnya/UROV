@@ -539,33 +539,40 @@ namespace UROVConfig
             }
         }
 
+        private int interval = 1;
+        public void setInterval(int val)
+        {
+            interval = val;
+        }
+
         private void ViewChartForm_Load(object sender, EventArgs e)
         {
             // задаём настройки масштабирования графиков
 
             ChartArea area = chart.ChartAreas[0];
 
-            area.AxisX.LabelStyle.Format = "dd.MM.yyyy HH:mm"; // задаём формат отображения меток
-                                                               // area.AxisX.IntervalType = DateTimeIntervalType.Number;
-            area.AxisX.Interval = 1;
+            //area.AxisX.LabelStyle.Format = "dd.MM.yyyy HH:mm"; // задаём формат отображения меток
+
+            area.AxisX.Interval = interval;
             area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
+            //area.AxisX.IntervalOffsetType = DateTimeIntervalType.Milliseconds;
             area.AxisX.ScaleView.Zoomable = true;
             area.CursorX.AutoScroll = true;
 
             area.CursorX.IsUserEnabled = true;
             area.CursorX.IsUserSelectionEnabled = true;
             area.CursorX.IntervalType = DateTimeIntervalType.Number;
-            area.CursorX.Interval = 1D;
+            area.CursorX.Interval = interval;
 
             area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollSize = 1D;
+            area.AxisX.ScaleView.SmallScrollSize = interval;
             area.AxisX.ScaleView.Zoomable = true;
 
             area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.MinSize = 1D;
+            area.AxisX.ScaleView.MinSize = interval;
 
             area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollMinSize = 1D;
+            area.AxisX.ScaleView.SmallScrollMinSize = interval;
 
             area.AxisY.IntervalType = DateTimeIntervalType.Number;
             area.AxisY.ScaleView.Zoomable = true;
