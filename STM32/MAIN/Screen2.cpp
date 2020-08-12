@@ -1860,14 +1860,14 @@ void EthalonRecordScreen::drawWelcome(TFTMenu* menu)
   
 //  uint8_t* oldFont = dc->getFont();
 
-  dc->setFreeFont(TFT_FONT);
+  dc->setFreeFont(TFT_SMALL_FONT);
 
   Vector<const char*> lines;
   lines.push_back("Для записи эталона");
   lines.push_back("необходимо привести");
-  lines.push_back("штангу в движение.");
+  lines.push_back("выключатель в движение.");
   lines.push_back("");
-  lines.push_back("Приведите штангу");
+  lines.push_back("Приведите выключатель");
   lines.push_back("в движение и ждите");
   lines.push_back("результата записи.");
   
@@ -1887,7 +1887,7 @@ void EthalonRecordScreen::drawWelcome(TFTMenu* menu)
       curY += fontHeight + lineSpacing;
     }
   
-
+	dc->setFreeFont(TFT_FONT);
 //  dc->setFont(oldFont);
    
 }
