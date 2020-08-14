@@ -359,7 +359,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.exitToolStripMenuItem.Text = "Выход";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -543,7 +543,7 @@
             this.btnImportSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnImportSettings.Image")));
             this.btnImportSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnImportSettings.Name = "btnImportSettings";
-            this.btnImportSettings.Size = new System.Drawing.Size(115, 67);
+            this.btnImportSettings.Size = new System.Drawing.Size(113, 67);
             this.btnImportSettings.Text = "Архивация данных";
             this.btnImportSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnImportSettings.ToolTipText = "Архивация данных с контроллера";
@@ -567,7 +567,7 @@
             this.btnRecordEthalonUp.Image = ((System.Drawing.Image)(resources.GetObject("btnRecordEthalonUp.Image")));
             this.btnRecordEthalonUp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRecordEthalonUp.Name = "btnRecordEthalonUp";
-            this.btnRecordEthalonUp.Size = new System.Drawing.Size(131, 67);
+            this.btnRecordEthalonUp.Size = new System.Drawing.Size(130, 67);
             this.btnRecordEthalonUp.Text = "Запись эталона вверх";
             this.btnRecordEthalonUp.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnRecordEthalonUp.Click += new System.EventHandler(this.btnRecordEthalonUp_Click);

@@ -3492,7 +3492,9 @@ namespace UROVConfig
             }
 
 
-            treeViewSD.SelectedNode.Remove();
+           treeViewSD.SelectedNode.Remove();
+            plEmptySDWorkspace.BringToFront();
+
            PushCommandToQueue(SET_PREFIX + "DELFILE" + PARAM_DELIMITER + fileName, DummyAnswerReceiver);
 
 
@@ -4366,6 +4368,11 @@ namespace UROVConfig
 
         private void recordEthalon(string dir)
         {
+            if(MessageBox.Show("При записи эталона вам необходимо привести штангу в движение.\n\nПри нажатии кнопки \"Отмена\" - запись эталона производиться не будет.\n\nПосле нажатия кнопки \"ОК\" этого диалогового окна - приведите штангу в движение, и дождитесь диалогового окна с сообщением о результатах записи!", "Сообщение", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+            {
+                return;
+            }
+
             ShowWaitCursor(true);
             inSetEthalonRecordToController = true;
             PushCommandToQueue(GET_PREFIX + "EREC" + PARAM_DELIMITER + dir, ParseRecordEthalon);

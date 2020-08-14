@@ -23,11 +23,16 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
 
 
   // сравниваем кол-во импульсов на канал
-  uint16_t channelPulses = Settings.getPulses();
+  uint16_t skipCounter = Settings.getSkipCounter();
+  uint16_t channelPulses = Settings.getPulses() / (skipCounter ? skipCounter : 1);
   uint16_t channelDelta = Settings.getPulsesDelta();
 
   uint16_t minPulses = channelPulses - channelDelta;
   uint16_t maxPulses = channelPulses + channelDelta;
+
+  DBG("minPulses="); DBGLN(minPulses);
+  DBG("maxPulses="); DBGLN(maxPulses);
+  DBG("list.size()="); DBGLN(list.size());
 
   if(!(list.size() >= minPulses && list.size() <= maxPulses))
   {

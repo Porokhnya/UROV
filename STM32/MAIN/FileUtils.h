@@ -3,6 +3,7 @@
 #include <SdFat.h>
 #include <Arduino.h>
 #include "CONFIG.h"
+#include "TinyVector.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef USE_SDFAT
   extern SdFat SD_CARD;
@@ -50,6 +51,8 @@ class FileUtils
     static String getFileName(SdFile &f);
     static void deleteFile(const String& fileName);
     static uint32_t getFileSize(const String& fileName);
+    static void saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list);
+    static bool isEthalonExists(uint8_t channel, bool isUpMove);
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

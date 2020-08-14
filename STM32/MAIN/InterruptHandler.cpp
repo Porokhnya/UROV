@@ -1181,6 +1181,20 @@ void InterruptHandlerClass::update()
           Feedback.testDiode();
     
           needToLog = true; // говорим, что надо записать в лог
+
+          // проверяем, есть ли у нас эталоны на SD? Если нет - создаём их.
+
+          // эталон движения вверх
+          if(!FileUtils::isEthalonExists(0,true))
+          {
+            FileUtils::saveEthalon(0,true,copyList1);
+          }
+          
+          // эталон движения вниз
+          if(!FileUtils::isEthalonExists(0,false))
+          {
+            FileUtils::saveEthalon(0,false,copyList1);
+          }
             
            // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
            compareRes1 = EthalonComparer::Compare(copyList1, 0,compareNumber1, ethalonData1);

@@ -1702,6 +1702,10 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
     break;
   }
 
+  // сохраняем эталон
+  FileUtils::saveEthalon(saveChannel,direction == dirUp, *selectedList);
+  
+/*
   SD_CARD.mkdir(ETHALONS_DIRECTORY);
 
   String fileName = ETHALONS_DIRECTORY;
@@ -1740,7 +1744,7 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
   //  file.flush();
     file.close();
   }
- 
+ */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::saveEthalons()

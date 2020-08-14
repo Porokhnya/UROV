@@ -29,6 +29,78 @@ void setFileDateTime(uint16_t* date, uint16_t* time)
   *time = FAT_TIME(tm.hour, tm. minute, tm. second);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool FileUtils::isEthalonExists(uint8_t channel, bool isUpMove)
+{
+  if(!SDInit::sdInitResult)
+  {
+    return false;
+  }  
+
+  String fileName = ETHALONS_DIRECTORY;
+  fileName += ETHALON_NAME_PREFIX;
+  fileName += channel;
+
+  if(isUpMove)
+  {
+    fileName += ETHALON_UP_POSTFIX;
+  }
+  else
+  {
+    fileName += ETHALON_DOWN_POSTFIX;
+  }
+
+   fileName += ETHALON_FILE_EXT;
+
+   return SD_CARD.exists(fileName.c_str());
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void FileUtils::saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list)
+{
+  if(!SDInit::sdInitResult)
+  {
+    return;
+  }
+  
+  PAUSE_ADC; // останавливаем АЦП  
+
+   SD_CARD.mkdir(ETHALONS_DIRECTORY);
+
+  String fileName = ETHALONS_DIRECTORY;
+  fileName += ETHALON_NAME_PREFIX;
+  fileName += channel;
+
+  if(isUpMove)
+  {
+    fileName += ETHALON_UP_POSTFIX;
+  }
+  else
+  {
+    fileName += ETHALON_DOWN_POSTFIX;
+  }
+
+   fileName += ETHALON_FILE_EXT;
+
+  DBG(F("WRITE ETHALON TO FILE "));
+  DBGLN(fileName);
+
+  SdFile file;
+  file.open(fileName.c_str(),FILE_WRITE | O_CREAT | O_TRUNC);
+  
+  if(file.isOpen())
+  {
+    DBG(F("WRITE ETHALON DATA, RECORDS COUNT: "));
+    DBGLN(list.size());
+
+    for(size_t i=0;i<list.size();i++)
+    {
+      uint32_t val = list[i];
+      file.write(&val,sizeof(val));
+    }
+
+    file.close();
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void FileUtils::deleteFile(const String& fileName)
 {
   if(!SDInit::sdInitResult)
