@@ -822,11 +822,42 @@ namespace UROVConfig
             System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
             s.Points.Clear();
 
+            int interval = 1;
+
+            ChartArea area = targetChart.ChartAreas[0];
+
+            area.AxisX.Interval = interval;
+            area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
+            //area.AxisX.IntervalOffsetType = DateTimeIntervalType.Milliseconds;
+            area.AxisX.ScaleView.Zoomable = true;
+            area.CursorX.AutoScroll = true;
+
+            area.CursorX.IsUserEnabled = true;
+            area.CursorX.IsUserSelectionEnabled = true;
+            area.CursorX.IntervalType = DateTimeIntervalType.Number;
+            area.CursorX.Interval = interval;
+
+            area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.SmallScrollSize = interval;
+            area.AxisX.ScaleView.Zoomable = true;
+
+            area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.MinSize = interval;
+
+            area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
+            area.AxisX.ScaleView.SmallScrollMinSize = interval;
+
+            area.AxisY.IntervalType = DateTimeIntervalType.Number;
+            area.AxisY.ScaleView.Zoomable = true;
+            area.CursorY.IsUserSelectionEnabled = true;
+            area.CursorY.IsUserEnabled = true;
+            area.CursorY.AutoScroll = true;
+
             // у нас размер одной записи - 4 байта
             int pointsCount = content.Count / 4;
             byte[] dt = new byte[4];
 
-            int xStep = 1;
+           // int xStep = 1;
 
 
             // подсчитываем максимальное значение по Y
@@ -857,30 +888,34 @@ namespace UROVConfig
                 maxPulseTime = Math.Max(maxPulseTime, (timeList[i] - timeList[i - 1]));
             }
 
-            double xCoord = 0;
+            int xCoord = 0;
+            List<int> XValuesEthalon = new List<int>();
+            List<double> YValuesEthalon = new List<double>();
 
             // теперь считаем все остальные точки
             for (int i = 1; i < timeList.Count; i++)
             {
                 int pulseTime = timeList[i] - timeList[i - 1];
-                pulseTime *= 100;
+                //pulseTime *= 100;
 
-                int pulseTimePercents = pulseTime / maxPulseTime;
+                int pulseTimePercents = (pulseTime*100) / maxPulseTime;
                 pulseTimePercents = 100 - pulseTimePercents;
 
 
-                System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                pt.XValue = xCoord;
-                pt.SetValueY(pulseTimePercents);
+                //System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+                //pt.XValue = xCoord;
+                //pt.SetValueY(pulseTimePercents);
 
-                xCoord += xStep;
+                xCoord += pulseTime;// xStep;
+                XValuesEthalon.Add(xCoord);
+                YValuesEthalon.Add(pulseTimePercents);
 
-                s.Points.Add(pt);
+                //s.Points.Add(pt);
 
             } // for
 
 
-
+            s.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
         }
 
         /// <summary>
@@ -3516,6 +3551,8 @@ namespace UROVConfig
             RequestFile(treeViewSD.SelectedNode);
         }
 
+        const int customLabelsCount = 15; // сколько всего наших меток будет на оси X
+
         private void ShowChart(InterruptRecord record, string stationID, string stationName, bool modal)
         {
             //  System.Diagnostics.Debug.Assert(record != null);
@@ -3775,7 +3812,6 @@ namespace UROVConfig
             }
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-            const int customLabelsCount = 15; // сколько всего наших меток будет на оси X
 
             ChartArea area = vcf.chart.ChartAreas[0];
             area.AxisX.CustomLabels.Clear();
