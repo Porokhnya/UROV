@@ -2120,6 +2120,12 @@ namespace UROVConfig
             if (ControllerNames.Instance.Names.ContainsKey(stationID))
                 stationName = ControllerNames.Instance.Names[stationID];
 
+
+            // обновляем кол-во срабатываний
+            Config.Instance.MotoresourceCurrent1++;
+            nudMotoresourceCurrent1.Value = Config.Instance.MotoresourceCurrent1;
+            UpdateMotoresourcePercents();
+
             ShowChart(rec, stationID, stationName,false);
         }
 
@@ -3521,6 +3527,9 @@ namespace UROVConfig
             vcf.setDefaultFileName(record.InterruptInfo.InterruptTime.ToString("yyyy-MM-dd HH.mm"));
 
             vcf.lblCaption.Text = "Срабатывание от " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+
+            // добавляем кол-во импульсов на график
+            vcf.chart.Legends[1].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", record.InterruptData.Count);
 
             System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
             ethalonSerie.Points.Clear();
