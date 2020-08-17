@@ -816,16 +816,9 @@ namespace UROVConfig
 
         } 
 
-        private void CreateChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
+        private void setChartInterval(System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int interval)
         {
-
-            System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
-            s.Points.Clear();
-
-            int interval = 1;
-
             ChartArea area = targetChart.ChartAreas[0];
-
             area.AxisX.Interval = interval;
             area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
             //area.AxisX.IntervalOffsetType = DateTimeIntervalType.Milliseconds;
@@ -852,6 +845,17 @@ namespace UROVConfig
             area.CursorY.IsUserSelectionEnabled = true;
             area.CursorY.IsUserEnabled = true;
             area.CursorY.AutoScroll = true;
+        }
+
+        private void CreateChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
+        {
+
+            System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
+            s.Points.Clear();
+
+            ChartArea area = targetChart.ChartAreas[0];
+
+            
 
             // у нас размер одной записи - 4 байта
             int pointsCount = content.Count / 4;
@@ -880,6 +884,40 @@ namespace UROVConfig
                     break;
                 }
             }
+
+            // добавляем кол-во импульсов на график
+            targetChart.Legends[0].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", timeList.Count);
+
+            // тут добавляем кастомные метки на ось X - времена
+            int maxTime = 0;
+            if (timeList.Count > 0)
+            {
+                maxTime += timeList[timeList.Count - 1];
+            }
+
+
+            // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
+
+            area.AxisX.CustomLabels.Clear();
+
+            int step = maxTime / customLabelsCount;
+            int startOffset = -step / 2;
+            int endOffset = step / 2;
+            int counter = 0;
+
+            for (int i = 0; i < customLabelsCount; i++)
+            {
+                string labelText = String.Format("{0}ms", counter / 1000);
+                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                area.AxisX.CustomLabels.Add(monthLabel);
+                startOffset = startOffset + step;
+                endOffset = endOffset + step;
+                counter += step;
+            }
+
+            // устанавливаем интервал для меток на графике
+            setChartInterval(targetChart, step);
+
 
             // получаем максимальное время импульса - это будет 100% по оси Y
             int maxPulseTime = 0;
