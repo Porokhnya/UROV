@@ -34,11 +34,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   DBG("maxPulses="); DBGLN(maxPulses);
   DBG("list.size()="); DBGLN(list.size());
 
-  if(!(list.size() >= minPulses && list.size() <= maxPulses))
-  {
-    DBGLN(F("кол-во импульсов в списке выходит за границы допустимых - несовпадание с эталоном!"));
-    return COMPARE_RESULT_MismatchEthalon; // результат не соответствует эталону, поскольку кол-во импульсов расходится с настройками
-  }
+
 
   // смотрим позицию штанги
   RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
@@ -153,6 +149,12 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   // прочитали эталон, теперь можно сравнивать. Кол-во импульсов у нас находится в пределах настроенной дельты,
   // и нам надо сравнить импульсы, находящиеся в списке list, с импульсами, находящимися в списке ethalon.
 
+
+  if(!(list.size() >= minPulses && list.size() <= maxPulses))
+  {
+    DBGLN(F("кол-во импульсов в списке выходит за границы допустимых - несовпадание с эталоном!"));
+    return COMPARE_RESULT_MismatchEthalon; // результат не соответствует эталону, поскольку кол-во импульсов расходится с настройками
+  }
 
   DBG(F("Кол-во импульсов эталона: "));
   DBGLN(ethalonData.size());
