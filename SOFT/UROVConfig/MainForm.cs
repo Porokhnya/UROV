@@ -3845,10 +3845,17 @@ namespace UROVConfig
                 maxTime += record.InterruptData[record.InterruptData.Count - 1];
             }
 
+            if (record.EthalonData.Count > 0)
+            {
+                maxTime = Math.Max(maxTime, record.DataArrivedTime + record.EthalonData[record.EthalonData.Count - 1]);
+            }
+
             if (record.CurrentTimes.Count > 0)
             {
                 maxTime = Math.Max(maxTime, record.CurrentTimes[record.CurrentTimes.Count - 1]);
             }
+
+
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
 
