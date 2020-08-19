@@ -3690,7 +3690,7 @@ namespace UROVConfig
             
             if(YValuesInterrupt.Count > 1)
             {
-                YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;// YValuesInterrupt[YValuesInterrupt.Count - 2];
+                YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;
             }
             
             
@@ -3737,6 +3737,14 @@ namespace UROVConfig
                 YValuesEthalon.Add(pulseTimePercents);
 
             } // for
+
+            // убираем последний пик вверх
+
+            if (YValuesEthalon.Count > 1)
+            {
+                YValuesEthalon[YValuesEthalon.Count - 1] = 0;
+            }
+
 
             ethalonSerie.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
 
