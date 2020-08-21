@@ -226,18 +226,68 @@ protected:
 private:
       ParamsScreen();
 
-      int inductiveSensorButton, transformerButton, acsDelayButton, relayDelayButton, backButton;
+      int resursButton, transformerButton, impulseSetButton /*acsDelayButton*/, relayDelayButton, backButton;
   
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class InductiveSensorScreen : public AbstractTFTScreen
+class ImpulseScreen : public AbstractTFTScreen
+{
+public:
+
+	static AbstractTFTScreen* create()
+	{
+		return new ImpulseScreen();
+	}
+
+protected:
+
+	virtual void doSetup(TFTMenu* menu);
+	virtual void doUpdate(TFTMenu* menu);
+	virtual void doDraw(TFTMenu* menu);
+	virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+
+private:
+	ImpulseScreen();
+
+	int PulsesCountButton, PulsesDeltaButton, etalonCountButton, etalonDeltaButton, backButton;
+
+
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class ASUScreen : public AbstractTFTScreen
+{
+public:
+
+	static AbstractTFTScreen* create()
+	{
+		return new ASUScreen();
+	}
+
+protected:
+
+	virtual void doSetup(TFTMenu* menu);
+	virtual void doUpdate(TFTMenu* menu);
+	virtual void doDraw(TFTMenu* menu);
+	virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+
+private:
+	ASUScreen();
+
+	int PulsesCountButton, PulsesDeltaButton, reserved1, reserved2, backButton;
+
+
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class resursrScreen : public AbstractTFTScreen
 {
   public:
 
   static AbstractTFTScreen* create()
   {
-    return new InductiveSensorScreen();
+    return new resursrScreen();
   }
     
 protected:
@@ -248,9 +298,9 @@ protected:
     virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
 
 private:
-      InductiveSensorScreen();
+      resursrScreen();
 
-      int pulsesCountButton, pulseDeltaButton, motoresourceButton, motoresourceMaxButton, backButton;
+      int reserved1, reserved2, motoresourceButton, motoresourceMaxButton, backButton;
   
   
 };
@@ -309,6 +359,34 @@ private:
 	  String channel1DeltaVal;//DEPRECATED:  , channel2DeltaVal, channel3DeltaVal;
       int currentEditedButton;
   
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class EcoderDeltaScreen : public AbstractTFTScreen, public KeyboardInputTarget
+{
+public:
+
+	static AbstractTFTScreen* create()
+	{
+		return new EcoderDeltaScreen();
+	}
+
+	virtual void onKeyboardInput(bool enterPressed, const String& enteredValue);
+
+protected:
+
+	virtual void doSetup(TFTMenu* menu);
+	virtual void doUpdate(TFTMenu* menu);
+	virtual void doDraw(TFTMenu* menu);
+	virtual void onButtonPressed(TFTMenu* menu, int pressedButton);
+
+private:
+	EcoderDeltaScreen();
+
+	int channel1Button;//DEPRECATED:  , channel2Button, channel3Button, 
+	int backButton;
+	String channel1DeltaVal;//DEPRECATED:  , channel2DeltaVal, channel3DeltaVal;
+	int currentEditedButton;
+
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class MotoresourceScreen : public AbstractTFTScreen, public KeyboardInputTarget
@@ -388,7 +466,7 @@ protected:
 private:
       TransformerScreen();
 
-      int borderMaxButton, borderMinButton, skipCounterButton, backButton, koeffTokButton;
+      int borderMaxButton, borderMinButton, reserved, backButton, koeffTokButton;
   
   
 };

@@ -44,7 +44,7 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(SystemScreen::create());
   Screen.addScreen(CommunicateScreen::create());
   Screen.addScreen(ParamsScreen::create());
-  Screen.addScreen(InductiveSensorScreen::create());
+  Screen.addScreen(resursrScreen::create());
   Screen.addScreen(TransformerScreen::create());
   Screen.addScreen(PulsesCountScreen::create());
   Screen.addScreen(PulsesDeltaScreen::create());
@@ -57,7 +57,11 @@ void Screen2::doSetup(TFTMenu* menu)
   Screen.addScreen(RS485Screen::create());
   Screen.addScreen(CurrentCoeffScreen::create());
   Screen.addScreen(SkipCounterScreen::create());
-  
+  Screen.addScreen(ImpulseScreen::create());
+  Screen.addScreen(ASUScreen::create());
+  Screen.addScreen(EcoderDeltaScreen::create());
+ 
+ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen2::doUpdate(TFTMenu* menu)
@@ -402,7 +406,7 @@ void CommunicateScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// ParamsScreen
+// ParamsScreen    Вызывается по кнопке "Параметры"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ParamsScreen::ParamsScreen() : AbstractTFTScreen("ParamsScreen")
 {
@@ -414,11 +418,11 @@ void ParamsScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
   
   // тут настраиваемся, например, можем добавлять кнопки
-  inductiveSensorButton = screenButtons->addButton(5, 2, 210, 30, "Инд. датчик");
-  transformerButton = screenButtons->addButton(5, 37, 210, 30, "Калибровка");
-  acsDelayButton = screenButtons->addButton( 5, 72, 210, 30, "Задержка АСУ");
-  relayDelayButton = screenButtons->addButton( 5, 107, 210, 30, "Задержка имп.");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+  resursButton = screenButtons->addButton(5, 2, 210, 30, "Ресурс работы");            // ресурс работы механизма выключателя
+  transformerButton = screenButtons->addButton(5, 37, 210, 30, "Настройка порог");    // настройка порогов АЦП и коэффициента входа сигнала с токовых трансформаторов
+  impulseSetButton = screenButtons->addButton(5, 72, 210, 30, "Импульсы");            // настройка импульсов энкодера и сравнения с эталонным файлом
+  relayDelayButton = screenButtons->addButton( 5, 107, 210, 30, "Настройка АСУ");     // настройка задержек входного сигнала защиты и выдачи сигнала на АСУ ТП
+  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");                    // возврат в меню "НАСТРОЙКИ"   
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -436,61 +440,168 @@ void ParamsScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
     menu->switchToScreen("Settings");
-  else if(pressedButton == inductiveSensorButton)
-    menu->switchToScreen("InductiveSensorScreen");
+  else if(pressedButton == resursButton)
+    menu->switchToScreen("resursrScreen");
   else if(pressedButton == transformerButton)
     menu->switchToScreen("TransformerScreen");
-  else if(pressedButton == acsDelayButton)
-    menu->switchToScreen("AcsDelayScreen");
+  else if(pressedButton == impulseSetButton)
+    menu->switchToScreen("ImpulseScreen");
   else if(pressedButton == relayDelayButton)
-    menu->switchToScreen("RelayDelayScreen");
-    
+    menu->switchToScreen("ASUScreen");
 }
+
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// InductiveSensorScreen
+// resursrScreen
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-InductiveSensorScreen::InductiveSensorScreen() : AbstractTFTScreen("InductiveSensorScreen")
+resursrScreen::resursrScreen() : AbstractTFTScreen("resursrScreen")
 {
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InductiveSensorScreen::doSetup(TFTMenu* menu)
+void resursrScreen::doSetup(TFTMenu* menu)
 {
-  // тут настраиваемся, например, можем добавлять кнопки
-  pulsesCountButton = screenButtons->addButton(5, 2, 210, 30, "Импульсы");
-  pulseDeltaButton = screenButtons->addButton(5, 37, 210, 30, "Дельты");
-  motoresourceButton = screenButtons->addButton( 5, 72, 210, 30, "Ресурс тек.");
-  motoresourceMaxButton = screenButtons->addButton(5, 107, 210, 30, "Ресурс макс.");
-  backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+	// тут настраиваемся, например, можем добавлять кнопки
+	motoresourceButton = screenButtons->addButton(5, 2, 210, 30, "Ресурс тек.");
+	motoresourceMaxButton = screenButtons->addButton(5, 37, 210, 30, "Ресурс макс.");
+	reserved1 = screenButtons->addButton(5, 72, 210, 30, "=======");
+	reserved2 = screenButtons->addButton(5, 107, 210, 30, "=======");
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InductiveSensorScreen::doUpdate(TFTMenu* menu)
+void resursrScreen::doUpdate(TFTMenu* menu)
 {
-    // тут обновляем внутреннее состояние
+	// тут обновляем внутреннее состояние
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InductiveSensorScreen::doDraw(TFTMenu* menu)
+void resursrScreen::doDraw(TFTMenu* menu)
 {
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InductiveSensorScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+void resursrScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
-  if(pressedButton == backButton)
-    menu->switchToScreen("ParamsScreen");
-  else if(pressedButton == pulsesCountButton)
-    menu->switchToScreen("PulsesCountScreen");
-  else if(pressedButton == pulseDeltaButton)
-    menu->switchToScreen("PulsesDeltaScreen");
-  else if(pressedButton == motoresourceButton)
-    menu->switchToScreen("MotoresourceScreen");
-  else if(pressedButton == motoresourceMaxButton)
-    menu->switchToScreen("MotoresourceMaxScreen");
-    
+	if (pressedButton == backButton)
+		menu->switchToScreen("ParamsScreen");
+	else if (pressedButton == motoresourceButton)
+		menu->switchToScreen("MotoresourceScreen");
+	else if (pressedButton == motoresourceMaxButton)
+		menu->switchToScreen("MotoresourceMaxScreen");
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// PulsesCountScreen
+// ImpulseScreen     Настройка количества импульсов и дельт сравнения с энкодера и файла эталона
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ImpulseScreen::ImpulseScreen() : AbstractTFTScreen("ImpulseScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseScreen::doSetup(TFTMenu* menu)
+{
+	screenButtons->setButtonColors(TFT_BUTTON_COLORS);
+
+	// тут настраиваемся, например, можем добавлять кнопки
+	PulsesCountButton = screenButtons->addButton(5, 2, 210, 30, "Пропуск имп.");      // пропуск импульсов энкодера
+	PulsesDeltaButton = screenButtons->addButton(5, 37, 210, 30, "Дельта имп.");      // дельта импульсов
+	etalonCountButton = screenButtons->addButton(5, 72, 210, 30, "Эталон колич.");    // количество импульсов в файле эталона
+	etalonDeltaButton = screenButtons->addButton(5, 107, 210, 30, "Эталон дельта");   // дельта сравнения с файлом эталона
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseScreen::doUpdate(TFTMenu* menu)
+{
+	// тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseScreen::doDraw(TFTMenu* menu)
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ImpulseScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+	if (pressedButton == backButton)
+		menu->switchToScreen("Settings");
+	else if (pressedButton == PulsesCountButton)
+	{
+		menu->switchToScreen("SkipCounterScreen");
+	}
+	else if (pressedButton == PulsesDeltaButton)
+	{
+		menu->switchToScreen("EcoderDeltaScreen");  // Программа не завершена
+	}
+	else if (pressedButton == etalonCountButton)
+	{
+		menu->switchToScreen("PulsesCountScreen");
+	}
+	
+	else if (pressedButton == etalonDeltaButton)
+	{
+		menu->switchToScreen("PulsesDeltaScreen");
+	}
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ASUScreen     Настройка времени реагирования на сигнал защиты и задержку выдачи сигнала на реле АСУ ТП
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ASUScreen::ASUScreen() : AbstractTFTScreen("ASUScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ASUScreen::doSetup(TFTMenu* menu)
+{
+	screenButtons->setButtonColors(TFT_BUTTON_COLORS);
+
+	// тут настраиваемся, например, можем добавлять кнопки
+	PulsesCountButton = screenButtons->addButton(5, 2, 210, 30, "Задержка нач.");
+	PulsesDeltaButton = screenButtons->addButton(5, 37, 210, 30, "Задержка АСУТП");
+	reserved1 = screenButtons->addButton(5, 72, 210, 30, "========");
+	reserved2 = screenButtons->addButton(5, 107, 210, 30, "========");
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ASUScreen::doUpdate(TFTMenu* menu)
+{
+	// тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ASUScreen::doDraw(TFTMenu* menu)
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ASUScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+	if (pressedButton == backButton)
+		menu->switchToScreen("ParamsScreen");
+	else if (pressedButton == PulsesCountButton)
+	{
+		menu->switchToScreen("RelayDelayScreen");
+	}
+	else if (pressedButton == PulsesDeltaButton)
+	{
+		menu->switchToScreen("AcsDelayScreen");
+	}
+	else if (pressedButton == reserved1)
+	{
+		
+	}
+
+	else if (pressedButton == reserved2)
+	{
+		
+	}
+
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// PulsesCountScreen  устанавливает количество импульсов для сравнения с эталоном
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 PulsesCountScreen::PulsesCountScreen() : AbstractTFTScreen("PulsesCountScreen")
 {
@@ -551,7 +662,7 @@ void PulsesCountScreen::doDraw(TFTMenu* menu)
 void PulsesCountScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("InductiveSensorScreen");
+    menu->switchToScreen("ImpulseScreen");
   else
   {
     currentEditedButton = pressedButton;
@@ -561,7 +672,7 @@ void PulsesCountScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// PulsesDeltaScreen
+// PulsesDeltaScreen   устанавливает дельту сравнения с эталоном
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 PulsesDeltaScreen::PulsesDeltaScreen() : AbstractTFTScreen("PulsesDeltaScreen")
 {
@@ -608,21 +719,19 @@ void PulsesDeltaScreen::doUpdate(TFTMenu* menu)
 void PulsesDeltaScreen::doDraw(TFTMenu* menu)
 {
   TFT_Class* dc = menu->getDC();
-//  uint8_t* oldFont = dc->getFont();
 
   dc->setFreeFont(TFT_FONT);//(BigRusFont);
 //  dc->setColor(WHITE);
 
   menu->print("Дельты",2,2);
   menu->print("Канал 1:", 2, 37);
-  
-//  dc->setFont(oldFont);
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void PulsesDeltaScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("InductiveSensorScreen");
+    menu->switchToScreen("ImpulseScreen");
   else
   {
     currentEditedButton = pressedButton;
@@ -631,8 +740,82 @@ void PulsesDeltaScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   }
     
 }
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// MotoresourceScreen
+// EcoderDeltaScreen   устанавливает дельту сравнения с эталоном
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EcoderDeltaScreen::EcoderDeltaScreen() : AbstractTFTScreen("EcoderDeltaScreen")
+{
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void EcoderDeltaScreen::doSetup(TFTMenu* menu)
+{
+	screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
+
+	currentEditedButton = -1;
+	channel1DeltaVal = Settings.getEthalonPulseDelta();
+
+	// тут настраиваемся, например, можем добавлять кнопки
+	//reserved = screenButtons->addButton(5, 2, 210, 30, "reserved");
+	channel1Button = screenButtons->addButton(120, 30, 95, 30, channel1DeltaVal.c_str());
+	backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
+
+	screenButtons->setButtonBackColor(channel1Button, BLACK);
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void EcoderDeltaScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
+{
+	if (!enterPressed)
+		return;
+
+	if (currentEditedButton == channel1Button)
+	{
+		channel1DeltaVal = enteredValue;
+		screenButtons->relabelButton(channel1Button, channel1DeltaVal.c_str());
+		Settings.setEthalonPulseDelta(channel1DeltaVal.toInt());
+	}
+
+
+	currentEditedButton = -1;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void EcoderDeltaScreen::doUpdate(TFTMenu* menu)
+{
+	// тут обновляем внутреннее состояние
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void EcoderDeltaScreen::doDraw(TFTMenu* menu)
+{
+	TFT_Class* dc = menu->getDC();
+
+	dc->setFreeFont(TFT_FONT);//(BigRusFont);
+  //  dc->setColor(WHITE);
+
+	menu->print("Дельты", 2, 2);
+	menu->print("Канал 1:", 2, 37);
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void EcoderDeltaScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+{
+	if (pressedButton == backButton)
+		menu->switchToScreen("ImpulseScreen");
+	else
+	{
+		currentEditedButton = pressedButton;
+		String strValToEdit = screenButtons->getLabel(currentEditedButton);
+		ScreenKeyboard->show(ktDigits, strValToEdit, this, this, 3);
+	}
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// MotoresourceScreen   устанавливает количество срабатываний механизма выключателя
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MotoresourceScreen::MotoresourceScreen() : AbstractTFTScreen("MotoresourceScreen")
 {
@@ -698,7 +881,7 @@ void MotoresourceScreen::doDraw(TFTMenu* menu)
 void MotoresourceScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("InductiveSensorScreen");
+    menu->switchToScreen("resursrScreen");
   else if(pressedButton == resetButton)
   {
       channel1MotoresourceVal = '0';
@@ -782,7 +965,7 @@ void MotoresourceMaxScreen::doDraw(TFTMenu* menu)
 void MotoresourceMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("InductiveSensorScreen");
+    menu->switchToScreen("resursrScreen");
   else if(pressedButton == resetButton)
   {
       channel1MotoresourceVal = '0';
@@ -800,7 +983,7 @@ void MotoresourceMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// TransformerScreen
+// TransformerScreen  устанавливает пороговые значения сигнала с токовых трансформаторов
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TransformerScreen::TransformerScreen() : AbstractTFTScreen("TransformerScreen")
 {
@@ -812,8 +995,8 @@ void TransformerScreen::doSetup(TFTMenu* menu)
   // тут настраиваемся, например, можем добавлять кнопки
   borderMaxButton = screenButtons->addButton(5, 2, 210, 30, "Порог макс.");
   borderMinButton = screenButtons->addButton(5, 37, 210, 30, "Порог мин.");
-  skipCounterButton = screenButtons->addButton( 5, 72, 210, 30, "Пропуск имп.");
-  koeffTokButton = screenButtons->addButton(5, 107, 210, 30, "Коэфф.тока");
+  koeffTokButton = screenButtons->addButton(5, 72, 210, 30, "Коэфф.тока");
+  reserved = screenButtons->addButton(5, 107, 210, 30, "========");
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
 
 }
@@ -842,13 +1025,13 @@ void TransformerScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   {
     menu->switchToScreen("BorderMinScreen");
   }
-  else if (pressedButton == skipCounterButton)
-  {
-	  menu->switchToScreen("SkipCounterScreen");
-  }
   else if (pressedButton == koeffTokButton)
   {
 	  menu->switchToScreen("CurrentCoeffScreen");
+  }
+  else if (pressedButton == reserved)
+  {
+	 // menu->switchToScreen("CurrentCoeffScreen");
   }
     
 }
@@ -936,8 +1119,8 @@ void BorderMaxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   }
     
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// SkipCounterScreen
+//------------------------------------- -----------------------------------------------------------------------------------------------------------------------------------
+// SkipCounterScreen  устанавливает количество пропускаемых импульсов с энкодера
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SkipCounterScreen::SkipCounterScreen() : AbstractTFTScreen("SkipCounterScreen")
 {
@@ -951,7 +1134,7 @@ void SkipCounterScreen::onActivate()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SkipCounterScreen::doSetup(TFTMenu* menu)
 {
-  screenButtons->setButtonColors(TFT_BUTTON_COLORS2);
+  screenButtons->setButtonColors(TFT_BUTTON_COLORS);
   
   currentEditedButton = -1;
   onActivate();
@@ -1003,7 +1186,7 @@ void SkipCounterScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
   {
-    menu->switchToScreen("TransformerScreen");
+    menu->switchToScreen("ImpulseScreen");
   }
   else if(pressedButton == resetButton)
   {
@@ -1022,7 +1205,7 @@ void SkipCounterScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// CurrentCoeffScreen
+// CurrentCoeffScreen  устанавливает коэффициент пересчета сигнала с токового трансформатора.
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CurrentCoeffScreen::CurrentCoeffScreen() : AbstractTFTScreen("CurrentCoeffScreen")
 {
@@ -1107,7 +1290,7 @@ void CurrentCoeffScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// BorderMinScreen
+// BorderMinScreen  устанавливает минимальный порог сигнала с токового трансформатора
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 BorderMinScreen::BorderMinScreen() : AbstractTFTScreen("BorderMinScreen")
 {
@@ -1191,7 +1374,7 @@ void BorderMinScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// AcsDelayScreen
+// AcsDelayScreen устанавливает задержку сигнала реле защиты
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 AcsDelayScreen::AcsDelayScreen() : AbstractTFTScreen("AcsDelayScreen")
 {
@@ -1257,7 +1440,7 @@ void AcsDelayScreen::doDraw(TFTMenu* menu)
 void AcsDelayScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("ParamsScreen");
+    menu->switchToScreen("ASUScreen");
   else if(pressedButton == resetButton)
   {
       channel1AcsDelayVal = ACS_SIGNAL_DELAY;
@@ -1341,7 +1524,7 @@ void RelayDelayScreen::doDraw(TFTMenu* menu)
 void RelayDelayScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
-    menu->switchToScreen("ParamsScreen");
+    menu->switchToScreen("ASUScreen");
   else if(pressedButton == resetButton)
   {
       channel1RelayDelayVal = RELAY_WANT_DATA_AFTER/1000;
