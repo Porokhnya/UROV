@@ -1571,12 +1571,17 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 try { Config.Instance.Pulses1 = Convert.ToInt32(a.Params[1]); }
-                catch { Config.Instance.Pulses1 = 0; }
+                catch
+                {
+                    Config.Instance.Pulses1 = 0;
+                    MessageBox.Show("ОШИБКА РАЗБОРА ОТВЕТА КОНТРОЛЛЕРА!");
+                }
 
             }
             else
             {
                 Config.Instance.Pulses1 = 0;
+                MessageBox.Show("КОНТРОЛЛЕР ОТВЕТИЛ ОШИБКОЙ НА ЗАПРОС КОЛ-ВА ИМПУЛЬСОВ!");
             }
 
             try
@@ -3640,17 +3645,20 @@ namespace UROVConfig
                 maxPulseTime = Math.Max(maxPulseTime, (timeList[i] - timeList[i - 1]));
             }
 
-            int endStop = timeList.Count;
+            // int endStop = timeList.Count;
 
-            for (int i = 1; i < record.EthalonData.Count; i++)
+            if (record.EthalonData.Count > 0)
             {
-                maxPulseTime = Math.Max(maxPulseTime, (record.EthalonData[i] - record.EthalonData[i - 1]));
+                for (int i = 1; i < record.EthalonData.Count; i++)
+                {
+                    maxPulseTime = Math.Max(maxPulseTime, (record.EthalonData[i] - record.EthalonData[i - 1]));
+                }
             }
 
-            endStop = Math.Min(endStop, record.EthalonData.Count);
+            //endStop = Math.Min(endStop, record.EthalonData.Count);
 
-            if (record.EthalonData.Count < 1)
-                endStop = timeList.Count;
+            //if (record.EthalonData.Count < 1)
+              //  endStop = timeList.Count;
 
 
             //double xCoord = 0;
@@ -3671,7 +3679,7 @@ namespace UROVConfig
             YValuesInterrupt.Add(0);
 
             // теперь считаем все остальные точки
-            for (int i = 1; i < endStop; i++)
+            for (int i = 1; i < timeList.Count; i++)
             {
                 int pulseTime = timeList[i] - timeList[i - 1];
                 //pulseTime *= 100;
@@ -3714,29 +3722,32 @@ namespace UROVConfig
             YValuesEthalon.Add(0);
 
             // считаем график эталона
-            for (int i = 1; i < record.EthalonData.Count; i++)
+            if (record.EthalonData.Count > 0)
+            {
+                for (int i = 1; i < record.EthalonData.Count; i++)
                 {
                     int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
                     //pulseTime *= 100;
 
-                    int pulseTimePercents = (pulseTime*100) / maxPulseTime;
+                    int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
                     pulseTimePercents = 100 - pulseTimePercents;
 
 
-                // System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                // pt.XValue = xCoord;
-                // pt.SetValueY(pulseTimePercents);
+                    // System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
+                    // pt.XValue = xCoord;
+                    // pt.SetValueY(pulseTimePercents);
 
-                //  xCoord += xStep;
+                    //  xCoord += xStep;
 
-                //  ethalonSerie.Points.Add(pt);
+                    //  ethalonSerie.Points.Add(pt);
 
-                //xCoord = xCoord.AddMilliseconds(pulseTime);
-                xCoord += pulseTime;
-                XValuesEthalon.Add(xCoord);
-                YValuesEthalon.Add(pulseTimePercents);
+                    //xCoord = xCoord.AddMilliseconds(pulseTime);
+                    xCoord += pulseTime;
+                    XValuesEthalon.Add(xCoord);
+                    YValuesEthalon.Add(pulseTimePercents);
 
-            } // for
+                } // for
+            }
 
             // убираем последний пик вверх
 
