@@ -229,25 +229,25 @@ void SettingsClass::reloadSettings()
       }
 
       // читаем сохранённые импульсы
-      if(!read16(COUNT_PULSES_STORE_ADDRESS1,channelPulses))
+      if(!read16(COUNT_PULSES_STORE_ADDRESS,channelPulses))
       {
         channelPulses = 0;
       }
 
       // читаем моторесурс
-      if(!read32(MOTORESOURCE_STORE_ADDRESS1,motoresource))
+      if(!read32(MOTORESOURCE_STORE_ADDRESS,motoresource))
       {
         motoresource = 0;
       }
 
       // читаем максимальный моторесурс
-      if(!read32(MOTORESOURCE_MAX_STORE_ADDRESS1,motoresourceMax))
+      if(!read32(MOTORESOURCE_MAX_STORE_ADDRESS,motoresourceMax))
       {
         motoresourceMax = 0;
       }
 
       // читаем дельту импульсов
-     if(!read8(CHANNEL_PULSES_DELTA_ADDRESS1,channelDelta))
+     if(!read8(CHANNEL_PULSES_DELTA_ADDRESS,channelDelta))
      {
       channelDelta = 0;
      }
@@ -401,7 +401,7 @@ uint32_t SettingsClass::getMotoresource()
 void SettingsClass::setMotoresource(uint32_t val)
 {
   motoresource = val;
-  write32(MOTORESOURCE_STORE_ADDRESS1,motoresource);  
+  write32(MOTORESOURCE_STORE_ADDRESS,motoresource);  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getMotoresourceMax()
@@ -412,7 +412,7 @@ uint32_t SettingsClass::getMotoresourceMax()
 void SettingsClass::setMotoresourceMax(uint32_t val)
 {
   motoresourceMax = val;
-  write32(MOTORESOURCE_MAX_STORE_ADDRESS1,motoresourceMax);
+  write32(MOTORESOURCE_MAX_STORE_ADDRESS,motoresourceMax);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint16_t SettingsClass::getPulses()
@@ -423,7 +423,7 @@ uint16_t SettingsClass::getPulses()
 void SettingsClass::setPulses(uint16_t val)
 {
   channelPulses = val;
-  write16(COUNT_PULSES_STORE_ADDRESS1,channelPulses);
+  write16(COUNT_PULSES_STORE_ADDRESS,channelPulses);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint8_t SettingsClass::getPulsesDelta()
@@ -434,6 +434,6 @@ uint8_t SettingsClass::getPulsesDelta()
 void SettingsClass::setPulsesDelta(uint8_t val)
 {
   channelDelta = val;
-  write8(CHANNEL_PULSES_DELTA_ADDRESS1,channelDelta);
+  write8(CHANNEL_PULSES_DELTA_ADDRESS,channelDelta);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

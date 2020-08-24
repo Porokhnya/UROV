@@ -1182,6 +1182,9 @@ void InterruptHandlerClass::update()
     
           needToLog = true; // говорим, что надо записать в лог
 
+/*
+ // ЗАКОММЕНТИРОВАЛ АВТОСОХРАНЕНИЕ ЭТАЛОНА
+ 
           // проверяем, есть ли у нас эталоны на SD? Если нет - создаём их.
 
           // эталон движения вверх
@@ -1195,7 +1198,7 @@ void InterruptHandlerClass::update()
           {
             FileUtils::saveEthalon(0,false,copyList1);
           }
-            
+*/            
            // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
            compareRes1 = EthalonComparer::Compare(copyList1, 0,compareNumber1, ethalonData1);
     
