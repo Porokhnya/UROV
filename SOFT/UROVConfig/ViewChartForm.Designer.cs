@@ -34,6 +34,8 @@
             System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem1 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
             System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell1 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
             System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell2 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell3 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell4 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -102,8 +104,12 @@
             legendCell1.Text = "Импульсов:";
             legendCell2.Name = "EthalonPulses";
             legendCell2.Text = "Эталон:";
+            legendCell3.Name = "TrigDate";
+            legendCell4.Name = "Place";
             legendItem1.Cells.Add(legendCell1);
             legendItem1.Cells.Add(legendCell2);
+            legendItem1.Cells.Add(legendCell3);
+            legendItem1.Cells.Add(legendCell4);
             legend2.CustomItems.Add(legendItem1);
             legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend2.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Column;

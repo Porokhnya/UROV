@@ -3611,6 +3611,9 @@ namespace UROVConfig
             // добавляем кол-во импульсов на график
             vcf.chart.Legends[1].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", record.InterruptData.Count);
             vcf.chart.Legends[1].CustomItems[0].Cells["EthalonPulses"].Text = String.Format("Эталон: {0}", record.EthalonData.Count);
+            vcf.chart.Legends[1].CustomItems[0].Cells["TrigDate"].Text = "Дата: " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+            vcf.chart.Legends[1].CustomItems[0].Cells["Place"].Text = stationName;
+
 
             System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
             ethalonSerie.Points.Clear();
