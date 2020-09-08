@@ -7,6 +7,7 @@
 typedef Vector<uint32_t> UInt32Vector;
 typedef Vector<uint16_t> UInt16Vector;
 
+/*
 typedef enum
 {
   checkCurrentBorder, // проверяем пороги
@@ -15,16 +16,24 @@ typedef enum
   waitForTakeData, // ждём, когда данные заберут
   
 } WatchCurrentState;
+*/
 
 struct CurrentOscillData // данные по току, по трём каналам
 {
+
+  private:
+
+    int32_t firstRecordIndex; // индекс самой ранней записи
+  
   public:
 
-    static const uint32_t MAX_RECORDS = COUNT_OF_FULL_CURRENT_LIST + COUNT_OF_CURRENT_PREVIEW_RECORDS;
+    // максимальное кол-во записей по току в списке
+    static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;//COUNT_OF_FULL_CURRENT_LIST + COUNT_OF_CURRENT_PREVIEW_RECORDS;
 
 
   void clear() // очищает данные без освобождения памяти под них
   {    
+    firstRecordIndex = 0;
     
     times.clear();
     data1.clear();
@@ -38,11 +47,13 @@ struct CurrentOscillData // данные по току, по трём канал
    clear();
   }
 
-  uint32_t earlierRecord()
+  CurrentOscillData normalize();
+
+  uint32_t earlierRecordTime()
   {
     if(times.size() > 0)
     {
-      return times[0];
+      return times[firstRecordIndex];
     }
     return 0xFFFFFFFF;
    
@@ -50,6 +61,31 @@ struct CurrentOscillData // данные по току, по трём канал
 
   void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
   {
+    if(times.size() >= MAX_RECORDS)
+    {
+      // достигли конца списка, надо начинать сначала.
+      // для этого увеличиваем указатель первой записи в списке, и пишем
+      // на нужное место переданные данные.
+
+      size_t writeIndex = times.size() - (times.size() - firstRecordIndex);
+
+      // теперь пишем по нужному адресу
+      times[writeIndex] = tm;
+      data1[writeIndex] = channel1;
+      data2[writeIndex] = channel2;
+      data3[writeIndex] = channel3;
+      
+      // увеличиваем указатель самой ранней записи
+      firstRecordIndex++;
+      if(firstRecordIndex >= MAX_RECORDS)
+      {
+        firstRecordIndex = 0; 
+      }
+
+
+      return;
+    }
+    
     times.push_back(tm);
     data1.push_back(channel1);
     data2.push_back(channel2);
@@ -87,12 +123,14 @@ class ADCSampler
     void pause();
     void resume();
 
-    CurrentOscillData getListOfCurrent()
+    // разрешает или запрещает собирать данные по току
+    void setCanCollectCurrentData(bool val)
     {
-      CurrentOscillData result = oscillData;
-      machineState = checkCurrentBorder;
-      return result;
+      canCollectCurrentData = val;
     }
+
+    // возвращает список данных по осциллограмме тока, чистя локальный
+    CurrentOscillData getListOfCurrent();
 
 /*
 	void startComputeRMS();
@@ -102,13 +140,15 @@ class ADCSampler
 
   private:
 
+/*
     volatile WatchCurrentState machineState; // состояние конечного автомата
     void savePreviewOfCurrent(uint16_t raw1, uint16_t raw2, uint16_t raw3);
     bool hasBorderAlert(uint16_t raw1, uint16_t raw2, uint16_t raw3);
+*/  
 
     bool putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3);
     void getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3);
-  
+    
     volatile bool dataReady;
     uint16_t adcBuffer[NUMBER_OF_BUFFERS][ADC_BUFFER_SIZE];
 
@@ -121,17 +161,13 @@ class ADCSampler
     uint16_t countOfSamples; // кол-во проделанных измерений
 
 
+    bool canCollectCurrentData;
     CurrentOscillData oscillData;
     uint32_t currentOscillTimer;
 
 
-    bool compareTimerEnabled; // флаг, что мы в режиме таймера проверки превышения верхнего порога компаратора
-    uint32_t compareTimer; // таймер ожидания верхнего порога компаратора
-/*
-	  volatile bool rmsComputeMode;
-	  volatile uint32_t rmsData1, rmsData2, rmsData3;
-	  volatile uint32_t rmsStartComputeTime;
-*/    
+//    bool compareTimerEnabled; // флаг, что мы в режиме таймера проверки превышения верхнего порога компаратора
+//    uint32_t compareTimer; // таймер ожидания верхнего порога компаратора
 };
 
 extern ADCSampler adcSampler;

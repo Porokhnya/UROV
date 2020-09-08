@@ -1132,7 +1132,12 @@ void InterruptHandlerClass::update()
         {
           //    DBGLN(F("Взведён флаг аварии!"));
           Feedback.alarm(true);
-        }        
+        }    
+
+        PAUSE_ADC; // останавливаем АЦП на время
+
+        // запрещаем собирать данные по току
+        adcSampler.setCanCollectCurrentData(false);
 
         noInterrupts();
         
@@ -1140,22 +1145,23 @@ void InterruptHandlerClass::update()
             // вызываем не clear, а empty, чтобы исключить лишние переаллокации памяти
             encoderList.empty();        
             
-            // заканчиваем сбор данных по току, копируем данные по току в локальный список
-         //   stopCollectCurrentData();
-           // CurrentOscillData copyOscillData = oscillData;
-          //  oscillData.clear();
-
-         OscillData.clear();
-         OscillData = adcSampler.getListOfCurrent();
+           // заканчиваем сбор данных по току, копируем данные по току в локальный список
+           OscillData.clear();
+           OscillData = adcSampler.getListOfCurrent();
         
         interrupts();
+
+        // разрешаем собирать данные по току
+        adcSampler.setCanCollectCurrentData(true);
 
         // вычисляем смещение от начала записи по току до начала поступления данных
         int32_t datArrivTm = 0;
         if(OscillData.times.size() > 0 && copyList1.size() > 0)
         {
-          datArrivTm = copyList1[0] - OscillData.earlierRecord();
+          datArrivTm = copyList1[0] - OscillData.earlierRecordTime();
         }
+
+       // datArrivTm = 500000ul;//TODO: УБРАТЬ!!!
 
         // нормализуем список времен записей по току
         normalizeList(OscillData.times);
