@@ -6,6 +6,7 @@
 
 
 class ADCSampler {
+  
   public:
     ADCSampler();
     void begin(unsigned int samplingRate);

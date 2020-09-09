@@ -215,6 +215,7 @@ ADCSampler::ADCSampler()
   currentOscillTimer = 0;
 //  machineState = checkCurrentBorder;
   canCollectCurrentData = true;
+  _stopped = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::setLowBorder(uint32_t val) 
@@ -231,6 +232,7 @@ void ADCSampler::begin()
 {  
 DBGLN("ADCSampler::begin START.");  
 
+  _stopped = false;
   dataReady = false;
 //  compareTimerEnabled = false;
 
@@ -404,6 +406,11 @@ bool ADCSampler::hasBorderAlert(uint16_t raw1, uint16_t raw2, uint16_t raw3)
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::setCanCollectCurrentData(bool val)
+{
+      canCollectCurrentData = val;  
+}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CurrentOscillData ADCSampler::getListOfCurrent()
 {
@@ -647,6 +654,12 @@ void ADCSampler::handleInterrupt()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::pause()
 {
+  if(_stopped)
+  {
+    return;
+  }
+  _stopped = true;
+  
   // останавливаем таймер
   //HAL_TIM_Base_Stop_IT ( &htim3 );
   HAL_NVIC_DisableIRQ  ( TIM3_IRQn );
@@ -655,7 +668,12 @@ void ADCSampler::pause()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::resume()
 {
+  if(!_stopped)
+  {
+    return;
+  }
 
+  _stopped = false;
   HAL_NVIC_EnableIRQ  ( TIM3_IRQn );
  
 }

@@ -16,26 +16,6 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 void genUpdate()
 {  
   GEN_TIMER.stop();
-/*  
-  static bool bInited = false;
-  static uint8_t level = LOW;
-  static uint32_t counter = 0;
-  if(!bInited)
-  { 
-    bInited = true;
-    pinModeFast(IMPULSE_PIN_B,OUTPUT);
-  }
-
-  level = !level;
-  digitalWriteFast(IMPULSE_PIN_B,level);
-  counter++;
-
-  if(counter >= (1000ul*PULSE_CHART_WORK_TIME)/GEN_TIMER_PERIOD)
-  {
-    counter = 0;
-    GEN_TIMER.stop();
-  }
- */
   
 
   if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())

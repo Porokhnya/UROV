@@ -105,6 +105,10 @@ struct CurrentOscillData // данные по току, по трём канал
 
 class ADCSampler 
 {
+  private:
+
+    bool _stopped;
+  
   public:
     ADCSampler();
     void begin();
@@ -124,10 +128,7 @@ class ADCSampler
     void resume();
 
     // разрешает или запрещает собирать данные по току
-    void setCanCollectCurrentData(bool val)
-    {
-      canCollectCurrentData = val;
-    }
+    void setCanCollectCurrentData(bool val);
 
     // возвращает список данных по осциллограмме тока, чистя локальный
     CurrentOscillData getListOfCurrent();

@@ -29,10 +29,10 @@ void TestRoutineClass::start()
 //--------------------------------------------------------------------------------------------------
 void TestRoutineClass::stop()
 {
-  Relay_LineALL.off();
-  Relay_Shunt1.off();
   Relay_Shunt2.off();
+  Relay_Shunt1.off();
   Relay_Alarm.off();
+  Relay_LineALL.off();
 
   machineState = trmIdle;
 }
@@ -106,7 +106,8 @@ void TestRoutineClass::update()
       {
         if(millis() - lastMillis >= RELAY_SHUNT1_OFF_INTERVAL)
         {
-            Relay_Shunt1.off();
+//            Relay_Shunt1.off();
+            stop();
             machineState = trmWaitPulsesDone;
             lastMillis = millis();
         }
@@ -119,6 +120,7 @@ void TestRoutineClass::update()
         {
           stop();
         }
+
       }
       break;
         

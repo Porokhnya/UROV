@@ -1677,6 +1677,9 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 	done = false;
 	list.empty();
 	timer = millis();
+
+  adcSampler.setCanCollectCurrentData(false);
+ 
 	oldSubscriber = InterruptHandler.getSubscriber();
 	InterruptHandler.setSubscriber(this);
 
@@ -1691,6 +1694,9 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 	}
 
 	InterruptHandler.setSubscriber(oldSubscriber);
+  
+  adcSampler.setCanCollectCurrentData(true);
+  
 	return done && list.size();
 
 }
