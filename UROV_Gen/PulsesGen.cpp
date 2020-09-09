@@ -5,6 +5,7 @@
 #include "Settings.h"
 #include "DueTimer.h"
 #include "digitalWriteFast.h"
+#include "TestRoutine.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const uint8_t IMPULSE_PIN_A = 53;    // НОМЕР ПИНА A, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
 const uint8_t IMPULSE_PIN_B = 49;    // НОМЕР ПИНА B, НА КОТОРОМ БУДУТ ГЕНЕРИРОВАТЬСЯ ИМПУЛЬСЫ
@@ -16,7 +17,7 @@ ImpulseGeneratorClass ImpulseGeneratorB(IMPULSE_PIN_B);
 void genUpdate()
 {  
   GEN_TIMER.stop();
-  
+
 
   if(/*ImpulseGeneratorA.isDone() && */ImpulseGeneratorB.isDone())
   {
@@ -25,6 +26,8 @@ void genUpdate()
   
 //  ImpulseGeneratorA.update();
   ImpulseGeneratorB.update();
+
+  TestRoutine.update();
 
   GEN_TIMER.start();
   
