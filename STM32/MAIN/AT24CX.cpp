@@ -110,6 +110,20 @@ AT24C512::AT24C512(TwoWire& w,byte index) : AT24CX(w)  {
 }
 
 /**
+ * Constructor with AT24C1024 EEPROM at index 0
+ */
+AT24C1024::AT24C1024(TwoWire& w) : AT24CX(w)  {
+  init(0, 256);
+}
+/**
+ * Constructor with AT24C1024 EEPROM at given index
+ */
+AT24C1024::AT24C1024(TwoWire& w,byte index) : AT24CX(w)  {
+  init(index, 256);
+}
+
+
+/**
  * Init
  */
 void AT24CX::init(byte index, byte pageSize) {

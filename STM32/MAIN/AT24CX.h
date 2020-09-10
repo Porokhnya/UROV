@@ -105,6 +105,12 @@ public:
 	AT24C512(TwoWire& w,byte index);
 };
 
+// AT24C1024 class definiton
+class AT24C1024 : public AT24CX {
+public:
+  AT24C1024(TwoWire& w);
+  AT24C1024(TwoWire& w,byte index);
+};
 
 
 #endif

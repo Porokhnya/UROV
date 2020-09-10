@@ -300,7 +300,7 @@ void SettingsClass::reloadSettings()
 void SettingsClass::begin()
 {
 #ifndef _WIRE1_OFF  
-  eeprom = new AT24C128(Wire1);
+  eeprom = new EEPROM_CLASS(Wire1);
 #endif  
 
   reloadSettings();
