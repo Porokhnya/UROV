@@ -79,7 +79,7 @@ class InterruptHandlerClass
    InterruptEventSubscriber* getSubscriber();
    void informSubscriber(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
    
-   static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, InterruptTimeList& ethalonData1, bool toEEPROM=false);
+   static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, /*InterruptTimeList& ethalonData1*/const String& ethalonFileName, bool toEEPROM=false);
 
 /*
    // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
@@ -94,7 +94,7 @@ private:
 
   bool hasAlarm;
   
-   static int writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, InterruptTimeList& ethalonData, bool toEEPROM=false, int curEEPROMWriteAddress=0);
+   static int writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM=false, int curEEPROMWriteAddress=0);
 
 
 };

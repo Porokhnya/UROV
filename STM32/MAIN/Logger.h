@@ -2,6 +2,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include <Arduino.h>
 #include "FileUtils.h"
+#include "DS3231.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 typedef enum
 {
@@ -43,14 +44,20 @@ class LoggerClass
 
     LoggerClass();
 
-    //void writeLine(const String& line);
-    //void write(const String& data);
-
     void write(uint8_t* data,size_t dataLength);
+    void pause();
+    void resume();
+
+    String getCurrentLogFileName() { return logFileName; }
 
   private:
 
+    DS3231Time lastWriteTime;
     SdFile workFile;
+    bool bPaused;
+    String logFileName;
+    
+    void doOpenFile(DS3231Time& tm);
     bool openWorkFile();
     void closeWorkFile();
 

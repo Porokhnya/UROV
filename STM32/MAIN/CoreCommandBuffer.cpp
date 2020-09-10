@@ -8,6 +8,7 @@
 #include "DS3231.h"
 #include "Settings.h"
 #include "SDFakeFilesInterceptor.h"
+#include "Logger.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 // список поддерживаемых команд
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +99,7 @@ void CommandParser::clear()
     delete [] arguments[i];  
   }
 
-  arguments.empty();
+  arguments.clear();
   //while(arguments.size())
   //  arguments.pop();
 }
@@ -617,6 +618,13 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
       SD_CARD.mkdir(dirOnly.c_str());
     }
 
+    bool isLoggerPaused = false;
+    if(Logger.getCurrentLogFileName().endsWith(filePath))
+    {
+      isLoggerPaused = true;
+      Logger.pause();
+    }   
+    
     SdFile f;
     f.open(filePath.c_str(),FILE_WRITE | O_TRUNC);
 
@@ -650,6 +658,11 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
       {
         f.close(); 
       }
+
+    if(isLoggerPaused)
+    {
+      Logger.resume();
+    }  
  } // if(SDInit::sdInitResult)
  else
  {
@@ -676,9 +689,13 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
  }
 
   if(wantBreak)
+  {
     pStream->print(CORE_COMMAND_ANSWER_ERROR);
+  }
   else
+  {   
     pStream->print(CORE_COMMAND_ANSWER_OK);
+  }
     
   pStream->print(parser.getArg(0));
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
@@ -700,6 +717,13 @@ bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
 
       fileName += parser.getArg(i);
     }
+
+    bool isLoggerPaused = false;
+    if(Logger.getCurrentLogFileName().endsWith(fileName))
+    {
+      isLoggerPaused = true;
+      Logger.pause();
+    }
     
     FileUtils::deleteFile(fileName);
 
@@ -707,6 +731,11 @@ bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
     pStream->print(parser.getArg(0));
     pStream->print(CORE_COMMAND_PARAM_DELIMITER);
     pStream->println(CORE_COMMAND_DONE);    
+
+    if(isLoggerPaused)
+    {
+      Logger.resume();
+    }
 
     return true;
 
@@ -732,6 +761,13 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
     pStream->print(parser.getArg(0));
     pStream->print(CORE_COMMAND_PARAM_DELIMITER);
 
+    bool isLoggerPaused = false;
+    if(Logger.getCurrentLogFileName().endsWith(fileName))
+    {
+      isLoggerPaused = true;
+      Logger.pause();
+    }  
+    
     // проверяем - не фейковый ли это файл?
     if(SDFakeFiles.isOurFakeFile(fileName))
     {
@@ -743,7 +779,12 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
       // файл не фейковый, печатаем его размер в поток
       pStream->println(FileUtils::getFileSize(fileName));    
     }
-    
+
+    if(isLoggerPaused)
+    {
+      Logger.resume();
+    }  
+        
     return true;
   }
   return false;  
@@ -754,7 +795,8 @@ bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandPa
 
 
   String endOfFile = CORE_END_OF_DATA;
-  
+
+  /*
   if(LastTriggeredInterruptRecord.size() > 0) // есть последнее срабатывание
   {
     size_t to = LastTriggeredInterruptRecord.size();
@@ -763,8 +805,40 @@ bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandPa
         pStream->write(LastTriggeredInterruptRecord[i]);
     }
 
-    LastTriggeredInterruptRecord.empty();
+    LastTriggeredInterruptRecord.clear();
 
+  }
+  */
+  if(LastTriggeredInterruptRecordIndex > -1)
+  {
+    AT24CX* eeprom = Settings.getEEPROM();
+    // вычисляем начало очередной записи в EEPROM
+    int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + LastTriggeredInterruptRecordIndex*EEPROM_LAST_3_RECORD_SIZE;
+
+    // читаем заголовки
+    uint8_t header1, header2, header3;
+    header1 = eeprom->read(eepromAddress++);
+    header2 = eeprom->read(eepromAddress++);
+    header3 = eeprom->read(eepromAddress++);
+
+     // проверяем заголовки
+    if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
+    {
+      // запись валидная, в следующих четырёх байтах - будет длина данных
+      uint32_t recordLength;
+      eeprom->read(eepromAddress,(uint8_t*)&recordLength,4);
+      eepromAddress += 4;
+
+      // теперь читаем данные
+      for(uint32_t iter=0;iter<recordLength;iter++)
+      {
+        pStream->write(eeprom->read(eepromAddress++));
+        pStream->flush();
+      } // for
+  
+    }
+    
+    LastTriggeredInterruptRecordIndex = -1;
   }
 
   pStream->println(endOfFile);
@@ -787,6 +861,13 @@ bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser
       fileName += parser.getArg(i);
     }
 
+    bool isLoggerPaused = false;
+    if(Logger.getCurrentLogFileName().endsWith(fileName))
+    {
+      isLoggerPaused = true;
+      Logger.pause();
+    } 
+    
     // проверяем, не фейковый ли это файл?
     if(SDFakeFiles.isOurFakeFile(fileName))
     {
@@ -798,6 +879,11 @@ bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser
       // файл не фейковый, надо отправить его в поток
       FileUtils::SendToStream(pStream, fileName);
     }
+
+    if(isLoggerPaused)
+    {
+      Logger.resume();
+    }      
     
     pStream->println(endOfFile);
   }
@@ -1675,7 +1761,7 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 {
 	done = false;
-	list.empty();
+	list.clear();
 	timer = millis();
 
   adcSampler.setCanCollectCurrentData(false);

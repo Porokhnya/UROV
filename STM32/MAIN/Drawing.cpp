@@ -31,7 +31,7 @@ namespace Drawing
   void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
   {
       // освобождаем серию
-      serie.empty();
+      serie.clear();
 
 	  TFT_Class* dc = Screen.getDC();
 	  int screenWidth = dc->width();
@@ -511,7 +511,7 @@ void Chart::clearSeries()
     delete series[i]; 
   }
 
-  series.empty();
+  series.clear();
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

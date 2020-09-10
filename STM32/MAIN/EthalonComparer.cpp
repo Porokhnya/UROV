@@ -5,7 +5,7 @@
 #include "Settings.h"
 #include "FileUtils.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t channelNumber, EthalonCompareNumber& compareNumber, InterruptTimeList& ethalonData)
+EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t channelNumber, EthalonCompareNumber& compareNumber, String& fileName)//InterruptTimeList& ethalonData)
 {
     DBGLN("");
     DBG(F("Сравниваем список импульсов #"));
@@ -13,6 +13,8 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     DBGLN(F(" с эталоном..."));
 
     compareNumber = ecnNoEthalon;
+    
+    InterruptTimeList ethalonData;
     ethalonData.clear();
     
     if(list.size() < 2)
@@ -49,7 +51,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
       
   // загружаем файл эталона
   
-   String fileName;
+   fileName = "";
    fileName = ETHALONS_DIRECTORY;
    fileName += ETHALON_NAME_PREFIX;
   
@@ -120,22 +122,33 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   
   SdFile file;
   file.open(fileName.c_str(),FILE_READ);
+
+  uint32_t ethalonPulsesCount = 0; // количество импульсов эталона
   
   if(file.isOpen())
   {
     file.rewind(); // переходим на начало файла
-    
-    uint32_t curRec;
-    while(1)
-    {
-      int readResult = file.read(&curRec,sizeof(curRec));
-      if(readResult == -1 || size_t(readResult) < sizeof(curRec))
+    uint32_t fSize = file.fileSize();
+
+    #ifndef ETHALON_COMPARE_ONLY_PULSES_COUNT // только если сказали - сравнивать и времена импульсов, не только их количество   
+      uint32_t curRec;
+      while(1)
       {
-        break;
+        int readResult = file.read(&curRec,sizeof(curRec));
+        if(readResult == -1 || size_t(readResult) < sizeof(curRec))
+        {
+          break;
+        }
+    
+          ethalonData.push_back(curRec);
       }
-  
-        ethalonData.push_back(curRec);
-    }
+
+      ethalonPulsesCount = ethalonData.size();
+    #else
+      // сравниваем только кол-во импульсов
+      ethalonPulsesCount = fSize/sizeof(uint32_t);
+    #endif // ETHALON_COMPARE_ONLY_PULSES_COUNT
+    
     file.close();
   }
   else
@@ -157,13 +170,17 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   }
 
   DBG(F("Кол-во импульсов эталона: "));
-  DBGLN(ethalonData.size());
+  DBGLN(ethalonPulsesCount);
 
   DBG(F("Кол-во собранных импульсов: "));
   DBGLN(list.size());
 
+  #ifndef ETHALON_COMPARE_ONLY_PULSES_COUNT
+
+  // сравниваем времена импульсов
+  
   // для начала вычисляем, сколько импульсов сравнивать
-  size_t toCompare = min(ethalonData.size(),list.size());
+  size_t toCompare = min(ethalonPulsesCount,list.size());
 
   DBG(F("Импульсов к сравнению: "));
   DBGLN(toCompare);
@@ -203,6 +220,16 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
       return COMPARE_RESULT_MismatchEthalon;
     }
   }
+  #else
+    // сравниваем только количество импульсов
+    int32_t dt = list.size() - ethalonPulsesCount;
+
+    if(abs(dt) > maxPulses - minPulses)
+    {
+      // кол-во импульсов в эталоне отличается на кол-во импульсов прерывания больше, чем на дельту
+      return COMPARE_RESULT_MismatchEthalon;
+    }
+  #endif // ETHALON_COMPARE_ONLY_PULSES_COUNT
 
   DBGLN(F("полное совпадение с эталоном!"));
   DBGLN("");

@@ -35,7 +35,8 @@
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
 #endif
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
+//Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
+int8_t LastTriggeredInterruptRecordIndex = -1; // индекс последнего сработавшего прерывания, сохраненный в EEPROM
 bool isBadSDDetected = false;
 bool isBadSDLedOn = false;
 uint32_t badSDBlinkTimer = 0;
@@ -89,7 +90,8 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 	EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
 
 	EthalonCompareNumber compareNumber1;
-	InterruptTimeList ethalonData1;
+	//InterruptTimeList ethalonData1;
+ String ethalonFileName;
 
 	bool needToLog = false;
 
@@ -105,7 +107,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 		needToLog = true;
 
 		// здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-		compareRes1 = EthalonComparer::Compare(interruptsList, 0, compareNumber1, ethalonData1);
+		compareRes1 = EthalonComparer::Compare(interruptsList, 0, compareNumber1, ethalonFileName);//ethalonData1);
 
 		if (compareRes1 == COMPARE_RESULT_MatchEthalon)
 		{
@@ -125,7 +127,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	// получаем список данных по току
-	CurrentOscillData oscillData = adcSampler.getListOfCurrent();//InterruptHandlerClass::getCurrentData();
+	CurrentOscillData oscillData = adcSampler.getListOfCurrent();
 	// нормализуем список времён
 	InterruptHandlerClass::normalizeList(oscillData.times);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
@@ -135,7 +137,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 	if (wantToInformSubscriber)
 	{
 	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
-		InterruptHandler.informSubscriber(&oscillData,interruptsList, compareRes1/*, millis() - rs485RelayTriggeredTime, rs485RelayTriggeredTime*/);
+		InterruptHandler.informSubscriber(&oscillData,interruptsList, compareRes1);
 
    // обновляем экран, чтобы график появился сразу
    Screen.update();
@@ -144,13 +146,13 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
   if (needToLog)
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1,true);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonData1);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog

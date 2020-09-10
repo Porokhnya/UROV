@@ -90,8 +90,9 @@ void SettingsClass::write8(int addr, uint8_t val)
   }
 
     int writeaddr = addr;
-    eeprom->write(writeaddr++,RECORD_HEADER1);
-    eeprom->write(writeaddr++,RECORD_HEADER2);
+    eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
+    eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
+    
     uint8_t* writePtr = (uint8_t*)&val;
     eeprom->write(writeaddr,writePtr,sizeof(val)); 
     
@@ -105,8 +106,9 @@ void SettingsClass::write16(int addr, uint16_t val)
   }
 
     int writeaddr = addr;
-    eeprom->write(writeaddr++,RECORD_HEADER1);
-    eeprom->write(writeaddr++,RECORD_HEADER2);
+    eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
+    eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
+    
     uint8_t* writePtr = (uint8_t*)&val;
     eeprom->write(writeaddr,writePtr,sizeof(val)); 
     
@@ -120,8 +122,9 @@ void SettingsClass::write32(int addr, uint32_t val)
   }
 
     int writeaddr = addr;
-    eeprom->write(writeaddr++,RECORD_HEADER1);
-    eeprom->write(writeaddr++,RECORD_HEADER2);
+    eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
+    eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
+    
     uint8_t* writePtr = (uint8_t*)&val;
     eeprom->write(writeaddr,writePtr,sizeof(val)); 
     
@@ -138,15 +141,22 @@ bool SettingsClass::read8(int addr, uint8_t& val)
 
   int readAddr = addr;
   uint8_t header1, header2;
-  header1 = eeprom->read(readAddr++);
-  header2 = eeprom->read(readAddr++);
+  header1 = eeprom->read(readAddr);readAddr++;
+  header2 = eeprom->read(readAddr);readAddr++;
 
   if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
-     return (val != 0xFF);
+     return true;//(val != 0xFF);
   }
+  #ifdef _SETTINGS_LOAD_DEBUG
+  else
+  {
+      Serial.print("Settings:read8 - BAD HEADER AT ADDRESS ");
+      Serial.println(addr);
+  }
+  #endif
 
   return false;      
 }
@@ -162,15 +172,22 @@ bool SettingsClass::read16(int addr, uint16_t& val)
 
   int readAddr = addr;
   uint8_t header1, header2;
-  header1 = eeprom->read(readAddr++);
-  header2 = eeprom->read(readAddr++);
+  header1 = eeprom->read(readAddr);readAddr++;
+  header2 = eeprom->read(readAddr);readAddr++;
 
   if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
-     return (val != 0xFFFF);
+     return true;//(val != 0xFFFF);
   }
+  #ifdef _SETTINGS_LOAD_DEBUG
+  else
+  {
+      Serial.print("Settings:read16 - BAD HEADER AT ADDRESS ");
+      Serial.println(addr);
+  }
+  #endif
 
   return false;      
 }
@@ -186,15 +203,22 @@ bool SettingsClass::read32(int addr, uint32_t& val)
 
   int readAddr = addr;
   uint8_t header1, header2;
-  header1 = eeprom->read(readAddr++);
-  header2 = eeprom->read(readAddr++);
+  header1 = eeprom->read(readAddr);readAddr++;
+  header2 = eeprom->read(readAddr);readAddr++;
 
   if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
-     return (val != 0xFFFFFFFF);
+     return true;//(val != 0xFFFFFFFF);
   }
+  #ifdef _SETTINGS_LOAD_DEBUG
+  else
+  {
+      Serial.print("Settings:read32 - BAD HEADER AT ADDRESS ");
+      Serial.println(addr);
+  }
+  #endif
 
   return false;      
 }
