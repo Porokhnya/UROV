@@ -1,4 +1,3 @@
-#include <SPI.h>
 #include <RamDisk.h>
 #include <WinBondRAM.h>
 
@@ -11,7 +10,7 @@ void setup() {
   Serial.begin(9600);
   
   // Initialize RAM
-  ram.begin();
+  ram.begin(PC13,PA7,PA6,PA5);
 
   Serial.print(F("Format (Y/N): "));
   while (!Serial.available());
