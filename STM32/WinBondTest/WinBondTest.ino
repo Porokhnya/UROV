@@ -9,7 +9,11 @@ char buf[40];
 void setup() {
   Serial.begin(9600);
   
-  // Initialize RAM
+  // Инициализируем память.
+  // Первый параметр - пин CS
+  // второй параметр - пин MOSI
+  // третий параметр - пин MISO
+  // четвертый параметр - пин SCK
   ram.begin(PC13,PA7,PA6,PA5);
 
   Serial.print(F("Format (Y/N): "));
