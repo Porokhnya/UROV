@@ -549,36 +549,37 @@ namespace UROVConfig
         {
             // задаём настройки масштабирования графиков
 
-            ChartArea area = chart.ChartAreas[0];
+            for (int i = 0; i < chart.ChartAreas.Count; i++)
+            {
+                ChartArea area = chart.ChartAreas[i];
 
-            //area.AxisX.LabelStyle.Format = "dd.MM.yyyy HH:mm"; // задаём формат отображения меток
 
-            area.AxisX.Interval = interval;
-            area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
-            //area.AxisX.IntervalOffsetType = DateTimeIntervalType.Milliseconds;
-            area.AxisX.ScaleView.Zoomable = true;
-            area.CursorX.AutoScroll = true;
+                area.AxisX.Interval = interval;
+                area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
+                area.AxisX.ScaleView.Zoomable = true;
+                area.CursorX.AutoScroll = true;
 
-            area.CursorX.IsUserEnabled = true;
-            area.CursorX.IsUserSelectionEnabled = true;
-            area.CursorX.IntervalType = DateTimeIntervalType.Number;
-            area.CursorX.Interval = interval;
+                area.CursorX.IsUserEnabled = true;
+                area.CursorX.IsUserSelectionEnabled = true;
+                area.CursorX.IntervalType = DateTimeIntervalType.Number;
+                area.CursorX.Interval = interval;
 
-            area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollSize = interval;
-            area.AxisX.ScaleView.Zoomable = true;
+                area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollSize = interval;
+                area.AxisX.ScaleView.Zoomable = true;
 
-            area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.MinSize = interval;
+                area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.MinSize = interval;
 
-            area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollMinSize = interval;
+                area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollMinSize = interval;
 
-            area.AxisY.IntervalType = DateTimeIntervalType.Number;
-            area.AxisY.ScaleView.Zoomable = true;
-            area.CursorY.IsUserSelectionEnabled = true;
-            area.CursorY.IsUserEnabled = true;
-            area.CursorY.AutoScroll = true;
+                area.AxisY.IntervalType = DateTimeIntervalType.Number;
+                area.AxisY.ScaleView.Zoomable = true;
+                area.CursorY.IsUserSelectionEnabled = true;
+                area.CursorY.IsUserEnabled = true;
+                area.CursorY.AutoScroll = true;
+            }
         }
     }
 }

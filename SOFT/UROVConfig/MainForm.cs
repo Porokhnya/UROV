@@ -818,33 +818,35 @@ namespace UROVConfig
 
         private void setChartInterval(System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int interval)
         {
-            ChartArea area = targetChart.ChartAreas[0];
-            area.AxisX.Interval = interval;
-            area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
-            //area.AxisX.IntervalOffsetType = DateTimeIntervalType.Milliseconds;
-            area.AxisX.ScaleView.Zoomable = true;
-            area.CursorX.AutoScroll = true;
+            for (int i = 0; i < targetChart.ChartAreas.Count; i++)
+            {
+                ChartArea area = targetChart.ChartAreas[i];
+                area.AxisX.Interval = interval;
+                area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
+                area.AxisX.ScaleView.Zoomable = true;
+                area.CursorX.AutoScroll = true;
 
-            area.CursorX.IsUserEnabled = true;
-            area.CursorX.IsUserSelectionEnabled = true;
-            area.CursorX.IntervalType = DateTimeIntervalType.Number;
-            area.CursorX.Interval = interval;
+                area.CursorX.IsUserEnabled = true;
+                area.CursorX.IsUserSelectionEnabled = true;
+                area.CursorX.IntervalType = DateTimeIntervalType.Number;
+                area.CursorX.Interval = interval;
 
-            area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollSize = interval;
-            area.AxisX.ScaleView.Zoomable = true;
+                area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollSize = interval;
+                area.AxisX.ScaleView.Zoomable = true;
 
-            area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.MinSize = interval;
+                area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.MinSize = interval;
 
-            area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
-            area.AxisX.ScaleView.SmallScrollMinSize = interval;
+                area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollMinSize = interval;
 
-            area.AxisY.IntervalType = DateTimeIntervalType.Number;
-            area.AxisY.ScaleView.Zoomable = true;
-            area.CursorY.IsUserSelectionEnabled = true;
-            area.CursorY.IsUserEnabled = true;
-            area.CursorY.AutoScroll = true;
+                area.AxisY.IntervalType = DateTimeIntervalType.Number;
+                area.AxisY.ScaleView.Zoomable = true;
+                area.CursorY.IsUserSelectionEnabled = true;
+                area.CursorY.IsUserEnabled = true;
+                area.CursorY.AutoScroll = true;
+            }
         }
 
         private void CreateChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
@@ -853,7 +855,6 @@ namespace UROVConfig
             System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
             s.Points.Clear();
 
-            ChartArea area = targetChart.ChartAreas[0];
 
             
 
@@ -897,24 +898,27 @@ namespace UROVConfig
 
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-
-            area.AxisX.CustomLabels.Clear();
-
             int step = maxTime / customLabelsCount;
-            int startOffset = -step / 2;
-            int endOffset = step / 2;
-            int counter = 0;
 
-            for (int i = 0; i < customLabelsCount; i++)
+            for (int kk = 0; kk < targetChart.ChartAreas.Count; kk++)
             {
-                string labelText = String.Format("{0}ms", counter / 1000);
-                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                area.AxisX.CustomLabels.Add(monthLabel);
-                startOffset = startOffset + step;
-                endOffset = endOffset + step;
-                counter += step;
-            }
+                ChartArea area = targetChart.ChartAreas[kk];
+                area.AxisX.CustomLabels.Clear();
 
+                int startOffset = -step / 2;
+                int endOffset = step / 2;
+                int counter = 0;
+
+                for (int i = 0; i < customLabelsCount; i++)
+                {
+                    string labelText = String.Format("{0}ms", counter / 1000);
+                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisX.CustomLabels.Add(monthLabel);
+                    startOffset = startOffset + step;
+                    endOffset = endOffset + step;
+                    counter += step;
+                }
+            }
             // устанавливаем интервал для меток на графике
             setChartInterval(targetChart, step);
 
@@ -3678,8 +3682,23 @@ namespace UROVConfig
             //xCoord += xStep;
             //interruptSerie.Points.Add(ptFake1);
 
+            // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
+            if(record.CurrentTimes.Count > 0)
+            {
+                for(int z=0;z<record.CurrentTimes.Count;z++)
+                {
+                    if (record.CurrentTimes[z] >= pulsesOffset)
+                        break;
+
+                    XValuesInterrupt.Add(record.CurrentTimes[z]);
+                    YValuesInterrupt.Add(0);
+                }
+            }
+
+
             XValuesInterrupt.Add(xCoord);
             YValuesInterrupt.Add(0);
+
 
             // теперь считаем все остальные точки
             for (int i = 1; i < timeList.Count; i++)
@@ -3690,9 +3709,15 @@ namespace UROVConfig
                 int pulseTimePercents = (pulseTime*100) / maxPulseTime;
                 pulseTimePercents = 100 - pulseTimePercents;
 
+                // абсолютное инвертированное значение от maxPulseTime
+                // maxPulseTime = 100%
+                // x = pulseTimePercents
+                // x = (pulseTimePercents*maxPulseTime)/100;
+
                 xCoord += pulseTime;
                 XValuesInterrupt.Add(xCoord);
-                YValuesInterrupt.Add(pulseTimePercents);
+                //YValuesInterrupt.Add(pulseTimePercents);
+                YValuesInterrupt.Add((pulseTimePercents * maxPulseTime) / 100);
 
             } // for
 
@@ -3703,10 +3728,22 @@ namespace UROVConfig
             {
                 YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;
             }
-            
-            
 
-            interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
+            // а вот тут - добавлять следующие точки от конца прерывания до конца информации по токам
+            if (record.CurrentTimes.Count > 0)
+            {
+                for (int z = 0; z < record.CurrentTimes.Count; z++)
+                {
+                    if (record.CurrentTimes[z] <= xCoord)
+                        continue;
+
+                    XValuesInterrupt.Add(record.CurrentTimes[z]);
+                    YValuesInterrupt.Add(0);
+                }
+            }
+
+
+                interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
 
             //xCoord =  interruptTime;
             xCoord = pulsesOffset;
@@ -3747,7 +3784,8 @@ namespace UROVConfig
                     //xCoord = xCoord.AddMilliseconds(pulseTime);
                     xCoord += pulseTime;
                     XValuesEthalon.Add(xCoord);
-                    YValuesEthalon.Add(pulseTimePercents);
+                    //YValuesEthalon.Add(pulseTimePercents);
+                    YValuesEthalon.Add((pulseTimePercents * maxPulseTime) / 100);
 
                 } // for
             }
@@ -3762,8 +3800,10 @@ namespace UROVConfig
 
             ethalonSerie.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
 
+            int maxCurrentValue = 0;
+
             // теперь создаём графики по току
-            if(record.CurrentTimes.Count > 0)
+            if (record.CurrentTimes.Count > 0)
             {
                 // СПИСОК СОДЕРЖИТ ВРЕМЕНА micros(), И ЯВЛЯЕТСЯ НОРМАЛИЗОВАННЫМ !!!
                 List<int> XValuesOfCurrent1 = new List<int>();
@@ -3775,8 +3815,7 @@ namespace UROVConfig
 
                 List<int> currentTimesList = record.CurrentTimes;
                 xCoord = 0;
-                int maxCurrentValue = 0;
-
+                
                 for (int i = 1; i < currentTimesList.Count; i++)
                 {
                     maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData1[i]);
@@ -3784,23 +3823,10 @@ namespace UROVConfig
                     maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData3[i]);
 
                 }
+                
 
-                int phaseOffset = 10000; // пофазный сдвиг
+                //int phaseOffset = 10000; // пофазный сдвиг
 
-
-                /*
-                  
-                // начальные точки по току
-
-                XValuesOfCurrent1.Add(xCoord);
-                XValuesOfCurrent2.Add(xCoord + phaseOffset);
-                XValuesOfCurrent3.Add(xCoord + phaseOffset*2);
-
-
-                YValuesChannel1.Add(0);
-                YValuesChannel2.Add(0);
-                YValuesChannel3.Add(0);
-                */
 
                 // теперь считаем все остальные точки
                 for (int i = 1; i < currentTimesList.Count; i++)
@@ -3808,14 +3834,14 @@ namespace UROVConfig
                     int pulseTime = currentTimesList[i] - currentTimesList[i - 1];
                     //pulseTime *= 100;
 
-                    int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 80);
-                    YValuesChannel1.Add(percents);
+                    //int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 80);
+                    YValuesChannel1.Add(record.CurrentData1[i]);// percents);
 
-                    percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 78);
-                    YValuesChannel2.Add(percents);
+                    //percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 78);
+                    YValuesChannel2.Add(record.CurrentData2[i]);// percents);
 
-                    percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 76);
-                    YValuesChannel3.Add(percents);
+                    //percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 76);
+                    YValuesChannel3.Add(record.CurrentData3[i]);// percents);
 
 
 
@@ -3825,8 +3851,8 @@ namespace UROVConfig
 
                     if (i > 1)
                     {
-                        XValuesOfCurrent2.Add(xCoord + phaseOffset);
-                        XValuesOfCurrent3.Add(xCoord + phaseOffset * 2);
+                        XValuesOfCurrent2.Add(xCoord);// + phaseOffset);
+                        XValuesOfCurrent3.Add(xCoord);// + phaseOffset * 2);
                     }
                     else
                     {
@@ -3839,16 +3865,6 @@ namespace UROVConfig
 
 
                 // добавляем графики тока
-
-                /*
-                // сглаживание
-                const int approximatePasses = 500;
-
-                approximate(approximatePasses, ref YValuesChannel1);
-                approximate(approximatePasses, ref YValuesChannel2);
-                approximate(approximatePasses, ref YValuesChannel3);
-                */
-
 
                 channel1Current.Points.DataBindXY(XValuesOfCurrent1, YValuesChannel1);
                 channel2Current.Points.DataBindXY(XValuesOfCurrent2, YValuesChannel2);
@@ -3880,27 +3896,64 @@ namespace UROVConfig
 
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-
-            ChartArea area = vcf.chart.ChartAreas[0];
-            area.AxisX.CustomLabels.Clear();
-
             int step = maxTime / customLabelsCount;
-            int startOffset = -step/2;
-            int endOffset = step/2;
-            int counter = 0;
 
-            for(int i=0;i< customLabelsCount;i++)
+            for (int kk = 0; kk < vcf.chart.ChartAreas.Count; kk++)
             {
-                string labelText = String.Format("{0}ms", counter/1000);
-                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                area.AxisX.CustomLabels.Add(monthLabel);
-                startOffset = startOffset + step;
-                endOffset = endOffset + step;
-                counter += step;
+                ChartArea area = vcf.chart.ChartAreas[kk];
+                area.AxisX.CustomLabels.Clear();
+
+                int startOffset = -step / 2;
+                int endOffset = step / 2;
+                int counter = 0;
+
+                for (int i = 0; i < customLabelsCount; i++)
+                {
+                    string labelText = String.Format("{0}ms", counter / 1000);
+                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisX.CustomLabels.Add(monthLabel);
+                    startOffset = startOffset + step;
+                    endOffset = endOffset + step;
+                    counter += step;
+                }
             }
 
             // устанавливаем интервал для меток на графике
             vcf.setInterval(step);
+
+
+            // теперь пробуем для графика прерываний - переназначить метки
+            {
+                int interruptLabelsCount = 6;
+                step = maxPulseTime / interruptLabelsCount;
+
+                ChartArea area = vcf.chart.ChartAreas[0];
+                area.AxisY.CustomLabels.Clear();
+                area.AxisY.Interval = step;
+                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+                int startOffset = -step / 2;
+                int endOffset = step / 2;
+                int counter = 0;
+
+                for (int i = 0; i < interruptLabelsCount; i++)
+                {
+                    string labelText = String.Format("{0}us", maxPulseTime - counter);
+                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisY.CustomLabels.Add(monthLabel);
+                    startOffset = startOffset + step;
+                    endOffset = endOffset + step;
+                    counter += step;
+                }
+            }
+
+            // теперь рисуем свои метки на Y осях токов
+            if (record.CurrentTimes.Count > 0)
+            {
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[1], maxCurrentValue);
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[2], maxCurrentValue);
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[3], maxCurrentValue);
+            }
 
             if (modal)
             {
@@ -3912,6 +3965,45 @@ namespace UROVConfig
                 vcf.BringToFront();
             }
 
+        }
+
+        private void AddCustomLabelsOfCurrent(ChartArea area, int maxCurrentValue)
+        {
+            int currentLabelsCount = 6;
+            int step = maxCurrentValue / currentLabelsCount;
+
+            area.AxisY.CustomLabels.Clear();
+            area.AxisY.Interval = step;
+            area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+            int startOffset = -step / 2;
+            int endOffset = step / 2;
+            int counter = 0;
+
+            for (int i = 0; i < currentLabelsCount; i++)
+            {
+                string labelText = String.Format("{0:0.00}A", GetCurrentFromADC(counter));
+                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                area.AxisY.CustomLabels.Add(monthLabel);
+                startOffset = startOffset + step;
+                endOffset = endOffset + step;
+                counter += step;
+            }
+        }
+
+        private float GetCurrentFromADC(int adcVAL)
+        {
+            float result = 0;
+            float CURRENT_DIVIDER = 1000.0f;
+            float COEFF_1 = 5.0f;
+            float currentCoeff = 3160.0f;
+            currentCoeff /= 1000;
+
+            float intermediate = (COEFF_1 * adcVAL) / currentCoeff;
+
+            result = (intermediate / CURRENT_DIVIDER);
+
+            return result;
         }
 
         private void approximate(int countPasses, ref List<double> lst)
