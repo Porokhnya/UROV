@@ -23,14 +23,12 @@ InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
   startSeenTime = 0;
   timerDelta = 0;
   canAcceptInterruptData = true;
+  list1 = NULL;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onDeactivate()
 {
     // после деактивирования нашего экрана мы опять можем принимать данные прерываний, чтобы показать новые графики
-    // чистим память
-    list1.clear();
-    serie1.clear();
     canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -54,7 +52,7 @@ void InterruptScreen::OnHaveInterruptData()
   // два - когда в списках прерываний точек заведомо меньше, чем точек на графике (например, 20 вместо 150) - без пересчёта получим
   // куцый график, в этом случае нам надо его растянуть по-максимуму.
 
-  Drawing::ComputeChart(list1, serie1);
+  Drawing::ComputeChart(*list1, serie1);
 
   // вычисляем моторесурс
   computeMotoresource();
@@ -62,10 +60,10 @@ void InterruptScreen::OnHaveInterruptData()
   // запоминаем время начала показа и переключаемся на экран
   startSeenTime = millis();
   Screen.switchToScreen(this);
-  Screen.update();
+  Screen.update(); // после вызова update наш экран покажется сразу, т.е. валидность всех переданных в OnInterruptRaised мы можем гарантировать.
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -77,7 +75,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, const Interr
   // пришли результаты серии прерываний с одного из списков.
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
-  list1 = list;
+  list1 = &list;
   oscillData = oscData;
   box.chartColor = LGRAY;
   box.compareColor = LGRAY;
@@ -220,7 +218,7 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   String str;
 
   str = F("Импульсов: ");
-  str += list1.size();
+  str += list1->size();
   
   
   str += F("; ресурс: ");
@@ -283,7 +281,7 @@ void InterruptScreen::doDraw(TFTMenu* menu)
 	drawCompareResult(menu);
 
   // ОЧИСТКА ПАМЯТИ !!!
-  list1.clear();
+  list1->clear();
   serie1.clear();
   oscillData->clear();
 }

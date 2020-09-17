@@ -25,7 +25,7 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
 
   static AbstractTFTScreen* create();  
 
-  void OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult result);
+  void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult result);
   void OnHaveInterruptData();
     
 protected:
@@ -49,7 +49,7 @@ private:
     void drawMotoresource(TFTMenu* menu);
     //void drawTimeBeforeInterrupt(TFTMenu* menu);
 
-    InterruptTimeList list1;
+    InterruptTimeList* list1;
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	CurrentOscillData* oscillData; // данные по току

@@ -1756,6 +1756,9 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 		file.close();
 	}
 #endif 
+
+  // чистим память
+  list.clear();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
@@ -1787,7 +1790,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& _list, EthalonCompareResult result)
+void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult result)
 {
 	list = _list;
 }

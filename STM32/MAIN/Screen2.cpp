@@ -1796,7 +1796,9 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
   }
 
   if(state == recStarted)
+  {
     drawWelcome(menu);
+  }
   else
   if(state == recDone)
   {
@@ -1806,6 +1808,9 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
     showButtons(true);    
     
     Drawing::DrawChart(this, serie1, RED);
+
+    // чистим память после отрисовки
+    serie1.clear();
   }    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1887,6 +1892,9 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
 
   // сохраняем эталон
   FileUtils::saveEthalon(saveChannel,direction == dirUp, *selectedList);
+
+  // чистим память после сохранения
+  selectedList->clear();
   
 /*
   SD_CARD.mkdir(ETHALONS_DIRECTORY);
@@ -1952,6 +1960,9 @@ void EthalonRecordScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
   {
+    // чистим память
+    list1.clear();
+    
     menu->switchToScreen("EthalonScreen");
   }
   else if(pressedButton == channel1Button)
@@ -2143,9 +2154,12 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Screen.getDC()->fillScreen(TFT_BACK_COLOR);
   showButtons(true);  
   Drawing::DrawChart(this, serie1, RED);
+
+  // чистим память после отрисовки
+  serie1.clear();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
@@ -2169,24 +2183,6 @@ void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, const In
     
   } // switch
   */
-
-  
-  // для теста - печатаем в Serial
-  #ifdef _MY_DEBUG
-
-    if(list.size() > 1)
-    {
-      DBGLN("INTERRUPT DATA >>");
-      
-      for(size_t i=0;i<list.size();i++)
-      {
-        DBGLN(list[i]);
-      }
-    }
-
-    DBGLN("<< END OF INTERRUPT DATA");
-    
-  #endif // _MY_DEBUG  
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
