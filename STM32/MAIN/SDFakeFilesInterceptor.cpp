@@ -35,11 +35,15 @@ uint32_t SDFakeFilesClass::getFileSize(const String& fileName)
     uint32_t result = 0;
 
     AT24CX* eeprom = Settings.getEEPROM();
+    if(!eeprom)
+    {
+      return 0;
+    }
 
     for(uint8_t i=0;i<3;i++)
     {
       // вычисляем начало очередной записи в EEPROM
-      int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + i*EEPROM_LAST_3_RECORD_SIZE;
+      uint32_t eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + i*EEPROM_LAST_3_RECORD_SIZE;
 
       // читаем заголовки
       uint8_t header1, header2, header3;
@@ -71,11 +75,15 @@ void SDFakeFilesClass::printFakeFile(const String& fileName, Stream* pStream)
   {
 
     AT24CX* eeprom = Settings.getEEPROM();
+    if(!eeprom)
+    {
+      return;
+    }
 
     for(uint8_t i=0;i<3;i++)
     {
        // вычисляем начало очередной записи в EEPROM
-      int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + i*EEPROM_LAST_3_RECORD_SIZE;
+      uint32_t eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + i*EEPROM_LAST_3_RECORD_SIZE;
 
       // читаем заголовки
       uint8_t header1, header2, header3;

@@ -180,66 +180,6 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
        
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-/*
-void computeRMS()
-{
-#ifndef _RMS_OFF
-	if (computeRMSCalled)
-  {
-		return;
-  }
-
-	computeRMSCalled = true;
-  inComputeRMSMode = true;
-  rmsStartComputeTime = millis(); // запоминаем время начала сбора
-  
-	// считаем РМС
-	adcSampler.startComputeRMS();
-#endif // _RMS_OFF
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void checkRMS()
-{
-#ifndef _RMS_OFF
-
-	// получаем подсчитанное РМС
-	uint32_t rmsComputed1, rmsComputed2, rmsComputed3;
-	adcSampler.getComputedRMS(rmsComputed1, rmsComputed2, rmsComputed3);
-
-	computeRMSCalled = false;
-  inComputeRMSMode = false;
-
-	// получаем текущее состояние нижнего концевика, оно должно измениться.
-	bool thiDownEndstopTriggered = RodDownEndstopTriggered(true);
-
-	//тут проверяем РМС
-
-	uint32_t rmsEthalonVal = RMS_ETHALON_VAL; // 100% значение РМС
-	float hist = ((1.0f*RMS_ETHALON_VAL) / 100)*RMS_HISTERESIS_PERCENTS;
-	uint32_t rmsHisteresis = hist; // гистерезис РМС
-
-	bool hasAlarm = abs(rmsComputed1 - rmsEthalonVal) >= rmsHisteresis ||
-		abs(rmsComputed2 - rmsEthalonVal) >= rmsHisteresis ||
-		abs(rmsComputed3 - rmsEthalonVal) >= rmsHisteresis;
-
-
-	if (hasAlarm)
-	{
-		// если нижний концевик не изменил положения - это авария!
-		bool hasEndstopAlarm = (!thiDownEndstopTriggered && thiDownEndstopTriggered == downEndstopTriggered) ||
-			(downEndstopTriggered && thiDownEndstopTriggered == downEndstopTriggered);
-
-		if (hasEndstopAlarm)
-		{
-			// авария
-			Feedback.alarm(true);
-		}
-	}
-
-#endif // _RMS_OFF
-}
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass::InterruptHandlerClass()
 {
   subscriber = NULL;
@@ -250,7 +190,7 @@ void InterruptHandlerClass::begin()
 {
 
 // резервируем память
-//  encoderList.reserve(MAX_PULSES_TO_CATCH);
+  encoderList.reserve(MAX_PULSES_TO_CATCH);
 
   // настраиваем вход защиты
   pinMode(RELAY_PIN,
@@ -309,14 +249,16 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
-, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, int curEEPROMWriteAddress)
+uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
 {
 
-  int written = 0;
+  uint32_t written = 0;
   
   if(_list.size() < 2) // ничего в списке прерываний нет
+  {
     return written;
+  }
 
  const uint8_t CHANNEL_NUM = 0;
  AT24CX* eeprom = Settings.getEEPROM();
@@ -630,8 +572,18 @@ int InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscill
        {
         #ifndef _SD_OFF
         Logger.write(workBuff,3);
-        //Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));   
+        //Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));
+
+        while(file.available())
+        {
+          uint8_t b = (uint8_t) file.read();
+          Logger.write(&b,1);
+        }
+
+        /*
         uint8_t buff[4] = {0}; 
+
+        
         while(1)
         {
           if(!file.available())
@@ -656,8 +608,9 @@ int InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscill
             Logger.write(buff,readed);
           }
         } // while(1)
+        */
         #endif
-       }       
+       } // else       
             
 
         file.close();
@@ -835,16 +788,21 @@ void InterruptHandlerClass::writeToLog(
   bool toEEPROM
 )
 {
+  AT24CX* eeprom = Settings.getEEPROM();
+
+  if(toEEPROM && !eeprom)
+  {
+    return;
+  }
 
   PAUSE_ADC; // останавливаем АЦП
 
   uint8_t workBuff[10] = {0};
-  int eepromAddress = EEPROM_LAST_3_DATA_ADDRESS;
-  int recordStartAddress = 0;
-  int recordTotalLength = 0;
+  uint32_t eepromAddress = EEPROM_LAST_3_DATA_ADDRESS;
+  uint32_t recordStartAddress = 0;
+  uint32_t recordTotalLength = 0;
   
-  AT24CX* eeprom = Settings.getEEPROM();
-    uint8_t idx = 0;
+  uint8_t idx = 0;
   
 
   if(toEEPROM)
@@ -971,7 +929,7 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   if(lst1.size() > 1)
   {
-    int written = writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
+    uint32_t written = writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
     eepromAddress += written;
     recordTotalLength += written;
   } // if
@@ -1007,112 +965,8 @@ void InterruptHandlerClass::writeToLog(
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-void InterruptHandlerClass::startCollectCurrentData()
-{
-#ifndef CURRENT_OSCILL_OFF
-	// сработала защита, нам надо собирать данные по току с определённым интервалом
-	if (!currentOscillTimerActive)
-	{
-		oscillData.clear();
-		currentOscillTimerActive = true;
-		currentOscillTimer = micros();
-	}
-#endif // #ifndef CURRENT_OSCILL_OFF
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::stopCollectCurrentData()
-{
-	currentOscillTimerActive = false;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-CurrentOscillData& InterruptHandlerClass::getCurrentData()
-{
-	return oscillData;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
-
-  // собираем данные по току, если необходимо
-/*  
-	#ifndef CURRENT_OSCILL_OFF
-	if (currentOscillTimerActive)
-	{
-		// просто собираем информацию по току через указанные промежутки времени
-		if (adcSampler.available())
-		{
-			// есть данные по АЦП, проверяем таймер
-			if (micros() - currentOscillTimer >= CURRENT_OSCILL_FREQ)
-			{
-				// промежуток времени прошёл, собираем данные с АЦП, по всем трём каналам
-				uint32_t cT = micros();
-
-				int bufferLength = 0;
-				uint16_t* cBuf = adcSampler.getADCBuffer(&bufferLength);    // Получить буфер с данными
-
-				uint16_t countOfPoints = bufferLength / NUM_CHANNELS;
-				
-				uint32_t raw1 = 0;
-				uint32_t raw2 = 0;
-				uint32_t raw3 = 0;
-
-
-				for (int i = 0; i < bufferLength; i = i + NUM_CHANNELS)                // получить результат измерения поканально, с интервалом 3
-				{
-
-					raw1 += cBuf[i + 0];                          // Данные 1 графика  (красный)
-					raw2 += cBuf[i + 1];                          // Данные 2 графика  (синий)
-					raw3 += cBuf[i + 2];                          // Данные 3 графика  (желтый)
-
-				} // for
-
-				raw1 /= countOfPoints;
-				raw2 /= countOfPoints;
-				raw3 /= countOfPoints;
-
-				// посчитали среднее, заносим в список
-				oscillData.times.push_back(cT);
-				oscillData.data1.push_back(raw1);
-				oscillData.data2.push_back(raw2);
-				oscillData.data3.push_back(raw3);
-
-				currentOscillTimer = micros();
-				adcSampler.reset(); // сбрасываем признак готовности данных
-
-			} // if
-
-
-		} // if (adcSampler.available())
-
-	} // if(currentOscillTimerActive)
-	#endif // #ifndef CURRENT_OSCILL_OFF
-*/  
-
-/*
-  // считаем RMS, если это необходимо
-  #ifndef _RMS_OFF
-
-    // подсчёт RMS
-    if (inComputeRMSMode) // мы считаем RMS ?
-    {
-      if (millis() - rmsStartComputeTime > RMS_COMPUTE_TIME)
-      {
-    //    DBGLN(F("RMS собрано, проверяем!"));
-        inComputeRMSMode = false;
-        
-        // время подсчёта РМС вышло, надо проверять
-        checkRMS(); // проверяем РМС
-      }
-  
-    }  
-  #endif // _RMS_OFF
-  */
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -1124,15 +978,7 @@ void InterruptHandlerClass::update()
       if(hasRelayTriggered())
       {
         // сработало реле защиты
-/*
-        #ifndef _RMS_OFF
-          // считаем РМС
-            computeRMS();
-        #endif
-*/
-        // сработала защита, нам надо собирать данные по току с определённым интервалом
-    //    startCollectCurrentData();  
-        
+
         #ifdef PREDICT_ENABLED
         noInterrupts();
           predictOff(); // отключаем сбор предсказаний
@@ -1158,18 +1004,10 @@ void InterruptHandlerClass::update()
         downEndstopTriggered = RodDownEndstopTriggered(true);
 
       //  DBGLN(F("PREDICT TRIGGERED, COLLECT PULSES..."));
-     /* 
-        #ifndef _RMS_OFF
-          // считаем РМС
-            computeRMS();
-        #endif
-*/
-        // сработало предсказание, нам надо собирать данные по току с определённым интервалом
-     //   startCollectCurrentData();  
-        
+
         noInterrupts();
         
-          encoderList.clear(); // очищаем список прерываний
+          encoderList.empty(); // очищаем список прерываний
           
           // тут копируем полученные в предсказании импульсы в список
           for(size_t k=0;k<predictList.size();k++)
@@ -1198,7 +1036,7 @@ void InterruptHandlerClass::update()
      //   DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
                 
         noInterrupts();
-          encoderList.clear(); // очищаем список прерываний
+          encoderList.empty(); // очищаем список прерываний
           timer = micros();
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
@@ -1218,6 +1056,8 @@ void InterruptHandlerClass::update()
       
       if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
       {
+
+        PAUSE_ADC; // останавливаем АЦП на время
               
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку импульсов энкодера
@@ -1245,7 +1085,6 @@ void InterruptHandlerClass::update()
           Feedback.alarm(true);
         }    
 
-        PAUSE_ADC; // останавливаем АЦП на время
 
         // запрещаем собирать данные по току
         adcSampler.setCanCollectCurrentData(false);
@@ -1253,7 +1092,7 @@ void InterruptHandlerClass::update()
         noInterrupts();
         
             InterruptTimeList copyList1 = encoderList; // копируем данные в локальный список
-            encoderList.clear();        
+            encoderList.empty();        
             
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
            OscillData.clear();

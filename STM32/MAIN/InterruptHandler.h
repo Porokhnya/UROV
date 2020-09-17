@@ -94,7 +94,7 @@ private:
 
   bool hasAlarm;
   
-   static int writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM=false, int curEEPROMWriteAddress=0);
+   static uint32_t writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM=false, uint32_t curEEPROMWriteAddress=0);
 
 
 };

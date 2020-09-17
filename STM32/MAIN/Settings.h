@@ -21,13 +21,13 @@ class SettingsClass
 {
 public:
 
-  bool read8(int addr, uint8_t& val);
-  bool read16(int addr, uint16_t& val);
-  bool read32(int addr, uint32_t& val);
+  bool read8(uint32_t addr, uint8_t& val);
+  bool read16(uint32_t addr, uint16_t& val);
+  bool read32(uint32_t addr, uint32_t& val);
 
-  void write8(int addr, uint8_t val);
-  void write16(int addr, uint16_t val);
-  void write32(int addr, uint32_t val);
+  void write8(uint32_t addr, uint8_t val);
+  void write16(uint32_t addr, uint16_t val);
+  void write32(uint32_t addr, uint32_t val);
 
 	SettingsClass();
 
@@ -98,7 +98,6 @@ public:
   private:
 
     uint32_t ethalonPulseDelta;
-
     uint16_t channelPulses;
     uint8_t channelDelta;
     uint32_t motoresource, motoresourceMax;

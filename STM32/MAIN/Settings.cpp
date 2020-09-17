@@ -42,7 +42,7 @@ String SettingsClass::getUUID(const char* passedUUID)
       return savedUUID;
     }
     
-    uint16_t addr = UUID_STORE_ADDRESS;
+    uint32_t addr = UUID_STORE_ADDRESS;
     uint8_t header1 = eeprom->read(addr); addr++;
     uint8_t header2 = eeprom->read(addr); addr++;
     uint8_t header3 = eeprom->read(addr); addr++;
@@ -76,20 +76,25 @@ String SettingsClass::getUUID(const char* passedUUID)
     // есть сохранённый GUID, читаем его
     for(int i=0;i<32;i++)
     {
-      savedUUID += (char) eeprom->read(addr); addr++;
+      char ch = (char) eeprom->read(addr); addr++;;
+      if(!ch)
+      {
+        break;
+      }
+      savedUUID += ch;
     }
 
     return savedUUID;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write8(int addr, uint8_t val)
+void SettingsClass::write8(uint32_t addr, uint8_t val)
 {
   if(!eeprom)
   {
     return;    
   }
 
-    int writeaddr = addr;
+    uint32_t writeaddr = addr;
     eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
     eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
     
@@ -98,14 +103,14 @@ void SettingsClass::write8(int addr, uint8_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write16(int addr, uint16_t val)
+void SettingsClass::write16(uint32_t addr, uint16_t val)
 {
   if(!eeprom)
   {
     return;    
   }
 
-    int writeaddr = addr;
+    uint32_t writeaddr = addr;
     eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
     eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
     
@@ -114,14 +119,14 @@ void SettingsClass::write16(int addr, uint16_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write32(int addr, uint32_t val)
+void SettingsClass::write32(uint32_t addr, uint32_t val)
 {
   if(!eeprom)
   {
     return;    
   }
 
-    int writeaddr = addr;
+    uint32_t writeaddr = addr;
     eeprom->write(writeaddr,RECORD_HEADER1);writeaddr++;
     eeprom->write(writeaddr,RECORD_HEADER2);writeaddr++;
     
@@ -130,7 +135,7 @@ void SettingsClass::write32(int addr, uint32_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read8(int addr, uint8_t& val)
+bool SettingsClass::read8(uint32_t addr, uint8_t& val)
 {
   val = 0xFF;
   
@@ -139,7 +144,7 @@ bool SettingsClass::read8(int addr, uint8_t& val)
     return false;
   }
 
-  int readAddr = addr;
+  uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
@@ -161,7 +166,7 @@ bool SettingsClass::read8(int addr, uint8_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read16(int addr, uint16_t& val)
+bool SettingsClass::read16(uint32_t addr, uint16_t& val)
 {
   val = 0xFFFF;
   
@@ -170,7 +175,7 @@ bool SettingsClass::read16(int addr, uint16_t& val)
     return false;
   }
 
-  int readAddr = addr;
+  uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
@@ -192,7 +197,7 @@ bool SettingsClass::read16(int addr, uint16_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read32(int addr, uint32_t& val)
+bool SettingsClass::read32(uint32_t addr, uint32_t& val)
 {
   val = 0xFFFFFFFF;
   
@@ -201,7 +206,7 @@ bool SettingsClass::read32(int addr, uint32_t& val)
     return false;
   }
 
-  int readAddr = addr;
+  uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
@@ -299,10 +304,7 @@ void SettingsClass::reloadSettings()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::begin()
 {
-#ifndef _WIRE1_OFF  
   eeprom = new EEPROM_CLASS(Wire1);
-#endif  
-
   reloadSettings();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

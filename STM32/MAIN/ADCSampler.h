@@ -7,16 +7,6 @@
 typedef Vector<uint32_t> UInt32Vector;
 typedef Vector<uint16_t> UInt16Vector;
 
-/*
-typedef enum
-{
-  checkCurrentBorder, // проверяем пороги
-  waitForBorderAlert, // ждём, чтобы проверить порог ещё раз
-  collectCurrentData, // собираем данные по току
-  waitForTakeData, // ждём, когда данные заберут
-  
-} WatchCurrentState;
-*/
 
 struct CurrentOscillData // данные по току, по трём каналам
 {
@@ -133,19 +123,9 @@ class ADCSampler
     // возвращает список данных по осциллограмме тока, чистя локальный
     CurrentOscillData getListOfCurrent();
 
-/*
-	void startComputeRMS();
-	void getComputedRMS(uint32_t& result1, uint32_t& result2, uint32_t& result3);
-*/
-
 
   private:
 
-/*
-    volatile WatchCurrentState machineState; // состояние конечного автомата
-    void savePreviewOfCurrent(uint16_t raw1, uint16_t raw2, uint16_t raw3);
-    bool hasBorderAlert(uint16_t raw1, uint16_t raw2, uint16_t raw3);
-*/  
 
     bool putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3);
     void getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3);
@@ -167,8 +147,6 @@ class ADCSampler
     uint32_t currentOscillTimer;
 
 
-//    bool compareTimerEnabled; // флаг, что мы в режиме таймера проверки превышения верхнего порога компаратора
-//    uint32_t compareTimer; // таймер ожидания верхнего порога компаратора
 };
 
 extern ADCSampler adcSampler;

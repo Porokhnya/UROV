@@ -31,9 +31,7 @@
 #include "Endstops.h"
 #include "RS485.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#ifndef _WIRE1_OFF
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
-#endif
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Vector<uint8_t> LastTriggeredInterruptRecord; // список последнего сработавшего прерывания
 int8_t LastTriggeredInterruptRecordIndex = -1; // индекс последнего сработавшего прерывания, сохраненный в EEPROM
@@ -340,11 +338,9 @@ void setup()
   #endif 
 
 
-#ifndef _WIRE1_OFF
   DBGLN(F("Init I2C..."));  
   Wire1.begin();  
   DBGLN(F("I2C inited."));
-#endif  
 
 #ifndef _RTC_OFF  
   DBGLN(F("Init RTC..."));

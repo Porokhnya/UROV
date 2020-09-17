@@ -28,6 +28,9 @@ InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
 void InterruptScreen::onDeactivate()
 {
     // после деактивирования нашего экрана мы опять можем принимать данные прерываний, чтобы показать новые графики
+    // чистим память
+    list1.clear();
+    serie1.clear();
     canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +62,7 @@ void InterruptScreen::OnHaveInterruptData()
   // запоминаем время начала показа и переключаемся на экран
   startSeenTime = millis();
   Screen.switchToScreen(this);
+  Screen.update();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, const InterruptTimeList& list, EthalonCompareResult compareResult)
@@ -248,12 +252,8 @@ void InterruptScreen::computeMotoresource()
 void InterruptScreen::drawCompareResult(TFTMenu* menu)
 {
   TFT_Class* dc = menu->getDC();
-  //word oldBackColor = dc->getBackColor();  
-  //word oldColor = dc->getColor();
-  //uint8_t* oldFont = dc->getFont();
-  dc->setFreeFont(TFT_SMALL_FONT);//(SmallRusFont);
-  //uint8_t fontWidth = dc->getFontXsize();
-  uint8_t fontHeight = FONT_HEIGHT(dc);//dc->getFontYsize();
+  dc->setFreeFont(TFT_SMALL_FONT);
+  uint8_t fontHeight = FONT_HEIGHT(dc);
   
   uint16_t curX = 162;
   uint16_t curY = 20; 
@@ -262,61 +262,30 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
   uint8_t spacing = 4;
 
 
-    //dc->setBackColor(BLACK);
-    //dc->setColor(compareBox.chartColor);
 	  String channelNum = "1"; /////// String(compareBox.channelNum + 1);
     uint8_t captionLen = menu->getRusPrinter()->textWidth(channelNum.c_str());//print(channelNum.c_str(),0,0,0,true);
     menu->getRusPrinter()->print(channelNum.c_str(), curX, curY + (boxHeight - captionLen)/2, BLACK, compareBox.chartColor );
 
-//    dc->setBackColor(compareBox.compareColor);
-//    dc->setColor(compareBox.compareColor);
-
     uint16_t boxLeft = curX + captionLen + spacing;
     dc->fillRoundRect(boxLeft, curY, boxWidth, boxHeight,2,compareBox.compareColor);
 
-   // dc->setColor(compareBox.foreCompareColor);
     captionLen = menu->getRusPrinter()->textWidth(compareBox.compareCaption);//print(compareBox.compareCaption,0,0,0,true);
     menu->getRusPrinter()->print(compareBox.compareCaption, boxLeft + (boxWidth - captionLen)/2, curY + (boxHeight - fontHeight)/2,compareBox.compareColor,compareBox.foreCompareColor );  
 
-//  dc->setBackColor(oldBackColor);
-//  dc->setColor(oldColor);
-//  dc->setFont(oldFont);  
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
 	Drawing::DrawChart(this, serie1);
-/*
-	#ifndef CURRENT_OSCILL_OFF
-	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-	// тут отрисовываем графики тока
-	const uint8_t xOffsetStep = 5;
-	const uint8_t yOffsetStep = 5;
-	uint16_t xOffset = 10;
-	uint16_t yOffset = 10;
-
-	Points serie;
-
-	Drawing::ComputeSerie(oscillData->data1, serie, xOffset, yOffset);
-	Drawing::DrawSerie(this, serie, CYAN);
-	xOffset += xOffsetStep;
-	yOffset += yOffsetStep;
-
-	Drawing::ComputeSerie(oscillData->data2, serie, xOffset, yOffset);
-	Drawing::DrawSerie(this, serie, GREEN);
-	xOffset += xOffsetStep;
-	yOffset += yOffsetStep;
-
-	Drawing::ComputeSerie(oscillData->data3, serie, xOffset, yOffset);
-	Drawing::DrawSerie(this, serie, PURPLE);
-	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-	#endif // CURRENT_OSCILL_OFF
-*/
 	drawTime(menu);
 	drawMotoresource(menu);
 	drawCompareResult(menu);
 
-  //TODO: ОЧИЩАТЬ ПАМЯТЬ СПИСКА ПО ТОКУ!!!
+  // ОЧИСТКА ПАМЯТИ !!!
+  list1.clear();
+  serie1.clear();
+  oscillData->clear();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)

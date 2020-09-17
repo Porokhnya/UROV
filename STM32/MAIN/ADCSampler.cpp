@@ -213,7 +213,6 @@ ADCSampler::ADCSampler()
   workingBufferIndex = 0;
   countOfSamples = 0;
   currentOscillTimer = 0;
-//  machineState = checkCurrentBorder;
   canCollectCurrentData = true;
   _stopped = false;
 }
@@ -269,19 +268,6 @@ void ADCSampler::end()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #ifndef _CURRENT_COLLECT_OFF
-/*
-volatile uint32_t previewTimer = 0; // таймер для сбора превью по току
-volatile uint16_t recordsAvailable = 0;
-volatile uint16_t writeIterator = 0;
-volatile int16_t firstRecordIndex = -1;
-
-volatile uint32_t stateTimer = 0; // таймер для различных состояний конечного автомата
-
-volatile uint32_t cTimes[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
-volatile uint16_t cData1[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
-volatile uint16_t cData2[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
-volatile uint16_t cData3[COUNT_OF_CURRENT_PREVIEW_RECORDS] = {0};
-*/
 volatile uint16_t avgSamplesDone = 0; // кол-во собранных семплов для усреднения
 // списки для усреднения
 volatile uint16_t avgChannel1[CURRENT_AVG_SAMPLES] = {0};
@@ -354,58 +340,6 @@ void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
 
   #endif // #ifndef _CURRENT_COLLECT_OFF
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void ADCSampler::savePreviewOfCurrent(uint16_t raw1, uint16_t raw2, uint16_t raw3)
-{
-    // сохраняем превью по току
- #ifndef _CURRENT_COLLECT_OFF   
-    if(micros() - previewTimer >= CURRENT_OSCILL_FREQ)
-    {
-      if(putAVG(raw1,raw2,raw3))
-      {
-            // список усреднения полон, надо усреднять
-            uint16_t avg1 = 0, avg2 = 0, avg3 = 0;
-           getAVG(avg1,avg2,avg3);
-      
-            cTimes[writeIterator] = micros();
-            cData1[writeIterator] = avg1;
-            cData2[writeIterator] = avg2;
-            cData3[writeIterator] = avg3;
-      
-            writeIterator++;
-            
-            if(writeIterator >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
-            {
-              writeIterator = 0;
-            }
-            
-      
-            recordsAvailable++;
-            
-            if(recordsAvailable >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
-            {
-              recordsAvailable = COUNT_OF_CURRENT_PREVIEW_RECORDS;
-              
-              firstRecordIndex++;
-              if(firstRecordIndex >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
-              {
-                firstRecordIndex = 0;
-              }
-            }
-      } // if(putAVG(raw1,raw2,raw3))
-
-      previewTimer = micros();
-    } // if 
-    #endif // #ifndef _CURRENT_COLLECT_OFF 
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool ADCSampler::hasBorderAlert(uint16_t raw1, uint16_t raw2, uint16_t raw3)
-{
-  return (raw1 > _compare_High || raw2 > _compare_High || raw3 > _compare_High);
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::setCanCollectCurrentData(bool val)
 {
@@ -517,116 +451,6 @@ void ADCSampler::handleInterrupt()
           }
         } // canCollectCurrentData
         #endif // _CURRENT_COLLECT_OFF
-
-        /*
-
-        #ifndef _CURRENT_COLLECT_OFF
-          
-          // теперь смотрим, что там с конечным автоматом?
-          switch(machineState)
-          {
-            case checkCurrentBorder: // проверяем пороги
-            {
-              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
-              
-              if(hasBorderAlert(raw1,raw2,raw3))
-              {
-                // порог превышен, взводим таймер проверки порогов
-                machineState = waitForBorderAlert;
-                stateTimer = micros();
-                
-              } // if
-            }
-            break; // checkCurrentBorder
-
-            case waitForBorderAlert: // ждём, чтобы проверить порог ещё раз
-            {
-              #ifndef _CURRENT_COLLECT_OFF
-              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
-              #endif
-              
-              if(micros() - stateTimer >= 20000ul)
-              {
-                // время ожидания вышло, можно проверять пороги
-                if(hasBorderAlert(raw1,raw2,raw3))
-                {
-                  // по прежнему есть превышение порога
-                  // запоминаем превью по току, переключаемся на сбор информации, пока список не будет заполнен
-                  oscillData.clear();
-
-                  // нашли первую запись, проходим
-                  int16_t iter = firstRecordIndex;
-                  while(recordsAvailable > 0)
-                  {
-    
-                    oscillData.add(cTimes[iter],cData1[iter],cData2[iter],cData3[iter]);
-    
-                    recordsAvailable--;
-                    iter++;
-                    
-                    if(iter >= COUNT_OF_CURRENT_PREVIEW_RECORDS)
-                    {
-                      iter = 0;
-                    }
-                  } // while
-                  
-    
-                  writeIterator = 0;
-                  firstRecordIndex = -1;
-                  
-                  stateTimer = micros();
-                  machineState = collectCurrentData;
-                } // if
-                else
-                {
-                  // превышения порога нет
-                  machineState = checkCurrentBorder; // переключаемся на проверку порогов
-                } // else
-              } // if
-              
-            }
-            break; // waitForBorderAlert
-
-            case collectCurrentData: // собираем данные по току
-            {
-                if(micros() - stateTimer >= CURRENT_OSCILL_FREQ)
-                {
-
-                  if(putAVG(raw1,raw2,raw3))
-                  {
-                    uint16_t avg1 = 0, avg2 = 0, avg3 = 0;
-                    getAVG(avg1,avg2,avg3);
-                  
-                      oscillData.add(micros(),avg1,avg2,avg3);
-                      
-                      if(oscillData.times.size() >= oscillData.MAX_RECORDS)
-                      {
-                        // собрали, всё
-                        machineState = waitForTakeData; // ждём, пока данные не заберут
-                      }
-                  } // if(putAVG(raw1,raw2,raw3))
-                  stateTimer = micros();
-                }
-            }
-            break; // collectCurrentData
-
-            case waitForTakeData: // ждём, когда данные заберут
-            {
-              savePreviewOfCurrent(raw1,raw2,raw3); // сохраняем превью про току
-              
-              if(micros() - stateTimer >= 10000000ul)
-              {
-                // если в течение N секунд не забрали - переключаемся на проверку порогов
-                machineState = checkCurrentBorder;
-              }
-            }
-            break; // waitForTakeData
-            
-          } // switch
-          
-        #endif // #ifndef _CURRENT_COLLECT_OFF
-        */
-
 
     countOfSamples++;
 
