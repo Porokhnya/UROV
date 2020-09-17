@@ -819,6 +819,7 @@ void InterruptHandlerClass::writeToLog(
     if(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)
     {
       // прочитали текущий индекс, и инкрементировали его
+      /*
       idx = eeprom->read(eepromAddress+3);
       idx++;
       if(idx > 2) // пишем только последние 3 срабатывания
@@ -828,6 +829,8 @@ void InterruptHandlerClass::writeToLog(
 
       // записали новый индекс
       eeprom->write(eepromAddress+3,idx);
+      */
+      idx = 0; //TODO: ПОКА ТОЛЬКО ОДНА ЗАПИСЬ !!!
     }
     else
     {
