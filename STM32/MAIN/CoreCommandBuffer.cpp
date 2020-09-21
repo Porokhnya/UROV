@@ -1793,10 +1793,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult result)
 {
 	list = _list;
+  done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnHaveInterruptData()
-{
-	done = true;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
+

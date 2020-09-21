@@ -26,7 +26,6 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
   static AbstractTFTScreen* create();  
 
   void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult result);
-  void OnHaveInterruptData();
     
 protected:
 

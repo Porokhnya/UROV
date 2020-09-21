@@ -2110,41 +2110,24 @@ void EthalonRecordScreen::onDeactivate()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnHaveInterruptData()
+void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
-  // сбрасываем подписчика
-  InterruptHandler.setSubscriber(NULL);
+  DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
-  DBGLN(F("EthalonRecordScreen::OnHaveInterruptData"));
+  // пришли результаты серии прерываний с одного из списков.
+  // мы запоминаем результаты в локальный список.
+  list1 = list;
+
+
+ // сбрасываем подписчика
+  InterruptHandler.setSubscriber(NULL);
 
   // смотрим, в каком листе есть данные, и устанавливаем кнопки выбора графика на первый список с данными
   if (list1.size())
   {
-	  channel1SelectedChannel = -1;
-	  rotateSelectedChannel(channel1Button, channel1SelectedChannel);
+    channel1SelectedChannel = -1;
+    rotateSelectedChannel(channel1Button, channel1SelectedChannel);
   }
-
-  /*
-  //DEPRECATED: 
-  InterruptTimeList* lists[] = {&list1, &list2, &list3};
- 
-
-  for(int i=0;i<3;i++)
-  {
-    if(lists[i]->size())
-    {
-      channel1SelectedChannel = i-1;
-      channel2SelectedChannel = i-1;
-      channel3SelectedChannel = i-1;
-
-      rotateSelectedChannel(channel1Button,channel1SelectedChannel);
-      rotateSelectedChannel(channel2Button,channel2SelectedChannel);
-      rotateSelectedChannel(channel3Button,channel3SelectedChannel);
-      
-      break;
-    }
-  } // for
-  */
 
 
   state = recDone;
@@ -2156,34 +2139,7 @@ void EthalonRecordScreen::OnHaveInterruptData()
   Drawing::DrawChart(this, serie1, RED);
 
   // чистим память после отрисовки
-  serie1.clear();
-}
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
-{
-  DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
-
-  // пришли результаты серии прерываний с одного из списков.
-  // мы запоминаем результаты в локальный список.
-  list1 = list;
-
-  /*
-  //DEPRECATED:
-  switch(listNum)
-  {
-    case 0:
-    break;      
-    case 1:
-      list2 = list;
-    break;      
-
-    case 2:
-      list3 = list;
-    break;      
-    
-  } // switch
-  */
-  
+  serie1.clear();  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FileEntry

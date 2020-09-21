@@ -394,6 +394,10 @@ CurrentOscillData CurrentOscillData::normalize()
 void ADCSampler::handleInterrupt()
 {
   // код обработки данных, поступающих с АЦП
+  if(_stopped)
+  {
+    return;
+  }
 
 
   /*

@@ -679,7 +679,6 @@ class EthalonRecordScreen : public AbstractTFTScreen, public InterruptEventSubsc
   }
 
   void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
-  void OnHaveInterruptData();
     
 protected:
 
