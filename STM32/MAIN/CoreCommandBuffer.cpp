@@ -1713,12 +1713,11 @@ ExternalEthalonCommandHandler::ExternalEthalonCommandHandler()
 	timer = 0;
 	oldSubscriber = NULL;
 	done = false;
-  list = NULL;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 {
-	if (!list || !list->size())
+	if (!list.size())
 	{
 		return;
 	}
@@ -1748,9 +1747,9 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
 	if (file.isOpen())
 	{
-		for (size_t i = 0; i<list->size(); i++)
+		for (size_t i = 0; i<list.size(); i++)
 		{
-			uint32_t val = (*list)[i];
+			uint32_t val = list[i];
 			file.write(&val, sizeof(val));
 		}
 
@@ -1765,8 +1764,7 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 {
 	done = false;
-	//list.clear();
-  list = NULL;
+	list.clear();
 	timer = millis();
 
   adcSampler.setCanCollectCurrentData(false);
@@ -1788,11 +1786,11 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
   
   adcSampler.setCanCollectCurrentData(true);
   
-	return done && list && list->size();
+	return done && list.size();
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList* _list, EthalonCompareResult result)
+void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult result)
 {
 	list = _list;
   done = true;

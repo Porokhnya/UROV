@@ -129,7 +129,7 @@ public:
 	ExternalEthalonCommandHandler();
 
 	// вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
-	virtual void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList* list, EthalonCompareResult result);
+	virtual void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult result);
 
 	// возвращает true, если запись удалась
 	bool beginRecord(uint32_t timeout);
@@ -140,7 +140,7 @@ public:
 private:
 
 	bool done;
-	InterruptTimeList* list; // список прерываний
+	InterruptTimeList list; // список прерываний
 	uint32_t timer; // таймер для отсчёта времени
 	InterruptEventSubscriber* oldSubscriber; // старый подписчик
 };

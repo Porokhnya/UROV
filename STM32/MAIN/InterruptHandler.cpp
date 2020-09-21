@@ -1241,7 +1241,7 @@ void InterruptHandlerClass::informSubscriber(CurrentOscillData* oscData, Interru
 		//DBGLN(F("Subscriber exists!"));
 
     // сообщаем обработчику, что данные по срабатыванию есть
-		subscriber->OnInterruptRaised(oscData, &list, compareResult);
+		subscriber->OnInterruptRaised(oscData, list, compareResult);
 
 		//DBGLN(F("Subscriber informed!"));
 	}

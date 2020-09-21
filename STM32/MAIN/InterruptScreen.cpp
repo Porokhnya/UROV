@@ -32,7 +32,7 @@ void InterruptScreen::onDeactivate()
     canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList* list, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -47,7 +47,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTim
   // пришли результаты серии прерываний с одного из списков.
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
-  list1 = list;
+  list1 = &list;
   oscillData = oscData;
   box.chartColor = LGRAY;
   box.compareColor = LGRAY;
