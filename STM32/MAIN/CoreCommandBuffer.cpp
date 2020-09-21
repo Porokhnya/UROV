@@ -1717,7 +1717,7 @@ ExternalEthalonCommandHandler::ExternalEthalonCommandHandler()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 {
-	if (!list.size())
+  if (!list.size())
 	{
 		return;
 	}
@@ -1747,7 +1747,8 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
 	if (file.isOpen())
 	{
-		for (size_t i = 0; i<list.size(); i++)
+    size_t to = list.size();
+		for (size_t i = 0; i<to; i++)
 		{
 			uint32_t val = list[i];
 			file.write(&val, sizeof(val));
@@ -1759,6 +1760,7 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
   // чистим память
   list.clear();
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
@@ -1792,7 +1794,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult result)
 {
-	list = _list;
+  list = _list;
   done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
