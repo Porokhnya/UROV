@@ -3948,11 +3948,26 @@ namespace UROVConfig
             }
 
             // теперь рисуем свои метки на Y осях токов
-            if (record.CurrentTimes.Count > 0)
+            if (record.CurrentTimes.Count > 0) // есть токи
             {
+                vcf.chart.ChartAreas[0].Position.Height = 20;
+
+                vcf.chart.ChartAreas[1].Visible = true;
+                vcf.chart.ChartAreas[2].Visible = true;
+                vcf.chart.ChartAreas[3].Visible = true;
+
                 AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[1], maxCurrentValue);
                 AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[2], maxCurrentValue);
                 AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[3], maxCurrentValue);
+            }
+            else
+            {
+                // токов нет, скрываем серии
+                vcf.chart.ChartAreas[0].Position.Height = 80;
+
+                vcf.chart.ChartAreas[1].Visible = false;
+                vcf.chart.ChartAreas[2].Visible = false;
+                vcf.chart.ChartAreas[3].Visible = false;
             }
 
             if (modal)
