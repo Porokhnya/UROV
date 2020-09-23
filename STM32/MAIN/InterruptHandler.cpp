@@ -11,7 +11,7 @@
 InterruptHandlerClass InterruptHandler;
 CurrentOscillData     OscillData; // данные по току, актуальные на момент прерывания
 //--------------------------------------------------------------------------------------------------------------------------------------
-InterruptTimeList encoderList; // список времён срабатываний прерываний на энкодере штанги
+InterruptTimeList InterruptData; // список времён срабатываний прерываний на энкодере штанги
 MachineState machineState = msIdle; // состояние конечного автомата
 volatile bool canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
 volatile uint32_t timer = 0; // служебный таймер
@@ -20,6 +20,7 @@ volatile bool downEndstopTriggered = false; // состояние нижнего
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool relayTriggeredAtStart = false; // флаг, что защита сработала при старте (это срабатывание мы игнорируем)
 volatile uint16_t interruptSkipCounter = 0; // счётчик пойманных импульсов, для пропуска лишних
+volatile bool paused = false; // флаг, что обработчик - на паузе
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -83,6 +84,10 @@ InterruptEventSubscriber* subscriber = NULL; // подписчик для обр
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера
 {
+  if(paused) // на паузе
+  {
+    return;
+  }
 
   // тут проверяем, надо ли пропустить N импульсов
   uint32_t toSkip = Settings.getSkipCounter();
@@ -137,13 +142,13 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
   
   #endif // PREDICT_ENABLED
   
-  if(!canHandleEncoder || encoderList.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
+  if(!canHandleEncoder || InterruptData.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
   {
     return;
   }
   
     uint32_t now = micros();
-    encoderList.push_back(now);
+    InterruptData.push_back(now);
     timer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
 
@@ -173,7 +178,7 @@ void InterruptHandlerClass::begin()
 {
 
 // резервируем память
-  encoderList.reserve(MAX_PULSES_TO_CATCH);
+  InterruptData.reserve(MAX_PULSES_TO_CATCH);
 
   // настраиваем вход защиты
   pinMode(RELAY_PIN,
@@ -184,13 +189,6 @@ void InterruptHandlerClass::begin()
   #endif
   );  
   
-/*  
-#if (RELAY_INTERRUPT_LEVEL == RISING)
-  pinMode(RELAY_PIN, INPUT_PULLUP);
-#else
-  pinMode(RELAY_PIN, INPUT);
-#endif
-*/
 
   // настраиваем первый выход энкодера на чтение
 #if (ENCODER_INTERRUPT_LEVEL == RISING)
@@ -951,8 +949,49 @@ void InterruptHandlerClass::writeToLog(
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+void InterruptHandlerClass::pause()
+{
+  if(paused) // уже на паузе
+  {
+    return;
+  }
+
+  noInterrupts();
+  paused = true;
+  interrupts();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void InterruptHandlerClass::resume()
+{
+  if(!paused) // не на паузе
+  {
+    return;
+  }
+
+  // поскольку мы были на паузе - начинаем сначала
+  #ifdef PREDICT_ENABLED
+    predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
+    predictList.clear(); // список для предсказаний
+    predictTriggeredFlag = false; // флаг срабатывания предсказания
+  #endif
+
+  noInterrupts();
+  paused = false;
+  InterruptData.empty();
+  machineState = msIdle; // состояние конечного автомата
+  canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
+  downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты  
+  OscillData.clear();
+  interrupts();  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
+
+  if(paused) // на паузе
+  {
+    return;
+  }
 
   // проверяем состояние конечного автомата
   switch(machineState)
@@ -993,12 +1032,12 @@ void InterruptHandlerClass::update()
 
         noInterrupts();
         
-          encoderList.empty(); // очищаем список прерываний
+          InterruptData.empty(); // очищаем список прерываний
           
           // тут копируем полученные в предсказании импульсы в список
           for(size_t k=0;k<predictList.size();k++)
           {
-            encoderList.push_back(predictList[k]);
+            InterruptData.push_back(predictList[k]);
           }          
 
           predictOff(); // выключаем предсказания
@@ -1022,7 +1061,7 @@ void InterruptHandlerClass::update()
      //   DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
                 
         noInterrupts();
-          encoderList.empty(); // очищаем список прерываний
+          InterruptData.empty(); // очищаем список прерываний
           timer = micros();
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
@@ -1044,6 +1083,8 @@ void InterruptHandlerClass::update()
       {
 
         PAUSE_ADC; // останавливаем АЦП на время
+
+        pause(); // ставим на паузу
               
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку импульсов энкодера
@@ -1053,7 +1094,7 @@ void InterruptHandlerClass::update()
         interrupts(); 
         
         //DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
-       // DBGLN(encoderList.size());
+       // DBGLN(InterruptData.size());
 
 
         // обновляем моторесурс, т.к. было срабатывание защиты
@@ -1062,7 +1103,7 @@ void InterruptHandlerClass::update()
         Settings.setMotoresource(motoresource);
 
         // проверяем, авария ли?
-        hasAlarm = !encoderList.size();
+        hasAlarm = !InterruptData.size();
         
         // выставляем флаг аварии, в зависимости от наличия данных в списках
         if(hasAlarm)
@@ -1077,8 +1118,8 @@ void InterruptHandlerClass::update()
 
         noInterrupts();
         
-            InterruptTimeList copyList1 = encoderList; // копируем данные в локальный список
-            encoderList.empty();        
+           // InterruptTimeList copyList1 = InterruptData; // копируем данные в локальный список
+            //InterruptData.empty();        
             
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
            OscillData.clear();
@@ -1091,9 +1132,9 @@ void InterruptHandlerClass::update()
 
         // вычисляем смещение от начала записи по току до начала поступления данных
         int32_t datArrivTm = 0;
-        if(OscillData.times.size() > 0 && copyList1.size() > 0)
+        if(OscillData.times.size() > 0 && InterruptData.size() > 0)
         {
-          datArrivTm = copyList1[0] - OscillData.earlierRecordTime();
+          datArrivTm = InterruptData[0] - OscillData.earlierRecordTime();
         }
 
        // datArrivTm = 500000ul;//TODO: УБРАТЬ!!!
@@ -1102,22 +1143,21 @@ void InterruptHandlerClass::update()
         normalizeList(OscillData.times);
 
          // нормализуем список прерываний
-         normalizeList(copyList1);
+         normalizeList(InterruptData);
 
 
          // начинаем работать со списком прерываний
          EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
          EthalonCompareNumber compareNumber1;
-         //InterruptTimeList ethalonData1;
          String ethalonFileName;
 
           bool needToLog = false;
 
         // теперь смотрим - надо ли нам самим чего-то обрабатывать?
-        if(copyList1.size() > 1)
+        if(InterruptData.size() > 1)
         {
 //            DBG("Прерывание содержит данные: ");
-//            DBGLN(copyList1.size());
+//            DBGLN(InterruptData.size());
     
           // зажигаем светодиод "ТЕСТ"
           Feedback.testDiode();
@@ -1132,17 +1172,17 @@ void InterruptHandlerClass::update()
           // эталон движения вверх
           if(!FileUtils::isEthalonExists(0,true))
           {
-            FileUtils::saveEthalon(0,true,copyList1);
+            FileUtils::saveEthalon(0,true,InterruptData);
           }
           
           // эталон движения вниз
           if(!FileUtils::isEthalonExists(0,false))
           {
-            FileUtils::saveEthalon(0,false,copyList1);
+            FileUtils::saveEthalon(0,false,InterruptData);
           }
 */            
            // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-           compareRes1 = EthalonComparer::Compare(copyList1, 0,compareNumber1, ethalonFileName);//ethalonData1);
+           compareRes1 = EthalonComparer::Compare(InterruptData, 0,compareNumber1, ethalonFileName);//ethalonData1);
     
            if(compareRes1 == COMPARE_RESULT_MatchEthalon)
             {}
@@ -1151,23 +1191,23 @@ void InterruptHandlerClass::update()
               Feedback.failureDiode();
               Feedback.alarm();
            }
-        } // if(copyList1.size() > 1)
+        } // if(InterruptData.size() > 1)
 
             if(needToLog)
             {              
               // записываем последнее срабатывание в EEPROM
-              writeToLog(datArrivTm, relayTriggeredTime, &OscillData,copyList1, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+              writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
               
               #ifndef _SD_OFF
                   //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
                   // надо записать в лог дату срабатывания системы
-                  writeToLog(datArrivTm, relayTriggeredTime, &OscillData,copyList1, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+                  writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
               #endif // !_SD_OFF
               
             } // needToLog
 
 
-        bool wantToInformSubscriber = (copyList1.size() > 1);
+        bool wantToInformSubscriber = (InterruptData.size() > 1);
 
         if(wantToInformSubscriber)
         { 
@@ -1177,11 +1217,20 @@ void InterruptHandlerClass::update()
             //  DBGLN(F("Подписчик найден!"));  
               
             // уведомляем подписчика
-            informSubscriber(&OscillData,copyList1, compareRes1);
+            informSubscriber(&OscillData,compareRes1);
     
           } // if(subscriber)
+          else
+          {
+            resume(); // подписчика нет, просто начинаем сначала            
+          }
           
-        }   // if(wantToInformSubscriber)        
+        }   // if(wantToInformSubscriber)
+        else
+        {
+          resume(); // подписчика нет, просто начинаем сначала
+        }
+                
 
         // переключаемся на ветку ожидания отщёлкивания концевика защиты
         machineState = msWaitGuardRelease;
@@ -1217,16 +1266,19 @@ void InterruptHandlerClass::setSubscriber(InterruptEventSubscriber* h)
   subscriber = h;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::informSubscriber(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
+bool InterruptHandlerClass::informSubscriber(CurrentOscillData* oscData, EthalonCompareResult compareResult)
 {
 	if (subscriber)
 	{
 		//DBGLN(F("Subscriber exists!"));
 
     // сообщаем обработчику, что данные по срабатыванию есть
-		subscriber->OnInterruptRaised(oscData, list, compareResult);
+		subscriber->OnInterruptRaised(oscData, compareResult);
 
 		//DBGLN(F("Subscriber informed!"));
+   return true;
 	}
+
+ return false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------

@@ -23,7 +23,6 @@ InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
   startSeenTime = 0;
   timerDelta = 0;
   canAcceptInterruptData = true;
-  list1 = NULL;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onDeactivate()
@@ -32,7 +31,7 @@ void InterruptScreen::onDeactivate()
     canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult compareResult)
 {
 
   if(!canAcceptInterruptData)
@@ -47,7 +46,6 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTim
   // пришли результаты серии прерываний с одного из списков.
   // мы запоминаем результаты в локальный список.
   EthalonCompareBox box;
-  list1 = &list;
   oscillData = oscData;
   box.chartColor = LGRAY;
   box.compareColor = LGRAY;
@@ -74,7 +72,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTim
 	}
     break;
 
-    case COMPARE_RESULT_MismatchEthalon:
+  case COMPARE_RESULT_MismatchEthalon:
 	{
 		box.compareColor = RED;
 		box.foreCompareColor = WHITE;
@@ -85,31 +83,13 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTim
 
  compareBox = box;
    
-  // для теста - печатаем в Serial
-  #ifdef _PRINT_INTERRUPT_DATA
-
-    if(list1.size() > 1)
-    {
-		DBG("INTERRUPT");
-      DBGLN(" DATA >>");
-      
-      for(size_t i=0;i<list1.size();i++)
-      {
-        DBGLN(list1[i]);
-      }
-    }
-
-    DBGLN("<< END OF INTERRUPT DATA");
-    
-  #endif // _PRINT_INTERRUPT_DATA  
-
 
 
   // сначала делаем пересчёт точек на график, т.к. у нас ограниченное кол-во точек - это раз.
   // два - когда в списках прерываний точек заведомо меньше, чем точек на графике (например, 20 вместо 150) - без пересчёта получим
   // куцый график, в этом случае нам надо его растянуть по-максимуму.
 
-  Drawing::ComputeChart(*list1, serie1);
+//  Drawing::ComputeChart(InterruptData, serie);
 
   // вычисляем моторесурс
   computeMotoresource();
@@ -162,26 +142,32 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
 
     bool canRedrawMotoresource = false;
     
-    if(channelMotoresourcePercents1 >= (100 - MOTORESOURCE_BLINK_PERCENTS) )
+    if(channelMotoresourcePercents >= (100 - MOTORESOURCE_BLINK_PERCENTS) )
     {
       // ресурс по системе на канале 1 исчерпан, надо мигать надписью
-      motoresourceBlinkTimer1 += dT;
+      motoresourceBlinkTimer += dT;
       
-      if(motoresourceBlinkTimer1 > MOTORESOURCE_BLINK_DURATION)
+      if(motoresourceBlinkTimer > MOTORESOURCE_BLINK_DURATION)
       { 
-        motoresourceBlinkTimer1 -= MOTORESOURCE_BLINK_DURATION;
+        motoresourceBlinkTimer -= MOTORESOURCE_BLINK_DURATION;
                
-        if(motoresourceLastFontColor1 == RED)
-          motoresourceLastFontColor1 = BLACK;
+        if(motoresourceLastFontColor == RED)
+        {
+          motoresourceLastFontColor = BLACK;
+        }
         else
-          motoresourceLastFontColor1 = RED;
+        {
+          motoresourceLastFontColor = RED;
+        }
 
           canRedrawMotoresource = true;
       }
     }
 
     if(canRedrawMotoresource)
+    {
       drawMotoresource(menu);
+    }
       
       
 }
@@ -194,8 +180,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT);
 
 
-  uint32_t channelResourceCurrent1 = Settings.getMotoresource();  
-  uint32_t channelResourceMax1 = Settings.getMotoresourceMax();
+  uint32_t channelResourceCurrent = Settings.getMotoresource();  
+  uint32_t channelResourceMax = Settings.getMotoresourceMax();
 
   // рисуем моторесурс системы по каналам
   uint16_t curX = 5;
@@ -206,19 +192,14 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   String str;
 
   str = F("Импульсов: ");
-  str += list1->size();
+  str += InterruptData.size();
   
   
   str += F("; ресурс: ");
-//  str += channelResourceCurrent1;
-//  str += F("/");
-//  str += channelResourceMax1;
-//  str += F(" (");
-  str += channelMotoresourcePercents1;
-//  str += F("%)");
+  str += channelMotoresourcePercents;
   str += "%";
 
-  menu->getRusPrinter()->print(str.c_str(),curX,curY,BLACK,motoresourceLastFontColor1);
+  menu->getRusPrinter()->print(str.c_str(),curX,curY,BLACK,motoresourceLastFontColor);
   curY += fontHeight + 4;
 
 }
@@ -226,12 +207,12 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 void InterruptScreen::computeMotoresource()
 {
   
-  uint32_t channelResourceCurrent1 = Settings.getMotoresource();
-  uint32_t channelResourceMax1 = Settings.getMotoresourceMax();
-  channelMotoresourcePercents1 = (channelResourceCurrent1*100)/(channelResourceMax1 ? channelResourceMax1 : 1);
-  motoresourceLastFontColor1 = channelMotoresourcePercents1 < (100 - MOTORESOURCE_BLINK_PERCENTS) ? WHITE : RED;
+  uint32_t channelResourceCurrent = Settings.getMotoresource();
+  uint32_t channelResourceMax = Settings.getMotoresourceMax();
+  channelMotoresourcePercents = (channelResourceCurrent*100)/(channelResourceMax ? channelResourceMax : 1);
+  motoresourceLastFontColor = channelMotoresourcePercents < (100 - MOTORESOURCE_BLINK_PERCENTS) ? WHITE : RED;
   timerDelta = millis();
-  motoresourceBlinkTimer1 = (MOTORESOURCE_BLINK_DURATION/3)*2;
+  motoresourceBlinkTimer = (MOTORESOURCE_BLINK_DURATION/3)*2;
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -248,14 +229,14 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
   uint8_t spacing = 4;
 
 
-	  String channelNum = "1"; /////// String(compareBox.channelNum + 1);
-    uint8_t captionLen = menu->getRusPrinter()->textWidth(channelNum.c_str());//print(channelNum.c_str(),0,0,0,true);
+	  String channelNum = "1";
+    uint8_t captionLen = menu->getRusPrinter()->textWidth(channelNum.c_str());
     menu->getRusPrinter()->print(channelNum.c_str(), curX, curY + (boxHeight - captionLen)/2, BLACK, compareBox.chartColor );
 
     uint16_t boxLeft = curX + captionLen + spacing;
     dc->fillRoundRect(boxLeft, curY, boxWidth, boxHeight,2,compareBox.compareColor);
 
-    captionLen = menu->getRusPrinter()->textWidth(compareBox.compareCaption);//print(compareBox.compareCaption,0,0,0,true);
+    captionLen = menu->getRusPrinter()->textWidth(compareBox.compareCaption);
     menu->getRusPrinter()->print(compareBox.compareCaption, boxLeft + (boxWidth - captionLen)/2, curY + (boxHeight - fontHeight)/2,compareBox.compareColor,compareBox.foreCompareColor );  
 
 
@@ -263,15 +244,16 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::doDraw(TFTMenu* menu)
 {
-	Drawing::DrawChart(this, serie1);
+	//Drawing::DrawChart(this, serie);
+  Drawing::DrawChartFromList(this,InterruptData);
 	drawTime(menu);
 	drawMotoresource(menu);
 	drawCompareResult(menu);
 
-  // ОЧИСТКА ПАМЯТИ !!!
-  list1->clear();
-  serie1.clear();
-  oscillData->clear();
+  // ОЧИСТКА ПАМЯТИ
+ // serie.clear();
+  // возобновляем обработчик прерываний
+  InterruptHandler.resume();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)

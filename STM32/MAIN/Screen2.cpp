@@ -1651,6 +1651,7 @@ void EthalonChartScreen::doSetup(TFTMenu* menu)
 void EthalonChartScreen::show(const String& fName)
 {
     fileName = fName;
+    /*
     serie.clear();
     InterruptTimeList lst;
 
@@ -1673,6 +1674,7 @@ void EthalonChartScreen::show(const String& fName)
     }
 
     Drawing::ComputeChart(lst, serie);
+    */
     Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1683,13 +1685,16 @@ void EthalonChartScreen::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonChartScreen::doDraw(TFTMenu* menu)
 {
-  Drawing::DrawChart(this,serie);
+ // Drawing::DrawChart(this,serie);
+    Drawing::DrawChartFromFileName(this,fileName);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonChartScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen(listEthalonsFilesScreen); // переключаемся на экран работы со списком эталонов
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // EthalonRecordScreen
@@ -1730,26 +1735,6 @@ void EthalonRecordScreen::doSetup(TFTMenu* menu)
   screenButtons->setButtonFontColor(channel1SaveButton,WHITE);
   
   curY += boxSize + buttonSpacing;
-
-  //DEPRECATED: channel2Button  = screenButtons->addButton(curX, curY, boxSize, boxSize, "-");
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonFontColor(channel2Button,WHITE);
-
-  //DEPRECATED: channel2SaveButton = screenButtons->addButton(curX + boxSize + buttonSpacing*2, curY, boxSize, boxSize, "-");
-  //DEPRECATED: screenButtons->setButtonBackColor(channel2SaveButton,BLACK);
-  //DEPRECATED: screenButtons->setButtonFontColor(channel2SaveButton,WHITE);
-  
-  //DEPRECATED: curY += boxSize + buttonSpacing;
-
-  //DEPRECATED: channel3Button  = screenButtons->addButton(curX, curY, boxSize, boxSize, "-");
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3Button,BLACK);
-  //DEPRECATED: screenButtons->setButtonFontColor(channel3Button,WHITE);
-
-  //DEPRECATED: channel3SaveButton = screenButtons->addButton(curX + boxSize + buttonSpacing*2, curY, boxSize, boxSize, "-");
-  //DEPRECATED: screenButtons->setButtonBackColor(channel3SaveButton,BLACK);
-  //DEPRECATED: screenButtons->setButtonFontColor(channel3SaveButton,WHITE);
-
-  //DEPRECATED: curY += boxSize + buttonSpacing;
 
   directionButton = screenButtons->addButton(curX, curY, boxSize*2 + buttonSpacing*2, 34, "c",BUTTON_SYMBOL);
 
@@ -1802,15 +1787,19 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
   else
   if(state == recDone)
   {
-    Drawing::ComputeChart(list1, serie1);
+//    Drawing::ComputeChart(InterruptData, serie);
     
     Screen.getDC()->fillScreen(TFT_BACK_COLOR);
     showButtons(true);    
     
-    Drawing::DrawChart(this, serie1, RED);
+//    Drawing::DrawChart(this, serie, RED);
+    Drawing::DrawChartFromList(this,InterruptData,RED);
 
     // чистим память после отрисовки
-    serie1.clear();
+//    serie.clear();
+
+    // возобновляем работу прерываний
+    InterruptHandler.resume();    
   }    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1840,18 +1829,6 @@ void EthalonRecordScreen::rotateSelectedChannel(int button, int& val)
       color = RED;
       capt = "1";
     break;
-/*    
-    case 1:
-      color = VGA_BLUE;
-      capt = "2";
-    break;
-    
-    case 2:
-      color = VGA_YELLOW;
-      fontColor = BLACK;
-      capt = "3";
-    break;
-*/
   }
 
   screenButtons->setButtonBackColor(button,color);
@@ -1865,77 +1842,9 @@ void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
   if(saveChannel == -1) // не выбрано, для какого канала сохранять
     return;
 
-  InterruptTimeList fakeList;
-  InterruptTimeList* selectedList = &fakeList;
-
-  switch(selChannel)
-  {
-    case 0:
-      selectedList = &list1;
-    break;
-    
-	/*
-	//DEPRECATED:
-    case 1:
-      selectedList = &list2;
-    break;
-    
-    case 2:
-      selectedList = &list3;
-    break;
-	*/
-
-    default:
-      selectedList = &fakeList;
-    break;
-  }
-
   // сохраняем эталон
-  FileUtils::saveEthalon(saveChannel,direction == dirUp, *selectedList);
-
-  // чистим память после сохранения
-  selectedList->clear();
+  FileUtils::saveEthalon(saveChannel,direction == dirUp, InterruptData);
   
-/*
-  SD_CARD.mkdir(ETHALONS_DIRECTORY);
-
-  String fileName = ETHALONS_DIRECTORY;
-  fileName += ETHALON_NAME_PREFIX;
-  fileName += saveChannel;
-  
-  if(direction == dirUp)
-  {
-    fileName += ETHALON_UP_POSTFIX;
-  }
-  else
-  {
-    fileName += ETHALON_DOWN_POSTFIX;
-  }
-
-  fileName += ETHALON_FILE_EXT;
-
-  DBG(F("WRITE ETHALON TO FILE "));
-  DBGLN(fileName);
-
-  PAUSE_ADC; // останавливаем АЦП
-  SdFile file;
-  file.open(fileName.c_str(),FILE_WRITE | O_CREAT | O_TRUNC);
-  
-  if(file.isOpen())
-  {
-    DBG(F("WRITE ETHALON DATA, RECORDS COUNT: "));
-    DBGLN(selectedList->size());
-
-    for(size_t i=0;i<selectedList->size();i++)
-    {
-      uint32_t val = (*selectedList)[i];
-      file.write(&val,sizeof(val));
-    }
-
-  //  file.flush();
-    file.close();
-  }
- */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void EthalonRecordScreen::saveEthalons()
@@ -1946,9 +1855,10 @@ void EthalonRecordScreen::saveEthalons()
   // если выбрано и то, и то - пишем данные в файл.
 
   saveEthalon(channel1SelectedChannel,channel1SaveChannel);
-  //DEPRECATED: saveEthalon(channel2SelectedChannel,channel2SaveChannel);
-  //DEPRECATED: saveEthalon(channel3SelectedChannel,channel3SaveChannel);
 
+  // возобновляем работу прерываний
+  InterruptHandler.resume();
+    
   Vector<const char*> lines;
   lines.push_back("Эталоны");
   lines.push_back("сохранены.");    
@@ -1960,8 +1870,8 @@ void EthalonRecordScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
   {
-    // чистим память
-    list1.clear();
+    // возобновляем работу прерываний
+    InterruptHandler.resume();
     
     menu->switchToScreen("EthalonScreen");
   }
@@ -1969,32 +1879,10 @@ void EthalonRecordScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   {
     rotateSelectedChannel(pressedButton, channel1SelectedChannel);
   }
-  /*
-  //DEPRECATED:
-  else if(pressedButton == channel2Button)
-  {
-    rotateSelectedChannel(pressedButton, channel2SelectedChannel);
-  }
-  else if(pressedButton == channel3Button)
-  {
-    rotateSelectedChannel(pressedButton, channel3SelectedChannel);
-  }
-  */
   else if(pressedButton == channel1SaveButton)
   {
     rotateSelectedChannel(pressedButton, channel1SaveChannel);
   }
-  /*
-  //DEPRECATED:
-  else if(pressedButton == channel2SaveButton)
-  {
-    rotateSelectedChannel(pressedButton, channel2SaveChannel);
-  }
-  else if(pressedButton == channel3SaveButton)
-  {
-    rotateSelectedChannel(pressedButton, channel3SaveChannel);
-  }
-  */
   else if(pressedButton == directionButton)
   {
     if(direction == dirUp)
@@ -2086,7 +1974,6 @@ void EthalonRecordScreen::drawWelcome(TFTMenu* menu)
     }
   
 	dc->setFreeFont(TFT_FONT);
-//  dc->setFont(oldFont);
    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2099,9 +1986,6 @@ void EthalonRecordScreen::onActivate()
   resetButtons();
   showButtons(false);
   
-  list1.clear();
-  //DEPRECATED: list2.clear();
-  //DEPRECATED: list3.clear();
   InterruptHandler.setSubscriber(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2110,36 +1994,35 @@ void EthalonRecordScreen::onDeactivate()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult)
+void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult compareResult)
 {
   DBGLN(F("EthalonRecordScreen::OnInterruptRaised"));
 
-  // пришли результаты серии прерываний с одного из списков.
-  // мы запоминаем результаты в локальный список.
-  list1 = list;
+  // пришли результаты серии прерываний
 
 
  // сбрасываем подписчика
   InterruptHandler.setSubscriber(NULL);
 
   // смотрим, в каком листе есть данные, и устанавливаем кнопки выбора графика на первый список с данными
-  if (list1.size())
+  if (InterruptData.size())
   {
     channel1SelectedChannel = -1;
     rotateSelectedChannel(channel1Button, channel1SelectedChannel);
   }
 
 
-  state = recDone;
-
-  Drawing::ComputeChart(list1, serie1);
+  state = recDone; // говорим, что запись закончена
+/*
+  Drawing::ComputeChart(InterruptData, serie);
   
   Screen.getDC()->fillScreen(TFT_BACK_COLOR);
   showButtons(true);  
-  Drawing::DrawChart(this, serie1, RED);
+  Drawing::DrawChart(this, serie, RED);
 
   // чистим память после отрисовки
-  serie1.clear();  
+  serie.clear();  
+*/  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FileEntry

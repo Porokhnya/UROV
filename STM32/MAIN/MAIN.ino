@@ -65,7 +65,7 @@ DS3231Time rsRelTrigTime; // время срабатывания защиты
 bool HasRS485Link = false;
 uint32_t lastRS485PacketSeenAt = 0;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, InterruptTimeList& interruptsList, bool endstopUpTriggered, bool endstopDownTriggered)
+void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool endstopUpTriggered, bool endstopDownTriggered)
 {
 	// тут обрабатываем результаты срабатывания защиты от модуля
 
@@ -75,7 +75,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 	motoresource++;
 	Settings.setMotoresource(motoresource);
 
-	bool hasAlarm = !interruptsList.size(); // авария, если в списке нет данных
+	bool hasAlarm = !InterruptData.size(); // авария, если в списке нет данных
 	if (hasAlarm)
 	{
 	//	DBGLN(F("processInterruptFromModule: HAS ALARM FLAG!"));
@@ -94,7 +94,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 	bool needToLog = false;
 
 	// теперь смотрим - надо ли нам самим чего-то обрабатывать?
-	if (interruptsList.size() > 1)
+	if (InterruptData.size() > 1)
 	{
 	//	DBG("processInterruptFromModule: INTERRUPT HAS DATA COUNT: ");
 	//	DBGLN(interruptsList.size());
@@ -105,7 +105,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 		needToLog = true;
 
 		// здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-		compareRes1 = EthalonComparer::Compare(interruptsList, 0, compareNumber1, ethalonFileName);//ethalonData1);
+		compareRes1 = EthalonComparer::Compare(InterruptData, 0, compareNumber1, ethalonFileName);//ethalonData1);
 
 		if (compareRes1 == COMPARE_RESULT_MatchEthalon)
 		{
@@ -130,12 +130,12 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
 	InterruptHandlerClass::normalizeList(oscillData.times);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
-	bool wantToInformSubscriber = (hasAlarm || (interruptsList.size() > 1));
+	bool wantToInformSubscriber = (hasAlarm || (InterruptData.size() > 1));
 
 	if (wantToInformSubscriber)
 	{
 	//	DBGLN(F("processInterruptFromModule: WANT TO INFORM SUBSCRIBER!"));
-		InterruptHandler.informSubscriber(&oscillData,interruptsList, compareRes1);
+		InterruptHandler.informSubscriber(&oscillData,compareRes1);
 
    // обновляем экран, чтобы график появился сразу
    Screen.update();
@@ -144,16 +144,19 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, Interru
   if (needToLog)
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,interruptsList, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog
+
+  // возобновляем работу обработчика прерываний
+  InterruptHandler.resume();
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -184,11 +187,9 @@ void OnRS485IncomingData(RS485* Sender)
 			rs485RelayTriggeredTime = millis(); // запоминаем время срабатывания защиты
       rsRelTrigTime = RealtimeClock.getTime();
 
-			// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-//			InterruptHandlerClass::startCollectCurrentData(); // начинаем собирать данные по току
-			// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
+      // останавливаем обработку прерываний у нас
+      InterruptHandler.pause();
 
-			//TODO: ТУТ МОЖНО ЧТО-ТО ДЕЛАТЬ ПО ФАКТУ СРАБАТЫВАНИЯ ЗАЩИТЫ, НАПРИМЕР - НАЧИНАТЬ ПРОВЕРКУ ТОКОВЫХ ТРАНСФОРМАТОРОВ.
 		}
 		break; // rs485HasInterrupt
 
@@ -213,12 +214,11 @@ void OnRS485IncomingData(RS485* Sender)
 		//		DBGLN(recordsCount);
 
 				// сохраняем записи
-				InterruptTimeList interruptsList;
-				interruptsList.reserve(recordsCount);
+       InterruptData.empty();
 
 				for (uint16_t i = 0; i<recordsCount; i++)
 				{
-					interruptsList.push_back(*rec++);
+					InterruptData.push_back(*rec++);
 				}
 
        // запоминаем время, когда данные пришли
@@ -244,7 +244,7 @@ void OnRS485IncomingData(RS485* Sender)
 				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 				// обрабатываем список прерываний  
-				processInterruptFromModule(dataArriveTime, rsRelTrigTime,interruptsList, endstopUpTriggered, endstopDownTriggered);
+				processInterruptFromModule(dataArriveTime, rsRelTrigTime, endstopUpTriggered, endstopDownTriggered);
 		}
 		break; // rs485InterruptData
 

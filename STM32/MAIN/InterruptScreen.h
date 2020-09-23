@@ -25,7 +25,7 @@ class InterruptScreen : public AbstractTFTScreen, public InterruptEventSubscribe
 
   static AbstractTFTScreen* create();  
 
-  void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult result);
+  void OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult result);
     
 protected:
 
@@ -41,14 +41,11 @@ private:
 
     void drawTime(TFTMenu* menu);
 
-	uint32_t channelMotoresourcePercents1;//DEPRECATED:  , channelMotoresourcePercents2, channelMotoresourcePercents3;
-	word motoresourceLastFontColor1;//DEPRECATED:  , motoresourceLastFontColor2, motoresourceLastFontColor3;
-	uint32_t motoresourceBlinkTimer1;//DEPRECATED:  , motoresourceBlinkTimer2, motoresourceBlinkTimer3;
+	uint32_t channelMotoresourcePercents;
+	word motoresourceLastFontColor;
+	uint32_t motoresourceBlinkTimer;
     void computeMotoresource();
     void drawMotoresource(TFTMenu* menu);
-    //void drawTimeBeforeInterrupt(TFTMenu* menu);
-
-    InterruptTimeList* list1;
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	CurrentOscillData* oscillData; // данные по току
@@ -57,17 +54,12 @@ private:
   EthalonCompareBox compareBox;
 
     unsigned long startSeenTime;
-  //  uint32_t timeBeforeInterrupts;
- //   bool hasRelayTriggeredTime;
 
     bool canAcceptInterruptData;
 
-    //EthalonCompareBoxes compareBoxes;
     void drawCompareResult(TFTMenu* menu);
 
-    Points serie1;
-	//DEPRECATED: Points serie2;
-	//DEPRECATED: Points serie3;
+//    Points serie;
 
     uint32_t timerDelta;  
   

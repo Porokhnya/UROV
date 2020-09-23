@@ -678,7 +678,7 @@ class EthalonRecordScreen : public AbstractTFTScreen, public InterruptEventSubsc
     return new EthalonRecordScreen();
   }
 
-  void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
+  void OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult compareResult);
     
 protected:
 
@@ -705,19 +705,13 @@ private:
       void saveEthalons();
       void saveEthalon(int selChannel, int saveChannel);
 
-      int backButton, saveButton, channel1Button, /*channel2Button, channel3Button,*/ channel1SaveButton, /*channel2SaveButton, channel3SaveButton,*/ directionButton;
-	  int channel1SelectedChannel;//DEPRECATED:  , channel2SelectedChannel, channel3SelectedChannel;
-	  int channel1SaveChannel;//DEPRECATED:  , channel2SaveChannel, channel3SaveChannel;
+      int backButton, saveButton, channel1Button, channel1SaveButton, directionButton;
+	    int channel1SelectedChannel;
+	    int channel1SaveChannel;
       void rotateSelectedChannel(int button, int& val);
       void showButtons(bool bShow);
-  
-      InterruptTimeList list1;
-	  //DEPRECATED: InterruptTimeList list2;
-	  //DEPRECATED: InterruptTimeList list3;
-    
-      Points serie1;
-	  //DEPRECATED: Points serie2;
-	  //DEPRECATED: Points serie3;
+      
+//      Points serie;
   
   
 };
@@ -745,7 +739,7 @@ private:
 
       int backButton;
       String fileName;
-      Points serie;
+   //   Points serie;
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

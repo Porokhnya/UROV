@@ -28,6 +28,273 @@
 namespace Drawing
 {
 
+  // рисуем график из списка
+  void DrawChartFromList(AbstractTFTScreen* caller, const InterruptTimeList& timeList,uint16_t color)
+  {
+    if(!caller->isActive()) // низзя рисовать
+    {
+      return;
+    }    
+
+      // рисуем сетку
+      const int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
+      const int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
+      const int columnsCount = 6; // 5 столбцов
+      const int rowsCount = 4; // 4 строки
+      const int columnWidth = INTERRUPT_CHART_X_POINTS/columnsCount; // ширина столбца
+      const int rowHeight = INTERRUPT_CHART_Y_POINTS/rowsCount; // высота строки 
+      RGBColor gridColor = { 0,200,0 }; // цвет сетки
+      
+  
+      // вызываем функцию для отрисовки сетки, её можно вызывать из каждого класса экрана
+     Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+
+
+     if(timeList.size() > 1) // есть что рисовать
+     {
+        // смещения для отрисовки
+        uint16_t xOffset = 5;
+        uint16_t yOffset = 0;
+
+        TFT_Class* dc = Screen.getDC();
+        int screenWidth = dc->width();
+        int screenHeight = dc->height();
+
+        uint32_t maxPulseTime = 0;
+        uint32_t totalPulsesTime = 0;
+        for(size_t i=1;i<timeList.size();i++)
+        {
+          uint32_t pulseWidth = timeList[i] - timeList[i-1];
+          maxPulseTime = max(maxPulseTime,pulseWidth);
+          totalPulsesTime += pulseWidth;
+        } // for
+
+        if (!maxPulseTime) // на случай, если там 0
+        {
+          maxPulseTime = 1;     
+        }
+
+        // теперь вычисляем положение по X для каждой точки импульсов
+      uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
+
+/*
+      // сначала добавляем первую точку, у неё координаты по X - это 0, по Y - та же длительность импульса, что будет во второй точке
+      uint32_t firstPulseTime = timeList[1] - timeList[0];
+      firstPulseTime *= 100;
+      uint16_t firstPointPercents = firstPulseTime/maxPulseTime;  
+
+      // получили значение в процентах от максимального значения Y для первой точки. Инвертируем это значение
+      firstPointPercents = 100 - firstPointPercents;
+      // теперь можем высчитать абсолютное значение по Y для первой точки  
+      double yCoord = INTERRUPT_CHART_Y_COORD - (firstPointPercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+      yCoord -= yOffset;
+
+      // чтобы за сетку не вылазило
+      if(yCoord < INTERRUPT_CHART_GRID_Y_START)
+      {
+        yCoord = INTERRUPT_CHART_GRID_Y_START;
+      }
+    */
+
+      // добавляем первую точку
+      double xCoord = INTERRUPT_CHART_X_COORD;
+      double yCoord = INTERRUPT_CHART_Y_COORD;
+
+
+      uint16_t iXCoord = constrain(round(xCoord), 0, screenWidth);
+      uint16_t iYCoord = constrain(round(yCoord),0,screenHeight);  
+
+      Point ptLast = {iXCoord,iYCoord};    
+      xCoord += xOffset;      
+
+          // теперь считаем все остальные точки
+          for(size_t i=1;i<timeList.size();i++)
+          {
+            uint32_t pulseTime = timeList[i] - timeList[i-1];
+    
+    
+            double pulseTimeXWeight = double(pulseTime)/totalPulsesTime;
+            double pulseXOffset = pulseTimeXWeight*pointsAvailable;
+          
+            pulseTime *= 100;
+            
+            uint16_t pulseTimePercents = pulseTime/maxPulseTime;
+            pulseTimePercents = 100 - pulseTimePercents;
+    
+        
+       //     DBG("pulseTimePercents=");
+       //     DBGLN(pulseTimePercents);
+        
+        
+            yCoord = INTERRUPT_CHART_Y_COORD - (pulseTimePercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+            yCoord -= yOffset;
+        
+            // чтобы за сетку не вылазило
+            if(yCoord < INTERRUPT_CHART_GRID_Y_START)
+            {
+              yCoord = INTERRUPT_CHART_GRID_Y_START;
+            }
+      
+            iXCoord = constrain(round(xCoord), 0, screenWidth);
+            iYCoord = constrain(round(yCoord), 0, screenHeight);
+      
+    
+    
+            Point ptCur = { iXCoord,iYCoord };            
+            xCoord += pulseXOffset;
+
+            if(ptCur != ptLast)
+            {
+              dc->drawLine(ptLast.X, ptLast.Y, ptCur.X, ptCur.Y,color);
+              yield();
+            }
+
+            ptLast = ptCur;
+            
+          } // for      
+          
+      
+     } // if(timeList.size() > 1)
+       
+  }
+
+  // рисуем график из файла
+  void DrawChartFromFileName(AbstractTFTScreen* caller, const String& fileName,uint16_t color)
+  {
+    if(!caller->isActive()) // низзя рисовать
+    {
+      return;
+    }
+    
+        // рисуем сетку
+      const int gridX = INTERRUPT_CHART_GRID_X_START; // начальная координата сетки по X
+      const int gridY = INTERRUPT_CHART_GRID_Y_START; // начальная координата сетки по Y
+      const int columnsCount = 6; // 5 столбцов
+      const int rowsCount = 4; // 4 строки
+      const int columnWidth = INTERRUPT_CHART_X_POINTS/columnsCount; // ширина столбца
+      const int rowHeight = INTERRUPT_CHART_Y_POINTS/rowsCount; // высота строки 
+      RGBColor gridColor = { 0,200,0 }; // цвет сетки
+      
+  
+      // вызываем функцию для отрисовки сетки, её можно вызывать из каждого класса экрана
+     Drawing::DrawGrid(gridX, gridY, columnsCount, rowsCount, columnWidth, rowHeight, gridColor);
+    
+      #ifndef _SD_OFF
+
+        PAUSE_ADC; // останавливаем АЦП
+        SdFile file;
+        file.open(fileName.c_str(),FILE_READ);
+        if(file.isOpen())
+        {
+          // сначала ищем максимальное время импульса
+           uint32_t maxPulseTime = 0;
+           uint32_t totalPulsesTime = 0;
+           size_t totalPulses = 0;
+
+           // смещения для отрисовки
+           uint16_t xOffset = 5;
+           uint16_t yOffset = 0;
+
+
+           uint32_t curRec, lastRec;
+           bool first = true;
+           while(1)
+          {
+            int readResult = file.read(&curRec,sizeof(curRec));
+            if(readResult == -1 || size_t(readResult) < sizeof(curRec))
+            {
+              break;
+            }
+
+              if(!first) // прочитали по крайней мере две записи
+              {
+                uint32_t pulseWidth = curRec - lastRec;
+                maxPulseTime = max(maxPulseTime,pulseWidth);
+                totalPulsesTime += pulseWidth;
+              }
+      
+              first = false;
+              lastRec = curRec;
+              totalPulses++;
+          }
+
+           if (!maxPulseTime) // на случай, если там 0
+           {
+              maxPulseTime = 1;  
+           }
+
+
+          if(totalPulses > 1) // есть импульсы, можем строить по ним график
+          {
+            file.rewind(); // возвращаемся на начало файла
+
+            TFT_Class* dc = Screen.getDC();
+            int screenWidth = dc->width();
+            int screenHeight = dc->height();
+            
+            // теперь вычисляем положение по X для каждой точки импульсов
+            uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
+            double xCoord = INTERRUPT_CHART_X_COORD;
+            double yCoord = INTERRUPT_CHART_Y_COORD;
+
+           first = true;
+           Point ptLast = { INTERRUPT_CHART_X_COORD, INTERRUPT_CHART_Y_COORD };
+           
+           while(1)
+          {
+            int readResult = file.read(&curRec,sizeof(curRec));
+            if(readResult == -1 || size_t(readResult) < sizeof(curRec))
+            {
+              break;
+            }
+
+              if(!first) // прочитали по крайней мере две записи
+              {
+                  uint32_t pulseTime = curRec - lastRec;
+                  double pulseTimeXWeight = double(pulseTime)/totalPulsesTime;
+                  double pulseXOffset = pulseTimeXWeight*pointsAvailable;
+                  pulseTime *= 100;
+                  uint16_t pulseTimePercents = pulseTime/maxPulseTime;
+                  pulseTimePercents = 100 - pulseTimePercents;
+
+                  yCoord = INTERRUPT_CHART_Y_COORD - (pulseTimePercents*(INTERRUPT_CHART_Y_POINTS-yOffset))/100;
+                  yCoord -= yOffset;
+
+                  // чтобы за сетку не вылазило
+                  if(yCoord < INTERRUPT_CHART_GRID_Y_START)
+                  {
+                    yCoord = INTERRUPT_CHART_GRID_Y_START;
+                  }
+
+                  uint16_t iXCoord = constrain(round(xCoord), 0, screenWidth);
+                  uint16_t iYCoord = constrain(round(yCoord), 0, screenHeight);
+
+                  Point ptCur = { iXCoord,iYCoord };
+
+                  if(ptCur != ptLast)
+                  {
+                    dc->drawLine(ptLast.X, ptLast.Y, ptCur.X, ptCur.Y,color);
+                    yield();
+                  }
+        
+                  xCoord += pulseXOffset;
+                  ptLast = ptCur;
+                  
+              } // if(!first)
+      
+              first = false;
+              lastRec = curRec;
+          } // while
+            
+          } // if(totalPulses > 1)
+
+
+          file.close();
+        }
+      
+      #endif // _SD_OFF
+  }
+/*
   void ComputeSerie(const InterruptTimeList& timeList,Points& serie, uint16_t xOffset, uint16_t yOffset)
   {
       // освобождаем серию
@@ -64,12 +331,6 @@ namespace Drawing
       uint16_t pointsAvailable = INTERRUPT_CHART_X_POINTS - xOffset;
      // double xStep = double(pointsAvailable)/(totalPulses-1);
 
-/*
-      Serial.print("pointsAvailable=");Serial.println(pointsAvailable);
-      Serial.print("totalPulses-1=");Serial.println(totalPulses-1);
-      Serial.print("maxPulseTime=");Serial.println(maxPulseTime);
-      Serial.print("totalPulsesTime=");Serial.println(totalPulsesTime);
-*/
     
       // сначала добавляем первую точку, у неё координаты по X - это 0, по Y - та же длительность импульса, что будет во второй точке
       uint32_t firstPulseTime = timeList[1] - timeList[0];
@@ -119,14 +380,7 @@ namespace Drawing
 
         double pulseTimeXWeight = double(pulseTime)/totalPulsesTime;
         double pulseXOffset = pulseTimeXWeight*pointsAvailable;
-/*
-       Serial.println();
-       Serial.print("xCoord=");Serial.println(xCoord);
-       Serial.print("round(xCoord)=");Serial.println(round(xCoord));
-       Serial.print("pulseTime=");Serial.println(pulseTime);
-       Serial.print("pulseTimeXWeight=");Serial.println(pulseTimeXWeight);
-       Serial.print("pulseXOffset=");Serial.println(pulseXOffset);
-*/        
+       
         pulseTime *= 100;
         
         uint16_t pulseTimePercents = pulseTime/maxPulseTime;
@@ -190,23 +444,10 @@ namespace Drawing
 			  continue;
 		  }
 
-		  /*
-		  DBG(F("dc->drawLine("));
-		  DBG(x1);
-		  DBG(F(","));
-		  DBG(y1);
-		  DBG(F(","));
-		  DBG(x2);
-		  DBG(F(","));
-		  DBG(y2);
-		  DBGLN(F(");"));
-		  */
 
 		  dc->drawLine(ptStart.X, ptStart.Y, ptEnd.X, ptEnd.Y,color);
           yield();
 
-
-//		  delay(500);
 
       } // for 
 
@@ -257,27 +498,15 @@ namespace Drawing
 
   void ComputeChart(const InterruptTimeList& list1, Points& serie1)
   {
-     /*
-      Формируем график
-      Ось X время регистрации всех импульсов (общее время хода линейки, перемещения траверсы).
-      Ось Y длительность импульсов.
-      
-      При этом максимальная длительность сформированных импульсов (в начале и конце движения) равна минимальным значениям по оси Y 
-      Минимальная длительность сформированных импульсов (в середине хода линейки) соответствует максимальным значениям по оси Y. 
-      */
     
       const uint16_t yOffset = 0; // первоначальный сдвиг графиков по Y
-//      uint16_t yOffsetStep = 5; // шаг сдвига графиков по Y, чтобы не пересекались
     
       const uint16_t xOffset = 5; // первоначальный сдвиг графиков по X, чтобы первый пик начинался не с начала координат
-//      uint16_t xOffsetStep = 5; // шаг сдвига графиков по X, чтобы не пересекались
       
       ComputeSerie(list1,serie1,xOffset, yOffset);
-//      yOffset += yOffsetStep;
-//      xOffset += xOffsetStep;
     
   }
-  
+ */ 
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor)
   {
 #ifndef _DRAW_GRID_OFF
@@ -300,7 +529,6 @@ namespace Drawing
         yield();
     }
     
-  //    dc->setColor(color); 
 #endif // _DRAW_GRID_OFF
 
   }

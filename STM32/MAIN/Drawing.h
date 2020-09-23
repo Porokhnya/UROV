@@ -26,6 +26,12 @@ typedef struct _Point
 
 	  return(X == rhs.X) && (Y == rhs.Y);
   }
+
+  bool operator !=(const _Point& rhs)
+  {
+    return !operator==(rhs);
+  }
+  
 } Point;
 #pragma pack(pop)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -36,11 +42,16 @@ class AbstractTFTScreen;
 namespace Drawing
 {
   void DrawGrid(int startX, int startY, int columnsCount, int rowsCount, int columnWidth, int rowHeight, RGBColor gridColor);
+  /*
   void ComputeChart(const InterruptTimeList& list1, Points& serie1);
   void DrawChart(AbstractTFTScreen* caller, const Points& serie1,uint16_t serie1Color=WHITE);
   void ComputeSerie(const InterruptTimeList& timeList, Points& serie, uint16_t xOffset, uint16_t yOffset);
   void DrawSerie(AbstractTFTScreen* caller, const Points& serie, uint16_t color);
   void DrawSerie(AbstractTFTScreen* caller, const Points& serie, RGBColor color);
+*/
+  void DrawChartFromFileName(AbstractTFTScreen* caller, const String& fileName,uint16_t serieColor=WHITE);
+  void DrawChartFromList(AbstractTFTScreen* caller, const InterruptTimeList& list,uint16_t serieColor=WHITE);
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma pack(push,1)

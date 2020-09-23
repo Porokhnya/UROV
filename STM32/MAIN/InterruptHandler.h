@@ -60,7 +60,7 @@ typedef enum
 struct InterruptEventSubscriber
 {
   // вызывается, когда прерывания на нужном номере завершены, и накоплена статистика
-  virtual void OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult result) = 0;
+  virtual void OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult result) = 0;
 
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -71,10 +71,12 @@ class InterruptHandlerClass
 
    void begin();
    void update();
+   void pause();
+   void resume();
 
    void setSubscriber(InterruptEventSubscriber* h);
    InterruptEventSubscriber* getSubscriber();
-   void informSubscriber(CurrentOscillData* oscData, InterruptTimeList& list, EthalonCompareResult compareResult);
+   bool informSubscriber(CurrentOscillData* oscData, EthalonCompareResult compareResult);
    
    static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, /*InterruptTimeList& ethalonData1*/const String& ethalonFileName, bool toEEPROM=false);
 
@@ -97,4 +99,5 @@ private:
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern InterruptHandlerClass InterruptHandler;
+extern InterruptTimeList InterruptData;
 //--------------------------------------------------------------------------------------------------------------------------------------

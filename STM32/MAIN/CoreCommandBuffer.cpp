@@ -988,12 +988,13 @@ bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 	{
 		ed = dirDown;
 	}
-
+  
 	bool result = eint.beginRecord(ETHALON_RECORD_TIMEOUT);
 	if (result)
 	{
 		eint.saveList(ed);
 	}
+  InterruptHandler.resume(); // включаем обработчик прерываний
 
 	if (result)
 	{
@@ -1717,7 +1718,7 @@ ExternalEthalonCommandHandler::ExternalEthalonCommandHandler()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 {
-  if (!list.size())
+  if (!InterruptData.size())
 	{
 		return;
 	}
@@ -1747,10 +1748,10 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 
 	if (file.isOpen())
 	{
-    size_t to = list.size();
+    size_t to = InterruptData.size();
 		for (size_t i = 0; i<to; i++)
 		{
-			uint32_t val = list[i];
+			uint32_t val = InterruptData[i];
 			file.write(&val, sizeof(val));
 		}
 
@@ -1758,15 +1759,12 @@ void ExternalEthalonCommandHandler::saveList(EthalonDirection direction)
 	}
 #endif 
 
-  // чистим память
-  list.clear();
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 {
 	done = false;
-	list.clear();
 	timer = millis();
 
   adcSampler.setCanCollectCurrentData(false);
@@ -1788,13 +1786,12 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
   
   adcSampler.setCanCollectCurrentData(true);
   
-	return done && list.size();
+	return done && InterruptData.size();
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult result)
+void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult result)
 {
-  list = _list;
   done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
