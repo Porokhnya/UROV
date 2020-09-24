@@ -545,6 +545,54 @@ namespace UROVConfig
             interval = val;
         }
 
+        private bool ethalonVisible = true;
+        private bool interruptVisible = true;
+
+        public void SetEthalonAvailable(bool avail)
+        {
+            ethalonVisible = avail;
+
+            if (avail)
+            {
+                chart.Series[0].Enabled = true;
+            }
+            else
+            {
+                chart.Series[0].Enabled = false;
+            }
+        }
+
+        public void SetChartOfCurrentAvailable(bool avail)
+        {
+            if (avail) // есть токи
+            {
+                chart.ChartAreas[0].Position.Height = 26;
+
+                chart.ChartAreas[1].Visible = true;
+                chart.ChartAreas[2].Visible = true;
+                chart.ChartAreas[3].Visible = true;
+
+                chart.Series[2].Enabled = true;
+                chart.Series[3].Enabled = true;
+                chart.Series[4].Enabled = true;
+
+            }
+            else
+            {
+                // токов нет, скрываем серии
+                chart.ChartAreas[0].Position.Height = 80;
+
+                chart.ChartAreas[1].Visible = false;
+                chart.ChartAreas[2].Visible = false;
+                chart.ChartAreas[3].Visible = false;
+
+                chart.Series[2].Enabled = false;
+                chart.Series[3].Enabled = false;
+                chart.Series[4].Enabled = false;
+
+            }
+        }
+
         private void ViewChartForm_Load(object sender, EventArgs e)
         {
             // задаём настройки масштабирования графиков
@@ -579,6 +627,172 @@ namespace UROVConfig
                 area.CursorY.IsUserSelectionEnabled = true;
                 area.CursorY.IsUserEnabled = true;
                 area.CursorY.AutoScroll = true;
+            }
+
+            for(int i=0;i<chart.Series.Count;i++)
+            {
+                chart.Series[i].SetCustomProperty("CHECK", "☑");
+            }
+
+            chart.Legends[0].CellColumns.Clear();
+
+            chart.Legends[0].CellColumns.Add(new LegendCellColumn()
+            {
+                Name = "chbx",
+                ColumnType = LegendCellColumnType.Text,
+                Text = "#CUSTOMPROPERTY(CHECK)",
+                Font = new Font("Segoe UI", 12, FontStyle.Bold)
+            });
+
+            chart.Legends[0].CellColumns.Add(new LegendCellColumn()
+            {
+                Name = "symbol",
+                ColumnType = LegendCellColumnType.SeriesSymbol
+            });
+
+            chart.Legends[0].CellColumns.Add(new LegendCellColumn()
+            {
+                Name = "title",
+                ColumnType = LegendCellColumnType.Text,
+                Text = "#LEGENDTEXT"
+            });
+
+            chart.ApplyPaletteColors();
+
+            foreach (Series series in chart.Series)
+            {
+                chart.Series[series.Name].SetCustomProperty(
+                    "COLOR",
+                    ColorTranslator.ToHtml(series.Color));
+            }
+
+            realignAreas();
+        }
+
+        private void dealWithEthalonAndInterrupt(string area)
+        {
+            if (!ethalonVisible && !interruptVisible)
+            {
+                chart.ChartAreas[area].Visible = false;
+            }
+            else
+            {
+                chart.ChartAreas[area].Visible = true;
+
+                if (!ethalonVisible)
+                {
+                    chart.Series["serie1"].Color = Color.FromArgb(0, chart.Series["serie1"].Color);
+                }
+                else
+                {
+                    chart.Series["serie1"].Color = ColorTranslator.FromHtml(chart.Series["serie1"].GetCustomProperty("COLOR"));
+                }
+
+                if (!interruptVisible)
+                {
+                    chart.Series["serie2"].Color = Color.FromArgb(0, chart.Series["serie2"].Color);
+                }
+                else
+                {
+                    chart.Series["serie2"].Color = ColorTranslator.FromHtml(chart.Series["serie2"].GetCustomProperty("COLOR"));
+                }
+            }
+        }
+
+        private void realignAreas()
+        {
+            // выравниваем видимые области по высоте
+            float totalPercentsAvailable = 90.0f; // сколько всего процентов по высоте доступно
+            float ySpacingPercents = 2.0f; // зазор, в процентах, по Y между видимыми областями
+
+            int totalVisibleAreas = 0;
+            for(int i=0;i<chart.ChartAreas.Count;i++)
+            {
+                if(chart.ChartAreas[i].Visible)
+                {
+                    totalVisibleAreas++;
+                }
+            }
+
+            if(totalVisibleAreas < 1) // нет видимых областей
+            {
+                return;
+            }
+
+            // теперь делим равномерно высоту между областями
+            float oneAreaHeight = totalPercentsAvailable / totalVisibleAreas;
+            float curY = ySpacingPercents;
+
+            for (int i = 0; i < chart.ChartAreas.Count; i++)
+            {
+                if (chart.ChartAreas[i].Visible)
+                {
+                    chart.ChartAreas[i].Position.Height = oneAreaHeight - ySpacingPercents;
+                    chart.ChartAreas[i].Position.Y = curY;
+
+                    curY += oneAreaHeight;
+
+                }
+
+            }
+        }
+
+        private void chart_MouseDown(object sender, MouseEventArgs e)
+        {
+            HitTestResult result = chart.HitTest(e.X, e.Y);
+
+            if (result != null && result.Object != null
+                && result.Object is LegendItem && e.Button == MouseButtons.Left)
+            {
+                LegendItem legendItem = (LegendItem)result.Object;
+
+                Series series = chart.Series[legendItem.SeriesName];
+
+                if (series.GetCustomProperty("CHECK").Equals("☑"))
+                {
+                    series.SetCustomProperty("CHECK", "☐");
+                    // series.Color = Color.FromArgb(0, series.Color);
+                    if (legendItem.SeriesName == "serie1")
+                    {
+                        ethalonVisible = false;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    else if (legendItem.SeriesName == "serie2")
+                    {
+                        interruptVisible = false;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    else
+                    {
+                        chart.ChartAreas[series.ChartArea].Visible = false;
+                    }
+
+                    
+                }
+                else
+                {
+                    series.SetCustomProperty("CHECK", "☑");
+                    //    series.Color = ColorTranslator.FromHtml(
+                    //             series.GetCustomProperty("COLOR"));
+                    if (legendItem.SeriesName == "serie1")
+                    {
+                        ethalonVisible = true;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    else if (legendItem.SeriesName == "serie2")
+                    {
+                        interruptVisible = true;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    else
+                    {
+                        chart.ChartAreas[series.ChartArea].Visible = true;
+                    }
+
+                    
+                }
+
+                realignAreas();
             }
         }
     }

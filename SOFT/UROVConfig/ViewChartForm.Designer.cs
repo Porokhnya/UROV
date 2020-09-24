@@ -108,7 +108,7 @@
             // 
             chartArea1.Name = "ethalonChartArea";
             chartArea1.Position.Auto = false;
-            chartArea1.Position.Height = 20F;
+            chartArea1.Position.Height = 28F;
             chartArea1.Position.Width = 95F;
             chartArea1.Position.X = 3F;
             chartArea1.Position.Y = 3F;
@@ -117,19 +117,19 @@
             chartArea2.Position.Height = 20F;
             chartArea2.Position.Width = 95F;
             chartArea2.Position.X = 3F;
-            chartArea2.Position.Y = 22F;
+            chartArea2.Position.Y = 30F;
             chartArea3.Name = "phase2Area";
             chartArea3.Position.Auto = false;
             chartArea3.Position.Height = 20F;
             chartArea3.Position.Width = 95F;
             chartArea3.Position.X = 3F;
-            chartArea3.Position.Y = 44F;
+            chartArea3.Position.Y = 50F;
             chartArea4.Name = "phase3Area";
             chartArea4.Position.Auto = false;
             chartArea4.Position.Height = 20F;
             chartArea4.Position.Width = 95F;
             chartArea4.Position.X = 3F;
-            chartArea4.Position.Y = 66F;
+            chartArea4.Position.Y = 70F;
             this.chart.ChartAreas.Add(chartArea1);
             this.chart.ChartAreas.Add(chartArea2);
             this.chart.ChartAreas.Add(chartArea3);
@@ -138,6 +138,11 @@
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
             legend1.Name = "Legend1";
+            legend1.Position.Auto = false;
+            legend1.Position.Height = 5F;
+            legend1.Position.Width = 90F;
+            legend1.Position.X = 3F;
+            legend1.Position.Y = 95F;
             legendCell1.Name = "PulsesCount";
             legendCell1.Text = "Импульсов:";
             legendCell2.Name = "EthalonPulses";
@@ -150,8 +155,13 @@
             legendItem1.Cells.Add(legendCell4);
             legend2.CustomItems.Add(legendItem1);
             legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend2.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Column;
+            legend2.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
             legend2.Name = "Legend2";
+            legend2.Position.Auto = false;
+            legend2.Position.Height = 5F;
+            legend2.Position.Width = 90F;
+            legend2.Position.X = 3F;
+            legend2.Position.Y = 90F;
             legendCell5.Name = "Cell1";
             legendCell5.Text = "ФАЗА 1";
             legendItem2.Cells.Add(legendCell5);
@@ -220,6 +230,7 @@
             this.chart.Size = new System.Drawing.Size(1026, 575);
             this.chart.TabIndex = 3;
             this.chart.Text = "chart1";
+            this.chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chart_MouseDown);
             // 
             // panel3
             // 
