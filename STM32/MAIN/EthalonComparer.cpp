@@ -132,7 +132,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
 
     #ifndef ETHALON_COMPARE_ONLY_PULSES_COUNT // только если сказали - сравнивать и времена импульсов, не только их количество   
       uint32_t curRec;
-      while(1)
+      while(file.available())
       {
         int readResult = file.read(&curRec,sizeof(curRec));
         if(readResult == -1 || size_t(readResult) < sizeof(curRec))

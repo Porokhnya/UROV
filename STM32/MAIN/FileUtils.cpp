@@ -186,7 +186,7 @@ void FileUtils::SendToStream(Stream* s, const String& fileName)
 
   if(file.isOpen())
   {
-     while(1)
+     while(file.available())
     {
       int iCh = file.read();
       if(iCh == -1)

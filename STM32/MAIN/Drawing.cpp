@@ -198,7 +198,7 @@ namespace Drawing
 
            uint32_t curRec, lastRec;
            bool first = true;
-           while(1)
+           while(file.available())
           {
             int readResult = file.read(&curRec,sizeof(curRec));
             if(readResult == -1 || size_t(readResult) < sizeof(curRec))
@@ -240,7 +240,7 @@ namespace Drawing
            first = true;
            Point ptLast = { INTERRUPT_CHART_X_COORD, INTERRUPT_CHART_Y_COORD };
            
-           while(1)
+           while(file.available())
           {
             int readResult = file.read(&curRec,sizeof(curRec));
             if(readResult == -1 || size_t(readResult) < sizeof(curRec))

@@ -565,7 +565,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
         uint8_t buff[4] = {0}; 
 
         
-        while(1)
+        while(file.available())
         {
           if(!file.available())
           {
@@ -588,7 +588,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
           {
             Logger.write(buff,readed);
           }
-        } // while(1)
+        } // while(file.available())
         */
         #endif
        } // else       

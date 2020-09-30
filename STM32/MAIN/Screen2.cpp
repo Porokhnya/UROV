@@ -1662,7 +1662,7 @@ void EthalonChartScreen::show(const String& fName)
     if(file.isOpen())
     {
       uint32_t curRec;
-      while(1)
+      while(file.available())
       {
         int readResult = file.read(&curRec,sizeof(curRec));
         if(readResult == -1 || size_t(readResult) < sizeof(curRec))
