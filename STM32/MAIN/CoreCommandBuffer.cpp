@@ -811,7 +811,7 @@ bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandPa
   */
   if(LastTriggeredInterruptRecordIndex > -1)
   {
-    AT24CX* eeprom = Settings.getEEPROM();
+    EEPROM_CLASS* eeprom = Settings.getEEPROM();
     // вычисляем начало очередной записи в EEPROM
     uint32_t eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + LastTriggeredInterruptRecordIndex*EEPROM_LAST_3_RECORD_SIZE;
 

@@ -242,7 +242,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
   }
 
  const uint8_t CHANNEL_NUM = 0;
- AT24CX* eeprom = Settings.getEEPROM();
+ EEPROM_CLASS* eeprom = Settings.getEEPROM();
 
  uint8_t workBuff[5] = {0};
 
@@ -769,7 +769,7 @@ void InterruptHandlerClass::writeToLog(
   bool toEEPROM
 )
 {
-  AT24CX* eeprom = Settings.getEEPROM();
+  EEPROM_CLASS* eeprom = Settings.getEEPROM();
 
   if(toEEPROM && !eeprom)
   {
@@ -1082,6 +1082,8 @@ void InterruptHandlerClass::update()
       if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
       {
 
+    //    Serial.println("START WORK WITH INTERRUPT, STAGE 1!"); Serial.flush();
+
         PAUSE_ADC; // останавливаем АЦП на время
 
         pause(); // ставим на паузу
@@ -1093,8 +1095,8 @@ void InterruptHandlerClass::update()
           #endif
         interrupts(); 
         
-        //DBG(F("INTERRUPT DONE, CATCHED PULSES: "));
-       // DBGLN(InterruptData.size());
+
+ //      Serial.println("STAGE 2"); Serial.flush();
 
 
         // обновляем моторесурс, т.к. было срабатывание защиты
@@ -1102,16 +1104,20 @@ void InterruptHandlerClass::update()
         motoresource++;
         Settings.setMotoresource(motoresource);
 
+//        Serial.println("STAGE 3"); Serial.flush();
+
         // проверяем, авария ли?
         hasAlarm = !InterruptData.size();
         
         // выставляем флаг аварии, в зависимости от наличия данных в списках
         if(hasAlarm)
         {
-          //    DBGLN(F("Взведён флаг аварии!"));
+  //        Serial.println("STAGE ALARM"); Serial.flush();
           Feedback.alarm(true);
         }    
 
+
+//        Serial.println("STAGE 4"); Serial.flush();
 
         // запрещаем собирать данные по току
         adcSampler.setCanCollectCurrentData(false);
@@ -1127,6 +1133,8 @@ void InterruptHandlerClass::update()
         
         interrupts();
 
+  //      Serial.println("STAGE 5"); Serial.flush();
+        
         // разрешаем собирать данные по току
         adcSampler.setCanCollectCurrentData(true);
 
@@ -1137,6 +1145,8 @@ void InterruptHandlerClass::update()
           datArrivTm = InterruptData[0] - OscillData.earlierRecordTime();
         }
 
+//        Serial.println("STAGE 6"); Serial.flush();
+
        // datArrivTm = 500000ul;//TODO: УБРАТЬ!!!
 
         // нормализуем список времен записей по току
@@ -1145,6 +1155,7 @@ void InterruptHandlerClass::update()
          // нормализуем список прерываний
          normalizeList(InterruptData);
 
+//         Serial.println("STAGE 7"); Serial.flush();
 
          // начинаем работать со списком прерываний
          EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
@@ -1156,6 +1167,8 @@ void InterruptHandlerClass::update()
         // теперь смотрим - надо ли нам самим чего-то обрабатывать?
         if(InterruptData.size() > 1)
         {
+//          Serial.println("STAGE TEST DIODE ON"); Serial.flush();
+          
 //            DBG("Прерывание содержит данные: ");
 //            DBGLN(InterruptData.size());
     
@@ -1183,18 +1196,23 @@ void InterruptHandlerClass::update()
 */            
            // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
            compareRes1 = EthalonComparer::Compare(InterruptData, 0,compareNumber1, ethalonFileName);//ethalonData1);
+
+
+//            Serial.println("STAGE 8"); Serial.flush();
     
            if(compareRes1 == COMPARE_RESULT_MatchEthalon)
             {}
            else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
            {
+//              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
               Feedback.failureDiode();
               Feedback.alarm();
            }
         } // if(InterruptData.size() > 1)
 
             if(needToLog)
-            {              
+            {  
+//              Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
               writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
               
@@ -1203,6 +1221,8 @@ void InterruptHandlerClass::update()
                   // надо записать в лог дату срабатывания системы
                   writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
               #endif // !_SD_OFF
+
+//              Serial.println("STAGE WRITE TO LOG END"); Serial.flush();
               
             } // needToLog
 
@@ -1214,21 +1234,28 @@ void InterruptHandlerClass::update()
           //  DBGLN(F("Надо уведомить подписчика прерываний!"));
           if(subscriber)
           {
+//            Serial.println("STAGE INFORM SUBSCRIBER BEGIN"); Serial.flush();
             //  DBGLN(F("Подписчик найден!"));  
               
             // уведомляем подписчика
             informSubscriber(&OscillData,compareRes1);
+
+//            Serial.println("STAGE INFORM SUBSCRIBER END"); Serial.flush();
     
           } // if(subscriber)
           else
           {
+//            Serial.println("STAGE RESUME BEGIN 1"); Serial.flush();
             resume(); // подписчика нет, просто начинаем сначала            
+//            Serial.println("STAGE RESUME END 1"); Serial.flush();
           }
           
         }   // if(wantToInformSubscriber)
         else
         {
+//          Serial.println("STAGE RESUME BEGIN 2"); Serial.flush();
           resume(); // подписчика нет, просто начинаем сначала
+//          Serial.println("STAGE RESUME END 2"); Serial.flush();
         }
                 
 

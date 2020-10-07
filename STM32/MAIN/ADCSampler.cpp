@@ -343,7 +343,9 @@ void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::setCanCollectCurrentData(bool val)
 {
+  noInterrupts();
       canCollectCurrentData = val;  
+  interrupts();      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CurrentOscillData ADCSampler::getListOfCurrent()

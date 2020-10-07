@@ -34,7 +34,7 @@ uint32_t SDFakeFilesClass::getFileSize(const String& fileName)
   {    
     uint32_t result = 0;
 
-    AT24CX* eeprom = Settings.getEEPROM();
+    EEPROM_CLASS* eeprom = Settings.getEEPROM();
     if(!eeprom)
     {
       return 0;
@@ -74,7 +74,7 @@ void SDFakeFilesClass::printFakeFile(const String& fileName, Stream* pStream)
   if(fileName.endsWith(OUR_LAST_3_FAKE_FILE_NAME)) // это файл с последними тремя срабатываниями
   {
 
-    AT24CX* eeprom = Settings.getEEPROM();
+    EEPROM_CLASS* eeprom = Settings.getEEPROM();
     if(!eeprom)
     {
       return;

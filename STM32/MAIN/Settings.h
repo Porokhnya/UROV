@@ -37,7 +37,7 @@ public:
 
   void reloadSettings();
 
-  AT24CX* getEEPROM() {return eeprom;}
+  EEPROM_CLASS* getEEPROM() {return eeprom;}
 
 	// возвращает настройку кол-ва импульсов
 	uint16_t getPulses();
@@ -108,7 +108,7 @@ public:
 
 	  RodDirection rodDirection;
 
-    AT24C128* eeprom;
+    EEPROM_CLASS* eeprom;
     DS3231Temperature coreTemp;
     uint32_t timer;
 
