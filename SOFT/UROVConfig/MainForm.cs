@@ -3974,19 +3974,19 @@ namespace UROVConfig
         private void AddCustomLabelsOfCurrent(ChartArea area, int maxCurrentValue)
         {
             int currentLabelsCount = 6;
-            int step = maxCurrentValue / currentLabelsCount;
+            float step = Convert.ToSingle(maxCurrentValue) / currentLabelsCount;
 
             area.AxisY.CustomLabels.Clear();
             area.AxisY.Interval = step;
             area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
 
-            int startOffset = -step / 2;
-            int endOffset = step / 2;
-            int counter = 0;
+            float startOffset = -step / 2;
+            float endOffset = step / 2;
+            float counter = 0;
 
             for (int i = 0; i < currentLabelsCount; i++)
             {
-                string labelText = String.Format("{0:0.00}A", GetCurrentFromADC(counter));
+                string labelText = String.Format("{0:0.000}A", GetCurrentFromADC(counter));
                 CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
                 area.AxisY.CustomLabels.Add(monthLabel);
                 startOffset = startOffset + step;
@@ -3995,7 +3995,7 @@ namespace UROVConfig
             }
         }
 
-        private float GetCurrentFromADC(int adcVAL)
+        private float GetCurrentFromADC(float adcVAL)
         {
             float result = 0;
             float CURRENT_DIVIDER = 1000.0f;
