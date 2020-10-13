@@ -97,7 +97,7 @@ class ADCSampler
 {
   private:
 
-    bool _stopped;
+    volatile bool _stopped;
   
   public:
     ADCSampler();
@@ -114,14 +114,14 @@ class ADCSampler
 
     void reset(); // сбрасывает признак готовности данных
 
-    void pause();
-    void resume();
+    void pause(bool withNoInterrupts=true);
+    void resume(bool withNoInterrupts=true);
 
     // разрешает или запрещает собирать данные по току
     void setCanCollectCurrentData(bool val);
 
     // возвращает список данных по осциллограмме тока, чистя локальный
-    CurrentOscillData getListOfCurrent();
+    CurrentOscillData getListOfCurrent(bool withNoInterrupts=true);
 
 
   private:
@@ -142,7 +142,7 @@ class ADCSampler
     uint16_t countOfSamples; // кол-во проделанных измерений
 
 
-    bool canCollectCurrentData;
+    volatile bool canCollectCurrentData;
     CurrentOscillData oscillData;
     uint32_t currentOscillTimer;
 

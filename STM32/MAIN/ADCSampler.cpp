@@ -348,16 +348,17 @@ void ADCSampler::setCanCollectCurrentData(bool val)
   interrupts();      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CurrentOscillData ADCSampler::getListOfCurrent()
+CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
 {
-  pause();
+    pause(withNoInterrupts);
         
   CurrentOscillData result = oscillData.normalize();
   
   oscillData.clear();
   avgSamplesDone = 0;
   
-  resume();
+  resume(withNoInterrupts);
+  
   return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -482,13 +483,34 @@ void ADCSampler::handleInterrupt()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::pause()
+void ADCSampler::pause(bool withNoInterrupts)
 {
-  if(_stopped)
+  if(withNoInterrupts)
+  {
+    noInterrupts();  
+  }
+  bool thisStopped = _stopped;
+  
+  if(withNoInterrupts)
+  {
+    interrupts();
+  }
+  
+  if(thisStopped)
   {
     return;
   }
+
+  if(withNoInterrupts)
+  {
+    noInterrupts();
+  }
   _stopped = true;
+
+  if(withNoInterrupts)
+  {
+    interrupts();
+  }
   
   // останавливаем таймер
   //HAL_TIM_Base_Stop_IT ( &htim3 );
@@ -496,14 +518,35 @@ void ADCSampler::pause()
  HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::resume()
+void ADCSampler::resume(bool withNoInterrupts)
 {
-  if(!_stopped)
+ if(withNoInterrupts)
+  {
+    noInterrupts();  
+  }
+  bool thisStopped = _stopped;
+  
+  if(withNoInterrupts)
+  {
+    interrupts();
+  }
+
+  if(!thisStopped)
   {
     return;
   }
 
+  if(withNoInterrupts)
+  {
+    noInterrupts();
+  }
   _stopped = false;
+
+  if(withNoInterrupts)
+  {
+    interrupts();
+  }
+    
   HAL_NVIC_EnableIRQ  ( TIM3_IRQn );
  
 }

@@ -1129,7 +1129,7 @@ void InterruptHandlerClass::update()
             
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
            OscillData.clear();
-           OscillData = adcSampler.getListOfCurrent();
+           OscillData = adcSampler.getListOfCurrent(false);
         
         interrupts();
 
