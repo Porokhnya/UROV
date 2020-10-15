@@ -1172,8 +1172,12 @@ void InterruptHandlerClass::update()
 //            DBG("Прерывание содержит данные: ");
 //            DBGLN(InterruptData.size());
     
-          // зажигаем светодиод "ТЕСТ"
+          // зажигаем светодиод "ТЕСТ" (желтый)
           Feedback.testDiode();
+
+          // Формируем сигнал срабатывания системы на выводах АСУ ТП 
+          // №1 - НО контакта: в схему УРОВ (срабатывание УРОВ) (параллельно желтому светодиоду)
+          digitalWrite(out_asu_tp1,asu_tp_level);
     
           needToLog = true; // говорим, что надо записать в лог
 
@@ -1206,6 +1210,12 @@ void InterruptHandlerClass::update()
            {
 //              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
               Feedback.failureDiode();
+
+              // Формируем сигнал срабатывания системы на выводах АСУ ТП
+              // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
+              digitalWrite(out_asu_tp3,asu_tp_level);
+
+              
               Feedback.alarm();
            }
         } // if(InterruptData.size() > 1)
