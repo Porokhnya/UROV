@@ -11,13 +11,13 @@ void ConfigPin::setup()
 {
   
 	pinMode(out_asu_tp1, OUTPUT);                       // Выход на АСУ ТП №1
-	digitalWrite(out_asu_tp1, LOW);                     // Выход на АСУ ТП №1
+	digitalWrite(out_asu_tp1, !(asu_tp_level));                     // Выход на АСУ ТП №1
 	pinMode(out_asu_tp2, OUTPUT);                       // Выход на АСУ ТП №2
-	digitalWrite(out_asu_tp2, LOW);                     // Выход на АСУ ТП №2
+	digitalWrite(out_asu_tp2, !(asu_tp_level));                     // Выход на АСУ ТП №2
 	pinMode(out_asu_tp3, OUTPUT);                       // Выход на АСУ ТП №3
-	digitalWrite(out_asu_tp3, LOW);                     // Выход на АСУ ТП №3
+	digitalWrite(out_asu_tp3, !(asu_tp_level));                     // Выход на АСУ ТП №3
 	pinMode(out_asu_tp4, OUTPUT);                       // Выход на АСУ ТП №4
-	digitalWrite(out_asu_tp4, LOW);                     // Выход на АСУ ТП №4
+	digitalWrite(out_asu_tp4, !(asu_tp_level));                     // Выход на АСУ ТП №4
 
 
 	pinMode(Upr_RS485, OUTPUT);                         // Выход управлениея шиной RS485  
