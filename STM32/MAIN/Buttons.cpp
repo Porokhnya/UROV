@@ -37,14 +37,13 @@ void ButtonsList::update()
     Feedback.readyDiode(false); // гасим светодиод УСПЕХ
 
     Feedback.alarm(false); // сбрасываем сигнал АВАРИЯ
-/*
-    static bool b = true;
-    b = !b;
-    if(!b)
-      adcSampler.pause();
-    else
-      adcSampler.resume();
-*/      
+
+    // сбрасываем все сигналы на АСУ ТП
+    digitalWrite(out_asu_tp1, !(asu_tp_level));
+    digitalWrite(out_asu_tp2, !(asu_tp_level));
+    digitalWrite(out_asu_tp3, !(asu_tp_level));
+    digitalWrite(out_asu_tp4, !(asu_tp_level));
+    
   }
 
   if(redButton.isClicked())
