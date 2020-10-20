@@ -113,6 +113,10 @@ class CommandHandlerClass
   bool setSKIPCOUNTER(CommandParser& parser, Stream* pStream);
   bool getSKIPCOUNTER(const char* commandPassed, const CommandParser& parser, Stream* pStream);
 
+  bool setASUTPFLAGS(CommandParser& parser, Stream* pStream);
+  bool getASUTPFLAGS(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+
+
 
   bool printBackSETResult(bool isOK, const char* command, Stream* pStream);
     

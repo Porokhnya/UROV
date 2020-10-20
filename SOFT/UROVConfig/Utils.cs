@@ -920,6 +920,14 @@ namespace UROVConfig
             set { ethalonCompareDelta = value; }
         }
 
+        private uint asuTpFlags = 0xFF;
+        public uint AsuTpFlags
+        {
+            get { return asuTpFlags; }
+            set { asuTpFlags = value; }
+        }
+
+
         private int motoresourceCurrent1 = 0;
         //DEPRECATED: private int motoresourceCurrent2 = 0;
         //DEPRECATED: private int motoresourceCurrent3 = 0;

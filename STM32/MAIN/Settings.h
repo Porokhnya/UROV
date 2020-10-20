@@ -94,6 +94,9 @@ public:
 
   uint32_t getCurrentCoeff();
   void setCurrentCoeff(uint32_t c);
+
+  uint8_t getAsuTpFlags();
+  void setAsuTpFlags(uint8_t val);
     
   private:
 
@@ -105,6 +108,8 @@ public:
     uint32_t transformerHighBorder, transformerLowBorder;
 
     uint32_t skipCounter;
+
+    uint8_t asuTpFlags;
 
 	  RodDirection rodDirection;
 

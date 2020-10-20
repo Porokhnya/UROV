@@ -1377,6 +1377,7 @@ namespace UROVConfig
             inSetBordersToController = true;
             inSetRelayDelayToController = true;
             inSetDeltaToController = true;
+            inSetAsuTPFlagsInController = true;
 
             uuidRequested = false;
 
@@ -1405,6 +1406,8 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "DELTA", ParseAskDelta, BeforeAskPulses);
                 PushCommandToQueue(GET_PREFIX + "ECDELTA", ParseAskECDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "SKIPC", ParseAskSkipCounter, BeforeAskDelta);
+                PushCommandToQueue(GET_PREFIX + "ASUTPFLAGS", ParseAskAsuTpFlags, BeforeAskAsuTpFlags);
+                
                 //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
                 RequestEthalons();
@@ -1477,6 +1480,11 @@ namespace UROVConfig
             PushCommandToQueue(GET_PREFIX + "FILE|ETL|ET2UP.ETL", DummyAnswerReceiver, SetSDFileReadingFlagEthalon);
             PushCommandToQueue(GET_PREFIX + "FILE|ETL|ET2DWN.ETL", DummyAnswerReceiver, SetSDFileReadingFlagEthalon);
 
+        }
+
+        private void BeforeAskAsuTpFlags()
+        {
+            this.inSetAsuTPFlagsInController = true;
         }
 
         private void BeforeAskDelta()
@@ -1671,6 +1679,43 @@ namespace UROVConfig
                 nudACSDelay.Value = 0;
                 Config.Instance.ACSDelay = 0;
             }
+        }
+
+        private void ParseAskAsuTpFlags(Answer a)
+        {
+            this.inSetAsuTPFlagsInController = false;
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.AsuTpFlags = Convert.ToUInt16(a.Params[1]); } catch { Config.Instance.AsuTpFlags = 0xFF; }
+
+            }
+            else
+            {
+                Config.Instance.AsuTpFlags = 0xFF;
+            }
+
+            cbAsuTpLine1.Checked = false;
+            cbAsuTpLine2.Checked = false;
+            cbAsuTpLine3.Checked = false;
+            cbAsuTpLine4.Checked = false;
+
+            if ((Config.Instance.AsuTpFlags & 1) != 0)
+            {
+                cbAsuTpLine1.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 2) != 0)
+            {
+                cbAsuTpLine2.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 4) != 0)
+            {
+                cbAsuTpLine3.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 8) != 0)
+            {
+                cbAsuTpLine4.Checked = true;
+            }
+
         }
 
         private void ParseAskECDelta(Answer a)
@@ -1980,6 +2025,8 @@ namespace UROVConfig
             this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
             this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
             this.btnSDTest.Enabled = bConnected;
+
+            this.btnSetAsuTpLags.Enabled = bConnected && !inSetAsuTPFlagsInController;
 
             if (!bConnected) // порт закрыт
             {
@@ -4663,6 +4710,46 @@ namespace UROVConfig
 
         }
 
+        private void ParseSetCurrentAsuTPFlags(Answer a)
+        {
+            inSetAsuTPFlagsInController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.AsuTpFlags = tempAsuTPFlags;
+
+                MessageBox.Show("Настройки выдачи сигналов обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Ошибка обновления флагов выдачи сигналов!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            cbAsuTpLine1.Checked = false;
+            cbAsuTpLine2.Checked = false;
+            cbAsuTpLine3.Checked = false;
+            cbAsuTpLine4.Checked = false;
+
+            if ((Config.Instance.AsuTpFlags & 1) != 0)
+            {
+                cbAsuTpLine1.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 2) != 0)
+            {
+                cbAsuTpLine2.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 4) != 0)
+            {
+                cbAsuTpLine3.Checked = true;
+            }
+            if ((Config.Instance.AsuTpFlags & 8) != 0)
+            {
+                cbAsuTpLine4.Checked = true;
+            }
+
+        }
+
         private void ParseSetCurrentCoeff(Answer a)
         {
             inSetCurrentCoeffToController = false;
@@ -4692,6 +4779,38 @@ namespace UROVConfig
             s += Convert.ToString(nudCurrentCoeff.Value);
 
             PushCommandToQueue(SET_PREFIX + "CCOEFF" + PARAM_DELIMITER + s, ParseSetCurrentCoeff);
+        }
+
+        private bool inSetAsuTPFlagsInController = true;
+        private uint tempAsuTPFlags = 0;
+        private void btnSetAsuTpLags_Click(object sender, EventArgs e)
+        {
+            inSetAsuTPFlagsInController = true;
+            ShowWaitCursor(true);
+
+            UInt16 val = 0;
+            if(cbAsuTpLine1.Checked)
+            {
+                val |= 1;
+            }
+
+            if(cbAsuTpLine2.Checked)
+            {
+                val |= 2;
+            }
+
+            if(cbAsuTpLine3.Checked)
+            {
+                val |= 4;
+            }
+
+            if(cbAsuTpLine4.Checked)
+            {
+                val |= 8;
+            }
+
+            tempAsuTPFlags = val;
+            PushCommandToQueue(SET_PREFIX + "ASUTPFLAGS" + PARAM_DELIMITER + val.ToString(), ParseSetCurrentAsuTPFlags);
         }
     }
 

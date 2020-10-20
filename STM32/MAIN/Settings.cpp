@@ -26,6 +26,8 @@ SettingsClass::SettingsClass()
   transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
   skipCounter = INTERRUPT_SKIP_COUNTER;
 
+  asuTpFlags = 0xFF; // выдаём сигналы на все линии АСУ ТП
+
 #ifndef DISABLE_CATCH_ENCODER_DIRECTION
   rodDirection = rpBroken;
 #else
@@ -298,6 +300,13 @@ void SettingsClass::reloadSettings()
       {
         ethalonPulseDelta = 50;
       }
+
+      // читаем флаги выдачи сигналов на АСУ ТП
+      if(!read8(ASU_TP_SIGNALS_ADDRESS,asuTpFlags))
+      {
+        asuTpFlags = 0xFF; // выдаём сигналы на все линии
+      }
+      
       
   } // if(eeprom)  
 }
@@ -340,6 +349,17 @@ void SettingsClass::update()
   }
 
 #endif // !_CORE_TEMP_OFF  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+uint8_t SettingsClass::getAsuTpFlags()
+{
+  return asuTpFlags;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setAsuTpFlags(uint8_t val)
+{
+  asuTpFlags = val;
+  write8(ASU_TP_SIGNALS_ADDRESS,asuTpFlags);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getEthalonPulseDelta()

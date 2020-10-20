@@ -1098,11 +1098,13 @@ void InterruptHandlerClass::update()
 
  //      Serial.println("STAGE 2"); Serial.flush();
 
+        uint8_t asuTpFlags = Settings.getAsuTpFlags();
 
         // обновляем моторесурс, т.к. было срабатывание защиты
         uint32_t motoresource = Settings.getMotoresource();
         motoresource++;
         Settings.setMotoresource(motoresource);
+        
 
 //        Serial.println("STAGE 3"); Serial.flush();
 
@@ -1175,9 +1177,13 @@ void InterruptHandlerClass::update()
           // зажигаем светодиод "ТЕСТ" (желтый)
           Feedback.testDiode();
 
-          // Формируем сигнал срабатывания системы на выводах АСУ ТП 
-          // №1 - НО контакта: в схему УРОВ (срабатывание УРОВ) (параллельно желтому светодиоду)
-          digitalWrite(out_asu_tp1,asu_tp_level);
+
+          if(asuTpFlags & 1) // только если флаг выдачи сигнала в первую линию АСУ ТП - установлен
+          {
+              // Формируем сигнал срабатывания системы на выводах АСУ ТП 
+              // №1 - НО контакта: в схему УРОВ (срабатывание УРОВ) (параллельно желтому светодиоду)
+              digitalWrite(out_asu_tp1,asu_tp_level);
+          }
     
           needToLog = true; // говорим, что надо записать в лог
 
@@ -1211,9 +1217,12 @@ void InterruptHandlerClass::update()
 //              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
               Feedback.failureDiode();
 
-              // Формируем сигнал срабатывания системы на выводах АСУ ТП
-              // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
-              digitalWrite(out_asu_tp3,asu_tp_level);
+              if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
+              {
+                // Формируем сигнал срабатывания системы на выводах АСУ ТП
+                // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
+                digitalWrite(out_asu_tp3,asu_tp_level);
+              }
 
               
               Feedback.alarm();

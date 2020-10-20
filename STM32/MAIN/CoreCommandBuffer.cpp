@@ -39,6 +39,7 @@ const char SKIPCOUNTER_COMMAND[] PROGMEM = "SKIPC"; // настройка про
 const char SDTEST_COMMAND[] PROGMEM = "SDTEST"; // запустить тест SD
 const char CURRENT_COEFF_COMMAND[] PROGMEM = "CCOEFF"; // коэффициент пересчёта по току
 const char ECDELTA_COMMAND[] PROGMEM = "ECDELTA"; // дельта времени сравнения импульсов эталона
+const char ASUTP_COMMAND[] PROGMEM = "ASUTPFLAGS"; // флаги выдачи сигналов на линию АСУ ТП
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -253,6 +254,19 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // UPLOADFILE_COMMAND                  
         else
+        if(!strcmp_P(commandName, ASUTP_COMMAND))
+        {
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setASUTPFLAGS(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // ASUTP_COMMAND               
+        else
         if(!strcmp_P(commandName, PULSES_COMMAND))
         {
             if(cParser.argsCount() > 1)
@@ -435,6 +449,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             commandHandled = getPIN(commandName,cParser,pStream);                    
           
         } // PIN_COMMAND
+        else
+        if(!strcmp_P(commandName, ASUTP_COMMAND))
+        {
+            commandHandled = getASUTPFLAGS(commandName,cParser,pStream);                    
+          
+        } // ASUTP_COMMAND       
         else
         if(!strcmp_P(commandName, PULSES_COMMAND))
         {
@@ -1358,6 +1378,46 @@ bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
   uint8_t resCurrent1 = atoi(parser.getArg(1));
 
   Settings.setPulsesDelta(resCurrent1);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getASUTPFLAGS(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+  {
+    return false;  
+  }
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getAsuTpFlags());
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setASUTPFLAGS(CommandParser& parser, Stream* pStream)
+{
+
+  if(parser.argsCount() < 2)
+  {
+    return false;
+  }
+  
+  uint8_t flags = atoi(parser.getArg(1));
+
+  Settings.setAsuTpFlags(flags);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 
