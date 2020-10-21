@@ -1083,7 +1083,7 @@ void InterruptHandlerClass::update()
           
           if(trigReason == REASON_RELAY) // причиной срабатывания был сигнал внешней защиты
           {
-            trigReasonTimer = micros();
+            trigReasonTimer = micros(); // устанавливаем таймер ожидания только после ожидания, настроенного через конфигуратор
           }
         interrupts(); 
            
@@ -1109,7 +1109,6 @@ void InterruptHandlerClass::update()
             // прошло 20 миллисекунд, можно проверять, всё ли в порядке
             // если нет импульсов с энкодера - это авария
 
-              PAUSE_ADC; // останавливаем АЦП на время
               pause(); // ставим на паузу
 
               if(catchedPulses < 1)
@@ -1132,6 +1131,7 @@ void InterruptHandlerClass::update()
 
             // переключаемся на ветку ожидания отщёлкивания концевика защиты
             machineState = msWaitGuardRelease;
+            
             resume(); // продолжаем работу
           }
       } // if(trigReason == REASON_RELAY)
