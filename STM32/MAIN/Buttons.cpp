@@ -36,7 +36,7 @@ void ButtonsList::update()
     Feedback.failureDiode(false); // гасим светодиод ОШИБКА
     Feedback.readyDiode(false); // гасим светодиод УСПЕХ
 
-    Feedback.alarm(false); // сбрасываем сигнал АВАРИЯ
+    Feedback.setFailureLineLevel(false); // сбрасываем сигнал АВАРИЯ
 
     // сбрасываем все сигналы на АСУ ТП
     digitalWrite(out_asu_tp1, !(asu_tp_level));

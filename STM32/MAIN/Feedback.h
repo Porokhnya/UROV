@@ -12,7 +12,7 @@ class FeedbackList
     void failureDiode(bool on=true);
     void testDiode(bool on=true);
 
-    void alarm(bool on=true);
+    void setFailureLineLevel(bool on=true);
 
   private:
 };

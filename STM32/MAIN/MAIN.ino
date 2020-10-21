@@ -80,7 +80,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
 	{
 	//	DBGLN(F("processInterruptFromModule: HAS ALARM FLAG!"));
 		// сделал именно так, поскольку флаг аварии сбрасывать нельзя, плюс могут понадобиться дополнительные действия
-		Feedback.alarm(true);
+		Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
 	}
 
 
@@ -115,7 +115,7 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
 		{
 	//		DBGLN(F("processInterruptFromModule: MISMATCH ETHALON!"));
 			Feedback.failureDiode();
-			Feedback.alarm();
+			Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
 		}
 	}
 	else

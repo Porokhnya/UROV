@@ -22,6 +22,11 @@ volatile bool relayTriggeredAtStart = false; // флаг, что защита с
 volatile uint16_t interruptSkipCounter = 0; // счётчик пойманных импульсов, для пропуска лишних
 volatile bool paused = false; // флаг, что обработчик - на паузе
 //--------------------------------------------------------------------------------------------------------------------------------------
+#define REASON_RELAY  1 // причина старабывания - внешнее реле
+#define REASON_PREDICT 2 // причина срабатывания - предсказания
+volatile uint8_t trigReason = 0; // причина срабатывания
+volatile uint32_t trigReasonTimer = 0; // таймер отсчёта от причины срабатывания
+//--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
   if (relayTriggeredAtStart) // убираем первое срабатывание при старте
@@ -34,6 +39,7 @@ bool hasRelayTriggered()
     relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания защиты
     // сохраняем состояние нижнего концевика 
     downEndstopTriggered = RodDownEndstopTriggered(false);
+
     return true;
   }
 
@@ -1017,6 +1023,10 @@ void InterruptHandlerClass::update()
         //переключаемся на ветку сбора данных по прерываниям, с энкодера
         machineState = msWaitHandleInterrupts;
 
+        // запоминаем причину срабатывания
+        trigReason = REASON_RELAY;
+        trigReasonTimer = micros();
+
       }
       #ifdef PREDICT_ENABLED
       else
@@ -1045,6 +1055,11 @@ void InterruptHandlerClass::update()
           timer = micros();
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
+          
+        // запоминаем причину срабатывания
+        trigReason = REASON_PREDICT;
+        trigReasonTimer = micros();
+
                     
         interrupts();
                            
@@ -1077,7 +1092,44 @@ void InterruptHandlerClass::update()
       
       noInterrupts();      
           uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
+          size_t catchedPulses = InterruptData.size();
       interrupts();
+
+      if(trigReason == REASON_RELAY) // причиной срабатывания был сигнал внешней защиты, проверяем, насколько давно были импульсы с энкодера
+      {
+          if(micros() - trigReasonTimer >= 20000ul)
+          {
+            trigReason = 0; // сбрасываем причину срабатывания
+            
+            // прошло 20 миллисекунд, можно проверять, всё ли в порядке
+            // если нет импульсов с энкодера - это авария
+
+              PAUSE_ADC; // останавливаем АЦП на время
+              pause(); // ставим на паузу
+
+              if(catchedPulses < 1)
+              {
+                  // за 20 миллисекунд не поймали ни одного импульса с энкодера, это авария
+                  Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
+                  Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
+                  
+                  uint8_t asuTpFlags = Settings.getAsuTpFlags();
+
+                  if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
+                  {
+                    // Формируем сигнал срабатывания системы на выводах АСУ ТП
+                    // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
+                    digitalWrite(out_asu_tp3,asu_tp_level);
+                  }
+        
+        
+              }
+
+            // переключаемся на ветку ожидания отщёлкивания концевика защиты
+            machineState = msWaitGuardRelease;
+            resume(); // продолжаем работу
+          }
+      } // if(trigReason == REASON_RELAY)
       
       if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
       {
@@ -1115,7 +1167,7 @@ void InterruptHandlerClass::update()
         if(hasAlarm)
         {
   //        Serial.println("STAGE ALARM"); Serial.flush();
-          Feedback.alarm(true);
+          Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
         }    
 
 
@@ -1215,8 +1267,9 @@ void InterruptHandlerClass::update()
            else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
            {
 //              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
-              Feedback.failureDiode();
-
+              Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
+              Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
+              
               if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
               {
                 // Формируем сигнал срабатывания системы на выводах АСУ ТП
@@ -1225,7 +1278,6 @@ void InterruptHandlerClass::update()
               }
 
               
-              Feedback.alarm();
            }
         } // if(InterruptData.size() > 1)
 

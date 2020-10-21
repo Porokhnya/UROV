@@ -17,14 +17,14 @@ void FeedbackList::begin()
 
   pinMode(STATUS_LINE,OUTPUT);
   digitalWrite(STATUS_LINE, LOW);
-  alarm(false);
+  setFailureLineLevel(false);
 
   readyDiode(false);
   failureDiode(false);
   testDiode(false);
 }
 //--------------------------------------------------------------------------------------------------
-void FeedbackList::alarm(bool on)
+void FeedbackList::setFailureLineLevel(bool on)
 {
   digitalWrite(STATUS_LINE, on ? STATUS_ALARM_LEVEL : !STATUS_ALARM_LEVEL);
 }
