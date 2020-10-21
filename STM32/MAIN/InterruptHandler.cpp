@@ -1080,6 +1080,11 @@ void InterruptHandlerClass::update()
           timer = micros();
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
+          
+          if(trigReason == REASON_RELAY) // причиной срабатывания был сигнал внешней защиты
+          {
+            trigReasonTimer = micros();
+          }
         interrupts(); 
            
       }
