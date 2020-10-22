@@ -18,7 +18,6 @@ volatile uint32_t timer = 0; // служебный таймер
 DS3231Time relayTriggeredTime; // время срабатывания защиты
 volatile bool downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты
 //--------------------------------------------------------------------------------------------------------------------------------------
-volatile bool relayTriggeredAtStart = false; // флаг, что защита сработала при старте (это срабатывание мы игнорируем)
 volatile uint16_t interruptSkipCounter = 0; // счётчик пойманных импульсов, для пропуска лишних
 volatile bool paused = false; // флаг, что обработчик - на паузе
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -27,16 +26,43 @@ volatile bool paused = false; // флаг, что обработчик - на п
 volatile uint8_t trigReason = 0; // причина срабатывания
 volatile uint32_t trigReasonTimer = 0; // таймер отсчёта от причины срабатывания
 //--------------------------------------------------------------------------------------------------------------------------------------
+// подавление дребезга
+//--------------------------------------------------------------------------------------------------------------------------------------
+uint32_t debounceTimer = 0;
+uint8_t lastRelayState;
+uint8_t relayState;
+//--------------------------------------------------------------------------------------------------------------------------------------
+void relayDebounceRead() // читаем состояние входа релейной защиты с подавлением дребезга
+{
+  uint8_t nowState = digitalRead(RELAY_PIN);
+
+  // если состояние кнопки изменилось - взводим таймер
+  if (nowState != lastRelayState) 
+  {
+    debounceTimer = millis();
+  }
+
+  if ((millis() - debounceTimer) >= 5) // 5 миллисекунд на подавление дребезга
+  {
+    // если отсчёт таймера закончен, то смотрим,
+    // если прочитанное состояние не равно последнему высчитанному, то считаем,
+    // что дребезг прошёл, и сохраняем текущее состояние
+    if (nowState != relayState) 
+    {
+      relayState = nowState;
+    }
+  }
+
+  lastRelayState = nowState;  
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
-  if (relayTriggeredAtStart) // убираем первое срабатывание при старте
+
+  if(/*digitalRead(RELAY_PIN)*/ relayState == RELAY_TRIGGER_LEVEL)
   {
-    relayTriggeredAtStart = false;
-    return false;
-  }
-  if(digitalRead(RELAY_PIN) == RELAY_TRIGGER_LEVEL)
-  {
-    relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания защиты
+    relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания входа релейной защиты
+    
     // сохраняем состояние нижнего концевика 
     downEndstopTriggered = RodDownEndstopTriggered(false);
 
@@ -194,7 +220,10 @@ void InterruptHandlerClass::begin()
     INPUT
   #endif
   );  
-  
+
+  // читаем в переменные для работы с подавлением дребезга
+  lastRelayState = digitalRead(RELAY_PIN);
+  relayState = lastRelayState;  
 
   // настраиваем первый выход энкодера на чтение
 #if (ENCODER_INTERRUPT_LEVEL == RISING)
@@ -993,6 +1022,8 @@ void InterruptHandlerClass::resume()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
+
+  relayDebounceRead(); // обновляем состояние релейного входа
 
   if(paused) // на паузе
   {
