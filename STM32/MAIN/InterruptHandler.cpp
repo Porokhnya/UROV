@@ -7,6 +7,7 @@
 #include "Settings.h"
 #include "DelayedEvents.h"
 #include "ADCSampler.h"
+#include "RelayGuard.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptHandlerClass InterruptHandler;
 CurrentOscillData     OscillData; // данные по току, актуальные на момент прерывания
@@ -26,40 +27,11 @@ volatile bool paused = false; // флаг, что обработчик - на п
 volatile uint8_t trigReason = 0; // причина срабатывания
 volatile uint32_t trigReasonTimer = 0; // таймер отсчёта от причины срабатывания
 //--------------------------------------------------------------------------------------------------------------------------------------
-// подавление дребезга
-//--------------------------------------------------------------------------------------------------------------------------------------
-uint32_t debounceTimer = 0;
-uint8_t lastRelayState;
-uint8_t relayState;
-//--------------------------------------------------------------------------------------------------------------------------------------
-void relayDebounceRead() // читаем состояние входа релейной защиты с подавлением дребезга
-{
-  uint8_t nowState = digitalRead(RELAY_PIN);
-
-  // если состояние кнопки изменилось - взводим таймер
-  if (nowState != lastRelayState) 
-  {
-    debounceTimer = millis();
-  }
-
-  if ((millis() - debounceTimer) >= 5) // 5 миллисекунд на подавление дребезга
-  {
-    // если отсчёт таймера закончен, то смотрим,
-    // если прочитанное состояние не равно последнему высчитанному, то считаем,
-    // что дребезг прошёл, и сохраняем текущее состояние
-    if (nowState != relayState) 
-    {
-      relayState = nowState;
-    }
-  }
-
-  lastRelayState = nowState;  
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
 
-  if(/*digitalRead(RELAY_PIN)*/ relayState == RELAY_TRIGGER_LEVEL)
+  //if(digitalRead(RELAY_PIN) == RELAY_TRIGGER_LEVEL)
+  if(RelayGuard.isTriggered())
   {
     relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания входа релейной защиты
     
@@ -212,18 +184,6 @@ void InterruptHandlerClass::begin()
 // резервируем память
   InterruptData.reserve(MAX_PULSES_TO_CATCH);
 
-  // настраиваем вход защиты
-  pinMode(RELAY_PIN,
-  #if (RELAY_TRIGGER_LEVEL == LOW)
-    INPUT_PULLUP
-  #else
-    INPUT
-  #endif
-  );  
-
-  // читаем в переменные для работы с подавлением дребезга
-  lastRelayState = digitalRead(RELAY_PIN);
-  relayState = lastRelayState;  
 
   // настраиваем первый выход энкодера на чтение
 #if (ENCODER_INTERRUPT_LEVEL == RISING)
@@ -237,10 +197,6 @@ void InterruptHandlerClass::begin()
 
   // ждём, пока устаканится питание
   delay(50);
-
-  // взводим прерывание на входе срабатывания защиты
-  //attachInterrupt((RELAY_PIN), RelayTriggered, RELAY_INTERRUPT_LEVEL);
-  
   
 
   // считаем импульсы на штанге по прерыванию
@@ -1022,8 +978,6 @@ void InterruptHandlerClass::resume()
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::update()
 {
-
-  relayDebounceRead(); // обновляем состояние релейного входа
 
   if(paused) // на паузе
   {
