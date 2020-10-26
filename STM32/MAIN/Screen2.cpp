@@ -627,7 +627,9 @@ void PulsesCountScreen::doSetup(TFTMenu* menu)
 void PulsesCountScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -698,7 +700,9 @@ void PulsesDeltaScreen::doSetup(TFTMenu* menu)
 void PulsesDeltaScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -847,7 +851,9 @@ void MotoresourceScreen::doSetup(TFTMenu* menu)
 void MotoresourceScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -931,7 +937,9 @@ void MotoresourceMaxScreen::doSetup(TFTMenu* menu)
 void MotoresourceMaxScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -1068,7 +1076,9 @@ void BorderMaxScreen::doSetup(TFTMenu* menu)
 void BorderMaxScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -1322,7 +1332,9 @@ void BorderMinScreen::doSetup(TFTMenu* menu)
 void BorderMinScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -1356,7 +1368,9 @@ void BorderMinScreen::doDraw(TFTMenu* menu)
 void BorderMinScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("TransformerScreen");
+  }
   else if(pressedButton == resetButton)
   {
       channel1BorderVal = TRANSFORMER_LOW_DEFAULT_BORDER;
@@ -1406,7 +1420,9 @@ void AcsDelayScreen::doSetup(TFTMenu* menu)
 void AcsDelayScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -1440,7 +1456,9 @@ void AcsDelayScreen::doDraw(TFTMenu* menu)
 void AcsDelayScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("ASUScreen");
+  }
   else if(pressedButton == resetButton)
   {
       channel1AcsDelayVal = ACS_SIGNAL_DELAY;
@@ -1490,7 +1508,9 @@ void RelayDelayScreen::doSetup(TFTMenu* menu)
 void RelayDelayScreen::onKeyboardInput(bool enterPressed, const String& enteredValue)
 {
   if(!enterPressed)
+  {
     return;
+  }
 
     if(currentEditedButton == channel1Button)
     {
@@ -1524,7 +1544,9 @@ void RelayDelayScreen::doDraw(TFTMenu* menu)
 void RelayDelayScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("ASUScreen");
+  }
   else if(pressedButton == resetButton)
   {
       channel1RelayDelayVal = RELAY_WANT_DATA_AFTER/1000;
@@ -1573,9 +1595,13 @@ void FilesListScreen::doDraw(TFTMenu* menu)
 void FilesListScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("FilesScreen"); // переключаемся на экран настроек
+  }
   else if(pressedButton == viewChartsButton)
+  {
     menu->switchToScreen("ViewChartsScreen");
+  }
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1610,7 +1636,9 @@ void EthalonScreen::doDraw(TFTMenu* menu)
 void EthalonScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("FilesScreen"); // переключаемся на экран работы с файлами
+  }
   else if(pressedButton == viewEthalonButton)
   {
     listEthalonsFilesScreen->rescanFiles();
@@ -1625,9 +1653,13 @@ void EthalonScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
     MessageBox->confirm(lines,"EthalonRecordScreen","EthalonScreen");   
   }
   else if(pressedButton == singleButton)
+  {
     menu->switchToScreen("SingleScreen");    
+  }
   else if(pressedButton == ethalonFlagButton)
+  {
     menu->switchToScreen("EthalonFlagScreen");    
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // EthalonChartScreen
@@ -1772,7 +1804,9 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
   currentDrawState++;
 
   if(currentDrawState < 2)
+  {
     return;
+  }
   
   if(currentDrawState > 2)
   {
@@ -1840,7 +1874,9 @@ void EthalonRecordScreen::rotateSelectedChannel(int button, int& val)
 void EthalonRecordScreen::saveEthalon(int selChannel, int saveChannel)
 {
   if(saveChannel == -1) // не выбрано, для какого канала сохранять
+  {
     return;
+  }
 
   // сохраняем эталон
   FileUtils::saveEthalon(saveChannel,direction == dirUp, InterruptData);
@@ -2080,9 +2116,13 @@ String FileEntry::getName(const char* fileRootDir)
 ListFilesScreen* ListFilesScreen::create(ListFilesType vt)
 {
   if(vt == vtLogsListing)
+  {
     return new ListFilesScreen(vt, "ListLogsScreen");  
+  }
   else if(vt == vtEthalonsListing)
+  {
     return new ListFilesScreen(vt, "ListEthalonsScreen");
+  }
 
   return NULL;
 }
@@ -2108,10 +2148,14 @@ ListFilesScreen::~ListFilesScreen()
 void ListFilesScreen::clearFiles()
 {
   if(!files)
+  {
     return;
+  }
     
   for(int i=0;i<totalFilesCount;i++)
+  {
     delete files[i];
+  }
 
   delete [] files;
   files = NULL;
@@ -2120,7 +2164,9 @@ void ListFilesScreen::clearFiles()
 void ListFilesScreen::sortFiles()
 {
   if(!files)
+  {
     return;
+  }
 
   //TODO: Тут сортировка файлов!!!  
 }
@@ -2128,14 +2174,18 @@ void ListFilesScreen::sortFiles()
 void ListFilesScreen::showPage(int step)
 {
   if(!files || !filesButtons)
+  {
     return;
+  }
 
    currentPageNum += step;
    if(currentPageNum < 0)
     currentPageNum = 0;
 
    if(currentPageNum >= totalPages)
+   {
     currentPageNum = totalPages - 1;
+   }
 
     // тут отображение файлов
     int startIndex = currentPageNum*SCREEN_FILES_COUNT;
@@ -2177,9 +2227,13 @@ void ListFilesScreen::showPage(int step)
 const char* ListFilesScreen::getDirName()
 {
    if(viewType == vtLogsListing)
+   {
      return LOGS_DIRECTORY;
+   }
   else if(viewType == vtEthalonsListing)
+  {
      return ETHALONS_DIRECTORY;  
+  }
 
   return "";
 }
@@ -2187,7 +2241,9 @@ const char* ListFilesScreen::getDirName()
 void ListFilesScreen::rescanFiles()
 {
   if(!hasSD)
+  {
     return;
+  }
 
    int lastFilesCount = totalFilesCount;
 
@@ -2235,7 +2291,9 @@ void ListFilesScreen::rescanFiles()
     // кол-во файлов изменилось!!!
     totalPages = totalFilesCount/SCREEN_FILES_COUNT;
     if(totalFilesCount % SCREEN_FILES_COUNT)
+    {
       totalPages++;
+    }
 
       if(isFirstScan)
       {
@@ -2254,11 +2312,15 @@ void ListFilesScreen::rescanFiles()
 void ListFilesScreen::drawCurrentPageNumber()
 {
   if(!isActive() || ! filesButtons || currentPageButton == -1)
+  {
     return;
+  }
 
     currentPageCaption = (currentPageNum + 1);
     if(!totalPages)
+    {
       currentPageCaption = '0';
+    }
       
     currentPageCaption += '/';
     currentPageCaption += totalPages;
@@ -2277,9 +2339,13 @@ void ListFilesScreen::doSetup(TFTMenu* menu)
   backButton = screenButtons->addButton(5, 142, 210, 30, "ВЫХОД");
   
   if(viewType == vtEthalonsListing)
+  {
     viewFileButton = screenButtons->addButton(128, 2, 90, 50, "|", BUTTON_SYMBOL);
+  }
   else if(viewType == vtLogsListing)
+  {
     viewFileButton = screenButtons->addButton(128, 2, 90, 30, "=>COM");
+  }
 
   TFT_Class* dc = menu->getDC();
   int screenWidth = dc->width();
@@ -2400,9 +2466,13 @@ void ListFilesScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   if(pressedButton == backButton)
   {
     if(viewType == vtLogsListing)
+    {
       menu->switchToScreen("FilesScreen"); // переключаемся на экран "Файлы"
+    }
     else if(viewType == vtEthalonsListing)
+    {
       menu->switchToScreen("EthalonScreen"); // переключаемся на экран "Эталоны"
+    }
     
   }
   else
@@ -2505,13 +2575,17 @@ void SDInfoScreen::doDraw(TFTMenu* menu)
 void SDInfoScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
 {
   if(pressedButton == backButton)
+  {
     menu->switchToScreen("SDScreen"); // переключаемся на экран работы с SD
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SDInfoScreen::collectSDInfo()
 {
   if(!hasSD)
+  {
     return;
+  }
     
   cardSize = SD_CARD.card()->cardSize();
   cardSize *= 512;

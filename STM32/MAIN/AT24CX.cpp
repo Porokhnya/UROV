@@ -39,7 +39,7 @@ AT24CX::AT24CX(TwoWire& w) {
 /**
  * Constructor with AT24Cx EEPROM at given index and size of page
  */
-AT24CX::AT24CX(TwoWire& w,byte index, byte pageSize) {
+AT24CX::AT24CX(TwoWire& w,byte index, uint16_t pageSize) {
   wire = &w;
 	init(index, pageSize);
 }
@@ -126,7 +126,7 @@ AT24C1024::AT24C1024(TwoWire& w,byte index) : AT24CX(w)  {
 /**
  * Init
  */
-void AT24CX::init(byte index, byte pageSize) {
+void AT24CX::init(byte index, uint16_t pageSize) {
 	_id = AT24CX_ID | (index & 0x7);
 	_pageSize = pageSize;
 //	Wire.begin(); 

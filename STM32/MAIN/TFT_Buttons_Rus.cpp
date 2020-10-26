@@ -29,7 +29,9 @@ TFT_Buttons_Rus::~TFT_Buttons_Rus()
 word TFT_Buttons_Rus::getButtonBackColor(int buttonID)
 {
    if(buttonID < 0)
+   {
     return 0;
+   }
 
   return buttons[buttonID].backColor;
 }
@@ -37,7 +39,9 @@ word TFT_Buttons_Rus::getButtonBackColor(int buttonID)
 word TFT_Buttons_Rus::getButtonFontColor(int buttonID)
 {
    if(buttonID < 0)
+   {
     return 0;
+   }
 
   return buttons[buttonID].fontColor;
 }
@@ -93,10 +97,14 @@ int TFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t 
 	int btcnt = 0;
   
 	while (((buttons[btcnt].flags & BUTTON_UNUSED) == 0) and (btcnt<countButtons))
+  {
 		btcnt++;
+  }
   
 	if (btcnt == countButtons)
+  {
 		return -1;
+  }
 	else
 	{
 		buttons[btcnt].pos_x  = x;
@@ -113,26 +121,34 @@ int TFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t 
 void TFT_Buttons_Rus::hideButton(int buttonID, boolean redraw)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
-if (!(buttons[buttonID].flags & BUTTON_UNUSED))
+  if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
     buttons[buttonID].flags = buttons[buttonID].flags & ~BUTTON_VISIBLE;
     if (redraw)
+    {
       drawButton(buttonID);
+    }
   }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void TFT_Buttons_Rus::showButton(int buttonID, boolean redraw)
 {
-	if (buttonID < 0 || buttonID >= countButtons)
+  if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
-if (!(buttons[buttonID].flags & BUTTON_UNUSED))
+  if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
     buttons[buttonID].flags = buttons[buttonID].flags | BUTTON_VISIBLE;
     if (redraw)
+    {
       drawButton(buttonID);
+    }
   }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -147,7 +163,9 @@ void TFT_Buttons_Rus::drawButtons(DrawButtonsUpdateFunc func)
 			drawButton(i);
       
       if(func)
+      {
         func();
+      }
 
      yield();
      
@@ -164,7 +182,9 @@ void TFT_Buttons_Rus::setIconFont(FONTTYPE font)
 void TFT_Buttons_Rus::setButtonHasIcon(int buttonID)
 {
    if(buttonID < 0 || buttonID >= countButtons)
+   {
     return;
+   }
 
     buttons[buttonID].flags |= BUTTON_HAS_ICON;
   
@@ -174,7 +194,9 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
 {  
 
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
 //Serial.print("button #"); Serial.print(buttonID); Serial.print("; total buttons avail: "); Serial.println(countButtons); Serial.flush();
 //Serial.println("1"); Serial.flush();
@@ -192,9 +214,13 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
   
 
     if(buttons[buttonID].flags & BUTTON_HAS_BACK_COLOR && !(buttons[buttonID].flags & BUTTON_DISABLED))
+    {
        bkColor = buttons[buttonID].backColor;
+    }
     else
+    {
        bkColor = _color_background;
+    }
      
 
     _UTFT->fillRoundRect(buttons[buttonID].pos_x, buttons[buttonID].pos_y, buttons[buttonID].width, buttons[buttonID].height, 2, bkColor);
@@ -204,9 +230,13 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
 
 
     if(buttons[buttonID].flags & BUTTON_SELECTED)
+    {
       bkColor = _color_hilite;
+    }
     else
+    {
       bkColor = _color_border;
+    }
 
     _UTFT->drawRoundRect(buttons[buttonID].pos_x, buttons[buttonID].pos_y, buttons[buttonID].width, buttons[buttonID].height, 2, bkColor);
 
@@ -347,33 +377,43 @@ void TFT_Buttons_Rus::setButtonFont(int buttonID, FONTTYPE someFont)
 void TFT_Buttons_Rus::enableButton(int buttonID, boolean redraw)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].flags = buttons[buttonID].flags & ~BUTTON_DISABLED;
 		if (redraw)
+   {
 			drawButton(buttonID);
+   }
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void TFT_Buttons_Rus::disableButton(int buttonID, boolean redraw)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].flags = buttons[buttonID].flags | BUTTON_DISABLED;
 		if (redraw)
+   {
 			drawButton(buttonID);
+   }
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 const char* TFT_Buttons_Rus::getLabel(int buttonID)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return "";
+ }
 
   if (!(buttons[buttonID].flags & BUTTON_UNUSED))
   {
@@ -385,20 +425,26 @@ const char* TFT_Buttons_Rus::getLabel(int buttonID)
 void TFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean redraw)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
 	{
 		buttons[buttonID].label = label;
 		if (redraw)
+   {
 			drawButton(buttonID);
+   }
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 boolean TFT_Buttons_Rus::buttonEnabled(int buttonID)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return false;
+ }
 
 	return !(buttons[buttonID].flags & BUTTON_DISABLED);
 }
@@ -406,10 +452,14 @@ boolean TFT_Buttons_Rus::buttonEnabled(int buttonID)
 void TFT_Buttons_Rus::deleteButton(int buttonID)
 {
 	if (buttonID < 0 || buttonID >= countButtons)
+ {
 		return;
+ }
 
 	if (!(buttons[buttonID].flags & BUTTON_UNUSED))
+ {
 		buttons[buttonID].flags = BUTTON_UNUSED;
+ }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void TFT_Buttons_Rus::deleteAllButtons()
@@ -450,7 +500,9 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
 			if (((buttons[i].flags & BUTTON_UNUSED) == 0) and ((buttons[i].flags & BUTTON_DISABLED) == 0) and ((buttons[i].flags & BUTTON_VISIBLE) ) and (result == -1))
 			{
 				if ((touch_x >= buttons[i].pos_x) and (touch_x <= (buttons[i].pos_x + buttons[i].width)) and (touch_y >= buttons[i].pos_y) and (touch_y <= (buttons[i].pos_y + buttons[i].height)))
+       {
 					result = i;
+       }
 			}
 		}
 		if (result != -1)
@@ -485,9 +537,13 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
 
         uint16_t cl;
 				if(buttons[result].flags & BUTTON_SELECTED)
+       {
            cl = _color_hilite;
+       }
 				else
+        {
 				  cl = _color_border;
+        }
          
 				_UTFT->drawRoundRect(buttons[result].pos_x, buttons[result].pos_y, buttons[result].width, buttons[result].height,2, cl);
 

@@ -19,7 +19,7 @@ void Screen3::doUpdate(TFTMenu* menu)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Screen3::doDraw(TFTMenu* menu)
 {
-  TFT_Class* dc = menu->getDC();
+  //TFT_Class* dc = menu->getDC();
   //dc->setColor(RED);
   //dc->setBackColor(WHITE);
   

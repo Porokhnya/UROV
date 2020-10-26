@@ -627,7 +627,9 @@ void ChartSerie::clearLine(TFT_Class* dc, uint16_t xPoint, uint16_t color)
   uint16_t endIdx =  xPoint+1;
 
   if(endIdx >= savedPixels.size())
+  {
     return;
+  }
 
   drawLine(dc,savedPixels[startIdx].x,savedPixels[startIdx].y,savedPixels[endIdx].x,savedPixels[endIdx].y,color);
   yield();
@@ -639,7 +641,9 @@ uint16_t ChartSerie::getMaxYValue()
   uint16_t result = 0;
   
   if(!points || !pointsCount)
+  {
     return result;
+  }
 
     for(uint16_t i=0;i<pointsCount;i++)
     {

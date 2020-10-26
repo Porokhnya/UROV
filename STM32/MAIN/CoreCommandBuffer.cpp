@@ -56,9 +56,12 @@ CoreCommandBuffer::CoreCommandBuffer(Stream* s) : pStream(s)
 bool CoreCommandBuffer::hasCommand()
 {
   if(!(pStream && pStream->available()))
+  {
     return false;
+  }
 
     char ch;
+    
     while(pStream->available())
     {
       ch = (char) pStream->read();

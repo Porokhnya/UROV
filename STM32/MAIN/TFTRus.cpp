@@ -138,7 +138,7 @@ int TFTRus::print(const char* st,int x, int y, word bgColor, word fgColor, bool 
     return 0; 
   }
   
- int stl, i, tw = 0;
+ int stl, i;
  stl = strlen(st);
 
   if(!computeTextWidthOnly)
@@ -146,110 +146,13 @@ int TFTRus::print(const char* st,int x, int y, word bgColor, word fgColor, bool 
     pDisplay->setTextColor(fgColor,  bgColor);
   }
   
- // y += pDisplay->fontHeight(1);
   
   uint8_t utf_high_byte = 0;
-  ////////int ch_pos = 0;
   unsigned int ch;
 
   String buff;
   buff.reserve(stl);
 
-for (i = 0; i < stl; i++) 
-  {
-    ch = st[i];
-    
-    if ( ch >= 128) 
-    {
-      if ( utf_high_byte == 0 && (ch ==0xD0 || ch == 0xD1)) 
-      {
-        utf_high_byte = ch;
-        continue;
-      } 
-      else 
-      {
-        if ( utf_high_byte == 0xD0) 
-        {
-          if (ch == 0x81) 
-          { 
-            //Ё
-            ch = RUS_YO_BIG; // индекс буквы Ё в массиве перекодировки
-          } 
-          else 
-          {
-            if(ch <= 0xAF)  // [А-Я]
-            {
-              ch -= 0x90;
-            } 
-            else if( ch <= 0xBF) // [а-п]
-            {
-              ch -= 0x90;
-            } 
-            else 
-            {
-              // ch -= (0x90 - 1);
-            }
-          }
-          
-          ch = pgm_read_byte((utf8_rus_charmap + ch));
-        
-        } 
-        else if (utf_high_byte == 0xD1) 
-        {
-          if (ch == 0x91) 
-          {
-            //ё
-            ch = RUS_YO_SMALL; // индекс буквы ё в массиве перекодировки
-          } 
-          else   // [р-я]
-          {
-            ch -= 0x80;
-            ch += 48;
-          }
-          
-          ch = pgm_read_byte((utf8_rus_charmap + ch));
-        }
-        
-        utf_high_byte = 0;
-      }
-    } 
-    else 
-    {
-      utf_high_byte = 0;
-    }
-
-    /*
-    int16_t adv;
-    if(!computeTextWidthOnly)
-    {
-      adv = pDisplay->drawChar(ch, x, y, 1);
-    }
-    else
-    {
-      String buff;
-      buff = (char) ch;
-      adv = pDisplay->textWidth(buff,1);
-      tw += adv;     
-    }
-    
-    x += adv;
-
-    ++ch_pos;
-    */
-    buff += char(ch);
-  } // for 
-
-  if(computeTextWidthOnly)
-  {
-    return pDisplay->textWidth(buff,1);
-  }
-  else
-  {
-    return pDisplay->drawString(buff,x,y,1);
-  }
-
-/*  
-  
   for (i = 0; i < stl; i++) 
   {
     ch = st[i];
@@ -312,27 +215,18 @@ for (i = 0; i < stl; i++)
     {
       utf_high_byte = 0;
     }
-    
-    int16_t adv;
-    if(!computeTextWidthOnly)
-    {
-      adv = pDisplay->drawChar(ch, x, y, 1);
-    }
-    else
-    {
-      String buff;
-      buff = (char) ch;
-      adv = pDisplay->textWidth(buff,1);
-      tw += adv;     
-    }
-    
-    x += adv;
 
-    ++ch_pos;
-  } // for  
-  
+    buff += char(ch);
+  } // for 
 
-   return tw; // возвращаем длину в пикселях отрисованного текста
-   */
+  if(computeTextWidthOnly)
+  {
+    return pDisplay->textWidth(buff,1);
+  }
+  else
+  {
+    return pDisplay->drawString(buff,x,y,1);
+  }
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

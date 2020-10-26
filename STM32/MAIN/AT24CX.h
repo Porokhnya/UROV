@@ -44,7 +44,7 @@ class AT24CX
 {
 public:
 	AT24CX(TwoWire& w);
-	AT24CX(TwoWire& w,byte index, byte pageSize);
+	AT24CX(TwoWire& w,byte index, uint16_t pageSize);
 	void write(unsigned int address, byte data);
 	void write(unsigned int address, byte *data, int n);
 	void writeInt(unsigned int address, unsigned int data);
@@ -60,14 +60,14 @@ public:
 	double readDouble(unsigned int address);
 	void readChars(unsigned int address, char *data, int n);
 protected:
-	void init(byte index, byte pageSize);
+	void init(byte index, uint16_t pageSize);
   TwoWire* wire;
 private:
 	void read(unsigned int address, byte *data, int offset, int n);
 	void write(unsigned int address, byte *data, int offset, int n);
 	int _id;
 	byte _b[8];
-	byte _pageSize;
+	uint16_t _pageSize;
 };
 
 // AT24C32 class definiton

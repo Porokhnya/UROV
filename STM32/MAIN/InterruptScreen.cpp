@@ -180,8 +180,8 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
   dc->setFreeFont(TFT_SMALL_FONT);
 
 
-  uint32_t channelResourceCurrent = Settings.getMotoresource();  
-  uint32_t channelResourceMax = Settings.getMotoresourceMax();
+ // uint32_t channelResourceCurrent = Settings.getMotoresource();  
+//  uint32_t channelResourceMax = Settings.getMotoresourceMax();
 
   // рисуем моторесурс системы по каналам
   uint16_t curX = 5;

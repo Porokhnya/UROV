@@ -235,7 +235,7 @@ byte  Screen6::validateDate(byte d, byte m, word y)
 byte  Screen6::validateDateForMonth(byte d, byte m, word y)
 {
 	byte mArr[12] = { 31,0,31,30,31,30,31,31,30,31,30,31 };
-	byte od;
+	//byte od;
 	//boolean dc = false;
 
 	if (m == 2)

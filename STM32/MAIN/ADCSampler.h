@@ -13,7 +13,7 @@ struct CurrentOscillData // данные по току, по трём канал
 
   private:
 
-    int32_t firstRecordIndex; // индекс самой ранней записи
+    uint32_t firstRecordIndex; // индекс самой ранней записи
   
   public:
 
@@ -51,7 +51,7 @@ struct CurrentOscillData // данные по току, по трём канал
 
   void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
   {
-    if(times.size() >= MAX_RECORDS)
+    if(times.size() >= size_t(MAX_RECORDS))
     {
       // достигли конца списка, надо начинать сначала.
       // для этого увеличиваем указатель первой записи в списке, и пишем

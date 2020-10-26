@@ -24,13 +24,13 @@ static int16_t besttwoavg( int16_t x , int16_t y , int16_t z )
 {
   int16_t da, db, dc;
   int16_t reta = 0;
-  if ( x > y ) da = x - y; else da = y - x;
-  if ( x > z ) db = x - z; else db = z - x;
-  if ( z > y ) dc = z - y; else dc = y - z;
+  if ( x > y ) { da = x - y; } else { da = y - x; }
+  if ( x > z ) { db = x - z; } else { db = z - x; }
+  if ( z > y ) { dc = z - y; } else { dc = y - z; }
 
-  if ( da <= db && da <= dc ) reta = (x + y) >> 1;
-  else if ( db <= da && db <= dc ) reta = (x + z) >> 1;
-  else reta = (y + z) >> 1;   //    else if ( dc <= da && dc <= db ) reta = (x + y) >> 1;
+  if ( da <= db && da <= dc ) { reta = (x + y) >> 1; }
+  else if ( db <= da && db <= dc ) { reta = (x + z) >> 1; }
+  else { reta = (y + z) >> 1; }   //    else if ( dc <= da && dc <= db ) reta = (x + y) >> 1;
 
   return (reta);
 }
@@ -216,14 +216,14 @@ TS_Point MyTFTTouch::getPoint()
   digitalWrite(_pin_cs, HIGH);
   //spi2.endTransaction();
   //Serial.printf("z=%d  ::  z1=%d,  z2=%d  ", z, z1, z2);
-  if (z < 0) z = 0;
+  if (z < 0) { z = 0; }
   if (z < Z_THRESHOLD) 
   { //  if ( !touched ) {
     // Serial.println();
     zraw = 0;
     if (z < Z_THRESHOLD_INT) 
     { //  if ( !touched ) {
-      if (255 != _pin_irq) isrWake = false;
+      if (255 != _pin_irq) { isrWake = false; }
     }
     return _point;
   }
@@ -275,11 +275,11 @@ TS_Point MyTFTTouch::getPoint()
 
     // измерения есть, надо конвертировать их в реальные координаты экрана
 
-    if (xraw < touchMinRawX) xraw = touchMinRawX;
-    if (xraw > touchMaxRawX) xraw = touchMaxRawX;
+    if (abs(xraw) < touchMinRawX) { xraw = touchMinRawX; }
+    if (abs(xraw) > touchMaxRawX) { xraw = touchMaxRawX; }
   
-    if (yraw < touchMinRawY) yraw = touchMinRawY;
-    if (yraw > touchMaxRawY) yraw = touchMaxRawY;
+    if (abs(yraw) < touchMinRawY) { yraw = touchMinRawY; }
+    if (abs(yraw) > touchMaxRawY) { yraw = touchMaxRawY; }
   
     
     _point.x = (xraw - touchMinRawX) * touchScaleX / (touchMaxRawX - touchMinRawX);
