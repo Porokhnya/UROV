@@ -133,18 +133,18 @@ class ADCSampler
     volatile bool dataReady;
     uint16_t adcBuffer[NUMBER_OF_BUFFERS][ADC_BUFFER_SIZE];
 
-    uint32_t _compare_High = TRANSFORMER_HIGH_DEFAULT_BORDER;                                  // Верхний порог компаратора АЦП
-    uint32_t _compare_Low = TRANSFORMER_LOW_DEFAULT_BORDER;                                   // Нижний порог компаратора АЦП
+    volatile uint32_t _compare_High = TRANSFORMER_HIGH_DEFAULT_BORDER;                                  // Верхний порог компаратора АЦП
+    volatile uint32_t _compare_Low = TRANSFORMER_LOW_DEFAULT_BORDER;                                   // Нижний порог компаратора АЦП
 
     volatile uint16_t tempADCBuffer[NUM_CHANNELS]; // буфер одного измерения АЦП
-    uint16_t workingBufferIndex; // индекс буфера, который заполняем
-    uint16_t filledBufferIndex; // индекс заполненного данными буфера
-    uint16_t countOfSamples; // кол-во проделанных измерений
+    volatile uint16_t workingBufferIndex; // индекс буфера, который заполняем
+    volatile uint16_t filledBufferIndex; // индекс заполненного данными буфера
+    volatile uint16_t countOfSamples; // кол-во проделанных измерений
 
 
     volatile bool canCollectCurrentData;
     CurrentOscillData oscillData;
-    uint32_t currentOscillTimer;
+    volatile uint32_t currentOscillTimer;
 
 
 };
