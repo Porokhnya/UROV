@@ -1166,22 +1166,22 @@ void InterruptHandlerClass::update()
         // запрещаем собирать данные по току
         adcSampler.setCanCollectCurrentData(false);
 
-        noInterrupts();
+//        noInterrupts();
         
-           // InterruptTimeList copyList1 = InterruptData; // копируем данные в локальный список
-            //InterruptData.empty();        
-            
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
            OscillData.clear();
-           OscillData = adcSampler.getListOfCurrent(false);
+           OscillData = adcSampler.getListOfCurrent();//false);
         
-        interrupts();
+//        interrupts();
+
+        // разрешаем собирать данные по току
+        adcSampler.setCanCollectCurrentData(true);
+
 
   //      Serial.println("STAGE 5"); Serial.flush();
         
 
         // вычисляем смещение от начала записи по току до начала поступления данных
-        // это можно делать ТОЛЬКО ТОГДА, когда данные по току НЕ СОБИРАЮТСЯ (adcSampler.setCanCollectCurrentData(false))
         
         int32_t datArrivTm = 0;
         if(OscillData.times.size() > 0 && InterruptData.size() > 0)
@@ -1195,9 +1195,6 @@ void InterruptHandlerClass::update()
             datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
           }
         }
-
-        // разрешаем собирать данные по току
-        adcSampler.setCanCollectCurrentData(true);
         
 
 //        Serial.println("STAGE 6"); Serial.flush();

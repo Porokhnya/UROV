@@ -1849,6 +1849,9 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
   
   adcSampler.setCanCollectCurrentData(true);
   
+  // возобновляем работу прерываний
+  InterruptHandler.resume();
+  
 	return done && InterruptData.size();
 
 }

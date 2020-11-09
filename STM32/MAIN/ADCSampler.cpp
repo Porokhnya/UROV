@@ -144,8 +144,6 @@ DBGLN("MX_ADC1_Init START.");
   }
 
     __HAL_LINKDMA(&hadc1,DMA_Handle,hdma_adc1);
-
-   //  AnalogWDGInit();
  
  
 DBGLN("MX_ADC1_Init END.");
@@ -206,6 +204,16 @@ extern "C"  void TIM3_IRQHandler(void) // обработчик тика тайм
 	adcSampler.handleInterrupt();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef _CURRENT_COLLECT_OFF
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+volatile uint16_t avgSamplesDone = 0; // кол-во собранных семплов для усреднения
+// списки для усреднения
+volatile uint16_t avgChannel1[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgChannel2[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgChannel3[CURRENT_AVG_SAMPLES] = {0};
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#endif // _CURRENT_COLLECT_OFF
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ADCSampler::ADCSampler()
 {
   dataReady = false;
@@ -233,11 +241,14 @@ DBGLN("ADCSampler::begin START.");
 
   _stopped = false;
   dataReady = false;
-//  compareTimerEnabled = false;
 
   oscillData.init();
   currentOscillTimer = 0;
   canCollectCurrentData = true;
+  
+  #ifndef _CURRENT_COLLECT_OFF
+    avgSamplesDone = 0;
+  #endif
 
   filledBufferIndex = 0;
   workingBufferIndex = 0;
@@ -247,9 +258,11 @@ DBGLN("ADCSampler::begin START.");
   
  MX_DMA_Init();
  MX_ADC1_Init();
- MX_TIM3_Init();
+ MX_TIM3_Init();  
 
 
+ //HAL_ADCEx_Calibration_Start(&hadc1); 
+  
   // говорим АЦП собирать данные по каналам в наш буфер
  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) &tempADCBuffer,NUM_CHANNELS);
   
@@ -266,19 +279,10 @@ void ADCSampler::end()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#ifndef _CURRENT_COLLECT_OFF
-volatile uint16_t avgSamplesDone = 0; // кол-во собранных семплов для усреднения
-// списки для усреднения
-volatile uint16_t avgChannel1[CURRENT_AVG_SAMPLES] = {0};
-volatile uint16_t avgChannel2[CURRENT_AVG_SAMPLES] = {0};
-volatile uint16_t avgChannel3[CURRENT_AVG_SAMPLES] = {0};
-
-#endif // _CURRENT_COLLECT_OFF
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3)
 {
-#ifndef _CURRENT_COLLECT_OFF  
+#ifndef _CURRENT_COLLECT_OFF
+  
       avgChannel1[avgSamplesDone] = raw1;
       avgChannel2[avgSamplesDone] = raw2;
       avgChannel3[avgSamplesDone] = raw3;
@@ -291,6 +295,7 @@ bool ADCSampler::putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3)
           return true;
       }
 #endif // #ifndef _CURRENT_COLLECT_OFF      
+
  return false;     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -351,11 +356,16 @@ void ADCSampler::setCanCollectCurrentData(bool val)
 CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
 {
     pause(withNoInterrupts);
-        
+
+  // возвращаем нормализованный список, упорядоченный по времени
   CurrentOscillData result = oscillData.normalize();
-  
+
+  // очищаем локальный список осциллограмм тока
   oscillData.clear();
+  
+  #ifndef _CURRENT_COLLECT_OFF
   avgSamplesDone = 0;
+  #endif
   
   resume(withNoInterrupts);
   
@@ -367,7 +377,7 @@ CurrentOscillData CurrentOscillData::normalize()
   // вот тут надо скопировать буфер так, чтобы учитывать индекс первой записи
   CurrentOscillData result;
 
-  if(times.size() < MAX_RECORDS)
+  if(times.size() < CurrentOscillData::MAX_RECORDS)
   {
     result = *this;
   }
@@ -397,27 +407,12 @@ CurrentOscillData CurrentOscillData::normalize()
 void ADCSampler::handleInterrupt()
 {
   // код обработки данных, поступающих с АЦП
-  if(_stopped)
+  
+  if(_stopped) // остановлены
   {
     return;
   }
 
-
-  /*
-    Буфер у нас для четырёх каналов, индексы:
-
-    0 - Аналоговый вход трансформатора №1
-    1 - Аналоговый вход трансформатора №2
-    2 - Аналоговый вход трансформатора №3
-    3 - Аналоговый вход контроль питания 3.3в
-
-     тут мы должны заполнять текущий буфер данными. У нас один буфер имеет размерность ADC_BUFFER_SIZE, которая
-     определяется как 200*NUM_CHANNELS, где NUM_CHANNELS = 4.
-
-     т.е. для каждого канала у нас - ADC_BUFFER_SIZE/NUM_CHANNELS измерений.
-     измерения располагаются последовательно по каналам.
-
-   */
 
     // заполняем буфер данными одного измерения
     uint16_t writeIndex = countOfSamples*NUM_CHANNELS;
@@ -443,6 +438,7 @@ void ADCSampler::handleInterrupt()
 
         // тут собираем данные по осциллограмме тока
         #ifndef _CURRENT_COLLECT_OFF
+        
         if(canCollectCurrentData)
         {
           if(micros() - currentOscillTimer >= CURRENT_TIMER_PERIOD)
@@ -457,6 +453,7 @@ void ADCSampler::handleInterrupt()
               currentOscillTimer = micros();
           }
         } // canCollectCurrentData
+        
         #endif // _CURRENT_COLLECT_OFF
 
     countOfSamples++;
@@ -513,9 +510,8 @@ void ADCSampler::pause(bool withNoInterrupts)
   }
   
   // останавливаем таймер
-  //HAL_TIM_Base_Stop_IT ( &htim3 );
   HAL_NVIC_DisableIRQ  ( TIM3_IRQn );
- HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
+  HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::resume(bool withNoInterrupts)
@@ -546,7 +542,8 @@ void ADCSampler::resume(bool withNoInterrupts)
   {
     interrupts();
   }
-    
+
+  // запускаем таймер
   HAL_NVIC_EnableIRQ  ( TIM3_IRQn );
  
 }

@@ -30,7 +30,7 @@ public:
   volatile bool isrWake=true;
    
 private:
-	int8_t _pin_cs, _pin_irq;
+	int16_t _pin_cs, _pin_irq;
  
   uint32_t touchScaleX;
   uint32_t touchScaleY;

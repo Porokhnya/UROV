@@ -37,6 +37,10 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompa
   if(!canAcceptInterruptData)
   {
     DBGLN("InterruptScreen::OnInterruptRaised - CAN'T ACCEPT INTERRUPT DATA!");
+    
+    // возобновляем обработчик прерываний
+    InterruptHandler.resume();
+    
     return;
   }
 
@@ -250,8 +254,7 @@ void InterruptScreen::doDraw(TFTMenu* menu)
 	drawMotoresource(menu);
 	drawCompareResult(menu);
 
-  // ОЧИСТКА ПАМЯТИ
- // serie.clear();
+ 
   // возобновляем обработчик прерываний
   InterruptHandler.resume();
 }

@@ -18,10 +18,15 @@ struct CurrentOscillData // данные по току, по трём канал
   public:
 
     // максимальное кол-во записей по току в списке
-    static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;//COUNT_OF_FULL_CURRENT_LIST + COUNT_OF_CURRENT_PREVIEW_RECORDS;
+    static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;
+
+    CurrentOscillData()
+    {
+      firstRecordIndex = 0; 
+    }
 
 
-  void clear() // очищает данные без освобождения памяти под них
+  void clear() // очищает данные
   {    
     firstRecordIndex = 0;
     
@@ -90,9 +95,25 @@ struct CurrentOscillData // данные по току, по трём канал
   UInt16Vector data2;
   UInt16Vector data3;
 
+  CurrentOscillData& operator=(const CurrentOscillData& rhs)
+  {
+    if(this == &rhs)
+    {
+      return *this;
+    }
+
+      times = rhs.times;
+      data1 = rhs.data1;
+      data2 = rhs.data2;
+      data3 = rhs.data3;
+
+      firstRecordIndex = rhs.firstRecordIndex;
+
+      return *this;
+  }
+
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 class ADCSampler 
 {
   private:

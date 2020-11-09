@@ -26,6 +26,10 @@ public:
 
     Vector &operator=(Vector const &other) __attribute__((always_inline))
     {
+      if(this == &other)
+      {
+        return *this;
+      }
         free(d_data);
         d_size = other.d_size;
         d_capacity = other.d_capacity;

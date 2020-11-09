@@ -1829,8 +1829,6 @@ void EthalonRecordScreen::drawState(TFTMenu* menu)
 //    Drawing::DrawChart(this, serie, RED);
     Drawing::DrawChartFromList(this,InterruptData,RED);
 
-    // чистим память после отрисовки
-//    serie.clear();
 
     // возобновляем работу прерываний
     InterruptHandler.resume();    
@@ -2049,16 +2047,7 @@ void EthalonRecordScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonC
 
 
   state = recDone; // говорим, что запись закончена
-/*
-  Drawing::ComputeChart(InterruptData, serie);
-  
-  Screen.getDC()->fillScreen(TFT_BACK_COLOR);
-  showButtons(true);  
-  Drawing::DrawChart(this, serie, RED);
-
-  // чистим память после отрисовки
-  serie.clear();  
-*/  
+ 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FileEntry
