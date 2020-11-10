@@ -3968,7 +3968,7 @@ namespace UROVConfig
             // устанавливаем интервал для меток на графике
             vcf.setInterval(step);
 
-
+            
             // теперь пробуем для графика прерываний - переназначить метки
             {
                 int interruptLabelsCount = 6;
@@ -3993,6 +3993,7 @@ namespace UROVConfig
                     counter += step;
                 }
             }
+            
 
             // теперь рисуем свои метки на Y осях токов
             if (record.CurrentTimes.Count > 0) // есть токи

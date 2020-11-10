@@ -106,6 +106,7 @@
             // 
             // chart
             // 
+            chartArea1.AxisY.LabelStyle.Enabled = false;
             chartArea1.Name = "ethalonChartArea";
             chartArea1.Position.Auto = false;
             chartArea1.Position.Height = 28F;

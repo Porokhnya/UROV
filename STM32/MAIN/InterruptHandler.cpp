@@ -30,7 +30,6 @@ volatile uint32_t trigReasonTimer = 0; // таймер отсчёта от пр�
 bool hasRelayTriggered()
 {
 
-  //if(digitalRead(RELAY_PIN) == RELAY_TRIGGER_LEVEL)
   if(RelayGuard.isTriggered())
   {
     relayTriggeredTime = RealtimeClock.getTime(); // запоминаем время срабатывания входа релейной защиты
