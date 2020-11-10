@@ -129,7 +129,10 @@ class ADCSampler
 
     // установка порогов компаратора
     void setLowBorder(uint32_t val);
+    uint32_t getLowBorder() { return _compare_Low; }
+    
     void setHighBorder(uint32_t val);
+    uint32_t getHighBorder() { return _compare_High; }
     
     uint16_t* getADCBuffer(int *bufferLength); // возвращает заполненный буфер измерений АЦП
 
@@ -143,6 +146,16 @@ class ADCSampler
 
     // возвращает список данных по осциллограмме тока, чистя локальный
     CurrentOscillData getListOfCurrent(bool withNoInterrupts=true);
+
+
+    // начинает сбор информации по среднему значению тока на каналах за определённый период времени
+    void startDetectCurrentPeak(uint32_t numSamples,uint32_t timerPeriod);
+
+    // проверяет, собрана ли информация по среднему значению тока на каналах за определённый период времени
+    bool currentPeakDataAvailable();
+
+    // возвращает средние значения по току на каналах, собранные в течение определённого кол-ва времени
+    void getCurrentPeakData(uint16_t& channel1, uint16_t& channel2, uint16_t& channel3);
 
 
   private:
@@ -166,6 +179,17 @@ class ADCSampler
     volatile bool canCollectCurrentData;
     CurrentOscillData oscillData;
     volatile uint32_t currentOscillTimer;
+
+
+    // усреднённые данные по току на каналах
+    UInt16Vector currentPeakChannel1;
+    UInt16Vector currentPeakChannel2;
+    UInt16Vector currentPeakChannel3;
+    volatile bool canCollectCurrentPeak;
+    volatile uint32_t currentPeakTimer;
+    volatile uint32_t currentPeakTimerPeriod;
+    volatile bool currentPeakDataReady;
+    volatile uint32_t currentPeakNumSamples;
 
 
 };

@@ -223,6 +223,88 @@ ADCSampler::ADCSampler()
   currentOscillTimer = 0;
   canCollectCurrentData = true;
   _stopped = false;
+
+  canCollectCurrentPeak = false;
+  currentPeakDataReady = false;
+  currentPeakTimer = 0;
+  currentPeakTimerPeriod = 0;
+  currentPeakNumSamples = 0;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::startDetectCurrentPeak(uint32_t numSamples,uint32_t timerPeriod)
+{
+  PAUSE_ADC; // останавливаем АЦП на время
+  currentPeakDataReady = false;
+  currentPeakTimerPeriod = timerPeriod;
+  currentPeakNumSamples = numSamples;
+
+  // очищаем списки
+  currentPeakChannel1.clear();
+  currentPeakChannel2.clear();
+  currentPeakChannel3.clear();
+
+  // запускаем сбор информации
+  currentPeakTimer = micros();
+  canCollectCurrentPeak = true;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bool ADCSampler::currentPeakDataAvailable()
+{
+  return currentPeakDataReady;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
+{
+  avg1 = avg2 = avg3 = 0;
+  
+  PAUSE_ADC; // останавливаем АЦП на время
+  
+  if(!currentPeakDataReady)
+  {
+    return;
+  }
+
+  // вычисляем средние значения
+ uint32_t chMin1 = 0xFFFFFFFF;
+  uint32_t chMin2 = 0xFFFFFFFF;
+  uint32_t chMin3 = 0xFFFFFFFF;
+
+  uint32_t chMax1 = 0;
+  uint32_t chMax2 = 0;
+  uint32_t chMax3 = 0;
+  
+  for(uint16_t i=0;i<currentPeakNumSamples;i++)
+  {
+    chMin1 = min(chMin1,currentPeakChannel1[i]);
+    chMin2 = min(chMin2,currentPeakChannel2[i]);
+    chMin3 = min(chMin3,currentPeakChannel3[i]);
+
+    chMax1 = max(chMax1,currentPeakChannel1[i]);
+    chMax2 = max(chMax2,currentPeakChannel2[i]);
+    chMax3 = max(chMax3,currentPeakChannel3[i]);
+  }
+
+  if(chMin1 == 0xFFFFFFFF)
+  {
+    chMin1 = chMax1;
+  }
+
+  if(chMin2 == 0xFFFFFFFF)
+  {
+    chMin2 = chMax2;
+  }
+
+  if(chMin3 == 0xFFFFFFFF)
+  {
+    chMin3 = chMax3;
+  }
+
+  avg1 = chMax1/currentPeakNumSamples - chMin1/currentPeakNumSamples;
+  avg2 = chMax2/currentPeakNumSamples - chMin2/currentPeakNumSamples;
+  avg3 = chMax3/currentPeakNumSamples - chMin3/currentPeakNumSamples;
+
+  // сбрасываем флаг готовности данных, потому что его уже получили - и обработали
+  currentPeakDataReady = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::setLowBorder(uint32_t val) 
@@ -435,6 +517,30 @@ void ADCSampler::handleInterrupt()
         raw1 = (COEFF_1*(tempADCBuffer[0]))/currentCoeff;
         raw2 = (COEFF_1*(tempADCBuffer[1]))/currentCoeff;
         raw3 = (COEFF_1*(tempADCBuffer[2]))/currentCoeff;
+
+        // проверяем - надо ли собирать информацию по току за определённый интервал?
+        if(canCollectCurrentPeak)
+        {
+            if(micros() - currentPeakTimer >= currentPeakTimerPeriod)
+            {
+              currentPeakChannel1.push_back(raw1);
+              currentPeakChannel2.push_back(raw2);
+              currentPeakChannel3.push_back(raw3);
+
+              if(currentPeakChannel1.size() >= currentPeakNumSamples)
+              {
+                // закончили сбор информации
+                canCollectCurrentPeak = false;
+
+                // выставили флаг, что данные доступны
+                currentPeakDataReady = true;
+                
+              }
+
+              currentPeakTimer = micros();
+            }
+          
+        } // if(canCollectCurrentPeak)
 
         // тут собираем данные по осциллограмме тока
         #ifndef _CURRENT_COLLECT_OFF

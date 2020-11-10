@@ -1011,6 +1011,10 @@ void InterruptHandlerClass::update()
         trigReason = REASON_RELAY;
         trigReasonTimer = micros();
 
+        // просим АЦП собрать данные по среднему значению тока за определённый период времени,
+        // чтобы понять - было ли превышение по току?
+        adcSampler.startDetectCurrentPeak(CURRENT_PEAK_NUM_SAMPLES,CURRENT_PEAK_TIMER_PERIOD); // просим сделать N семплов по M микросекунд между семплами
+
       }
       #ifdef PREDICT_ENABLED
       else
@@ -1088,36 +1092,60 @@ void InterruptHandlerClass::update()
       {
           if(micros() - trigReasonTimer >= 20000ul)
           {
-            trigReason = 0; // сбрасываем причину срабатывания
+            // проверяем - готовы ли данные по детектированию пика токов?
+            if(adcSampler.currentPeakDataAvailable())
+            {
+              trigReason = 0; // сбрасываем причину срабатывания
             
-            // прошло 20 миллисекунд, можно проверять, всё ли в порядке
-            // если нет импульсов с энкодера - это авария
+              // прошло 20 миллисекунд, можно проверять, всё ли в порядке
+              // если нет импульсов с энкодера - это авария
 
               pause(); // ставим на паузу
 
               if(catchedPulses < 1)
               {
-                  // за 20 миллисекунд не поймали ни одного импульса с энкодера, это авария
-                  Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
-                  Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
+                  //TODO: Если ток на линиях НЕ УВЕЛИЧИЛСЯ - это ЛОЖНОЕ срабатывание защиты, и сигнал выдавать НЕ НУЖНО!
                   
-                  uint8_t asuTpFlags = Settings.getAsuTpFlags();
+                  uint32_t highBorder = adcSampler.getHighBorder(); // получаем верхний порог по току
+                  uint16_t currentPeakChannel1 = 0,currentPeakChannel2 = 0,currentPeakChannel3 = 0;
 
-                  if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
+                  // получаем усреднённые данные по току на каналах
+                  adcSampler.getCurrentPeakData(currentPeakChannel1,currentPeakChannel2,currentPeakChannel3);
+
+                  // теперь проверяем - если было превышение по току - только тогда выдаём сигнал.
+                  bool hasCurrentPeakHighBorderAlarm = currentPeakChannel1 >= highBorder || currentPeakChannel2 >= highBorder || currentPeakChannel3 >= highBorder;
+
+                  if(hasCurrentPeakHighBorderAlarm)
                   {
-                    // Формируем сигнал срабатывания системы на выводах АСУ ТП
-                    // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
-                    digitalWrite(out_asu_tp3,asu_tp_level);
-                  }
+                    
+                      // за 20 миллисекунд не поймали ни одного импульса с энкодера, было превышение по току -  это авария
+                      
+                      Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
+                      Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
+                      
+                      uint8_t asuTpFlags = Settings.getAsuTpFlags();
+    
+                      if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
+                      {
+                        // Формируем сигнал срабатывания системы на выводах АСУ ТП
+                        // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
+                        digitalWrite(out_asu_tp3,asu_tp_level);
+                      }
+    
+                  } // if(hasCurrentPeakHighBorderAlarm)
         
         
-              }
+              } // if(catchedPulses < 1)
 
-            // переключаемся на ветку ожидания отщёлкивания концевика защиты
-            machineState = msWaitGuardRelease;
+              // переключаемся на ветку ожидания отщёлкивания концевика защиты
+              machineState = msWaitGuardRelease;
             
-            resume(); // продолжаем работу
-          }
+              resume(); // продолжаем работу
+            
+            } // if(adcSampler.currentPeakDataAvailable())
+            
+          } // if(micros() - trigReasonTimer >= 20000ul)
+          
       } // if(trigReason == REASON_RELAY)
       
       if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
