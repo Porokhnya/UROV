@@ -1830,7 +1830,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 	done = false;
 	timer = millis();
 
-  adcSampler.setCanCollectCurrentData(false);
+  adcSampler.stopCollectPreview();
  
 	oldSubscriber = InterruptHandler.getSubscriber();
 	InterruptHandler.setSubscriber(this);
@@ -1847,7 +1847,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 
 	InterruptHandler.setSubscriber(oldSubscriber);
   
-  adcSampler.setCanCollectCurrentData(true);
+  adcSampler.startCollectPreview();
   
   // возобновляем работу прерываний
   InterruptHandler.resume();

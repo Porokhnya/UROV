@@ -241,7 +241,6 @@ void OnRS485IncomingData(RS485* Sender)
 */
 				// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 				// говорим, что хватит нам собирать данные по току
-			//	InterruptHandlerClass::stopCollectCurrentData();
 				// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
 
 				// обрабатываем список прерываний  

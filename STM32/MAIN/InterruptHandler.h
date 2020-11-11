@@ -80,13 +80,7 @@ class InterruptHandlerClass
    
    static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, /*InterruptTimeList& ethalonData1*/const String& ethalonFileName, bool toEEPROM=false);
 
-/*
-   // ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
-   static void startCollectCurrentData();
-   static void stopCollectCurrentData();
-   static CurrentOscillData& getCurrentData();
-   // ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
-*/
+
    static void normalizeList(InterruptTimeList& list);
 
 private:

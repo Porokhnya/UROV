@@ -994,6 +994,13 @@ void InterruptHandlerClass::update()
       {
         // сработало реле защиты
 
+        // запрещаем собирать данные превью по току
+        adcSampler.stopCollectPreview();
+
+        // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
+        adcSampler.startCollectCurrent();
+        
+
         #ifdef PREDICT_ENABLED
         noInterrupts();
           predictOff(); // отключаем сбор предсказаний
@@ -1020,6 +1027,12 @@ void InterruptHandlerClass::update()
       else
       if(predictTriggered()) // сработало предсказание?
       {
+
+        // запрещаем собирать данные превью по току
+        adcSampler.stopCollectPreview();
+
+        // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
+        adcSampler.startCollectCurrent();
 
         // сохраняем время срабатывания защиты
         relayTriggeredTime = RealtimeClock.getTime();
@@ -1137,6 +1150,9 @@ void InterruptHandlerClass::update()
         
               } // if(catchedPulses < 1)
 
+              // говорим АЦП прекратить собирать данные по току
+              adcSampler.stopCollectCurrent();
+
               // переключаемся на ветку ожидания отщёлкивания концевика защиты
               machineState = msWaitGuardRelease;
             
@@ -1190,19 +1206,21 @@ void InterruptHandlerClass::update()
 
 //        Serial.println("STAGE 4"); Serial.flush();
 
-        // запрещаем собирать данные по току
-        adcSampler.setCanCollectCurrentData(false);
 
 //        noInterrupts();
         
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
+           
+            // говорим АЦП прекратить собирать данные по току
+            adcSampler.stopCollectCurrent();
+           
            OscillData.clear();
            OscillData = adcSampler.getListOfCurrent();//false);
         
 //        interrupts();
 
-        // разрешаем собирать данные по току
-        adcSampler.setCanCollectCurrentData(true);
+        // разрешаем собирать данные превью по току
+        adcSampler.startCollectPreview();
 
 
   //      Serial.println("STAGE 5"); Serial.flush();

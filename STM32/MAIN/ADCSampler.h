@@ -8,7 +8,69 @@ typedef Vector<uint32_t> UInt32Vector;
 typedef Vector<uint16_t> UInt16Vector;
 
 
-struct CurrentOscillData // данные по току, по трём каналам
+struct CurrentOscillData // данные по току
+{
+  CurrentOscillData()
+  {
+    
+  }
+  
+  void clear() // очищает данные
+  {        
+    times.clear();
+    data1.clear();
+    data2.clear();
+    data3.clear();
+        
+  }  
+
+
+  void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
+  {
+    times.push_back(tm);
+    data1.push_back(channel1);
+    data2.push_back(channel2);
+    data3.push_back(channel3);
+    
+  }
+
+
+  UInt32Vector times; // время занесения записи, micros()
+
+  // данные по АЦП
+  UInt16Vector data1;
+  UInt16Vector data2;
+  UInt16Vector data3;
+
+  CurrentOscillData& operator=(const CurrentOscillData& rhs)
+  {
+    if(this == &rhs)
+    {
+      return *this;
+    }
+
+      times = rhs.times;
+      data1 = rhs.data1;
+      data2 = rhs.data2;
+      data3 = rhs.data3;
+
+      return *this;
+  } 
+
+  uint32_t earlierRecordTime()
+  {
+    if(times.size() > 0)
+    {
+      return times[0];
+    }
+    return 0xFFFFFFFF;
+   
+  }   
+    
+};
+
+
+struct CurrentCircularBuffer // кольцевой буфер данных по току, по трём каналам
 {
 
   private:
@@ -20,7 +82,7 @@ struct CurrentOscillData // данные по току, по трём канал
     // максимальное кол-во записей по току в списке
     static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;
 
-    CurrentOscillData()
+    CurrentCircularBuffer()
     {
       firstRecordIndex = 0; 
     }
@@ -42,17 +104,7 @@ struct CurrentOscillData // данные по току, по трём канал
    clear();
   }
 
-  CurrentOscillData normalize();
-
-  uint32_t earlierRecordTime()
-  {
-    if(times.size() > 0)
-    {
-      return times[firstRecordIndex];
-    }
-    return 0xFFFFFFFF;
-   
-  }
+  CurrentCircularBuffer normalize();
 
   void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
   {
@@ -95,7 +147,7 @@ struct CurrentOscillData // данные по току, по трём канал
   UInt16Vector data2;
   UInt16Vector data3;
 
-  CurrentOscillData& operator=(const CurrentOscillData& rhs)
+  CurrentCircularBuffer& operator=(const CurrentCircularBuffer& rhs)
   {
     if(this == &rhs)
     {
@@ -141,9 +193,10 @@ class ADCSampler
     void pause(bool withNoInterrupts=true);
     void resume(bool withNoInterrupts=true);
 
-    // разрешает или запрещает собирать данные по току
-    void setCanCollectCurrentData(bool val);
-
+    // разрешает или запрещает собирать данные превью по току
+    void stopCollectPreview();
+    void startCollectPreview();
+    
     // возвращает список данных по осциллограмме тока, чистя локальный
     CurrentOscillData getListOfCurrent(bool withNoInterrupts=true);
 
@@ -157,12 +210,16 @@ class ADCSampler
     // возвращает средние значения по току на каналах, собранные в течение определённого кол-ва времени
     void getCurrentPeakData(uint16_t& channel1, uint16_t& channel2, uint16_t& channel3);
 
+    // разрешает или запрещает собирать данные по току в обычный, не кольцевой буфер
+    void startCollectCurrent();
+    void stopCollectCurrent();
+
 
   private:
 
 
-    bool putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3);
-    void getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3);
+    bool putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t raw1, uint16_t raw2, uint16_t raw3);
+    void getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t& avg1, uint16_t& avg2, uint16_t& avg3);
     
     volatile bool dataReady;
     uint16_t adcBuffer[NUMBER_OF_BUFFERS][ADC_BUFFER_SIZE];
@@ -176,9 +233,9 @@ class ADCSampler
     volatile uint16_t countOfSamples; // кол-во проделанных измерений
 
 
-    volatile bool canCollectCurrentData;
-    CurrentOscillData oscillData;
-    volatile uint32_t currentOscillTimer;
+    volatile bool canCollectCurrentPreviewData;
+    CurrentCircularBuffer currentPreviewData;
+    volatile uint32_t currentPreviewOscillTimer;
 
 
     // усреднённые данные по току на каналах
@@ -190,6 +247,15 @@ class ADCSampler
     volatile uint32_t currentPeakTimerPeriod;
     volatile bool currentPeakDataReady;
     volatile uint32_t currentPeakNumSamples;
+
+
+    volatile bool canCollectCurrent;
+    volatile uint32_t currentTimer;
+    UInt32Vector currentTimes;
+    UInt16Vector currentChannel1;
+    UInt16Vector currentChannel2;
+    UInt16Vector currentChannel3;
+    
 
 
 };

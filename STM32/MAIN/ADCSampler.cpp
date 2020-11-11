@@ -206,11 +206,18 @@ extern "C"  void TIM3_IRQHandler(void) // обработчик тика тайм
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifndef _CURRENT_COLLECT_OFF
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-volatile uint16_t avgSamplesDone = 0; // кол-во собранных семплов для усреднения
+volatile uint16_t avgPreviewSamplesDone = 0; // кол-во собранных семплов для усреднения
 // списки для усреднения
-volatile uint16_t avgChannel1[CURRENT_AVG_SAMPLES] = {0};
-volatile uint16_t avgChannel2[CURRENT_AVG_SAMPLES] = {0};
-volatile uint16_t avgChannel3[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgPreviewChannel1[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgPreviewChannel2[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgPreviewChannel3[CURRENT_AVG_SAMPLES] = {0};
+
+volatile uint16_t avgCurrentSamplesDone = 0; // кол-во собранных семплов для усреднения
+// списки для усреднения
+volatile uint16_t avgCurrentChannel1[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgCurrentChannel2[CURRENT_AVG_SAMPLES] = {0};
+volatile uint16_t avgCurrentChannel3[CURRENT_AVG_SAMPLES] = {0};
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // _CURRENT_COLLECT_OFF
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -220,8 +227,8 @@ ADCSampler::ADCSampler()
   filledBufferIndex = 0;
   workingBufferIndex = 0;
   countOfSamples = 0;
-  currentOscillTimer = 0;
-  canCollectCurrentData = true;
+  currentPreviewOscillTimer = 0;
+  canCollectCurrentPreviewData = true;
   _stopped = false;
 
   canCollectCurrentPeak = false;
@@ -229,6 +236,35 @@ ADCSampler::ADCSampler()
   currentPeakTimer = 0;
   currentPeakTimerPeriod = 0;
   currentPeakNumSamples = 0;
+
+  canCollectCurrent = false;
+  currentTimer = 0;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::startCollectCurrent()
+{
+  noInterrupts();
+  
+  currentTimes.clear();
+  currentChannel1.clear();
+  currentChannel2.clear();
+  currentChannel3.clear();
+  currentTimer = micros();
+
+  #ifndef _CURRENT_COLLECT_OFF
+    avgCurrentSamplesDone = 0;
+  #endif
+
+  canCollectCurrent = true;
+  
+  interrupts();
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::stopCollectCurrent()
+{
+  noInterrupts();
+    canCollectCurrent = false;
+  interrupts();  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::startDetectCurrentPeak(uint32_t numSamples,uint32_t timerPeriod)
@@ -324,12 +360,13 @@ DBGLN("ADCSampler::begin START.");
   _stopped = false;
   dataReady = false;
 
-  oscillData.init();
-  currentOscillTimer = 0;
-  canCollectCurrentData = true;
+  currentPreviewData.init();
+  currentPreviewOscillTimer = micros();
+  canCollectCurrentPreviewData = true;
   
   #ifndef _CURRENT_COLLECT_OFF
-    avgSamplesDone = 0;
+    avgPreviewSamplesDone = 0;
+    avgCurrentSamplesDone = 0;
   #endif
 
   filledBufferIndex = 0;
@@ -361,19 +398,19 @@ void ADCSampler::end()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool ADCSampler::putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3)
+bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3,  uint16_t raw1, uint16_t raw2, uint16_t raw3)
 {
 #ifndef _CURRENT_COLLECT_OFF
   
-      avgChannel1[avgSamplesDone] = raw1;
-      avgChannel2[avgSamplesDone] = raw2;
-      avgChannel3[avgSamplesDone] = raw3;
+      arr1[samplesCounter] = raw1;
+      arr2[samplesCounter] = raw2;
+      arr3[samplesCounter] = raw3;
 
-      avgSamplesDone++;
+      samplesCounter++;
       
-      if(avgSamplesDone >= CURRENT_AVG_SAMPLES)
+      if(samplesCounter >= CURRENT_AVG_SAMPLES)
       {
-          avgSamplesDone = 0;
+          samplesCounter = 0;
           return true;
       }
 #endif // #ifndef _CURRENT_COLLECT_OFF      
@@ -381,7 +418,7 @@ bool ADCSampler::putAVG(uint16_t raw1, uint16_t raw2, uint16_t raw3)
  return false;     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
+void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
 {
   avg1 = avg2 = avg3 = 0;
   
@@ -397,13 +434,13 @@ void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
   
   for(uint16_t i=0;i<CURRENT_AVG_SAMPLES;i++)
   {
-    chMin1 = min(chMin1,avgChannel1[i]);
-    chMin2 = min(chMin2,avgChannel2[i]);
-    chMin3 = min(chMin3,avgChannel3[i]);
+    chMin1 = min(chMin1,arr1[i]);
+    chMin2 = min(chMin2,arr2[i]);
+    chMin3 = min(chMin3,arr3[i]);
 
-    chMax1 = max(chMax1,avgChannel1[i]);
-    chMax2 = max(chMax2,avgChannel2[i]);
-    chMax3 = max(chMax3,avgChannel3[i]);
+    chMax1 = max(chMax1,arr1[i]);
+    chMax2 = max(chMax2,arr2[i]);
+    chMax3 = max(chMax3,arr3[i]);
   }
 
   if(chMin1 == 0xFFFFFFFF)
@@ -428,11 +465,22 @@ void ADCSampler::getAVG(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
   #endif // #ifndef _CURRENT_COLLECT_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::setCanCollectCurrentData(bool val)
+void ADCSampler::stopCollectPreview()
 {
   noInterrupts();
-      canCollectCurrentData = val;  
-  interrupts();      
+      canCollectCurrentPreviewData = false;  
+  interrupts();     
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ADCSampler::startCollectPreview()
+{
+  noInterrupts();
+      currentPreviewData.clear();
+      #ifndef _CURRENT_COLLECT_OFF
+      avgPreviewSamplesDone = 0;
+      #endif
+      canCollectCurrentPreviewData = true;  
+  interrupts();     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
@@ -440,13 +488,35 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
     pause(withNoInterrupts);
 
   // возвращаем нормализованный список, упорядоченный по времени
-  CurrentOscillData result = oscillData.normalize();
-
+  CurrentOscillData result;
+  
+  CurrentCircularBuffer normList = currentPreviewData.normalize();
+  
   // очищаем локальный список осциллограмм тока
-  oscillData.clear();
+  currentPreviewData.clear();
+
+  // помещаем данные по превью тока в список результатов
+  for(size_t i=0;i<normList.times.size();i++)
+  {
+    result.add(normList.times[i], normList.data1[i], normList.data2[i], normList.data3[i]);
+  }
+
+  // помещаем данные по списку тока в список результатов
+  for(size_t i=0;i<currentTimes.size();i++)
+  {
+    result.add(currentTimes[i], currentChannel1[i], currentChannel2[i], currentChannel2[i]);
+  }
+
+
+  // очищаем локальные списки по току
+  currentTimes.clear();
+  currentChannel1.clear();
+  currentChannel2.clear();
+  currentChannel3.clear();
   
   #ifndef _CURRENT_COLLECT_OFF
-  avgSamplesDone = 0;
+  avgPreviewSamplesDone = 0;
+  avgCurrentSamplesDone = 0;
   #endif
   
   resume(withNoInterrupts);
@@ -454,12 +524,12 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CurrentOscillData CurrentOscillData::normalize()
+CurrentCircularBuffer CurrentCircularBuffer::normalize()
 {
   // вот тут надо скопировать буфер так, чтобы учитывать индекс первой записи
-  CurrentOscillData result;
+  CurrentCircularBuffer result;
 
-  if(times.size() < CurrentOscillData::MAX_RECORDS)
+  if(times.size() < CurrentCircularBuffer::MAX_RECORDS)
   {
     result = *this;
   }
@@ -518,6 +588,7 @@ void ADCSampler::handleInterrupt()
         raw2 = (COEFF_1*(tempADCBuffer[1]))/currentCoeff;
         raw3 = (COEFF_1*(tempADCBuffer[2]))/currentCoeff;
 
+
         // проверяем - надо ли собирать информацию по току за определённый интервал?
         if(canCollectCurrentPeak)
         {
@@ -544,21 +615,41 @@ void ADCSampler::handleInterrupt()
 
         // тут собираем данные по осциллограмме тока
         #ifndef _CURRENT_COLLECT_OFF
-        
-        if(canCollectCurrentData)
+
+        // проверяем, можем ли мыпомещать данные по току в обычный, не кольцевой буфер?
+        if(canCollectCurrent)
         {
-          if(micros() - currentOscillTimer >= CURRENT_TIMER_PERIOD)
+         if(micros() - currentTimer >= CURRENT_TIMER_PERIOD)
           {
-            if(putAVG(raw1,raw2,raw3))
+            if(putAVG(avgCurrentSamplesDone, avgCurrentChannel1, avgCurrentChannel2, avgCurrentChannel3, raw1,raw2,raw3))
             {
               uint16_t avg1,avg2,avg3;
-              getAVG(avg1,avg2,avg3);
+              getAVG(avgCurrentChannel1, avgCurrentChannel2, avgCurrentChannel3, avg1,avg2,avg3);
               
-              oscillData.add(micros(),avg1,avg2,avg3);
+              currentTimes.push_back(micros());
+              currentChannel1.push_back(avg1);
+              currentChannel2.push_back(avg2);
+              currentChannel3.push_back(avg3);
             }
-              currentOscillTimer = micros();
+              currentTimer = micros();
+          } 
+        } // if(canCollectCurrent)
+
+        
+        if(canCollectCurrentPreviewData)
+        {
+          if(micros() - currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
+          {
+            if(putAVG(avgPreviewSamplesDone, avgPreviewChannel1, avgPreviewChannel2, avgPreviewChannel3, raw1,raw2,raw3))
+            {
+              uint16_t avg1,avg2,avg3;
+              getAVG(avgPreviewChannel1, avgPreviewChannel2, avgPreviewChannel3, avg1,avg2,avg3);
+              
+              currentPreviewData.add(micros(),avg1,avg2,avg3);
+            }
+              currentPreviewOscillTimer = micros();
           }
-        } // canCollectCurrentData
+        } // canCollectCurrentPreviewData
         
         #endif // _CURRENT_COLLECT_OFF
 
