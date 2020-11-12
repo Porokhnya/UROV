@@ -898,7 +898,9 @@ namespace UROVConfig
 
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-            int step = maxTime / customLabelsCount;
+            //            int step = maxTime / customLabelsCount;
+            int neareastValue = 100000; // приближение к 100 мс
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
 
             for (int kk = 0; kk < targetChart.ChartAreas.Count; kk++)
             {
@@ -3943,7 +3945,9 @@ namespace UROVConfig
 
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-            int step = maxTime / customLabelsCount;
+            // int step = maxTime / customLabelsCount;
+            int neareastValue = 100000; // приближение к 100 мс
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
 
             for (int kk = 0; kk < vcf.chart.ChartAreas.Count; kk++)
             {
