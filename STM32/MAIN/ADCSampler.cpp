@@ -492,16 +492,17 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   
   CurrentCircularBuffer normList = currentPreviewData.normalize();
 
-  //Serial.print("ADC PREVIEW SIZE: "); Serial.println(normList.times.size());
+//  Serial.print("ADC SOURCE SIZE: "); Serial.println(currentPreviewData./*times.size()*/recordsCount);
+//  Serial.print("ADC PREVIEW SIZE: "); Serial.println(normList./*times.size()*/recordsCount);
   
   // очищаем локальный список осциллограмм тока
   currentPreviewData.clear();
 
   // помещаем данные по превью тока в список результатов
-  for(size_t i=0;i<normList.times.size();i++)
+  for(size_t i=0;i<normList.recordsCount/*.times.size()*/;i++)
   {
     result.add(normList.times[i], normList.data1[i], normList.data2[i], normList.data3[i]);
-   // Serial.print("ADC PREVIEW: "); Serial.println(normList.times[i]);
+//    Serial.print("ADC PREVIEW: "); Serial.println(normList.times[i]);
   }
 
   // помещаем данные по списку тока в список результатов
@@ -532,7 +533,7 @@ CurrentCircularBuffer CurrentCircularBuffer::normalize()
   // вот тут надо скопировать буфер так, чтобы учитывать индекс первой записи
   CurrentCircularBuffer result;
 
-  if(times.size() < CurrentCircularBuffer::MAX_RECORDS)
+  if(/*times.size()*/recordsCount < CURRENT_LIST_SIZE)
   {
     result = *this;
   }
@@ -540,19 +541,33 @@ CurrentCircularBuffer CurrentCircularBuffer::normalize()
   {
     // кол-во записей уже достигло максимального, надо учитывать индекс первой записи, и от него идти
     size_t readIndex = firstRecordIndex;
-    for(size_t i=0;i<times.size();i++)
+    size_t writeIndex = 0;
+
+    for(size_t i=0;i</*times.size()*/recordsCount;i++)
     {
+      /*
         result.times.push_back(times[readIndex]);
         result.data1.push_back(data1[readIndex]);
         result.data2.push_back(data2[readIndex]);
         result.data3.push_back(data3[readIndex]);
+      */
+      
+        result.times[writeIndex] = (times[readIndex]);
+        result.data1[writeIndex] = (data1[readIndex]);
+        result.data2[writeIndex] = (data2[readIndex]);
+        result.data3[writeIndex] = (data3[readIndex]);
+        writeIndex++;        
 
         readIndex++;
-        if(readIndex >= times.size())
+        if(readIndex >= recordsCount)//times.size())
         {
           readIndex = 0;
         }
     } // for
+
+      result.firstRecordIndex = 0;
+      result.writeIterator = 0;
+      result.recordsCount = recordsCount;
   }
 
 

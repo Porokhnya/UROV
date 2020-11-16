@@ -76,26 +76,33 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
   private:
 
     uint32_t firstRecordIndex; // индекс самой ранней записи
+    uint32_t writeIterator;
   
   public:
 
     // максимальное кол-во записей по току в списке
-    static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;
+  //  static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;
 
     CurrentCircularBuffer()
     {
-      firstRecordIndex = 0; 
+      firstRecordIndex = 0;
+      writeIterator = 0;
+      recordsCount = 0; 
     }
 
 
   void clear() // очищает данные
   {    
     firstRecordIndex = 0;
-    
+    writeIterator = 0;
+    recordsCount = 0;
+
+    /*
     times.clear();
     data1.clear();
     data2.clear();
     data3.clear();
+    */
         
   }
 
@@ -108,6 +115,54 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
 
   void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
   {
+      // теперь пишем по нужному адресу
+    if(recordsCount >= CURRENT_LIST_SIZE)
+    {
+      noInterrupts();
+      // достигли конца списка, надо начинать сначала.
+      // для этого увеличиваем указатель первой записи в списке, и пишем
+      // на нужное место переданные данные.
+
+      size_t writeIndex = recordsCount - (recordsCount - firstRecordIndex);
+
+      // теперь пишем по нужному адресу
+      times[writeIndex] = tm;
+      data1[writeIndex] = channel1;
+      data2[writeIndex] = channel2;
+      data3[writeIndex] = channel3;
+      
+      // увеличиваем указатель самой ранней записи
+      firstRecordIndex++;
+      if(firstRecordIndex >= CURRENT_LIST_SIZE)
+      {
+        firstRecordIndex = 0; 
+      }
+      interrupts();
+
+      return;
+    }
+
+    noInterrupts();
+    times[writeIterator] = (tm);
+    data1[writeIterator] = (channel1);
+    data2[writeIterator] = (channel2);
+    data3[writeIterator] = (channel3);
+
+    writeIterator++;
+    recordsCount++;
+
+    if(recordsCount >=  CURRENT_LIST_SIZE)
+    {
+      recordsCount = CURRENT_LIST_SIZE;
+    }
+
+    if(writeIterator >= CURRENT_LIST_SIZE)
+    {
+      writeIterator = 0;
+    } 
+    interrupts();
+    
+    /*
     if(times.size() >= size_t(MAX_RECORDS))
     {
       // достигли конца списка, надо начинать сначала.
@@ -137,29 +192,48 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
     data1.push_back(channel1);
     data2.push_back(channel2);
     data3.push_back(channel3);
+    */
     
   }
-  
+
+    volatile uint32_t recordsCount;
+    volatile uint32_t times[CURRENT_LIST_SIZE];
+    volatile uint16_t data1[CURRENT_LIST_SIZE];
+    volatile uint16_t data2[CURRENT_LIST_SIZE];
+    volatile uint16_t data3[CURRENT_LIST_SIZE];
+
+  /*
   UInt32Vector times; // время занесения записи, micros()
 
   // данные по АЦП
   UInt16Vector data1;
   UInt16Vector data2;
   UInt16Vector data3;
+  */
 
   CurrentCircularBuffer& operator=(const CurrentCircularBuffer& rhs)
   {
+    
     if(this == &rhs)
     {
       return *this;
     }
-
+/*
       times = rhs.times;
       data1 = rhs.data1;
       data2 = rhs.data2;
       data3 = rhs.data3;
+*/
+noInterrupts();
+      memcpy((void*)times,(void*)rhs.times,sizeof(times));      
+      memcpy((void*)data1,(void*)rhs.data1,sizeof(data1));      
+      memcpy((void*)data2,(void*)rhs.data2,sizeof(data2));      
+      memcpy((void*)data3,(void*)rhs.data3,sizeof(data3));      
 
       firstRecordIndex = rhs.firstRecordIndex;
+      writeIterator = rhs.writeIterator;
+      recordsCount = rhs.recordsCount;
+interrupts();
 
       return *this;
   }
