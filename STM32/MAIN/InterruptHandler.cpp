@@ -957,7 +957,9 @@ void InterruptHandlerClass::resume()
   {
     return;
   }
-
+  
+  noInterrupts();
+  
   // поскольку мы были на паузе - начинаем сначала
   #ifdef PREDICT_ENABLED
     predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
@@ -965,7 +967,6 @@ void InterruptHandlerClass::resume()
     predictTriggeredFlag = false; // флаг срабатывания предсказания
   #endif
 
-  noInterrupts();
   paused = false;
   InterruptData.empty();
   machineState = msIdle; // состояние конечного автомата
