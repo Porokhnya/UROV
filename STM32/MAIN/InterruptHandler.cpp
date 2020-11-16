@@ -1240,11 +1240,12 @@ void InterruptHandlerClass::update()
             datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
           }
         }
-        
+
+        //TODO: УБРАТЬ!!!
+        datArrivTm = 400000;
 
 //        Serial.println("STAGE 6"); Serial.flush();
 
-       // datArrivTm = 500000ul;//TODO: УБРАТЬ!!!
 
         // нормализуем список времен записей по току
         normalizeList(OscillData.times);
