@@ -96,7 +96,7 @@ namespace UROVConfig
                             string line = System.Text.Encoding.UTF8.GetString(COMAnswer.ToArray(), 0, idx);
                             COMAnswer.RemoveRange(0, idx + 1);
                             line = line.Trim();
-                            if(line.StartsWith("UROV v."))
+                            if(line.StartsWith("UROV "))
                             {
                                 this.deviceFound = true;
                                 break;
