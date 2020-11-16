@@ -1077,7 +1077,7 @@ void InterruptHandlerClass::update()
      //   DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
                 
         noInterrupts();
-          InterruptData.empty(); // очищаем список прерываний
+        //  InterruptData.empty(); // очищаем список прерываний
           timer = micros();
           canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
           machineState = msHandleInterrupts; // можем собирать прерывания с энкодера

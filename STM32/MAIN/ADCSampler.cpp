@@ -491,6 +491,8 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   CurrentOscillData result;
   
   CurrentCircularBuffer normList = currentPreviewData.normalize();
+
+  //Serial.print("ADC PREVIEW SIZE: "); Serial.println(normList.times.size());
   
   // очищаем локальный список осциллограмм тока
   currentPreviewData.clear();
@@ -499,6 +501,7 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   for(size_t i=0;i<normList.times.size();i++)
   {
     result.add(normList.times[i], normList.data1[i], normList.data2[i], normList.data3[i]);
+   // Serial.print("ADC PREVIEW: "); Serial.println(normList.times[i]);
   }
 
   // помещаем данные по списку тока в список результатов
@@ -616,7 +619,7 @@ void ADCSampler::handleInterrupt()
         // тут собираем данные по осциллограмме тока
         #ifndef _CURRENT_COLLECT_OFF
 
-        // проверяем, можем ли мыпомещать данные по току в обычный, не кольцевой буфер?
+        // проверяем, можем ли мы помещать данные по току в обычный, не кольцевой буфер?
         if(canCollectCurrent)
         {
          if(micros() - currentTimer >= CURRENT_TIMER_PERIOD)
@@ -635,7 +638,8 @@ void ADCSampler::handleInterrupt()
           } 
         } // if(canCollectCurrent)
 
-        
+
+        // можем ли мы собирать превью в кольцевой буфер?
         if(canCollectCurrentPreviewData)
         {
           if(micros() - currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
