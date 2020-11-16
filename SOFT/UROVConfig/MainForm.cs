@@ -1977,6 +1977,8 @@ namespace UROVConfig
             ShowStartPanel();
 
             Application.Idle += new EventHandler(Application_Idle);
+
+            Text += ", v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
         private void InitTreeView()
