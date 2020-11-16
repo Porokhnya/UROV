@@ -432,6 +432,21 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.PreviewCount:
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                curRecord.PreviewCount = Read16(content, readed); readed += 2;
+                            }
+                            break;
+
+
                         case LogRecordType.ChannelInductiveSensorState:
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
@@ -3669,6 +3684,7 @@ namespace UROVConfig
             vcf.chart.Legends[1].CustomItems[0].Cells["EthalonPulses"].Text = String.Format("Эталон: {0}", record.EthalonData.Count);
             vcf.chart.Legends[1].CustomItems[0].Cells["TrigDate"].Text = "Дата: " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
             vcf.chart.Legends[1].CustomItems[0].Cells["Place"].Text = stationName;
+            vcf.chart.Legends[1].CustomItems[0].Cells["PreviewCount"].Text = String.Format("Превью тока: {0} записей", record.PreviewCount);
 
 
             System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
@@ -3735,6 +3751,8 @@ namespace UROVConfig
             //interruptSerie.Points.Add(ptFake1);
 
             // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
+            int offsetLabelIndex = -1;
+
             if(record.CurrentTimes.Count > 0)
             {
                 for(int z=0;z<record.CurrentTimes.Count;z++)
@@ -3744,6 +3762,7 @@ namespace UROVConfig
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
+                    offsetLabelIndex = z;
                 }
             }
 
@@ -3795,7 +3814,21 @@ namespace UROVConfig
             }
 
 
-                interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
+            interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
+            if(offsetLabelIndex != -1)
+            {
+                interruptSerie.Points[offsetLabelIndex].Label = String.Format("НАЧАЛО ПРЕРЫВАНИЯ, {0} ms", pulsesOffset/1000);
+                interruptSerie.Points[offsetLabelIndex].LabelBorderDashStyle = ChartDashStyle.Solid;
+                interruptSerie.Points[offsetLabelIndex].LabelBorderWidth = 1;
+                interruptSerie.Points[offsetLabelIndex].LabelBorderColor = Color.Black;
+                interruptSerie.Points[offsetLabelIndex].LabelBackColor = Color.Black;
+                interruptSerie.Points[offsetLabelIndex].LabelForeColor = Color.White;
+
+                interruptSerie.Points[offsetLabelIndex].MarkerColor = Color.Red;
+                interruptSerie.Points[offsetLabelIndex].MarkerStyle = MarkerStyle.Circle;
+                interruptSerie.Points[offsetLabelIndex].MarkerSize = 6;
+
+            }
 
             //xCoord =  interruptTime;
             xCoord = pulsesOffset;

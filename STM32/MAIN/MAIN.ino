@@ -126,7 +126,8 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
 
 	// ИЗМЕНЕНИЯ ПО ТОКУ - НАЧАЛО //
 	// получаем список данных по току
-	CurrentOscillData oscillData = adcSampler.getListOfCurrent();
+ uint16_t previewCount;
+	CurrentOscillData oscillData = adcSampler.getListOfCurrent(previewCount);
 	// нормализуем список времён
 	InterruptHandlerClass::normalizeList(oscillData.times);
 	// ИЗМЕНЕНИЯ ПО ТОКУ - КОНЕЦ //
@@ -145,13 +146,13 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
   if (needToLog)
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+    InterruptHandlerClass::writeToLog(previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+    InterruptHandlerClass::writeToLog(previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog

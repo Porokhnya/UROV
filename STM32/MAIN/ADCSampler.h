@@ -272,7 +272,7 @@ class ADCSampler
     void startCollectPreview();
     
     // возвращает список данных по осциллограмме тока, чистя локальный
-    CurrentOscillData getListOfCurrent(bool withNoInterrupts=true);
+    CurrentOscillData getListOfCurrent(uint16_t& previewCount, bool withNoInterrupts=true);
 
 
     // начинает сбор информации по среднему значению тока на каналах за определённый период времени

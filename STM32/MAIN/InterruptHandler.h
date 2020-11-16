@@ -78,7 +78,7 @@ class InterruptHandlerClass
    InterruptEventSubscriber* getSubscriber();
    bool informSubscriber(CurrentOscillData* oscData, EthalonCompareResult compareResult);
    
-   static void writeToLog(int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, /*InterruptTimeList& ethalonData1*/const String& ethalonFileName, bool toEEPROM=false);
+   static void writeToLog(uint16_t previewCount, int32_t dataArrivedTime, DS3231Time& tm, CurrentOscillData* oscData, InterruptTimeList& lst1, EthalonCompareResult res1, EthalonCompareNumber num1, /*InterruptTimeList& ethalonData1*/const String& ethalonFileName, bool toEEPROM=false);
 
 
    static void normalizeList(InterruptTimeList& list);
@@ -87,7 +87,7 @@ private:
 
   bool hasAlarm;
   
-   static uint32_t writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM=false, uint32_t curEEPROMWriteAddress=0);
+   static uint32_t writeLogRecord(uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult, EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM=false, uint32_t curEEPROMWriteAddress=0);
 
 
 };

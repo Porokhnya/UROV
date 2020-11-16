@@ -220,7 +220,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+uint32_t InterruptHandlerClass::writeLogRecord(uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
 {
 
@@ -243,12 +243,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,1);
     written++;
     curEEPROMWriteAddress++;
-/*
-    for(uint8_t c=0;c<1;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }
-*/    
   }
   else
   {
@@ -266,12 +260,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2;
-/*
-    for(uint8_t c=0;c<2;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }    
-*/    
   }
   else
   {
@@ -291,12 +279,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2;
-/*
-    for(uint8_t c=0;c<2;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }    
-*/    
   }
   else
   {
@@ -315,12 +297,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
     curEEPROMWriteAddress += 5;   
-/*
-    for(uint8_t c=0;c<5;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }     
-*/    
   }
   else
   {
@@ -340,13 +316,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
   {
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
-    curEEPROMWriteAddress += 5;   
-/*
-    for(uint8_t c=0;c<5;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }     
-*/    
+    curEEPROMWriteAddress += 5;     
   }
   else
   {
@@ -364,12 +334,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2;  
-/*
-    for(uint8_t c=0;c<2;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }          
-*/    
   }
   else
   {
@@ -387,12 +351,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,2);
     written += 2;
     curEEPROMWriteAddress += 2; 
-/*
-    for(uint8_t c=0;c<2;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }           
-*/    
   }
   else
   {
@@ -410,12 +368,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,5);
     written += 5;
     curEEPROMWriteAddress += 5;    
-/*
-    for(uint8_t c=0;c<5;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }        
-*/    
   }
   else
   {
@@ -423,6 +375,23 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     Logger.write(workBuff,5);    
     #endif
   }
+
+  // пишем количество превью в списках по току
+  workBuff[0] = recordPreviewCount;
+  memcpy(&(workBuff[1]),&previewCount,2);
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;    
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,3);    
+    #endif
+  }  
 
   // пишем список прерываний
   if(_list.size() > 1)
@@ -437,26 +406,9 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
-/*
-    for(uint8_t c=0;c<3;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }    
-*/    
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) _list.pData(), _list.size()*sizeof(uint32_t));
     written += _list.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += _list.size()*sizeof(uint32_t);
-/*
-    for(size_t k=0;k<_list.size();k++)
-    {
-       uint32_t rec = _list[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }
-*/    
    }
    else
    {
@@ -473,12 +425,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,1);
     written += 1;
     curEEPROMWriteAddress += 1;  
-/*
-    for(uint8_t c=0;c<1;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }               
-*/    
    }
    else
    {
@@ -507,12 +453,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
         eeprom->write(curEEPROMWriteAddress,workBuff,3);
         written += 3;
         curEEPROMWriteAddress += 3;
-    /*
-        for(uint8_t c=0;c<3;c++)
-        {
-          LastTriggeredInterruptRecord.push_back(workBuff[c]);
-        }
-*/
          while(file.available())
          {
             uint8_t b = file.read();
@@ -522,21 +462,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
 
           //  LastTriggeredInterruptRecord.push_back(b);
          }
-        /*
-        eeprom->write(curEEPROMWriteAddress,(uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));
-        written += ethalonData.size()*sizeof(uint32_t);
-        curEEPROMWriteAddress += ethalonData.size()*sizeof(uint32_t);
-    
-        for(size_t k=0;k<ethalonData.size();k++)
-        {
-           uint32_t rec = ethalonData[k];
-           uint8_t* ptr = (uint8_t*)&rec;
-           for(size_t c=0;c<sizeof(uint32_t);c++)
-           {
-              LastTriggeredInterruptRecord.push_back(*ptr++);
-           }
-        }
-        */    
         
        } // toEEPROM
        else
@@ -551,35 +476,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
           Logger.write(&b,1);
         }
 
-        /*
-        uint8_t buff[4] = {0}; 
-
-        
-        while(file.available())
-        {
-          if(!file.available())
-          {
-            break;
-          }
-          uint8_t readed = 0;
-          
-          for(uint8_t k=0;k<4;k++)
-          {
-            int b = file.read();
-            if( b < 0)
-            {
-              break;
-            }
-            buff[readed] = (uint8_t) b;
-            readed++;
-          } // for
-
-          if(readed > 0)
-          {
-            Logger.write(buff,readed);
-          }
-        } // while(file.available())
-        */
         #endif
        } // else       
             
@@ -588,49 +484,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
       }
    } // if(SD_CARD.exists(ethalonFileName.c_str()))   
   
-/*
-  if(ethalonData.size() > 1)
-  {
-   // пишем данные эталона, с которым сравнивали
-   workBuff[0] = recordEthalonDataFollow;
-   uint16_t dataLen = ethalonData.size();
-   memcpy(&(workBuff[1]),&dataLen,2);
-
-   if(toEEPROM)
-   {
-    eeprom->write(curEEPROMWriteAddress,workBuff,3);
-    written += 3;
-    curEEPROMWriteAddress += 3;
-
-    for(uint8_t c=0;c<3;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }     
-    
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));
-    written += ethalonData.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += ethalonData.size()*sizeof(uint32_t);
-
-    for(size_t k=0;k<ethalonData.size();k++)
-    {
-       uint32_t rec = ethalonData[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }    
-    
-   }
-   else
-   {
-    #ifndef _SD_OFF
-    Logger.write(workBuff,3);
-    Logger.write((uint8_t*) ethalonData.pData(), ethalonData.size()*sizeof(uint32_t));    
-    #endif
-   }
-  } // if(ethalonData.size() > 1)
-*/  
 
   // пишем данные по току
   if (oscData->times.size() > 1)
@@ -644,69 +497,24 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
-/*
-    for(uint8_t c=0;c<3;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }         
-*/    
+ 
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->times.pData(), oscData->times.size()*sizeof(uint32_t));
     written += oscData->times.size()*sizeof(uint32_t);
     curEEPROMWriteAddress += oscData->times.size()*sizeof(uint32_t);
-/*
-    for(size_t k=0;k<oscData->times.size();k++)
-    {
-       uint32_t rec = oscData->times[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(uint32_t);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }       
-*/
+
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data1.pData(), oscData->data1.size()*sizeof(uint16_t));
     written += oscData->data1.size()*sizeof(uint16_t);
     curEEPROMWriteAddress += oscData->data1.size()*sizeof(uint16_t);
 
-/*
-    for(size_t k=0;k<oscData->data1.size();k++)
-    {
-       uint16_t rec = oscData->data1[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(rec);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }         
-*/
+
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data2.pData(), oscData->data2.size()*sizeof(uint16_t));
     written += oscData->data2.size()*sizeof(uint16_t);
     curEEPROMWriteAddress += oscData->data2.size()*sizeof(uint16_t);
-/*
-    for(size_t k=0;k<oscData->data2.size();k++)
-    {
-       uint16_t rec = oscData->data2[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(rec);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }       
-*/
+
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) oscData->data3.pData(), oscData->data3.size()*sizeof(uint16_t));
     written += oscData->data3.size()*sizeof(uint16_t);
     curEEPROMWriteAddress += oscData->data3.size()*sizeof(uint16_t);
-/*
-    for(size_t k=0;k<oscData->data3.size();k++)
-    {
-       uint16_t rec = oscData->data3[k];
-       uint8_t* ptr = (uint8_t*)&rec;
-       for(size_t c=0;c<sizeof(rec);c++)
-       {
-          LastTriggeredInterruptRecord.push_back(*ptr++);
-       }
-    }     
-*/      
+      
     }
     else
     {
@@ -728,12 +536,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(int32_t dataArrivedTime, CurrentO
     written += 1;
     curEEPROMWriteAddress += 1;  
 
-/*
-    for(uint8_t c=0;c<1;c++)
-    {
-      LastTriggeredInterruptRecord.push_back(workBuff[c]);
-    }         
-*/
 
   }
   else
@@ -748,6 +550,7 @@ return written;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
+  uint16_t previewCount,
   int32_t dataArrivedTime, 
   DS3231Time& tm,
 	CurrentOscillData* oscData,
@@ -903,7 +706,7 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   if(lst1.size() > 1)
   {
-    uint32_t written = writeLogRecord(dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
+    uint32_t written = writeLogRecord(previewCount, dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
     eepromAddress += written;
     recordTotalLength += written;
   } // if
@@ -1214,9 +1017,10 @@ void InterruptHandlerClass::update()
            
             // говорим АЦП прекратить собирать данные по току
             adcSampler.stopCollectCurrent();
-           
+
+           uint16_t previewCount;
            OscillData.clear();
-           OscillData = adcSampler.getListOfCurrent();//false);
+           OscillData = adcSampler.getListOfCurrent(previewCount);//false);
         
 //        interrupts();
 
@@ -1331,12 +1135,12 @@ void InterruptHandlerClass::update()
             {  
 //              Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
-              writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+              writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
               
               #ifndef _SD_OFF
                   //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
                   // надо записать в лог дату срабатывания системы
-                  writeToLog(datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+                  writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
               #endif // !_SD_OFF
 
 //              Serial.println("STAGE WRITE TO LOG END"); Serial.flush();

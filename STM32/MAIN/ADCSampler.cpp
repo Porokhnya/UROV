@@ -483,7 +483,7 @@ void ADCSampler::startCollectPreview()
   interrupts();     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
+CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withNoInterrupts)
 {
     pause(withNoInterrupts);
 
@@ -491,6 +491,7 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   CurrentOscillData result;
   
   CurrentCircularBuffer normList = currentPreviewData.normalize();
+  previewCount = normList.recordsCount;
 
 //  Serial.print("ADC SOURCE SIZE: "); Serial.println(currentPreviewData./*times.size()*/recordsCount);
 //  Serial.print("ADC PREVIEW SIZE: "); Serial.println(normList./*times.size()*/recordsCount);
