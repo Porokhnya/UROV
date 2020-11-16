@@ -1237,12 +1237,13 @@ void InterruptHandlerClass::update()
           datArrivTm = 0;
           if(earlierCurrentRecord != 0xFFFFFFFF)
           {
-            datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
+            //datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
+            datArrivTm = firstInterruptRecord - earlierCurrentRecord;
           }
         }
 
         //TODO: УБРАТЬ!!!
-        datArrivTm = 400000;
+        //datArrivTm = 400000;
 
 //        Serial.println("STAGE 6"); Serial.flush();
 
