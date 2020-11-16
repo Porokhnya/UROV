@@ -507,7 +507,7 @@ CurrentOscillData ADCSampler::getListOfCurrent(bool withNoInterrupts)
   // помещаем данные по списку тока в список результатов
   for(size_t i=0;i<currentTimes.size();i++)
   {
-    result.add(currentTimes[i], currentChannel1[i], currentChannel2[i], currentChannel2[i]);
+    result.add(currentTimes[i], currentChannel1[i], currentChannel2[i], currentChannel3[i]);
   }
 
 
