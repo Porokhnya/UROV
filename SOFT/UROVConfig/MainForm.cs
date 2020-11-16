@@ -901,6 +901,7 @@ namespace UROVConfig
             //            int step = maxTime / customLabelsCount;
             int neareastValue = 100000; // приближение к 100 мс
             int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
+            int clCount = maxTime / step;
 
             for (int kk = 0; kk < targetChart.ChartAreas.Count; kk++)
             {
@@ -911,7 +912,7 @@ namespace UROVConfig
                 int endOffset = step / 2;
                 int counter = 0;
 
-                for (int i = 0; i < customLabelsCount; i++)
+                for (int i = 0; i < /*customLabelsCount*/clCount; i++)
                 {
                     string labelText = String.Format("{0}ms", counter / 1000);
                     CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
@@ -3950,7 +3951,6 @@ namespace UROVConfig
             // int step = maxTime / customLabelsCount;
             int neareastValue = 100000; // приближение к 100 мс
             int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
-
             int clCount = maxTime / step;
 
             for (int kk = 0; kk < vcf.chart.ChartAreas.Count; kk++)
