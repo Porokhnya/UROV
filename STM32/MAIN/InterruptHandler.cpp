@@ -144,8 +144,14 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
   } // predictEnabledFlag
   
   #endif // PREDICT_ENABLED
+
+  uint32_t maxPulses = MAX_PULSES_TO_CATCH;
+  if(toSkip > 0)
+  {
+    maxPulses *= toSkip;
+  }
   
-  if(!canHandleEncoder || InterruptData.size() >= MAX_PULSES_TO_CATCH) // не надо собирать импульсы с энкодера
+  if(!canHandleEncoder || InterruptData.size() >= maxPulses) // не надо собирать импульсы с энкодера
   {
     return;
   }

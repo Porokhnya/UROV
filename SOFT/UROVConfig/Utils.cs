@@ -20,6 +20,7 @@ namespace UROVConfig
     {
         MainSettingsNode,
         SDSettingsNode,
+        AdditionalSettingsNode
     }
 
     public enum AnswerBehaviour

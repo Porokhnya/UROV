@@ -32,32 +32,32 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Контроллер");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Архив", 6, 6);
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem1 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell1 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem2 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell2 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem5 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell5 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem6 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell6 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle43 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle46 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle47 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle48 = new System.Windows.Forms.DataGridViewCellStyle();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.connectStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusProgressMessage = new System.Windows.Forms.ToolStripStatusLabel();
@@ -149,37 +149,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.plVoltage = new System.Windows.Forms.Panel();
-            this.panel15 = new System.Windows.Forms.Panel();
-            this.label17 = new System.Windows.Forms.Label();
-            this.lblVoltage3 = new System.Windows.Forms.Label();
-            this.lblVoltage2 = new System.Windows.Forms.Label();
-            this.lblVoltage1 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.panel16 = new System.Windows.Forms.Panel();
-            this.label31 = new System.Windows.Forms.Label();
-            this.plTransformerBorders = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.label21 = new System.Windows.Forms.Label();
-            this.btnSetBorders = new System.Windows.Forms.Button();
-            this.nudHighBorder = new System.Windows.Forms.NumericUpDown();
-            this.nudLowBorder = new System.Windows.Forms.NumericUpDown();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label27 = new System.Windows.Forms.Label();
-            this.panel17 = new System.Windows.Forms.Panel();
-            this.label32 = new System.Windows.Forms.Label();
-            this.plRelayDelay = new System.Windows.Forms.Panel();
-            this.panel18 = new System.Windows.Forms.Panel();
-            this.label18 = new System.Windows.Forms.Label();
-            this.nudACSDelay = new System.Windows.Forms.NumericUpDown();
-            this.label25 = new System.Windows.Forms.Label();
-            this.btnSetRelayDelay = new System.Windows.Forms.Button();
-            this.nudRelayDelay = new System.Windows.Forms.NumericUpDown();
-            this.label33 = new System.Windows.Forms.Label();
-            this.panel19 = new System.Windows.Forms.Panel();
-            this.label34 = new System.Windows.Forms.Label();
             this.plDelta = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.nudEthalonCompareDelta = new System.Windows.Forms.NumericUpDown();
@@ -211,24 +180,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.panel10 = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
-            this.panel13 = new System.Windows.Forms.Panel();
-            this.panel14 = new System.Windows.Forms.Panel();
-            this.label22 = new System.Windows.Forms.Label();
-            this.btnCurrentCoeff = new System.Windows.Forms.Button();
-            this.nudCurrentCoeff = new System.Windows.Forms.NumericUpDown();
-            this.label23 = new System.Windows.Forms.Label();
-            this.panel20 = new System.Windows.Forms.Panel();
-            this.label24 = new System.Windows.Forms.Label();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.cbAsuTpLine4 = new System.Windows.Forms.CheckBox();
-            this.cbAsuTpLine3 = new System.Windows.Forms.CheckBox();
-            this.cbAsuTpLine2 = new System.Windows.Forms.CheckBox();
-            this.cbAsuTpLine1 = new System.Windows.Forms.CheckBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.btnSetAsuTpLags = new System.Windows.Forms.Button();
-            this.panel21 = new System.Windows.Forms.Panel();
-            this.label36 = new System.Windows.Forms.Label();
             this.lvLog = new System.Windows.Forms.ListView();
             this.logColumn1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.logColumn2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -257,6 +208,57 @@
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.plAdditionalSettings = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel25 = new System.Windows.Forms.Panel();
+            this.panel26 = new System.Windows.Forms.Panel();
+            this.label41 = new System.Windows.Forms.Label();
+            this.lblVoltage3 = new System.Windows.Forms.Label();
+            this.lblVoltage2 = new System.Windows.Forms.Label();
+            this.lblVoltage1 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.panel27 = new System.Windows.Forms.Panel();
+            this.label48 = new System.Windows.Forms.Label();
+            this.panel28 = new System.Windows.Forms.Panel();
+            this.panel29 = new System.Windows.Forms.Panel();
+            this.label49 = new System.Windows.Forms.Label();
+            this.btnSetBorders = new System.Windows.Forms.Button();
+            this.nudHighBorder = new System.Windows.Forms.NumericUpDown();
+            this.nudLowBorder = new System.Windows.Forms.NumericUpDown();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.panel30 = new System.Windows.Forms.Panel();
+            this.label52 = new System.Windows.Forms.Label();
+            this.panel31 = new System.Windows.Forms.Panel();
+            this.panel32 = new System.Windows.Forms.Panel();
+            this.label53 = new System.Windows.Forms.Label();
+            this.nudACSDelay = new System.Windows.Forms.NumericUpDown();
+            this.label54 = new System.Windows.Forms.Label();
+            this.btnSetRelayDelay = new System.Windows.Forms.Button();
+            this.nudRelayDelay = new System.Windows.Forms.NumericUpDown();
+            this.label55 = new System.Windows.Forms.Label();
+            this.panel33 = new System.Windows.Forms.Panel();
+            this.label56 = new System.Windows.Forms.Label();
+            this.panel43 = new System.Windows.Forms.Panel();
+            this.panel44 = new System.Windows.Forms.Panel();
+            this.label70 = new System.Windows.Forms.Label();
+            this.btnCurrentCoeff = new System.Windows.Forms.Button();
+            this.nudCurrentCoeff = new System.Windows.Forms.NumericUpDown();
+            this.label71 = new System.Windows.Forms.Label();
+            this.panel45 = new System.Windows.Forms.Panel();
+            this.label72 = new System.Windows.Forms.Label();
+            this.panel46 = new System.Windows.Forms.Panel();
+            this.panel47 = new System.Windows.Forms.Panel();
+            this.cbAsuTpLine4 = new System.Windows.Forms.CheckBox();
+            this.cbAsuTpLine3 = new System.Windows.Forms.CheckBox();
+            this.cbAsuTpLine2 = new System.Windows.Forms.CheckBox();
+            this.cbAsuTpLine1 = new System.Windows.Forms.CheckBox();
+            this.label73 = new System.Windows.Forms.Label();
+            this.btnSetAsuTpLags = new System.Windows.Forms.Button();
+            this.panel48 = new System.Windows.Forms.Panel();
+            this.label74 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -287,19 +289,6 @@
             this.plInfo.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.plVoltage.SuspendLayout();
-            this.panel15.SuspendLayout();
-            this.panel16.SuspendLayout();
-            this.plTransformerBorders.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudHighBorder)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudLowBorder)).BeginInit();
-            this.panel17.SuspendLayout();
-            this.plRelayDelay.SuspendLayout();
-            this.panel18.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudACSDelay)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRelayDelay)).BeginInit();
-            this.panel19.SuspendLayout();
             this.plDelta.SuspendLayout();
             this.panel11.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).BeginInit();
@@ -315,13 +304,28 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).BeginInit();
             this.panel10.SuspendLayout();
-            this.panel13.SuspendLayout();
-            this.panel14.SuspendLayout();
+            this.plAdditionalSettings.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
+            this.panel25.SuspendLayout();
+            this.panel26.SuspendLayout();
+            this.panel27.SuspendLayout();
+            this.panel28.SuspendLayout();
+            this.panel29.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHighBorder)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLowBorder)).BeginInit();
+            this.panel30.SuspendLayout();
+            this.panel31.SuspendLayout();
+            this.panel32.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudACSDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRelayDelay)).BeginInit();
+            this.panel33.SuspendLayout();
+            this.panel43.SuspendLayout();
+            this.panel44.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCurrentCoeff)).BeginInit();
-            this.panel20.SuspendLayout();
-            this.panel7.SuspendLayout();
-            this.panel8.SuspendLayout();
-            this.panel21.SuspendLayout();
+            this.panel45.SuspendLayout();
+            this.panel46.SuspendLayout();
+            this.panel47.SuspendLayout();
+            this.panel48.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -746,11 +750,12 @@
             // 
             this.plSection.BackColor = System.Drawing.Color.White;
             this.plSection.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.plSection.Controls.Add(this.plAdditionalSettings);
+            this.plSection.Controls.Add(this.plMainSettings);
             this.plSection.Controls.Add(this.plSDSettings);
             this.plSection.Controls.Add(this.plStartPanel);
             this.plSection.Controls.Add(this.archiveLogDataGrid);
             this.plSection.Controls.Add(this.plArchiveEthalonChart);
-            this.plSection.Controls.Add(this.plMainSettings);
             this.plSection.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plSection.Location = new System.Drawing.Point(0, 0);
             this.plSection.Name = "plSection";
@@ -847,8 +852,8 @@
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle33;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -863,8 +868,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle34;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -879,8 +884,8 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle35;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
@@ -888,8 +893,8 @@
             // 
             // Pulses
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle36;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -937,23 +942,23 @@
             // 
             // ethalonChart
             // 
-            chartArea1.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea1);
+            chartArea5.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea5);
             this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell1.Name = "PulsesCount";
-            legendItem1.Cells.Add(legendCell1);
-            legend1.CustomItems.Add(legendItem1);
-            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend1.Name = "Legend1";
-            this.ethalonChart.Legends.Add(legend1);
+            legendCell5.Name = "PulsesCount";
+            legendItem5.Cells.Add(legendCell5);
+            legend5.CustomItems.Add(legendItem5);
+            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend5.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend5);
             this.ethalonChart.Location = new System.Drawing.Point(0, 0);
             this.ethalonChart.Name = "ethalonChart";
-            series1.ChartArea = "ethalonChartArea";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.IsVisibleInLegend = false;
-            series1.Legend = "Legend1";
-            series1.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series1);
+            series5.ChartArea = "ethalonChartArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series5.IsVisibleInLegend = false;
+            series5.Legend = "Legend1";
+            series5.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series5);
             this.ethalonChart.Size = new System.Drawing.Size(200, 193);
             this.ethalonChart.TabIndex = 0;
             this.ethalonChart.Text = "chart1";
@@ -1046,8 +1051,8 @@
             // Num1
             // 
             this.Num1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num1.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num1.DefaultCellStyle = dataGridViewCellStyle37;
             this.Num1.HeaderText = "№";
             this.Num1.Name = "Num1";
             this.Num1.ReadOnly = true;
@@ -1062,8 +1067,8 @@
             // 
             // Temp1
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp1.DefaultCellStyle = dataGridViewCellStyle38;
             this.Temp1.HeaderText = "Температура";
             this.Temp1.Name = "Temp1";
             this.Temp1.ReadOnly = true;
@@ -1076,16 +1081,16 @@
             // 
             // Channel1
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel1.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel1.DefaultCellStyle = dataGridViewCellStyle39;
             this.Channel1.HeaderText = "Канал";
             this.Channel1.Name = "Channel1";
             this.Channel1.ReadOnly = true;
             // 
             // Pulses1
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle40;
             this.Pulses1.HeaderText = "Импульсов";
             this.Pulses1.Name = "Pulses1";
             this.Pulses1.ReadOnly = true;
@@ -1125,25 +1130,25 @@
             // 
             // archiveAthalonChart
             // 
-            chartArea2.Name = "ethalonChartArea";
-            this.archiveAthalonChart.ChartAreas.Add(chartArea2);
+            chartArea6.Name = "ethalonChartArea";
+            this.archiveAthalonChart.ChartAreas.Add(chartArea6);
             this.archiveAthalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell2.Name = "PulsesCount";
-            legendItem2.Cells.Add(legendCell2);
-            legend2.CustomItems.Add(legendItem2);
-            legend2.DockedToChartArea = "ethalonChartArea";
-            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend2.IsDockedInsideChartArea = false;
-            legend2.Name = "Legend1";
-            this.archiveAthalonChart.Legends.Add(legend2);
+            legendCell6.Name = "PulsesCount";
+            legendItem6.Cells.Add(legendCell6);
+            legend6.CustomItems.Add(legendItem6);
+            legend6.DockedToChartArea = "ethalonChartArea";
+            legend6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend6.IsDockedInsideChartArea = false;
+            legend6.Name = "Legend1";
+            this.archiveAthalonChart.Legends.Add(legend6);
             this.archiveAthalonChart.Location = new System.Drawing.Point(0, 0);
             this.archiveAthalonChart.Name = "archiveAthalonChart";
-            series2.ChartArea = "ethalonChartArea";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series2.IsVisibleInLegend = false;
-            series2.Legend = "Legend1";
-            series2.Name = "ethalonChartSerie";
-            this.archiveAthalonChart.Series.Add(series2);
+            series6.ChartArea = "ethalonChartArea";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series6.IsVisibleInLegend = false;
+            series6.Legend = "Legend1";
+            series6.Name = "ethalonChartSerie";
+            this.archiveAthalonChart.Series.Add(series6);
             this.archiveAthalonChart.Size = new System.Drawing.Size(200, 134);
             this.archiveAthalonChart.TabIndex = 2;
             this.archiveAthalonChart.Text = "chart1";
@@ -1175,7 +1180,7 @@
             this.plMainSettings.Controls.Add(this.flowLayoutPanel1);
             this.plMainSettings.Location = new System.Drawing.Point(2, 0);
             this.plMainSettings.Name = "plMainSettings";
-            this.plMainSettings.Size = new System.Drawing.Size(920, 594);
+            this.plMainSettings.Size = new System.Drawing.Size(762, 635);
             this.plMainSettings.TabIndex = 9;
             // 
             // flowLayoutPanel1
@@ -1183,19 +1188,14 @@
             this.flowLayoutPanel1.AutoScroll = true;
             this.flowLayoutPanel1.BackColor = System.Drawing.Color.White;
             this.flowLayoutPanel1.Controls.Add(this.plInfo);
-            this.flowLayoutPanel1.Controls.Add(this.plVoltage);
-            this.flowLayoutPanel1.Controls.Add(this.plTransformerBorders);
-            this.flowLayoutPanel1.Controls.Add(this.plRelayDelay);
             this.flowLayoutPanel1.Controls.Add(this.plDelta);
             this.flowLayoutPanel1.Controls.Add(this.plMotoresourceCurrent);
             this.flowLayoutPanel1.Controls.Add(this.plImpulses);
-            this.flowLayoutPanel1.Controls.Add(this.panel13);
-            this.flowLayoutPanel1.Controls.Add(this.panel7);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(920, 594);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(762, 635);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // plInfo
@@ -1342,391 +1342,12 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Информация";
             // 
-            // plVoltage
-            // 
-            this.plVoltage.BackColor = System.Drawing.Color.SteelBlue;
-            this.plVoltage.Controls.Add(this.panel15);
-            this.plVoltage.Controls.Add(this.panel16);
-            this.plVoltage.Location = new System.Drawing.Point(240, 20);
-            this.plVoltage.Margin = new System.Windows.Forms.Padding(10);
-            this.plVoltage.Name = "plVoltage";
-            this.plVoltage.Padding = new System.Windows.Forms.Padding(2);
-            this.plVoltage.Size = new System.Drawing.Size(200, 275);
-            this.plVoltage.TabIndex = 6;
-            // 
-            // panel15
-            // 
-            this.panel15.BackColor = System.Drawing.Color.White;
-            this.panel15.Controls.Add(this.label17);
-            this.panel15.Controls.Add(this.lblVoltage3);
-            this.panel15.Controls.Add(this.lblVoltage2);
-            this.panel15.Controls.Add(this.lblVoltage1);
-            this.panel15.Controls.Add(this.label28);
-            this.panel15.Controls.Add(this.label29);
-            this.panel15.Controls.Add(this.label30);
-            this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel15.Location = new System.Drawing.Point(2, 26);
-            this.panel15.Margin = new System.Windows.Forms.Padding(3, 11, 3, 3);
-            this.panel15.Name = "panel15";
-            this.panel15.Size = new System.Drawing.Size(196, 247);
-            this.panel15.TabIndex = 2;
-            // 
-            // label17
-            // 
-            this.label17.BackColor = System.Drawing.Color.LightYellow;
-            this.label17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label17.ForeColor = System.Drawing.Color.Black;
-            this.label17.Location = new System.Drawing.Point(13, 119);
-            this.label17.Name = "label17";
-            this.label17.Padding = new System.Windows.Forms.Padding(4);
-            this.label17.Size = new System.Drawing.Size(170, 82);
-            this.label17.TabIndex = 13;
-            this.label17.Text = "Напряжение питания микроконтроллера.";
-            // 
-            // lblVoltage3
-            // 
-            this.lblVoltage3.BackColor = System.Drawing.Color.LightGray;
-            this.lblVoltage3.Location = new System.Drawing.Point(13, 111);
-            this.lblVoltage3.Name = "lblVoltage3";
-            this.lblVoltage3.Size = new System.Drawing.Size(167, 20);
-            this.lblVoltage3.TabIndex = 7;
-            this.lblVoltage3.Text = "-";
-            this.lblVoltage3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblVoltage3.Visible = false;
-            // 
-            // lblVoltage2
-            // 
-            this.lblVoltage2.BackColor = System.Drawing.Color.LightGray;
-            this.lblVoltage2.Location = new System.Drawing.Point(13, 70);
-            this.lblVoltage2.Name = "lblVoltage2";
-            this.lblVoltage2.Size = new System.Drawing.Size(167, 20);
-            this.lblVoltage2.TabIndex = 6;
-            this.lblVoltage2.Text = "-";
-            this.lblVoltage2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblVoltage2.Visible = false;
-            // 
-            // lblVoltage1
-            // 
-            this.lblVoltage1.BackColor = System.Drawing.Color.LightGray;
-            this.lblVoltage1.Location = new System.Drawing.Point(13, 25);
-            this.lblVoltage1.Name = "lblVoltage1";
-            this.lblVoltage1.Size = new System.Drawing.Size(167, 20);
-            this.lblVoltage1.TabIndex = 5;
-            this.lblVoltage1.Text = "-";
-            this.lblVoltage1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.ForeColor = System.Drawing.Color.Black;
-            this.label28.Location = new System.Drawing.Point(13, 97);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(62, 13);
-            this.label28.TabIndex = 4;
-            this.label28.Text = "Вход 200В:";
-            this.label28.Visible = false;
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.ForeColor = System.Drawing.Color.Black;
-            this.label29.Location = new System.Drawing.Point(13, 54);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(50, 13);
-            this.label29.TabIndex = 2;
-            this.label29.Text = "Вход 5В:";
-            this.label29.Visible = false;
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.ForeColor = System.Drawing.Color.Black;
-            this.label30.Location = new System.Drawing.Point(13, 11);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(59, 13);
-            this.label30.TabIndex = 0;
-            this.label30.Text = "Вход 3.3В:";
-            // 
-            // panel16
-            // 
-            this.panel16.AutoSize = true;
-            this.panel16.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel16.Controls.Add(this.label31);
-            this.panel16.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel16.Location = new System.Drawing.Point(2, 2);
-            this.panel16.Margin = new System.Windows.Forms.Padding(0);
-            this.panel16.Name = "panel16";
-            this.panel16.Size = new System.Drawing.Size(196, 24);
-            this.panel16.TabIndex = 1;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label31.ForeColor = System.Drawing.Color.White;
-            this.label31.Location = new System.Drawing.Point(0, 0);
-            this.label31.Margin = new System.Windows.Forms.Padding(0);
-            this.label31.Name = "label31";
-            this.label31.Padding = new System.Windows.Forms.Padding(2);
-            this.label31.Size = new System.Drawing.Size(148, 24);
-            this.label31.TabIndex = 0;
-            this.label31.Text = "Напряжение ИП";
-            // 
-            // plTransformerBorders
-            // 
-            this.plTransformerBorders.BackColor = System.Drawing.Color.SteelBlue;
-            this.plTransformerBorders.Controls.Add(this.panel2);
-            this.plTransformerBorders.Controls.Add(this.panel17);
-            this.plTransformerBorders.Location = new System.Drawing.Point(460, 20);
-            this.plTransformerBorders.Margin = new System.Windows.Forms.Padding(10);
-            this.plTransformerBorders.Name = "plTransformerBorders";
-            this.plTransformerBorders.Padding = new System.Windows.Forms.Padding(2);
-            this.plTransformerBorders.Size = new System.Drawing.Size(200, 275);
-            this.plTransformerBorders.TabIndex = 7;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Controls.Add(this.label21);
-            this.panel2.Controls.Add(this.btnSetBorders);
-            this.panel2.Controls.Add(this.nudHighBorder);
-            this.panel2.Controls.Add(this.nudLowBorder);
-            this.panel2.Controls.Add(this.label26);
-            this.panel2.Controls.Add(this.label27);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(2, 26);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(196, 247);
-            this.panel2.TabIndex = 2;
-            // 
-            // label21
-            // 
-            this.label21.BackColor = System.Drawing.Color.LightYellow;
-            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label21.ForeColor = System.Drawing.Color.Black;
-            this.label21.Location = new System.Drawing.Point(13, 119);
-            this.label21.Name = "label21";
-            this.label21.Padding = new System.Windows.Forms.Padding(4);
-            this.label21.Size = new System.Drawing.Size(170, 82);
-            this.label21.TabIndex = 13;
-            this.label21.Text = "Верхний и нижний пороги компаратора АЦП (пока не используются).";
-            // 
-            // btnSetBorders
-            // 
-            this.btnSetBorders.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetBorders.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetBorders.ForeColor = System.Drawing.Color.Black;
-            this.btnSetBorders.Location = new System.Drawing.Point(16, 215);
-            this.btnSetBorders.Name = "btnSetBorders";
-            this.btnSetBorders.Size = new System.Drawing.Size(167, 23);
-            this.btnSetBorders.TabIndex = 8;
-            this.btnSetBorders.Text = "Установить";
-            this.btnSetBorders.UseVisualStyleBackColor = false;
-            this.btnSetBorders.Click += new System.EventHandler(this.btnSetBorders_Click);
-            // 
-            // nudHighBorder
-            // 
-            this.nudHighBorder.Location = new System.Drawing.Point(16, 26);
-            this.nudHighBorder.Maximum = new decimal(new int[] {
-            1410065408,
-            2,
-            0,
-            0});
-            this.nudHighBorder.Name = "nudHighBorder";
-            this.nudHighBorder.Size = new System.Drawing.Size(167, 20);
-            this.nudHighBorder.TabIndex = 6;
-            // 
-            // nudLowBorder
-            // 
-            this.nudLowBorder.Location = new System.Drawing.Point(16, 70);
-            this.nudLowBorder.Maximum = new decimal(new int[] {
-            1410065408,
-            2,
-            0,
-            0});
-            this.nudLowBorder.Name = "nudLowBorder";
-            this.nudLowBorder.Size = new System.Drawing.Size(167, 20);
-            this.nudLowBorder.TabIndex = 5;
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.ForeColor = System.Drawing.Color.Black;
-            this.label26.Location = new System.Drawing.Point(13, 11);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(52, 13);
-            this.label26.TabIndex = 2;
-            this.label26.Text = "Верхний:";
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.ForeColor = System.Drawing.Color.Black;
-            this.label27.Location = new System.Drawing.Point(13, 54);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(50, 13);
-            this.label27.TabIndex = 0;
-            this.label27.Text = "Нижний:";
-            // 
-            // panel17
-            // 
-            this.panel17.AutoSize = true;
-            this.panel17.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel17.Controls.Add(this.label32);
-            this.panel17.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel17.Location = new System.Drawing.Point(2, 2);
-            this.panel17.Margin = new System.Windows.Forms.Padding(0);
-            this.panel17.Name = "panel17";
-            this.panel17.Size = new System.Drawing.Size(196, 24);
-            this.panel17.TabIndex = 1;
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label32.ForeColor = System.Drawing.Color.White;
-            this.label32.Location = new System.Drawing.Point(0, 0);
-            this.label32.Margin = new System.Windows.Forms.Padding(0);
-            this.label32.Name = "label32";
-            this.label32.Padding = new System.Windows.Forms.Padding(2);
-            this.label32.Size = new System.Drawing.Size(125, 24);
-            this.label32.TabIndex = 0;
-            this.label32.Text = "Пороги тр-ра";
-            // 
-            // plRelayDelay
-            // 
-            this.plRelayDelay.BackColor = System.Drawing.Color.SteelBlue;
-            this.plRelayDelay.Controls.Add(this.panel18);
-            this.plRelayDelay.Controls.Add(this.panel19);
-            this.plRelayDelay.Location = new System.Drawing.Point(680, 20);
-            this.plRelayDelay.Margin = new System.Windows.Forms.Padding(10);
-            this.plRelayDelay.Name = "plRelayDelay";
-            this.plRelayDelay.Padding = new System.Windows.Forms.Padding(2);
-            this.plRelayDelay.Size = new System.Drawing.Size(200, 275);
-            this.plRelayDelay.TabIndex = 8;
-            // 
-            // panel18
-            // 
-            this.panel18.BackColor = System.Drawing.Color.White;
-            this.panel18.Controls.Add(this.label18);
-            this.panel18.Controls.Add(this.nudACSDelay);
-            this.panel18.Controls.Add(this.label25);
-            this.panel18.Controls.Add(this.btnSetRelayDelay);
-            this.panel18.Controls.Add(this.nudRelayDelay);
-            this.panel18.Controls.Add(this.label33);
-            this.panel18.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel18.Location = new System.Drawing.Point(2, 26);
-            this.panel18.Name = "panel18";
-            this.panel18.Size = new System.Drawing.Size(196, 247);
-            this.panel18.TabIndex = 2;
-            // 
-            // label18
-            // 
-            this.label18.BackColor = System.Drawing.Color.LightYellow;
-            this.label18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label18.ForeColor = System.Drawing.Color.Black;
-            this.label18.Location = new System.Drawing.Point(13, 120);
-            this.label18.Name = "label18";
-            this.label18.Padding = new System.Windows.Forms.Padding(4);
-            this.label18.Size = new System.Drawing.Size(170, 82);
-            this.label18.TabIndex = 12;
-            this.label18.Text = "Задержка после срабатывания защиты перед началом сбора импульсов, мс. Задержка вы" +
-    "дачи сигнала на АСУ ТП, мс.";
-            // 
-            // nudACSDelay
-            // 
-            this.nudACSDelay.Location = new System.Drawing.Point(16, 70);
-            this.nudACSDelay.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.nudACSDelay.Name = "nudACSDelay";
-            this.nudACSDelay.Size = new System.Drawing.Size(167, 20);
-            this.nudACSDelay.TabIndex = 10;
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.ForeColor = System.Drawing.Color.Black;
-            this.label25.Location = new System.Drawing.Point(13, 54);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(119, 13);
-            this.label25.TabIndex = 9;
-            this.label25.Text = "Задержка на АСУ ТП:";
-            // 
-            // btnSetRelayDelay
-            // 
-            this.btnSetRelayDelay.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetRelayDelay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetRelayDelay.ForeColor = System.Drawing.Color.Black;
-            this.btnSetRelayDelay.Location = new System.Drawing.Point(16, 215);
-            this.btnSetRelayDelay.Name = "btnSetRelayDelay";
-            this.btnSetRelayDelay.Size = new System.Drawing.Size(167, 23);
-            this.btnSetRelayDelay.TabIndex = 8;
-            this.btnSetRelayDelay.Text = "Установить";
-            this.btnSetRelayDelay.UseVisualStyleBackColor = false;
-            this.btnSetRelayDelay.Click += new System.EventHandler(this.btnSetRelayDelay_Click);
-            // 
-            // nudRelayDelay
-            // 
-            this.nudRelayDelay.Location = new System.Drawing.Point(16, 27);
-            this.nudRelayDelay.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.nudRelayDelay.Name = "nudRelayDelay";
-            this.nudRelayDelay.Size = new System.Drawing.Size(167, 20);
-            this.nudRelayDelay.TabIndex = 5;
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.ForeColor = System.Drawing.Color.Black;
-            this.label33.Location = new System.Drawing.Point(13, 11);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(160, 13);
-            this.label33.TabIndex = 0;
-            this.label33.Text = "Задержка перед импульсами:";
-            // 
-            // panel19
-            // 
-            this.panel19.AutoSize = true;
-            this.panel19.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel19.Controls.Add(this.label34);
-            this.panel19.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel19.Location = new System.Drawing.Point(2, 2);
-            this.panel19.Margin = new System.Windows.Forms.Padding(0);
-            this.panel19.Name = "panel19";
-            this.panel19.Size = new System.Drawing.Size(196, 24);
-            this.panel19.TabIndex = 1;
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label34.ForeColor = System.Drawing.Color.White;
-            this.label34.Location = new System.Drawing.Point(0, 0);
-            this.label34.Margin = new System.Windows.Forms.Padding(0);
-            this.label34.Name = "label34";
-            this.label34.Padding = new System.Windows.Forms.Padding(2);
-            this.label34.Size = new System.Drawing.Size(125, 24);
-            this.label34.TabIndex = 0;
-            this.label34.Text = "Реле защиты";
-            // 
             // plDelta
             // 
             this.plDelta.BackColor = System.Drawing.Color.SteelBlue;
             this.plDelta.Controls.Add(this.panel11);
             this.plDelta.Controls.Add(this.panel12);
-            this.plDelta.Location = new System.Drawing.Point(20, 315);
+            this.plDelta.Location = new System.Drawing.Point(240, 20);
             this.plDelta.Margin = new System.Windows.Forms.Padding(10);
             this.plDelta.Name = "plDelta";
             this.plDelta.Padding = new System.Windows.Forms.Padding(2);
@@ -1870,7 +1491,7 @@
             this.plMotoresourceCurrent.BackColor = System.Drawing.Color.SteelBlue;
             this.plMotoresourceCurrent.Controls.Add(this.panel5);
             this.plMotoresourceCurrent.Controls.Add(this.panel6);
-            this.plMotoresourceCurrent.Location = new System.Drawing.Point(240, 315);
+            this.plMotoresourceCurrent.Location = new System.Drawing.Point(460, 20);
             this.plMotoresourceCurrent.Margin = new System.Windows.Forms.Padding(10);
             this.plMotoresourceCurrent.Name = "plMotoresourceCurrent";
             this.plMotoresourceCurrent.Padding = new System.Windows.Forms.Padding(2);
@@ -2009,7 +1630,7 @@
             this.plImpulses.BackColor = System.Drawing.Color.SteelBlue;
             this.plImpulses.Controls.Add(this.panel9);
             this.plImpulses.Controls.Add(this.panel10);
-            this.plImpulses.Location = new System.Drawing.Point(460, 315);
+            this.plImpulses.Location = new System.Drawing.Point(20, 315);
             this.plImpulses.Margin = new System.Windows.Forms.Padding(10);
             this.plImpulses.Name = "plImpulses";
             this.plImpulses.Padding = new System.Windows.Forms.Padding(2);
@@ -2128,234 +1749,6 @@
             this.label16.TabIndex = 0;
             this.label16.Text = "Импульсы";
             // 
-            // panel13
-            // 
-            this.panel13.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel13.Controls.Add(this.panel14);
-            this.panel13.Controls.Add(this.panel20);
-            this.panel13.Location = new System.Drawing.Point(680, 315);
-            this.panel13.Margin = new System.Windows.Forms.Padding(10);
-            this.panel13.Name = "panel13";
-            this.panel13.Padding = new System.Windows.Forms.Padding(2);
-            this.panel13.Size = new System.Drawing.Size(200, 275);
-            this.panel13.TabIndex = 9;
-            // 
-            // panel14
-            // 
-            this.panel14.BackColor = System.Drawing.Color.White;
-            this.panel14.Controls.Add(this.label22);
-            this.panel14.Controls.Add(this.btnCurrentCoeff);
-            this.panel14.Controls.Add(this.nudCurrentCoeff);
-            this.panel14.Controls.Add(this.label23);
-            this.panel14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel14.Location = new System.Drawing.Point(2, 26);
-            this.panel14.Name = "panel14";
-            this.panel14.Size = new System.Drawing.Size(196, 247);
-            this.panel14.TabIndex = 2;
-            // 
-            // label22
-            // 
-            this.label22.BackColor = System.Drawing.Color.LightYellow;
-            this.label22.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label22.ForeColor = System.Drawing.Color.Black;
-            this.label22.Location = new System.Drawing.Point(13, 120);
-            this.label22.Name = "label22";
-            this.label22.Padding = new System.Windows.Forms.Padding(4);
-            this.label22.Size = new System.Drawing.Size(170, 82);
-            this.label22.TabIndex = 9;
-            this.label22.Text = "Коэффициент пересчёта тока, в тысячных долях (например, 1234 - это 1.234).";
-            // 
-            // btnCurrentCoeff
-            // 
-            this.btnCurrentCoeff.BackColor = System.Drawing.Color.LightGreen;
-            this.btnCurrentCoeff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCurrentCoeff.ForeColor = System.Drawing.Color.Black;
-            this.btnCurrentCoeff.Location = new System.Drawing.Point(16, 215);
-            this.btnCurrentCoeff.Name = "btnCurrentCoeff";
-            this.btnCurrentCoeff.Size = new System.Drawing.Size(167, 23);
-            this.btnCurrentCoeff.TabIndex = 8;
-            this.btnCurrentCoeff.Text = "Установить";
-            this.btnCurrentCoeff.UseVisualStyleBackColor = false;
-            this.btnCurrentCoeff.Click += new System.EventHandler(this.btnCurrentCoeff_Click);
-            // 
-            // nudCurrentCoeff
-            // 
-            this.nudCurrentCoeff.Location = new System.Drawing.Point(16, 27);
-            this.nudCurrentCoeff.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nudCurrentCoeff.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudCurrentCoeff.Name = "nudCurrentCoeff";
-            this.nudCurrentCoeff.Size = new System.Drawing.Size(167, 20);
-            this.nudCurrentCoeff.TabIndex = 5;
-            this.nudCurrentCoeff.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.ForeColor = System.Drawing.Color.Black;
-            this.label23.Location = new System.Drawing.Point(13, 11);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(80, 13);
-            this.label23.TabIndex = 0;
-            this.label23.Text = "Коэффициент:";
-            // 
-            // panel20
-            // 
-            this.panel20.AutoSize = true;
-            this.panel20.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel20.Controls.Add(this.label24);
-            this.panel20.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel20.Location = new System.Drawing.Point(2, 2);
-            this.panel20.Margin = new System.Windows.Forms.Padding(0);
-            this.panel20.Name = "panel20";
-            this.panel20.Size = new System.Drawing.Size(196, 24);
-            this.panel20.TabIndex = 1;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label24.ForeColor = System.Drawing.Color.White;
-            this.label24.Location = new System.Drawing.Point(0, 0);
-            this.label24.Margin = new System.Windows.Forms.Padding(0);
-            this.label24.Name = "label24";
-            this.label24.Padding = new System.Windows.Forms.Padding(2);
-            this.label24.Size = new System.Drawing.Size(180, 24);
-            this.label24.TabIndex = 0;
-            this.label24.Text = "Коэффициент тока";
-            // 
-            // panel7
-            // 
-            this.panel7.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel7.Controls.Add(this.panel8);
-            this.panel7.Controls.Add(this.panel21);
-            this.panel7.Location = new System.Drawing.Point(20, 610);
-            this.panel7.Margin = new System.Windows.Forms.Padding(10);
-            this.panel7.Name = "panel7";
-            this.panel7.Padding = new System.Windows.Forms.Padding(2);
-            this.panel7.Size = new System.Drawing.Size(200, 275);
-            this.panel7.TabIndex = 10;
-            // 
-            // panel8
-            // 
-            this.panel8.BackColor = System.Drawing.Color.White;
-            this.panel8.Controls.Add(this.cbAsuTpLine4);
-            this.panel8.Controls.Add(this.cbAsuTpLine3);
-            this.panel8.Controls.Add(this.cbAsuTpLine2);
-            this.panel8.Controls.Add(this.cbAsuTpLine1);
-            this.panel8.Controls.Add(this.label13);
-            this.panel8.Controls.Add(this.btnSetAsuTpLags);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel8.Location = new System.Drawing.Point(2, 26);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(196, 247);
-            this.panel8.TabIndex = 2;
-            // 
-            // cbAsuTpLine4
-            // 
-            this.cbAsuTpLine4.AutoSize = true;
-            this.cbAsuTpLine4.Location = new System.Drawing.Point(16, 80);
-            this.cbAsuTpLine4.Name = "cbAsuTpLine4";
-            this.cbAsuTpLine4.Size = new System.Drawing.Size(78, 17);
-            this.cbAsuTpLine4.TabIndex = 13;
-            this.cbAsuTpLine4.Text = "Линия №4";
-            this.cbAsuTpLine4.UseVisualStyleBackColor = true;
-            // 
-            // cbAsuTpLine3
-            // 
-            this.cbAsuTpLine3.AutoSize = true;
-            this.cbAsuTpLine3.Location = new System.Drawing.Point(16, 57);
-            this.cbAsuTpLine3.Name = "cbAsuTpLine3";
-            this.cbAsuTpLine3.Size = new System.Drawing.Size(78, 17);
-            this.cbAsuTpLine3.TabIndex = 12;
-            this.cbAsuTpLine3.Text = "Линия №3";
-            this.cbAsuTpLine3.UseVisualStyleBackColor = true;
-            // 
-            // cbAsuTpLine2
-            // 
-            this.cbAsuTpLine2.AutoSize = true;
-            this.cbAsuTpLine2.Location = new System.Drawing.Point(16, 34);
-            this.cbAsuTpLine2.Name = "cbAsuTpLine2";
-            this.cbAsuTpLine2.Size = new System.Drawing.Size(78, 17);
-            this.cbAsuTpLine2.TabIndex = 11;
-            this.cbAsuTpLine2.Text = "Линия №2";
-            this.cbAsuTpLine2.UseVisualStyleBackColor = true;
-            // 
-            // cbAsuTpLine1
-            // 
-            this.cbAsuTpLine1.AutoSize = true;
-            this.cbAsuTpLine1.Location = new System.Drawing.Point(16, 11);
-            this.cbAsuTpLine1.Name = "cbAsuTpLine1";
-            this.cbAsuTpLine1.Size = new System.Drawing.Size(78, 17);
-            this.cbAsuTpLine1.TabIndex = 10;
-            this.cbAsuTpLine1.Text = "Линия №1";
-            this.cbAsuTpLine1.UseVisualStyleBackColor = true;
-            // 
-            // label13
-            // 
-            this.label13.BackColor = System.Drawing.Color.LightYellow;
-            this.label13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label13.ForeColor = System.Drawing.Color.Black;
-            this.label13.Location = new System.Drawing.Point(13, 120);
-            this.label13.Name = "label13";
-            this.label13.Padding = new System.Windows.Forms.Padding(4);
-            this.label13.Size = new System.Drawing.Size(170, 82);
-            this.label13.TabIndex = 9;
-            this.label13.Text = "Флаги выдачи сигналов на линии АСУ ТП. Если галочка стоит - сигнал выдаётся.";
-            // 
-            // btnSetAsuTpLags
-            // 
-            this.btnSetAsuTpLags.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetAsuTpLags.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetAsuTpLags.ForeColor = System.Drawing.Color.Black;
-            this.btnSetAsuTpLags.Location = new System.Drawing.Point(16, 215);
-            this.btnSetAsuTpLags.Name = "btnSetAsuTpLags";
-            this.btnSetAsuTpLags.Size = new System.Drawing.Size(167, 23);
-            this.btnSetAsuTpLags.TabIndex = 8;
-            this.btnSetAsuTpLags.Text = "Установить";
-            this.btnSetAsuTpLags.UseVisualStyleBackColor = false;
-            this.btnSetAsuTpLags.Click += new System.EventHandler(this.btnSetAsuTpLags_Click);
-            // 
-            // panel21
-            // 
-            this.panel21.AutoSize = true;
-            this.panel21.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel21.Controls.Add(this.label36);
-            this.panel21.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel21.Location = new System.Drawing.Point(2, 2);
-            this.panel21.Margin = new System.Windows.Forms.Padding(0);
-            this.panel21.Name = "panel21";
-            this.panel21.Size = new System.Drawing.Size(196, 24);
-            this.panel21.TabIndex = 1;
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label36.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label36.ForeColor = System.Drawing.Color.White;
-            this.label36.Location = new System.Drawing.Point(0, 0);
-            this.label36.Margin = new System.Windows.Forms.Padding(0);
-            this.label36.Name = "label36";
-            this.label36.Padding = new System.Windows.Forms.Padding(2);
-            this.label36.Size = new System.Drawing.Size(179, 24);
-            this.label36.TabIndex = 0;
-            this.label36.Text = "Сигналы на АСУ ТП";
-            // 
             // lvLog
             // 
             this.lvLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -2425,8 +1818,8 @@
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle41;
             this.dataGridViewTextBoxColumn1.HeaderText = "№";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             this.dataGridViewTextBoxColumn1.ReadOnly = true;
@@ -2440,8 +1833,8 @@
             // 
             // dataGridViewTextBoxColumn3
             // 
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle42;
             this.dataGridViewTextBoxColumn3.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
@@ -2454,16 +1847,16 @@
             // 
             // dataGridViewTextBoxColumn5
             // 
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle43;
             this.dataGridViewTextBoxColumn5.HeaderText = "Штанга";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn6
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle44;
             this.dataGridViewTextBoxColumn6.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
             this.dataGridViewTextBoxColumn6.ReadOnly = true;
@@ -2489,8 +1882,8 @@
             // dataGridViewTextBoxColumn10
             // 
             this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle45;
             this.dataGridViewTextBoxColumn10.HeaderText = "№";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
             // 
@@ -2502,8 +1895,8 @@
             // 
             // dataGridViewTextBoxColumn12
             // 
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle46;
             this.dataGridViewTextBoxColumn12.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             // 
@@ -2514,15 +1907,15 @@
             // 
             // dataGridViewTextBoxColumn14
             // 
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle47;
             this.dataGridViewTextBoxColumn14.HeaderText = "Канал";
             this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
             // 
             // dataGridViewTextBoxColumn15
             // 
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle48;
             this.dataGridViewTextBoxColumn15.HeaderText = "Импульсов";
             this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
             // 
@@ -2540,6 +1933,637 @@
             // 
             this.dataGridViewTextBoxColumn18.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
+            // 
+            // plAdditionalSettings
+            // 
+            this.plAdditionalSettings.Controls.Add(this.flowLayoutPanel2);
+            this.plAdditionalSettings.Location = new System.Drawing.Point(43, 297);
+            this.plAdditionalSettings.Name = "plAdditionalSettings";
+            this.plAdditionalSettings.Size = new System.Drawing.Size(1147, 449);
+            this.plAdditionalSettings.TabIndex = 13;
+            // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.AutoScroll = true;
+            this.flowLayoutPanel2.BackColor = System.Drawing.Color.White;
+            this.flowLayoutPanel2.Controls.Add(this.panel25);
+            this.flowLayoutPanel2.Controls.Add(this.panel28);
+            this.flowLayoutPanel2.Controls.Add(this.panel31);
+            this.flowLayoutPanel2.Controls.Add(this.panel43);
+            this.flowLayoutPanel2.Controls.Add(this.panel46);
+            this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(10);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(1147, 449);
+            this.flowLayoutPanel2.TabIndex = 1;
+            // 
+            // panel25
+            // 
+            this.panel25.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel25.Controls.Add(this.panel26);
+            this.panel25.Controls.Add(this.panel27);
+            this.panel25.Location = new System.Drawing.Point(20, 20);
+            this.panel25.Margin = new System.Windows.Forms.Padding(10);
+            this.panel25.Name = "panel25";
+            this.panel25.Padding = new System.Windows.Forms.Padding(2);
+            this.panel25.Size = new System.Drawing.Size(200, 275);
+            this.panel25.TabIndex = 6;
+            // 
+            // panel26
+            // 
+            this.panel26.BackColor = System.Drawing.Color.White;
+            this.panel26.Controls.Add(this.label41);
+            this.panel26.Controls.Add(this.lblVoltage3);
+            this.panel26.Controls.Add(this.lblVoltage2);
+            this.panel26.Controls.Add(this.lblVoltage1);
+            this.panel26.Controls.Add(this.label45);
+            this.panel26.Controls.Add(this.label46);
+            this.panel26.Controls.Add(this.label47);
+            this.panel26.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel26.Location = new System.Drawing.Point(2, 26);
+            this.panel26.Margin = new System.Windows.Forms.Padding(3, 11, 3, 3);
+            this.panel26.Name = "panel26";
+            this.panel26.Size = new System.Drawing.Size(196, 247);
+            this.panel26.TabIndex = 2;
+            // 
+            // label41
+            // 
+            this.label41.BackColor = System.Drawing.Color.LightYellow;
+            this.label41.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label41.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label41.ForeColor = System.Drawing.Color.Black;
+            this.label41.Location = new System.Drawing.Point(13, 119);
+            this.label41.Name = "label41";
+            this.label41.Padding = new System.Windows.Forms.Padding(4);
+            this.label41.Size = new System.Drawing.Size(170, 82);
+            this.label41.TabIndex = 13;
+            this.label41.Text = "Напряжение питания микроконтроллера.";
+            // 
+            // lblVoltage3
+            // 
+            this.lblVoltage3.BackColor = System.Drawing.Color.LightGray;
+            this.lblVoltage3.Location = new System.Drawing.Point(13, 111);
+            this.lblVoltage3.Name = "lblVoltage3";
+            this.lblVoltage3.Size = new System.Drawing.Size(167, 20);
+            this.lblVoltage3.TabIndex = 7;
+            this.lblVoltage3.Text = "-";
+            this.lblVoltage3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblVoltage3.Visible = false;
+            // 
+            // lblVoltage2
+            // 
+            this.lblVoltage2.BackColor = System.Drawing.Color.LightGray;
+            this.lblVoltage2.Location = new System.Drawing.Point(13, 70);
+            this.lblVoltage2.Name = "lblVoltage2";
+            this.lblVoltage2.Size = new System.Drawing.Size(167, 20);
+            this.lblVoltage2.TabIndex = 6;
+            this.lblVoltage2.Text = "-";
+            this.lblVoltage2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblVoltage2.Visible = false;
+            // 
+            // lblVoltage1
+            // 
+            this.lblVoltage1.BackColor = System.Drawing.Color.LightGray;
+            this.lblVoltage1.Location = new System.Drawing.Point(13, 25);
+            this.lblVoltage1.Name = "lblVoltage1";
+            this.lblVoltage1.Size = new System.Drawing.Size(167, 20);
+            this.lblVoltage1.TabIndex = 5;
+            this.lblVoltage1.Text = "-";
+            this.lblVoltage1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.ForeColor = System.Drawing.Color.Black;
+            this.label45.Location = new System.Drawing.Point(13, 97);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(62, 13);
+            this.label45.TabIndex = 4;
+            this.label45.Text = "Вход 200В:";
+            this.label45.Visible = false;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.ForeColor = System.Drawing.Color.Black;
+            this.label46.Location = new System.Drawing.Point(13, 54);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(50, 13);
+            this.label46.TabIndex = 2;
+            this.label46.Text = "Вход 5В:";
+            this.label46.Visible = false;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.ForeColor = System.Drawing.Color.Black;
+            this.label47.Location = new System.Drawing.Point(13, 11);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(59, 13);
+            this.label47.TabIndex = 0;
+            this.label47.Text = "Вход 3.3В:";
+            // 
+            // panel27
+            // 
+            this.panel27.AutoSize = true;
+            this.panel27.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel27.Controls.Add(this.label48);
+            this.panel27.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel27.Location = new System.Drawing.Point(2, 2);
+            this.panel27.Margin = new System.Windows.Forms.Padding(0);
+            this.panel27.Name = "panel27";
+            this.panel27.Size = new System.Drawing.Size(196, 24);
+            this.panel27.TabIndex = 1;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label48.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label48.ForeColor = System.Drawing.Color.White;
+            this.label48.Location = new System.Drawing.Point(0, 0);
+            this.label48.Margin = new System.Windows.Forms.Padding(0);
+            this.label48.Name = "label48";
+            this.label48.Padding = new System.Windows.Forms.Padding(2);
+            this.label48.Size = new System.Drawing.Size(148, 24);
+            this.label48.TabIndex = 0;
+            this.label48.Text = "Напряжение ИП";
+            // 
+            // panel28
+            // 
+            this.panel28.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel28.Controls.Add(this.panel29);
+            this.panel28.Controls.Add(this.panel30);
+            this.panel28.Location = new System.Drawing.Point(240, 20);
+            this.panel28.Margin = new System.Windows.Forms.Padding(10);
+            this.panel28.Name = "panel28";
+            this.panel28.Padding = new System.Windows.Forms.Padding(2);
+            this.panel28.Size = new System.Drawing.Size(200, 275);
+            this.panel28.TabIndex = 7;
+            // 
+            // panel29
+            // 
+            this.panel29.BackColor = System.Drawing.Color.White;
+            this.panel29.Controls.Add(this.label49);
+            this.panel29.Controls.Add(this.btnSetBorders);
+            this.panel29.Controls.Add(this.nudHighBorder);
+            this.panel29.Controls.Add(this.nudLowBorder);
+            this.panel29.Controls.Add(this.label50);
+            this.panel29.Controls.Add(this.label51);
+            this.panel29.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel29.Location = new System.Drawing.Point(2, 26);
+            this.panel29.Name = "panel29";
+            this.panel29.Size = new System.Drawing.Size(196, 247);
+            this.panel29.TabIndex = 2;
+            // 
+            // label49
+            // 
+            this.label49.BackColor = System.Drawing.Color.LightYellow;
+            this.label49.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label49.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label49.ForeColor = System.Drawing.Color.Black;
+            this.label49.Location = new System.Drawing.Point(13, 119);
+            this.label49.Name = "label49";
+            this.label49.Padding = new System.Windows.Forms.Padding(4);
+            this.label49.Size = new System.Drawing.Size(170, 82);
+            this.label49.TabIndex = 13;
+            this.label49.Text = "Верхний и нижний пороги компаратора АЦП (пока не используются).";
+            // 
+            // btnSetBorders
+            // 
+            this.btnSetBorders.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetBorders.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetBorders.ForeColor = System.Drawing.Color.Black;
+            this.btnSetBorders.Location = new System.Drawing.Point(16, 215);
+            this.btnSetBorders.Name = "btnSetBorders";
+            this.btnSetBorders.Size = new System.Drawing.Size(167, 23);
+            this.btnSetBorders.TabIndex = 8;
+            this.btnSetBorders.Text = "Установить";
+            this.btnSetBorders.UseVisualStyleBackColor = false;
+            this.btnSetBorders.Click += new System.EventHandler(this.btnSetBorders_Click);
+            // 
+            // nudHighBorder
+            // 
+            this.nudHighBorder.Location = new System.Drawing.Point(16, 26);
+            this.nudHighBorder.Maximum = new decimal(new int[] {
+            1410065408,
+            2,
+            0,
+            0});
+            this.nudHighBorder.Name = "nudHighBorder";
+            this.nudHighBorder.Size = new System.Drawing.Size(167, 20);
+            this.nudHighBorder.TabIndex = 6;
+            // 
+            // nudLowBorder
+            // 
+            this.nudLowBorder.Location = new System.Drawing.Point(16, 70);
+            this.nudLowBorder.Maximum = new decimal(new int[] {
+            1410065408,
+            2,
+            0,
+            0});
+            this.nudLowBorder.Name = "nudLowBorder";
+            this.nudLowBorder.Size = new System.Drawing.Size(167, 20);
+            this.nudLowBorder.TabIndex = 5;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.ForeColor = System.Drawing.Color.Black;
+            this.label50.Location = new System.Drawing.Point(13, 11);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(52, 13);
+            this.label50.TabIndex = 2;
+            this.label50.Text = "Верхний:";
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.ForeColor = System.Drawing.Color.Black;
+            this.label51.Location = new System.Drawing.Point(13, 54);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(50, 13);
+            this.label51.TabIndex = 0;
+            this.label51.Text = "Нижний:";
+            // 
+            // panel30
+            // 
+            this.panel30.AutoSize = true;
+            this.panel30.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel30.Controls.Add(this.label52);
+            this.panel30.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel30.Location = new System.Drawing.Point(2, 2);
+            this.panel30.Margin = new System.Windows.Forms.Padding(0);
+            this.panel30.Name = "panel30";
+            this.panel30.Size = new System.Drawing.Size(196, 24);
+            this.panel30.TabIndex = 1;
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label52.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label52.ForeColor = System.Drawing.Color.White;
+            this.label52.Location = new System.Drawing.Point(0, 0);
+            this.label52.Margin = new System.Windows.Forms.Padding(0);
+            this.label52.Name = "label52";
+            this.label52.Padding = new System.Windows.Forms.Padding(2);
+            this.label52.Size = new System.Drawing.Size(125, 24);
+            this.label52.TabIndex = 0;
+            this.label52.Text = "Пороги тр-ра";
+            // 
+            // panel31
+            // 
+            this.panel31.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel31.Controls.Add(this.panel32);
+            this.panel31.Controls.Add(this.panel33);
+            this.panel31.Location = new System.Drawing.Point(460, 20);
+            this.panel31.Margin = new System.Windows.Forms.Padding(10);
+            this.panel31.Name = "panel31";
+            this.panel31.Padding = new System.Windows.Forms.Padding(2);
+            this.panel31.Size = new System.Drawing.Size(200, 275);
+            this.panel31.TabIndex = 8;
+            // 
+            // panel32
+            // 
+            this.panel32.BackColor = System.Drawing.Color.White;
+            this.panel32.Controls.Add(this.label53);
+            this.panel32.Controls.Add(this.nudACSDelay);
+            this.panel32.Controls.Add(this.label54);
+            this.panel32.Controls.Add(this.btnSetRelayDelay);
+            this.panel32.Controls.Add(this.nudRelayDelay);
+            this.panel32.Controls.Add(this.label55);
+            this.panel32.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel32.Location = new System.Drawing.Point(2, 26);
+            this.panel32.Name = "panel32";
+            this.panel32.Size = new System.Drawing.Size(196, 247);
+            this.panel32.TabIndex = 2;
+            // 
+            // label53
+            // 
+            this.label53.BackColor = System.Drawing.Color.LightYellow;
+            this.label53.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label53.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label53.ForeColor = System.Drawing.Color.Black;
+            this.label53.Location = new System.Drawing.Point(13, 120);
+            this.label53.Name = "label53";
+            this.label53.Padding = new System.Windows.Forms.Padding(4);
+            this.label53.Size = new System.Drawing.Size(170, 82);
+            this.label53.TabIndex = 12;
+            this.label53.Text = "Задержка после срабатывания защиты перед началом сбора импульсов, мс. Задержка вы" +
+    "дачи сигнала на АСУ ТП, мс.";
+            // 
+            // nudACSDelay
+            // 
+            this.nudACSDelay.Location = new System.Drawing.Point(16, 70);
+            this.nudACSDelay.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudACSDelay.Name = "nudACSDelay";
+            this.nudACSDelay.Size = new System.Drawing.Size(167, 20);
+            this.nudACSDelay.TabIndex = 10;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.ForeColor = System.Drawing.Color.Black;
+            this.label54.Location = new System.Drawing.Point(13, 54);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(119, 13);
+            this.label54.TabIndex = 9;
+            this.label54.Text = "Задержка на АСУ ТП:";
+            // 
+            // btnSetRelayDelay
+            // 
+            this.btnSetRelayDelay.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetRelayDelay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetRelayDelay.ForeColor = System.Drawing.Color.Black;
+            this.btnSetRelayDelay.Location = new System.Drawing.Point(16, 215);
+            this.btnSetRelayDelay.Name = "btnSetRelayDelay";
+            this.btnSetRelayDelay.Size = new System.Drawing.Size(167, 23);
+            this.btnSetRelayDelay.TabIndex = 8;
+            this.btnSetRelayDelay.Text = "Установить";
+            this.btnSetRelayDelay.UseVisualStyleBackColor = false;
+            this.btnSetRelayDelay.Click += new System.EventHandler(this.btnSetRelayDelay_Click);
+            // 
+            // nudRelayDelay
+            // 
+            this.nudRelayDelay.Location = new System.Drawing.Point(16, 27);
+            this.nudRelayDelay.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudRelayDelay.Name = "nudRelayDelay";
+            this.nudRelayDelay.Size = new System.Drawing.Size(167, 20);
+            this.nudRelayDelay.TabIndex = 5;
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.ForeColor = System.Drawing.Color.Black;
+            this.label55.Location = new System.Drawing.Point(13, 11);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(160, 13);
+            this.label55.TabIndex = 0;
+            this.label55.Text = "Задержка перед импульсами:";
+            // 
+            // panel33
+            // 
+            this.panel33.AutoSize = true;
+            this.panel33.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel33.Controls.Add(this.label56);
+            this.panel33.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel33.Location = new System.Drawing.Point(2, 2);
+            this.panel33.Margin = new System.Windows.Forms.Padding(0);
+            this.panel33.Name = "panel33";
+            this.panel33.Size = new System.Drawing.Size(196, 24);
+            this.panel33.TabIndex = 1;
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label56.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label56.ForeColor = System.Drawing.Color.White;
+            this.label56.Location = new System.Drawing.Point(0, 0);
+            this.label56.Margin = new System.Windows.Forms.Padding(0);
+            this.label56.Name = "label56";
+            this.label56.Padding = new System.Windows.Forms.Padding(2);
+            this.label56.Size = new System.Drawing.Size(125, 24);
+            this.label56.TabIndex = 0;
+            this.label56.Text = "Реле защиты";
+            // 
+            // panel43
+            // 
+            this.panel43.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel43.Controls.Add(this.panel44);
+            this.panel43.Controls.Add(this.panel45);
+            this.panel43.Location = new System.Drawing.Point(680, 20);
+            this.panel43.Margin = new System.Windows.Forms.Padding(10);
+            this.panel43.Name = "panel43";
+            this.panel43.Padding = new System.Windows.Forms.Padding(2);
+            this.panel43.Size = new System.Drawing.Size(200, 275);
+            this.panel43.TabIndex = 9;
+            // 
+            // panel44
+            // 
+            this.panel44.BackColor = System.Drawing.Color.White;
+            this.panel44.Controls.Add(this.label70);
+            this.panel44.Controls.Add(this.btnCurrentCoeff);
+            this.panel44.Controls.Add(this.nudCurrentCoeff);
+            this.panel44.Controls.Add(this.label71);
+            this.panel44.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel44.Location = new System.Drawing.Point(2, 26);
+            this.panel44.Name = "panel44";
+            this.panel44.Size = new System.Drawing.Size(196, 247);
+            this.panel44.TabIndex = 2;
+            // 
+            // label70
+            // 
+            this.label70.BackColor = System.Drawing.Color.LightYellow;
+            this.label70.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label70.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label70.ForeColor = System.Drawing.Color.Black;
+            this.label70.Location = new System.Drawing.Point(13, 120);
+            this.label70.Name = "label70";
+            this.label70.Padding = new System.Windows.Forms.Padding(4);
+            this.label70.Size = new System.Drawing.Size(170, 82);
+            this.label70.TabIndex = 9;
+            this.label70.Text = "Коэффициент пересчёта тока, в тысячных долях (например, 1234 - это 1.234).";
+            // 
+            // btnCurrentCoeff
+            // 
+            this.btnCurrentCoeff.BackColor = System.Drawing.Color.LightGreen;
+            this.btnCurrentCoeff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCurrentCoeff.ForeColor = System.Drawing.Color.Black;
+            this.btnCurrentCoeff.Location = new System.Drawing.Point(16, 215);
+            this.btnCurrentCoeff.Name = "btnCurrentCoeff";
+            this.btnCurrentCoeff.Size = new System.Drawing.Size(167, 23);
+            this.btnCurrentCoeff.TabIndex = 8;
+            this.btnCurrentCoeff.Text = "Установить";
+            this.btnCurrentCoeff.UseVisualStyleBackColor = false;
+            this.btnCurrentCoeff.Click += new System.EventHandler(this.btnCurrentCoeff_Click);
+            // 
+            // nudCurrentCoeff
+            // 
+            this.nudCurrentCoeff.Location = new System.Drawing.Point(16, 27);
+            this.nudCurrentCoeff.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nudCurrentCoeff.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudCurrentCoeff.Name = "nudCurrentCoeff";
+            this.nudCurrentCoeff.Size = new System.Drawing.Size(167, 20);
+            this.nudCurrentCoeff.TabIndex = 5;
+            this.nudCurrentCoeff.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.ForeColor = System.Drawing.Color.Black;
+            this.label71.Location = new System.Drawing.Point(13, 11);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(80, 13);
+            this.label71.TabIndex = 0;
+            this.label71.Text = "Коэффициент:";
+            // 
+            // panel45
+            // 
+            this.panel45.AutoSize = true;
+            this.panel45.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel45.Controls.Add(this.label72);
+            this.panel45.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel45.Location = new System.Drawing.Point(2, 2);
+            this.panel45.Margin = new System.Windows.Forms.Padding(0);
+            this.panel45.Name = "panel45";
+            this.panel45.Size = new System.Drawing.Size(196, 24);
+            this.panel45.TabIndex = 1;
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label72.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label72.ForeColor = System.Drawing.Color.White;
+            this.label72.Location = new System.Drawing.Point(0, 0);
+            this.label72.Margin = new System.Windows.Forms.Padding(0);
+            this.label72.Name = "label72";
+            this.label72.Padding = new System.Windows.Forms.Padding(2);
+            this.label72.Size = new System.Drawing.Size(180, 24);
+            this.label72.TabIndex = 0;
+            this.label72.Text = "Коэффициент тока";
+            // 
+            // panel46
+            // 
+            this.panel46.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel46.Controls.Add(this.panel47);
+            this.panel46.Controls.Add(this.panel48);
+            this.panel46.Location = new System.Drawing.Point(900, 20);
+            this.panel46.Margin = new System.Windows.Forms.Padding(10);
+            this.panel46.Name = "panel46";
+            this.panel46.Padding = new System.Windows.Forms.Padding(2);
+            this.panel46.Size = new System.Drawing.Size(200, 275);
+            this.panel46.TabIndex = 10;
+            // 
+            // panel47
+            // 
+            this.panel47.BackColor = System.Drawing.Color.White;
+            this.panel47.Controls.Add(this.cbAsuTpLine4);
+            this.panel47.Controls.Add(this.cbAsuTpLine3);
+            this.panel47.Controls.Add(this.cbAsuTpLine2);
+            this.panel47.Controls.Add(this.cbAsuTpLine1);
+            this.panel47.Controls.Add(this.label73);
+            this.panel47.Controls.Add(this.btnSetAsuTpLags);
+            this.panel47.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel47.Location = new System.Drawing.Point(2, 26);
+            this.panel47.Name = "panel47";
+            this.panel47.Size = new System.Drawing.Size(196, 247);
+            this.panel47.TabIndex = 2;
+            // 
+            // cbAsuTpLine4
+            // 
+            this.cbAsuTpLine4.AutoSize = true;
+            this.cbAsuTpLine4.Location = new System.Drawing.Point(16, 80);
+            this.cbAsuTpLine4.Name = "cbAsuTpLine4";
+            this.cbAsuTpLine4.Size = new System.Drawing.Size(78, 17);
+            this.cbAsuTpLine4.TabIndex = 13;
+            this.cbAsuTpLine4.Text = "Линия №4";
+            this.cbAsuTpLine4.UseVisualStyleBackColor = true;
+            // 
+            // cbAsuTpLine3
+            // 
+            this.cbAsuTpLine3.AutoSize = true;
+            this.cbAsuTpLine3.Location = new System.Drawing.Point(16, 57);
+            this.cbAsuTpLine3.Name = "cbAsuTpLine3";
+            this.cbAsuTpLine3.Size = new System.Drawing.Size(78, 17);
+            this.cbAsuTpLine3.TabIndex = 12;
+            this.cbAsuTpLine3.Text = "Линия №3";
+            this.cbAsuTpLine3.UseVisualStyleBackColor = true;
+            // 
+            // cbAsuTpLine2
+            // 
+            this.cbAsuTpLine2.AutoSize = true;
+            this.cbAsuTpLine2.Location = new System.Drawing.Point(16, 34);
+            this.cbAsuTpLine2.Name = "cbAsuTpLine2";
+            this.cbAsuTpLine2.Size = new System.Drawing.Size(78, 17);
+            this.cbAsuTpLine2.TabIndex = 11;
+            this.cbAsuTpLine2.Text = "Линия №2";
+            this.cbAsuTpLine2.UseVisualStyleBackColor = true;
+            // 
+            // cbAsuTpLine1
+            // 
+            this.cbAsuTpLine1.AutoSize = true;
+            this.cbAsuTpLine1.Location = new System.Drawing.Point(16, 11);
+            this.cbAsuTpLine1.Name = "cbAsuTpLine1";
+            this.cbAsuTpLine1.Size = new System.Drawing.Size(78, 17);
+            this.cbAsuTpLine1.TabIndex = 10;
+            this.cbAsuTpLine1.Text = "Линия №1";
+            this.cbAsuTpLine1.UseVisualStyleBackColor = true;
+            // 
+            // label73
+            // 
+            this.label73.BackColor = System.Drawing.Color.LightYellow;
+            this.label73.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label73.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label73.ForeColor = System.Drawing.Color.Black;
+            this.label73.Location = new System.Drawing.Point(13, 120);
+            this.label73.Name = "label73";
+            this.label73.Padding = new System.Windows.Forms.Padding(4);
+            this.label73.Size = new System.Drawing.Size(170, 82);
+            this.label73.TabIndex = 9;
+            this.label73.Text = "Флаги выдачи сигналов на линии АСУ ТП. Если галочка стоит - сигнал выдаётся.";
+            // 
+            // btnSetAsuTpLags
+            // 
+            this.btnSetAsuTpLags.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetAsuTpLags.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetAsuTpLags.ForeColor = System.Drawing.Color.Black;
+            this.btnSetAsuTpLags.Location = new System.Drawing.Point(16, 215);
+            this.btnSetAsuTpLags.Name = "btnSetAsuTpLags";
+            this.btnSetAsuTpLags.Size = new System.Drawing.Size(167, 23);
+            this.btnSetAsuTpLags.TabIndex = 8;
+            this.btnSetAsuTpLags.Text = "Установить";
+            this.btnSetAsuTpLags.UseVisualStyleBackColor = false;
+            this.btnSetAsuTpLags.Click += new System.EventHandler(this.btnSetAsuTpLags_Click);
+            // 
+            // panel48
+            // 
+            this.panel48.AutoSize = true;
+            this.panel48.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel48.Controls.Add(this.label74);
+            this.panel48.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel48.Location = new System.Drawing.Point(2, 2);
+            this.panel48.Margin = new System.Windows.Forms.Padding(0);
+            this.panel48.Name = "panel48";
+            this.panel48.Size = new System.Drawing.Size(196, 24);
+            this.panel48.TabIndex = 1;
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label74.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label74.ForeColor = System.Drawing.Color.White;
+            this.label74.Location = new System.Drawing.Point(0, 0);
+            this.label74.Margin = new System.Windows.Forms.Padding(0);
+            this.label74.Name = "label74";
+            this.label74.Padding = new System.Windows.Forms.Padding(2);
+            this.label74.Size = new System.Drawing.Size(179, 24);
+            this.label74.TabIndex = 0;
+            this.label74.Text = "Сигналы на АСУ ТП";
             // 
             // MainForm
             // 
@@ -2598,28 +2622,6 @@
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.plVoltage.ResumeLayout(false);
-            this.plVoltage.PerformLayout();
-            this.panel15.ResumeLayout(false);
-            this.panel15.PerformLayout();
-            this.panel16.ResumeLayout(false);
-            this.panel16.PerformLayout();
-            this.plTransformerBorders.ResumeLayout(false);
-            this.plTransformerBorders.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudHighBorder)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudLowBorder)).EndInit();
-            this.panel17.ResumeLayout(false);
-            this.panel17.PerformLayout();
-            this.plRelayDelay.ResumeLayout(false);
-            this.plRelayDelay.PerformLayout();
-            this.panel18.ResumeLayout(false);
-            this.panel18.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudACSDelay)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRelayDelay)).EndInit();
-            this.panel19.ResumeLayout(false);
-            this.panel19.PerformLayout();
             this.plDelta.ResumeLayout(false);
             this.plDelta.PerformLayout();
             this.panel11.ResumeLayout(false);
@@ -2644,19 +2646,43 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).EndInit();
             this.panel10.ResumeLayout(false);
             this.panel10.PerformLayout();
-            this.panel13.ResumeLayout(false);
-            this.panel13.PerformLayout();
-            this.panel14.ResumeLayout(false);
-            this.panel14.PerformLayout();
+            this.plAdditionalSettings.ResumeLayout(false);
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.panel25.ResumeLayout(false);
+            this.panel25.PerformLayout();
+            this.panel26.ResumeLayout(false);
+            this.panel26.PerformLayout();
+            this.panel27.ResumeLayout(false);
+            this.panel27.PerformLayout();
+            this.panel28.ResumeLayout(false);
+            this.panel28.PerformLayout();
+            this.panel29.ResumeLayout(false);
+            this.panel29.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHighBorder)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLowBorder)).EndInit();
+            this.panel30.ResumeLayout(false);
+            this.panel30.PerformLayout();
+            this.panel31.ResumeLayout(false);
+            this.panel31.PerformLayout();
+            this.panel32.ResumeLayout(false);
+            this.panel32.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudACSDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRelayDelay)).EndInit();
+            this.panel33.ResumeLayout(false);
+            this.panel33.PerformLayout();
+            this.panel43.ResumeLayout(false);
+            this.panel43.PerformLayout();
+            this.panel44.ResumeLayout(false);
+            this.panel44.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudCurrentCoeff)).EndInit();
-            this.panel20.ResumeLayout(false);
-            this.panel20.PerformLayout();
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
-            this.panel21.ResumeLayout(false);
-            this.panel21.PerformLayout();
+            this.panel45.ResumeLayout(false);
+            this.panel45.PerformLayout();
+            this.panel46.ResumeLayout(false);
+            this.panel46.PerformLayout();
+            this.panel47.ResumeLayout(false);
+            this.panel47.PerformLayout();
+            this.panel48.ResumeLayout(false);
+            this.panel48.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2737,16 +2763,6 @@
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Timer tmPeriodicCommandsTimer;
-        private System.Windows.Forms.Panel plVoltage;
-        private System.Windows.Forms.Panel panel15;
-        private System.Windows.Forms.Label lblVoltage3;
-        private System.Windows.Forms.Label lblVoltage2;
-        private System.Windows.Forms.Label lblVoltage1;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Panel panel16;
-        private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label lblMotoresourcePercents1;
         private System.Windows.Forms.ToolStrip toolStripSD;
         private System.Windows.Forms.ToolStripButton btnListSDFiles;
@@ -2777,24 +2793,6 @@
         private System.Windows.Forms.Panel plArchiveEthalonChart;
         private System.Windows.Forms.DataGridView archiveLogDataGrid;
         public System.Windows.Forms.TreeView treeView;
-        private System.Windows.Forms.Panel plTransformerBorders;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnSetBorders;
-        private System.Windows.Forms.NumericUpDown nudHighBorder;
-        private System.Windows.Forms.NumericUpDown nudLowBorder;
-        private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.Panel panel17;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Panel plRelayDelay;
-        private System.Windows.Forms.Panel panel18;
-        private System.Windows.Forms.Button btnSetRelayDelay;
-        private System.Windows.Forms.NumericUpDown nudRelayDelay;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Panel panel19;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.NumericUpDown nudACSDelay;
-        private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Button btnSetDelta;
         private System.Windows.Forms.DataGridViewTextBoxColumn Num1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time1;
@@ -2827,18 +2825,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.ToolStripButton btnSDTest;
-        private System.Windows.Forms.Panel panel13;
-        private System.Windows.Forms.Panel panel14;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Button btnCurrentCoeff;
-        private System.Windows.Forms.NumericUpDown nudCurrentCoeff;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Panel panel20;
-        private System.Windows.Forms.Label label24;
         private System.Windows.Forms.NumericUpDown nudDelta1;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.NumericUpDown nudEthalonCompareDelta;
@@ -2853,16 +2840,57 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Etl;
         private System.Windows.Forms.DataGridViewTextBoxColumn Compare;
         private System.Windows.Forms.DataGridViewButtonColumn Btn;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Panel plAdditionalSettings;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.Panel panel25;
+        private System.Windows.Forms.Panel panel26;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label lblVoltage3;
+        private System.Windows.Forms.Label lblVoltage2;
+        private System.Windows.Forms.Label lblVoltage1;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Panel panel27;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.Panel panel28;
+        private System.Windows.Forms.Panel panel29;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Button btnSetBorders;
+        private System.Windows.Forms.NumericUpDown nudHighBorder;
+        private System.Windows.Forms.NumericUpDown nudLowBorder;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.Panel panel30;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.Panel panel31;
+        private System.Windows.Forms.Panel panel32;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.NumericUpDown nudACSDelay;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.Button btnSetRelayDelay;
+        private System.Windows.Forms.NumericUpDown nudRelayDelay;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Panel panel33;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.Panel panel43;
+        private System.Windows.Forms.Panel panel44;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Button btnCurrentCoeff;
+        private System.Windows.Forms.NumericUpDown nudCurrentCoeff;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Panel panel45;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.Panel panel46;
+        private System.Windows.Forms.Panel panel47;
         private System.Windows.Forms.CheckBox cbAsuTpLine4;
         private System.Windows.Forms.CheckBox cbAsuTpLine3;
         private System.Windows.Forms.CheckBox cbAsuTpLine2;
         private System.Windows.Forms.CheckBox cbAsuTpLine1;
-        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label73;
         private System.Windows.Forms.Button btnSetAsuTpLags;
-        private System.Windows.Forms.Panel panel21;
-        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Panel panel48;
+        private System.Windows.Forms.Label label74;
     }
 }
 

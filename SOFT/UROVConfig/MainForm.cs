@@ -915,7 +915,18 @@ namespace UROVConfig
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
             //            int step = maxTime / customLabelsCount;
             int neareastValue = 100000; // приближение к 100 мс
-            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
+            int maxTimeDivideLabels = maxTime / customLabelsCount;
+            while(maxTimeDivideLabels < neareastValue)
+            {
+                neareastValue /= 10;
+            }
+
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTimeDivideLabels) / neareastValue, 0)) * neareastValue;
+            if(step < 1)
+            {
+                step = 1;
+            }
+
             int clCount = maxTime / step;
 
             for (int kk = 0; kk < targetChart.ChartAreas.Count; kk++)
@@ -1452,14 +1463,23 @@ namespace UROVConfig
             string cguid = Config.Instance.ControllerGUID;
             string savedName = Config.Instance.ControllerGUID;
             if (ControllerNames.Instance.Names.ContainsKey(cguid))
+            {
                 savedName = ControllerNames.Instance.Names[cguid];
+            }
+
+            if(savedName.Length < 1)
+            {
+                savedName = "<без имени>";
+            }
 
             if (IsConnected())
             {
-                connectStatusMessage.Text = "Соединено, контроллер " + savedName;
+                connectStatusMessage.Text = "Соединено, контроллер \"" + savedName + "\"";
             }
             else
+            {
                 connectStatusMessage.Text = "";
+            }
         }
 
         private void ParseAskUUID(Answer a)
@@ -1910,6 +1930,11 @@ namespace UROVConfig
             node.ImageIndex = 5;
             node.SelectedImageIndex = node.ImageIndex;
 
+            node = this.treeView.Nodes[0].Nodes.Add("Дополнительные настройки");
+            node.Tag = TreeNodeType.AdditionalSettingsNode;
+            node.ImageIndex = 5;
+            node.SelectedImageIndex = node.ImageIndex;
+
             if (featuresSettings.SDAvailable)
             {
                 TreeNode n = this.treeView.Nodes[0].Nodes.Add("SD-карта");
@@ -1981,6 +2006,7 @@ namespace UROVConfig
 
 
             plMainSettings.Dock = DockStyle.Fill;
+            plAdditionalSettings.Dock = DockStyle.Fill;
             this.plSDSettings.Dock = DockStyle.Fill;
             this.logDataGrid.Dock = DockStyle.Fill;
             this.plEthalonChart.Dock = DockStyle.Fill;
@@ -2372,6 +2398,13 @@ namespace UROVConfig
         {
             this.plMainSettings.BringToFront();
             treeView.SelectedNode = treeView.Nodes[0].Nodes[0];
+        }
+
+        private void ShowAdditionalSettings()
+        {
+            this.plAdditionalSettings.BringToFront();
+            treeView.SelectedNode = treeView.Nodes[0].Nodes[1];
+
         }
 
 
@@ -3981,11 +4014,21 @@ namespace UROVConfig
 
 
             // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
-            // int step = maxTime / customLabelsCount;
+            //            int step = maxTime / customLabelsCount;
             int neareastValue = 100000; // приближение к 100 мс
-            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTime / customLabelsCount) / neareastValue, 0)) * neareastValue;
-            int clCount = maxTime / step;
+            int maxTimeDivideLabels = maxTime / customLabelsCount;
+            while (maxTimeDivideLabels < neareastValue)
+            {
+                neareastValue /= 10;
+            }
 
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTimeDivideLabels) / neareastValue, 0)) * neareastValue;
+            if (step < 1)
+            {
+                step = 1;
+            }
+
+            int clCount = maxTime / step;
             for (int kk = 0; kk < vcf.chart.ChartAreas.Count; kk++)
             {
                 ChartArea area = vcf.chart.ChartAreas[kk];
@@ -4641,6 +4684,10 @@ namespace UROVConfig
 
                     case TreeNodeType.MainSettingsNode:
                         ShowMainSettings();
+                        break;
+
+                    case TreeNodeType.AdditionalSettingsNode:
+                        ShowAdditionalSettings();
                         break;
 
                     //TODO: Тут другие панели!!!
