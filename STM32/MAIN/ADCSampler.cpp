@@ -613,7 +613,7 @@ void ADCSampler::handleInterrupt()
         // проверяем - надо ли собирать информацию по току за определённый интервал?
         if(canCollectCurrentPeak)
         {
-            if(/*micros() - */currentPeakTimer++ >= currentPeakTimerPeriod)
+            if(/*micros() - */++currentPeakTimer >= currentPeakTimerPeriod)
             {
               currentPeakChannel1.push_back(raw1);
               currentPeakChannel2.push_back(raw2);
@@ -640,7 +640,7 @@ void ADCSampler::handleInterrupt()
         // проверяем, можем ли мы помещать данные по току в обычный, не кольцевой буфер?
         if(canCollectCurrent)
         {
-         if(/*micros() - */currentTimer++ >= CURRENT_TIMER_PERIOD)
+         if(/*micros() - */++currentTimer >= CURRENT_TIMER_PERIOD)
           {            
             if(putAVG(avgCurrentSamplesDone, avgCurrentChannel1, avgCurrentChannel2, avgCurrentChannel3, raw1,raw2,raw3))
             {
@@ -660,7 +660,7 @@ void ADCSampler::handleInterrupt()
         // можем ли мы собирать превью в кольцевой буфер?
         if(canCollectCurrentPreviewData)
         {
-          if(/*micros() - */currentPreviewOscillTimer++ >= CURRENT_TIMER_PERIOD)
+          if(/*micros() - */++currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
           {
             if(putAVG(avgPreviewSamplesDone, avgPreviewChannel1, avgPreviewChannel2, avgPreviewChannel3, raw1,raw2,raw3))
             {
