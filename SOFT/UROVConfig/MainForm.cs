@@ -902,7 +902,7 @@ namespace UROVConfig
             }
 
             // добавляем кол-во импульсов на график
-            targetChart.Legends[0].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", timeList.Count);
+            targetChart.Legends[0].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", timeList.Count);// * Config.Instance.SkipCounter);
 
             // тут добавляем кастомные метки на ось X - времена
             int maxTime = 0;
@@ -3713,11 +3713,12 @@ namespace UROVConfig
             vcf.lblCaption.Text = "Срабатывание от " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
 
             // добавляем кол-во импульсов на график
-            vcf.chart.Legends[1].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", record.InterruptData.Count);
+            vcf.chart.Legends[1].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", record.InterruptData.Count * Config.Instance.SkipCounter);
             vcf.chart.Legends[1].CustomItems[0].Cells["EthalonPulses"].Text = String.Format("Эталон: {0}", record.EthalonData.Count);
             vcf.chart.Legends[1].CustomItems[0].Cells["TrigDate"].Text = "Дата: " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
             vcf.chart.Legends[1].CustomItems[0].Cells["Place"].Text = stationName;
             vcf.chart.Legends[1].CustomItems[0].Cells["PreviewCount"].Text = String.Format("Превью тока: {0} записей", record.PreviewCount);
+            vcf.chart.Legends[1].CustomItems[0].Cells["tFact"].Text = String.Format("t факт: {0} ms", record.MoveTime/1000);
 
 
             System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
@@ -3833,6 +3834,11 @@ namespace UROVConfig
                 YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;
             }
 
+            // вставляем метку окончания импульсов
+            int lastInterruptIdx = XValuesInterrupt.Count - 1;
+
+
+
             // а вот тут - добавлять следующие точки от конца прерывания до конца информации по токам
             if (record.CurrentTimes.Count > 0)
             {
@@ -3862,6 +3868,35 @@ namespace UROVConfig
                 interruptSerie.Points[offsetLabelIndex].MarkerSize = 6;
 
             }
+
+            // расчётная длительность импульсов прерывания
+            int computedInterruptLength = -1;
+
+
+            if (lastInterruptIdx != -1)
+            {
+                interruptSerie.Points[lastInterruptIdx].Label = String.Format("КОНЕЦ ПРЕРЫВАНИЯ, {0} ms", Convert.ToInt32(interruptSerie.Points[lastInterruptIdx].XValue / 1000));
+                interruptSerie.Points[lastInterruptIdx].LabelBorderDashStyle = ChartDashStyle.Solid;
+                interruptSerie.Points[lastInterruptIdx].LabelBorderWidth = 1;
+                interruptSerie.Points[lastInterruptIdx].LabelBorderColor = Color.Black;
+                interruptSerie.Points[lastInterruptIdx].LabelBackColor = Color.Black;
+                interruptSerie.Points[lastInterruptIdx].LabelForeColor = Color.White;
+
+                interruptSerie.Points[lastInterruptIdx].MarkerColor = Color.Red;
+                interruptSerie.Points[lastInterruptIdx].MarkerStyle = MarkerStyle.Circle;
+                interruptSerie.Points[lastInterruptIdx].MarkerSize = 6;
+
+                computedInterruptLength = Convert.ToInt32(interruptSerie.Points[lastInterruptIdx].XValue) - pulsesOffset;
+            }
+
+
+            if(computedInterruptLength != -1)
+            {
+                vcf.chart.Legends[1].CustomItems[0].Cells["tComputed"].Text = String.Format("t расчёт: {0} ms", computedInterruptLength/1000);
+
+            }
+
+
 
             //xCoord =  interruptTime;
             xCoord = pulsesOffset;

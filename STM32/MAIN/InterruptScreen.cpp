@@ -195,8 +195,9 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 
   String str;
 
+  uint32_t toSkip = Settings.getSkipCounter();
   str = F("Импульсов: ");
-  str += InterruptData.size();
+  str += InterruptData.size() * toSkip;
   
   
   str += F("; ресурс: ");

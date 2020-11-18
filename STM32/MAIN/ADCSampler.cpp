@@ -249,7 +249,7 @@ void ADCSampler::startCollectCurrent()
   currentChannel1.clear();
   currentChannel2.clear();
   currentChannel3.clear();
-  currentTimer = micros();
+  currentTimer = 0;//micros();
 
   #ifndef _CURRENT_COLLECT_OFF
     avgCurrentSamplesDone = 0;
@@ -280,7 +280,7 @@ void ADCSampler::startDetectCurrentPeak(uint32_t numSamples,uint32_t timerPeriod
   currentPeakChannel3.clear();
 
   // запускаем сбор информации
-  currentPeakTimer = micros();
+  currentPeakTimer = 0;//micros();
   canCollectCurrentPeak = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ DBGLN("ADCSampler::begin START.");
   dataReady = false;
 
   currentPreviewData.init();
-  currentPreviewOscillTimer = micros();
+  currentPreviewOscillTimer = 0;//micros();
   canCollectCurrentPreviewData = true;
   
   #ifndef _CURRENT_COLLECT_OFF
@@ -411,6 +411,7 @@ bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* ar
       if(samplesCounter >= CURRENT_AVG_SAMPLES)
       {
           samplesCounter = 0;
+         // HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_5);
           return true;
       }
 #endif // #ifndef _CURRENT_COLLECT_OFF      
@@ -479,7 +480,8 @@ void ADCSampler::startCollectPreview()
       #ifndef _CURRENT_COLLECT_OFF
       avgPreviewSamplesDone = 0;
       #endif
-      canCollectCurrentPreviewData = true;  
+      canCollectCurrentPreviewData = true;
+      currentPreviewOscillTimer = 0;  
   interrupts();     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -611,7 +613,7 @@ void ADCSampler::handleInterrupt()
         // проверяем - надо ли собирать информацию по току за определённый интервал?
         if(canCollectCurrentPeak)
         {
-            if(micros() - currentPeakTimer >= currentPeakTimerPeriod)
+            if(/*micros() - */++currentPeakTimer >= currentPeakTimerPeriod)
             {
               currentPeakChannel1.push_back(raw1);
               currentPeakChannel2.push_back(raw2);
@@ -627,7 +629,7 @@ void ADCSampler::handleInterrupt()
                 
               }
 
-              currentPeakTimer = micros();
+              currentPeakTimer = 0;//micros();
             }
           
         } // if(canCollectCurrentPeak)
@@ -638,8 +640,8 @@ void ADCSampler::handleInterrupt()
         // проверяем, можем ли мы помещать данные по току в обычный, не кольцевой буфер?
         if(canCollectCurrent)
         {
-         if(micros() - currentTimer >= CURRENT_TIMER_PERIOD)
-          {
+         if(/*micros() - */++currentTimer >= CURRENT_TIMER_PERIOD)
+          {            
             if(putAVG(avgCurrentSamplesDone, avgCurrentChannel1, avgCurrentChannel2, avgCurrentChannel3, raw1,raw2,raw3))
             {
               uint16_t avg1,avg2,avg3;
@@ -650,7 +652,7 @@ void ADCSampler::handleInterrupt()
               currentChannel2.push_back(avg2);
               currentChannel3.push_back(avg3);
             }
-              currentTimer = micros();
+              currentTimer = 0;//micros();
           } 
         } // if(canCollectCurrent)
 
@@ -658,7 +660,7 @@ void ADCSampler::handleInterrupt()
         // можем ли мы собирать превью в кольцевой буфер?
         if(canCollectCurrentPreviewData)
         {
-          if(micros() - currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
+          if(/*micros() - */++currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
           {
             if(putAVG(avgPreviewSamplesDone, avgPreviewChannel1, avgPreviewChannel2, avgPreviewChannel3, raw1,raw2,raw3))
             {
@@ -667,7 +669,7 @@ void ADCSampler::handleInterrupt()
               
               currentPreviewData.add(micros(),avg1,avg2,avg3);
             }
-              currentPreviewOscillTimer = micros();
+              currentPreviewOscillTimer = 0;//micros();
           }
         } // canCollectCurrentPreviewData
         
