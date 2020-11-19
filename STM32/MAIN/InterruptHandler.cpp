@@ -1036,6 +1036,7 @@ void InterruptHandlerClass::update()
         int32_t datArrivTm = 0;
         if(OscillData.times.size() > 0 && InterruptData.size() > 0)
         {
+          /*
           uint32_t earlierCurrentRecord = OscillData.earlierRecordTime();
           uint32_t firstInterruptRecord = InterruptData[0];
 
@@ -1045,6 +1046,9 @@ void InterruptHandlerClass::update()
             //datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
             datArrivTm = firstInterruptRecord - earlierCurrentRecord;
           }
+          */
+          // хардкодим дату поступления данных
+          datArrivTm = 250ul*CURRENT_TIMER_PERIOD * CURRENT_AVG_SAMPLES * CURRENT_LIST_SIZE;
         }
 
         //TODO: УБРАТЬ!!!

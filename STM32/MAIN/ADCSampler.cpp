@@ -217,7 +217,6 @@ volatile uint16_t avgCurrentSamplesDone = 0; // кол-во собранных �
 volatile uint16_t avgCurrentChannel1[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgCurrentChannel2[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgCurrentChannel3[CURRENT_AVG_SAMPLES] = {0};
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // _CURRENT_COLLECT_OFF
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -249,10 +248,15 @@ void ADCSampler::startCollectCurrent()
   currentChannel1.clear();
   currentChannel2.clear();
   currentChannel3.clear();
-  currentTimer = 0;//micros();
+
+  // копируем часть уже накопленных сэмплов из списков превью по току в список постоянного накопления по току      
+  currentTimer = currentPreviewOscillTimer;//micros();
+  memcpy((void*)avgCurrentChannel1,(void*)avgPreviewChannel1,sizeof(avgCurrentChannel1));
+  memcpy((void*)avgCurrentChannel2,(void*)avgPreviewChannel2,sizeof(avgCurrentChannel2));
+  memcpy((void*)avgCurrentChannel3,(void*)avgPreviewChannel3,sizeof(avgCurrentChannel3));
 
   #ifndef _CURRENT_COLLECT_OFF
-    avgCurrentSamplesDone = 0;
+    avgCurrentSamplesDone = avgPreviewSamplesDone;
   #endif
 
   canCollectCurrent = true;
@@ -480,8 +484,8 @@ void ADCSampler::startCollectPreview()
       #ifndef _CURRENT_COLLECT_OFF
       avgPreviewSamplesDone = 0;
       #endif
-      canCollectCurrentPreviewData = true;
       currentPreviewOscillTimer = 0;  
+      canCollectCurrentPreviewData = true;
   interrupts();     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

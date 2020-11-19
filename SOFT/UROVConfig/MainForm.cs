@@ -3784,8 +3784,6 @@ namespace UROVConfig
             //xCoord += xStep;
             //interruptSerie.Points.Add(ptFake1);
 
-            // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
-            int offsetLabelIndex = -1;
 
             if(record.CurrentTimes.Count > 0)
             {
@@ -3796,13 +3794,16 @@ namespace UROVConfig
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
-                    offsetLabelIndex = z;
+//                    offsetLabelIndex = z;
                 }
             }
 
 
             XValuesInterrupt.Add(xCoord);
             YValuesInterrupt.Add(0);
+
+            // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
+            int offsetLabelIndex = XValuesInterrupt.Count-1;
 
 
             // теперь считаем все остальные точки
