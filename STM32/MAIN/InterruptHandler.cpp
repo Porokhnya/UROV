@@ -798,19 +798,19 @@ void InterruptHandlerClass::update()
       {
         // сработало реле защиты
 
+        noInterrupts();
         // запрещаем собирать данные превью по току
         adcSampler.stopCollectPreview();
-
         // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
         adcSampler.startCollectCurrent();
         
 
         #ifdef PREDICT_ENABLED
-        noInterrupts();
           predictOff(); // отключаем сбор предсказаний
-        interrupts();
         #endif
 
+        interrupts();
+        
      //   DBGLN(F("RELAY TRIGGERED, WAIT FOR PULSES BEGIN..."));
         
         timer = micros(); // запоминаем время срабатывания реле защиты
@@ -832,11 +832,16 @@ void InterruptHandlerClass::update()
       if(predictTriggered()) // сработало предсказание?
       {
 
+        noInterrupts();
+
         // запрещаем собирать данные превью по току
         adcSampler.stopCollectPreview();
 
         // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
         adcSampler.startCollectCurrent();
+
+        interrupts();
+
 
         // сохраняем время срабатывания защиты
         relayTriggeredTime = RealtimeClock.getTime();
@@ -1011,7 +1016,7 @@ void InterruptHandlerClass::update()
 //        Serial.println("STAGE 4"); Serial.flush();
 
 
-//        noInterrupts();
+        noInterrupts();
         
            // заканчиваем сбор данных по току, копируем данные по току в локальный список
            
@@ -1021,11 +1026,13 @@ void InterruptHandlerClass::update()
            uint16_t previewCount;
            OscillData.clear();
            OscillData = adcSampler.getListOfCurrent(previewCount);//false);
-        
-//        interrupts();
 
-        // разрешаем собирать данные превью по току
-        adcSampler.startCollectPreview();
+          // разрешаем собирать данные превью по току
+          adcSampler.startCollectPreview();
+           
+        
+        interrupts();
+
 
 
   //      Serial.println("STAGE 5"); Serial.flush();
@@ -1043,12 +1050,12 @@ void InterruptHandlerClass::update()
           datArrivTm = 0;
           if(earlierCurrentRecord != 0xFFFFFFFF)
           {
-            //datArrivTm = max(earlierCurrentRecord,firstInterruptRecord) - min(earlierCurrentRecord,firstInterruptRecord);
             datArrivTm = firstInterruptRecord - earlierCurrentRecord;
           }
           */
-          // хардкодим дату поступления данных
-          datArrivTm = 250ul*CURRENT_TIMER_PERIOD * CURRENT_AVG_SAMPLES * CURRENT_LIST_SIZE;
+          
+          // высчитываем дату поступления данных
+          datArrivTm = 250ul*CURRENT_TIMER_PERIOD * CURRENT_AVG_SAMPLES * previewCount;
         }
 
         //TODO: УБРАТЬ!!!
