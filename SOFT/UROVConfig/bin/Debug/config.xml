@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Config xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ChartPhase1Visible>true</ChartPhase1Visible>
+  <ChartPhase2Visible>false</ChartPhase2Visible>
+  <ChartPhase3Visible>true</ChartPhase3Visible>
+</Config>

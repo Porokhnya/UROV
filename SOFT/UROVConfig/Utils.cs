@@ -856,6 +856,7 @@ namespace UROVConfig
         private static object lockFlag = new object();
         private static Config instance;
 
+        [XmlIgnore]
         public static Config Instance
         {
             get
@@ -864,8 +865,31 @@ namespace UROVConfig
                 {
                     if (instance == null)
                     {
-                       
-                        instance = new Config();                     
+
+                        // instance = new Config();                     
+                        try
+                        {
+                            //Пытаемся загрузить файл с диска и десериализовать его
+                            using (FileStream fs =
+                                new FileStream(Application.StartupPath
+                                + "\\config.xml", FileMode.Open))
+                            {
+                                System.Xml.Serialization.XmlSerializer xs =
+                                    new System.Xml.Serialization.XmlSerializer(typeof(Config));
+
+                                instance = (Config)xs.Deserialize(fs);
+
+
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            //Если не удалось десериализовать то просто создаем новый экземпляр
+                            instance = new Config();
+                        }
+
+
+                        instance.Clear();
 
                     } // if instance == null
                 } // lock
@@ -874,6 +898,21 @@ namespace UROVConfig
 
         }
 
+        public static void Reload()
+        {
+            instance = null;
+        }
+
+        public void Save()
+        {
+            using (FileStream fs =
+              new FileStream(Application.StartupPath + "\\config.xml", FileMode.Create))
+            {
+                System.Xml.Serialization.XmlSerializer xs =
+                    new System.Xml.Serialization.XmlSerializer(typeof(Config));
+                xs.Serialize(fs, instance);
+            }
+        }
         private Config()
         {
         }
@@ -909,7 +948,18 @@ namespace UROVConfig
             currentCoeff = 1;
         }
 
+        [XmlElement("ChartPhase1Visible")]
+        public bool ChartPhase1Visible { get; set; }
+
+        [XmlElement("ChartPhase2Visible")]
+        public bool ChartPhase2Visible { get; set; }
+
+        [XmlElement("ChartPhase3Visible")]
+        public bool ChartPhase3Visible { get; set; }
+
+
         private int skipCounter = 1;
+        [XmlIgnore]
         public int SkipCounter
         {
             get { return skipCounter; }
@@ -917,6 +967,7 @@ namespace UROVConfig
         }
 
         private int ethalonCompareDelta = 50;
+        [XmlIgnore]
         public int EthalonCompareDelta
         {
             get { return ethalonCompareDelta; }
@@ -924,6 +975,7 @@ namespace UROVConfig
         }
 
         private uint asuTpFlags = 0xFF;
+        [XmlIgnore]
         public uint AsuTpFlags
         {
             get { return asuTpFlags; }
@@ -935,6 +987,7 @@ namespace UROVConfig
         //DEPRECATED: private int motoresourceCurrent2 = 0;
         //DEPRECATED: private int motoresourceCurrent3 = 0;
 
+        [XmlIgnore]
         public int MotoresourceCurrent1 { get { return motoresourceCurrent1; } set { motoresourceCurrent1 = value; } }
         //DEPRECATED: public int MotoresourceCurrent2 { get { return motoresourceCurrent2; } set { motoresourceCurrent2 = value; } }
         //DEPRECATED: public int MotoresourceCurrent3 { get { return motoresourceCurrent3; } set { motoresourceCurrent3 = value; } }
@@ -943,6 +996,7 @@ namespace UROVConfig
         //DEPRECATED: private int motoresourceMax2 = 0;
         //DEPRECATED: private int motoresourceMax3 = 0;
 
+        [XmlIgnore]
         public int MotoresourceMax1 { get { return motoresourceMax1; } set { motoresourceMax1 = value; } }
         //DEPRECATED: public int MotoresourceMax2 { get { return motoresourceMax2; } set { motoresourceMax2 = value; } }
         //DEPRECATED: public int MotoresourceMax3 { get { return motoresourceMax3; } set { motoresourceMax3 = value; } }
@@ -951,6 +1005,7 @@ namespace UROVConfig
         //DEPRECATED: private int pulses2 = 0;
         //DEPRECATED: private int pulses3 = 0;
 
+        [XmlIgnore]
         public int Pulses1 { get { return pulses1; } set { pulses1 = value; } }
         //DEPRECATED: public int Pulses2 { get { return pulses2; } set { pulses2 = value; } }
         //DEPRECATED: public int Pulses3 { get { return pulses3; } set { pulses3 = value; } }
@@ -959,6 +1014,7 @@ namespace UROVConfig
         //DEPRECATED: private int delta2 = 0;
         //DEPRECATED: private int delta3 = 0;
 
+        [XmlIgnore]
         public int Delta1 { get { return delta1; } set { delta1 = value; } }
         //DEPRECATED: public int Delta2 { get { return delta2; } set { delta2 = value; } }
         //DEPRECATED: public int Delta3 { get { return delta3; } set { delta3 = value; } }
@@ -966,19 +1022,25 @@ namespace UROVConfig
         private int lowBorder = 0;
         private int highBorder = 0;
 
+        [XmlIgnore]
         public int LowBorder { get { return lowBorder; } set { lowBorder = value; } }
+        [XmlIgnore]
         public int HighBorder { get { return highBorder; } set { highBorder = value; } }
 
         private int relayDelay = 0;
+        [XmlIgnore]
         public int RelayDelay { get { return relayDelay; } set { relayDelay = value; } }
 
         private int currentCoeff = 0;
+        [XmlIgnore]
         public int CurrentCoeff { get { return currentCoeff; } set { currentCoeff = value; } }
 
         private int acsDelay = 0;
+        [XmlIgnore]
         public int ACSDelay { get { return acsDelay; } set { acsDelay = value; } }
 
         private string controllerGUID = "";
+        [XmlIgnore]
         public string ControllerGUID { get { return controllerGUID; } set { controllerGUID = value; } }
 
 

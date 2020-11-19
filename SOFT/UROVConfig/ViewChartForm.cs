@@ -566,11 +566,55 @@ namespace UROVConfig
         {
             if (avail) // есть токи
             {
-                chart.ChartAreas[0].Position.Height = 26;
 
-                chart.ChartAreas[1].Visible = true;
-                chart.ChartAreas[2].Visible = true;
-                chart.ChartAreas[3].Visible = true;
+                int cntOfVisiblePhases = 0;
+                Config conf = Config.Instance;
+
+                if(conf.ChartPhase1Visible)
+                {
+                    cntOfVisiblePhases++;
+                }
+
+                if (conf.ChartPhase2Visible)
+                {
+                    cntOfVisiblePhases++;
+                }
+
+                if (conf.ChartPhase3Visible)
+                {
+                    cntOfVisiblePhases++;
+                }
+
+
+                if(cntOfVisiblePhases < 1) // нет ни одной видимой фазы
+                {
+                    chart.ChartAreas[0].Position.Height = 80;// 26;
+                    chart.ChartAreas[1].Visible = false;
+                    chart.ChartAreas[2].Visible = false;
+                    chart.ChartAreas[3].Visible = false;
+                }
+                else
+                {
+                    int availHeight = 80 - 26; // доступная высота для фаз, в процентах (не считая графика прерывания)
+                    int onePhaseHeight = availHeight / cntOfVisiblePhases;
+
+                    chart.ChartAreas[1].Visible = conf.ChartPhase1Visible;
+                    chart.ChartAreas[1].Position.Height = onePhaseHeight;
+
+                    chart.ChartAreas[2].Visible = conf.ChartPhase2Visible;
+                    chart.ChartAreas[2].Position.Height = onePhaseHeight;
+
+                    chart.ChartAreas[3].Visible = conf.ChartPhase3Visible;
+                    chart.ChartAreas[3].Position.Height = onePhaseHeight;
+
+                }
+
+                /*
+                chart.ChartAreas[0].Position.Height = 80;// 26;
+                chart.ChartAreas[1].Visible = false;
+                chart.ChartAreas[2].Visible = false;
+                chart.ChartAreas[3].Visible = false;
+                */
 
                 chart.Series[2].Enabled = true;
                 chart.Series[3].Enabled = true;
@@ -629,10 +673,22 @@ namespace UROVConfig
                 area.CursorY.AutoScroll = true;
             }
 
+            /*
+            // все птички по умолчанию включены
             for(int i=0;i<chart.Series.Count;i++)
             {
                 chart.Series[i].SetCustomProperty("CHECK", "☑");
             }
+            */
+
+            Config conf = Config.Instance;
+
+            // включаем птички по умолчанию только для графика прерываний
+            chart.Series["serieEthalon"].SetCustomProperty("CHECK", "☑");
+            chart.Series["serieInterrupt"].SetCustomProperty("CHECK", "☑");
+            chart.Series["seriePhase1"].SetCustomProperty("CHECK", conf.ChartPhase1Visible ? "☑" : "☐");
+            chart.Series["seriePhase2"].SetCustomProperty("CHECK", conf.ChartPhase2Visible ? "☑" : "☐");
+            chart.Series["seriePhase3"].SetCustomProperty("CHECK", conf.ChartPhase3Visible ? "☑" : "☐");
 
             chart.Legends[0].CellColumns.Clear();
 
@@ -681,20 +737,20 @@ namespace UROVConfig
 
                 if (!ethalonVisible)
                 {
-                    chart.Series["serie1"].Color = Color.FromArgb(0, chart.Series["serie1"].Color);
+                    chart.Series["serieEthalon"].Color = Color.FromArgb(0, chart.Series["serieEthalon"].Color);
                 }
                 else
                 {
-                    chart.Series["serie1"].Color = ColorTranslator.FromHtml(chart.Series["serie1"].GetCustomProperty("COLOR"));
+                    chart.Series["serieEthalon"].Color = ColorTranslator.FromHtml(chart.Series["serieEthalon"].GetCustomProperty("COLOR"));
                 }
 
                 if (!interruptVisible)
                 {
-                    chart.Series["serie2"].Color = Color.FromArgb(0, chart.Series["serie2"].Color);
+                    chart.Series["serieInterrupt"].Color = Color.FromArgb(0, chart.Series["serieInterrupt"].Color);
                 }
                 else
                 {
-                    chart.Series["serie2"].Color = ColorTranslator.FromHtml(chart.Series["serie2"].GetCustomProperty("COLOR"));
+                    chart.Series["serieInterrupt"].Color = ColorTranslator.FromHtml(chart.Series["serieInterrupt"].GetCustomProperty("COLOR"));
                 }
             }
         }
@@ -745,6 +801,7 @@ namespace UROVConfig
                 && result.Object is LegendItem && e.Button == MouseButtons.Left)
             {
                 LegendItem legendItem = (LegendItem)result.Object;
+                Config conf = Config.Instance;
 
                 Series series = chart.Series[legendItem.SeriesName];
 
@@ -752,12 +809,12 @@ namespace UROVConfig
                 {
                     series.SetCustomProperty("CHECK", "☐");
                     // series.Color = Color.FromArgb(0, series.Color);
-                    if (legendItem.SeriesName == "serie1")
+                    if (legendItem.SeriesName == "serieEthalon")
                     {
                         ethalonVisible = false;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
-                    else if (legendItem.SeriesName == "serie2")
+                    else if (legendItem.SeriesName == "serieInterrupt")
                     {
                         interruptVisible = false;
                         dealWithEthalonAndInterrupt(series.ChartArea);
@@ -765,21 +822,34 @@ namespace UROVConfig
                     else
                     {
                         chart.ChartAreas[series.ChartArea].Visible = false;
+                        if(legendItem.SeriesName == "seriePhase1")
+                        {
+                            conf.ChartPhase1Visible = false;
+                        }
+                        else if (legendItem.SeriesName == "seriePhase2")
+                        {
+                            conf.ChartPhase2Visible = false;
+                        }
+                        else if (legendItem.SeriesName == "seriePhase3")
+                        {
+                            conf.ChartPhase3Visible = false;
+                        }
+
                     }
 
-                    
+
                 }
                 else
                 {
                     series.SetCustomProperty("CHECK", "☑");
                     //    series.Color = ColorTranslator.FromHtml(
                     //             series.GetCustomProperty("COLOR"));
-                    if (legendItem.SeriesName == "serie1")
+                    if (legendItem.SeriesName == "serieEthalon")
                     {
                         ethalonVisible = true;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
-                    else if (legendItem.SeriesName == "serie2")
+                    else if (legendItem.SeriesName == "serieInterrupt")
                     {
                         interruptVisible = true;
                         dealWithEthalonAndInterrupt(series.ChartArea);
@@ -787,6 +857,18 @@ namespace UROVConfig
                     else
                     {
                         chart.ChartAreas[series.ChartArea].Visible = true;
+                        if (legendItem.SeriesName == "seriePhase1")
+                        {
+                            conf.ChartPhase1Visible = true;
+                        }
+                        else if (legendItem.SeriesName == "seriePhase2")
+                        {
+                            conf.ChartPhase2Visible = true;
+                        }
+                        else if (legendItem.SeriesName == "seriePhase3")
+                        {
+                            conf.ChartPhase3Visible = true;
+                        }
                     }
 
                     

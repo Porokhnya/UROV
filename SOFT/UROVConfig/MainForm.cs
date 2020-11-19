@@ -4401,6 +4401,7 @@ namespace UROVConfig
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             ControllerNames.Instance.Save();
+            Config.Instance.Save();
         }
 
         private void btnControllerName_Click(object sender, EventArgs e)
