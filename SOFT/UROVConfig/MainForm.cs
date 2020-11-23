@@ -3838,6 +3838,7 @@ namespace UROVConfig
             // вставляем метку окончания импульсов
             int lastInterruptIdx = XValuesInterrupt.Count - 1;
 
+            bool canAddInterruptLabels = XValuesInterrupt.Count > 1;
 
 
             // а вот тут - добавлять следующие точки от конца прерывания до конца информации по токам
@@ -3855,7 +3856,7 @@ namespace UROVConfig
 
 
             interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
-            if(offsetLabelIndex != -1)
+            if(offsetLabelIndex != -1 && canAddInterruptLabels)
             {
                 interruptSerie.Points[offsetLabelIndex].Label = String.Format("НАЧАЛО ПРЕРЫВАНИЯ, {0} ms", pulsesOffset/1000);
                 interruptSerie.Points[offsetLabelIndex].LabelBorderDashStyle = ChartDashStyle.Solid;
@@ -3874,7 +3875,7 @@ namespace UROVConfig
             int computedInterruptLength = -1;
 
 
-            if (lastInterruptIdx != -1)
+            if (lastInterruptIdx != -1 && canAddInterruptLabels)
             {
                 interruptSerie.Points[lastInterruptIdx].Label = String.Format("КОНЕЦ ПРЕРЫВАНИЯ, {0} ms", Convert.ToInt32(interruptSerie.Points[lastInterruptIdx].XValue / 1000));
                 interruptSerie.Points[lastInterruptIdx].LabelBorderDashStyle = ChartDashStyle.Solid;

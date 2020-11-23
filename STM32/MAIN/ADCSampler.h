@@ -275,9 +275,6 @@ class ADCSampler
     CurrentOscillData getListOfCurrent(uint16_t& previewCount, bool withNoInterrupts=true);
 
 
-    // начинает сбор информации по среднему значению тока на каналах за определённый период времени
-    void startDetectCurrentPeak(uint32_t numSamples,uint32_t timerPeriod);
-
     // проверяет, собрана ли информация по среднему значению тока на каналах за определённый период времени
     bool currentPeakDataAvailable();
 
@@ -313,14 +310,9 @@ class ADCSampler
 
 
     // усреднённые данные по току на каналах
-    UInt16Vector currentPeakChannel1;
-    UInt16Vector currentPeakChannel2;
-    UInt16Vector currentPeakChannel3;
-    volatile bool canCollectCurrentPeak;
-    volatile uint32_t currentPeakTimer;
-    volatile uint32_t currentPeakTimerPeriod;
+    volatile uint16_t currentPeakBuffers[2][3];
+    volatile uint8_t currentPeakBufferIndex;
     volatile bool currentPeakDataReady;
-    volatile uint32_t currentPeakNumSamples;
 
 
     volatile bool canCollectCurrent;
