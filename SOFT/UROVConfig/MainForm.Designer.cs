@@ -258,6 +258,7 @@
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -942,6 +943,8 @@
             this.nudHighBorder.Name = "nudHighBorder";
             this.nudHighBorder.Size = new System.Drawing.Size(167, 20);
             this.nudHighBorder.TabIndex = 6;
+            this.toolTip.SetToolTip(this.nudHighBorder, "Верхний порог по току, по превышении которого \r\nпринимается решение о нештатной с" +
+        "итуации.");
             // 
             // nudLowBorder
             // 
@@ -954,6 +957,7 @@
             this.nudLowBorder.Name = "nudLowBorder";
             this.nudLowBorder.Size = new System.Drawing.Size(167, 20);
             this.nudLowBorder.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudLowBorder, "НЕ ИСПОЛЬЗУЕТСЯ");
             // 
             // label50
             // 
@@ -1041,6 +1045,9 @@
             this.nudMaxIdleTime.Name = "nudMaxIdleTime";
             this.nudMaxIdleTime.Size = new System.Drawing.Size(167, 20);
             this.nudMaxIdleTime.TabIndex = 14;
+            this.toolTip.SetToolTip(this.nudMaxIdleTime, "Время после последнего детектированного импульса с энкодера, \r\nпо наступлению кот" +
+        "орого считается, что импульсов с энкодера \r\nбольше не будет, и надо выдавать гра" +
+        "фики событий.");
             // 
             // label17
             // 
@@ -1114,6 +1121,8 @@
             this.nudRelayDelay.Name = "nudRelayDelay";
             this.nudRelayDelay.Size = new System.Drawing.Size(167, 20);
             this.nudRelayDelay.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudRelayDelay, "При детектировании превышения по току в течение указанного \r\nвремени ожидаются им" +
+        "пульсы энкодера. Если импульсов нет - \r\nподаётся сигнал аварии.");
             // 
             // label55
             // 
@@ -1218,6 +1227,8 @@
             this.nudCurrentCoeff.Name = "nudCurrentCoeff";
             this.nudCurrentCoeff.Size = new System.Drawing.Size(167, 20);
             this.nudCurrentCoeff.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudCurrentCoeff, "Коэффициент пересчёта значений АЦП в значения \r\nтока, в тысячных долях (т.е. 1234" +
+        " - это 1.234)");
             this.nudCurrentCoeff.Value = new decimal(new int[] {
             1,
             0,
@@ -1295,6 +1306,7 @@
             this.cbAsuTpLine4.Size = new System.Drawing.Size(78, 17);
             this.cbAsuTpLine4.TabIndex = 13;
             this.cbAsuTpLine4.Text = "Линия №4";
+            this.toolTip.SetToolTip(this.cbAsuTpLine4, "НЕ ИСПОЛЬЗУЕТСЯ");
             this.cbAsuTpLine4.UseVisualStyleBackColor = true;
             // 
             // cbAsuTpLine3
@@ -1305,6 +1317,8 @@
             this.cbAsuTpLine3.Size = new System.Drawing.Size(78, 17);
             this.cbAsuTpLine3.TabIndex = 12;
             this.cbAsuTpLine3.Text = "Линия №3";
+            this.toolTip.SetToolTip(this.cbAsuTpLine3, "На эту линию выдаётся сигнал при выходе \r\nпараметров кривой движения за допустимы" +
+        "е границы.");
             this.cbAsuTpLine3.UseVisualStyleBackColor = true;
             // 
             // cbAsuTpLine2
@@ -1315,6 +1329,7 @@
             this.cbAsuTpLine2.Size = new System.Drawing.Size(78, 17);
             this.cbAsuTpLine2.TabIndex = 11;
             this.cbAsuTpLine2.Text = "Линия №2";
+            this.toolTip.SetToolTip(this.cbAsuTpLine2, "НЕ ИСПОЛЬЗУЕТСЯ");
             this.cbAsuTpLine2.UseVisualStyleBackColor = true;
             // 
             // cbAsuTpLine1
@@ -1325,6 +1340,7 @@
             this.cbAsuTpLine1.Size = new System.Drawing.Size(78, 17);
             this.cbAsuTpLine1.TabIndex = 10;
             this.cbAsuTpLine1.Text = "Линия №1";
+            this.toolTip.SetToolTip(this.cbAsuTpLine1, "На эту линию выдаётся сигнал \r\nсрабатывания системы.");
             this.cbAsuTpLine1.UseVisualStyleBackColor = true;
             // 
             // label73
@@ -1385,7 +1401,7 @@
             this.plMainSettings.Controls.Add(this.flowLayoutPanel1);
             this.plMainSettings.Location = new System.Drawing.Point(2, 0);
             this.plMainSettings.Name = "plMainSettings";
-            this.plMainSettings.Size = new System.Drawing.Size(762, 635);
+            this.plMainSettings.Size = new System.Drawing.Size(940, 635);
             this.plMainSettings.TabIndex = 9;
             // 
             // flowLayoutPanel1
@@ -1400,7 +1416,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(762, 635);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(940, 635);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // plInfo
@@ -1590,6 +1606,7 @@
             this.nudEthalonCompareDelta.Name = "nudEthalonCompareDelta";
             this.nudEthalonCompareDelta.Size = new System.Drawing.Size(167, 20);
             this.nudEthalonCompareDelta.TabIndex = 13;
+            this.toolTip.SetToolTip(this.nudEthalonCompareDelta, "Отклонение эталонного времени длительности \r\nимпульсов при сравнении графиков.");
             this.nudEthalonCompareDelta.Value = new decimal(new int[] {
             50,
             0,
@@ -1636,6 +1653,7 @@
             this.nudSkipCounter.Name = "nudSkipCounter";
             this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
             this.nudSkipCounter.TabIndex = 10;
+            this.toolTip.SetToolTip(this.nudSkipCounter, resources.GetString("nudSkipCounter.ToolTip"));
             this.nudSkipCounter.Value = new decimal(new int[] {
             1,
             0,
@@ -1755,6 +1773,7 @@
             this.nudMotoresourceMax1.Name = "nudMotoresourceMax1";
             this.nudMotoresourceMax1.Size = new System.Drawing.Size(167, 20);
             this.nudMotoresourceMax1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudMotoresourceMax1, "Максимальный ресурс системы.");
             this.nudMotoresourceMax1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
             // 
             // label11
@@ -1792,6 +1811,7 @@
             this.nudMotoresourceCurrent1.Name = "nudMotoresourceCurrent1";
             this.nudMotoresourceCurrent1.Size = new System.Drawing.Size(86, 20);
             this.nudMotoresourceCurrent1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudMotoresourceCurrent1, "Количество срабатываний системы.");
             this.nudMotoresourceCurrent1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
             // 
             // label7
@@ -1835,7 +1855,7 @@
             this.plImpulses.BackColor = System.Drawing.Color.SteelBlue;
             this.plImpulses.Controls.Add(this.panel9);
             this.plImpulses.Controls.Add(this.panel10);
-            this.plImpulses.Location = new System.Drawing.Point(20, 315);
+            this.plImpulses.Location = new System.Drawing.Point(680, 20);
             this.plImpulses.Margin = new System.Windows.Forms.Padding(10);
             this.plImpulses.Name = "plImpulses";
             this.plImpulses.Padding = new System.Windows.Forms.Padding(2);
@@ -1868,6 +1888,7 @@
             this.nudDelta1.Name = "nudDelta1";
             this.nudDelta1.Size = new System.Drawing.Size(167, 20);
             this.nudDelta1.TabIndex = 11;
+            this.toolTip.SetToolTip(this.nudDelta1, "Дельта кол-ва импульсов при сравнении с эталоном.");
             // 
             // label19
             // 
@@ -1917,6 +1938,7 @@
             this.nudPulses1.Name = "nudPulses1";
             this.nudPulses1.Size = new System.Drawing.Size(167, 20);
             this.nudPulses1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudPulses1, "Эталонное кол-во импульсов при срабатывании.");
             // 
             // label15
             // 
@@ -2552,6 +2574,10 @@
             this.dataGridViewTextBoxColumn18.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
             // 
+            // toolTip
+            // 
+            this.toolTip.IsBalloon = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2878,6 +2904,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown nudMaxIdleTime;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
