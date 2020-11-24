@@ -1120,7 +1120,7 @@ void InterruptHandlerClass::update()
           size_t catchedPulses = InterruptData.size();
       interrupts();
 
-      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
+      if(micros() - thisTimer >= Settings.getMaxIdleTime()) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
       {
 
       //  Serial.println("START WORK WITH INTERRUPT, STAGE 1!"); Serial.flush();

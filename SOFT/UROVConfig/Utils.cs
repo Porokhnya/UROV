@@ -14,6 +14,7 @@ using System.IO;
 
 namespace UROVConfig
 {
+
     public delegate void ShowInterruptInfo(InterruptRecord info);
 
     public enum TreeNodeType
@@ -1038,6 +1039,11 @@ namespace UROVConfig
         private int acsDelay = 0;
         [XmlIgnore]
         public int ACSDelay { get { return acsDelay; } set { acsDelay = value; } }
+
+        private int maxIdleTime = 0;
+        [XmlIgnore]
+        public int MaxIdleTime { get { return maxIdleTime; } set { maxIdleTime = value; } }
+        
 
         private string controllerGUID = "";
         [XmlIgnore]

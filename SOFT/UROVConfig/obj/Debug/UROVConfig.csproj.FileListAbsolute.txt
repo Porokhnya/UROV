@@ -32,7 +32,6 @@ D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.application
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.exe
 D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.pdb
 D:\JOB\UROV\UROV\SOFT\UROVConfig\bin\Debug\UROVConfig.pdb
-D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.csprojResolveAssemblyReference.cache
 C:\UROVConfig\bin\Debug\UROVConfig.exe.config
 C:\UROVConfig\bin\Debug\UROVConfig.exe.manifest
 C:\UROVConfig\bin\Debug\UROVConfig.application
@@ -53,3 +52,4 @@ C:\UROVConfig\obj\Debug\UROVConfig.exe.manifest
 C:\UROVConfig\obj\Debug\UROVConfig.application
 C:\UROVConfig\obj\Debug\UROVConfig.exe
 C:\UROVConfig\obj\Debug\UROVConfig.pdb
+D:\JOB\UROV\UROV\SOFT\UROVConfig\obj\Debug\UROVConfig.csprojResolveAssemblyReference.cache

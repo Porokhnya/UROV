@@ -198,6 +198,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BuildDate.txt" />
     <Content Include="decima.ico" />
     <None Include="Icons\decima-logo.png" />
     <None Include="Icons\sdimages\rescan.png" />
@@ -207,6 +208,9 @@
     <Content Include="program.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>echo %25date%25 &gt; "$(ProjectDir)\BuildDate.txt"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

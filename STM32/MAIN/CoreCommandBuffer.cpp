@@ -285,7 +285,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         else
         if(!strcmp_P(commandName, RDELAY_COMMAND))
         {
-            if(cParser.argsCount() > 2)
+            if(cParser.argsCount() > 3)
             {
               commandHandled = setRDELAY(cParser, pStream);
             }
@@ -1183,7 +1183,9 @@ bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandPars
   
   pStream->print(Settings.getRelayDelay()/1000);
   pStream->print(CORE_COMMAND_PARAM_DELIMITER);
-  pStream->println(Settings.getACSDelay());
+  pStream->print(Settings.getACSDelay());
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(Settings.getMaxIdleTime());
 
 
   return true;
@@ -1191,14 +1193,16 @@ bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandPars
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream)
 {
-  if(parser.argsCount() < 3)
+  if(parser.argsCount() < 4)
     return false;
   
   uint32_t curBorder = atoi(parser.getArg(1))*1000;
   uint16_t curAcsDelay = atoi(parser.getArg(2));
+  uint32_t maxIdleTime = atol(parser.getArg(3));
 
   Settings.setRelayDelay(curBorder);
   Settings.setACSDelay(curAcsDelay);
+  Settings.setMaxIdleTime(maxIdleTime);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

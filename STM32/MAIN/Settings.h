@@ -97,6 +97,9 @@ public:
 
   uint8_t getAsuTpFlags();
   void setAsuTpFlags(uint8_t val);
+
+  uint32_t getMaxIdleTime() { return maxIdleTime; }
+  void setMaxIdleTime(uint32_t val);
     
   private:
 
@@ -106,6 +109,7 @@ public:
     uint32_t motoresource, motoresourceMax;
 
     uint32_t transformerHighBorder, transformerLowBorder;
+    uint32_t maxIdleTime;
 
     uint32_t skipCounter;
 

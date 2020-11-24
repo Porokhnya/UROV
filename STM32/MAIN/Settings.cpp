@@ -306,6 +306,14 @@ void SettingsClass::reloadSettings()
       {
         asuTpFlags = 0xFF; // выдаём сигналы на все линии
       }
+
+      
+       // читаем время ожидания
+      if(!read32(MAX_IDLE_TIME_STORE_ADDRESS,maxIdleTime))
+      {
+        maxIdleTime = INTERRUPT_MAX_IDLE_TIME;
+      }
+
       
       
   } // if(eeprom)  
@@ -371,6 +379,12 @@ void SettingsClass::setEthalonPulseDelta(uint32_t val)
 {
   ethalonPulseDelta = val;
   write32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta);
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setMaxIdleTime(uint32_t val)
+{
+  maxIdleTime = val;
+  write32(MAX_IDLE_TIME_STORE_ADDRESS,maxIdleTime);  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint32_t SettingsClass::getCurrentCoeff()

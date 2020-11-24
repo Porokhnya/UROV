@@ -1690,12 +1690,14 @@ namespace UROVConfig
             {
                 try { Config.Instance.RelayDelay = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.RelayDelay = 0; }
                 try { Config.Instance.ACSDelay = Convert.ToInt32(a.Params[2]); } catch { Config.Instance.ACSDelay = 0; }
+                try { Config.Instance.MaxIdleTime = Convert.ToInt32(a.Params[3]); } catch { Config.Instance.MaxIdleTime = 0; }
 
             }
             else
             {
                 Config.Instance.RelayDelay = 0;
                 Config.Instance.ACSDelay = 0;
+                Config.Instance.MaxIdleTime = 0;
             }
 
             try
@@ -1716,6 +1718,16 @@ namespace UROVConfig
             {
                 nudACSDelay.Value = 0;
                 Config.Instance.ACSDelay = 0;
+            }
+
+            try
+            {
+                nudMaxIdleTime.Value = Config.Instance.MaxIdleTime;
+            }
+            catch
+            {
+                nudMaxIdleTime.Value = 0;
+                Config.Instance.MaxIdleTime = 0;
             }
         }
 
@@ -1907,7 +1919,7 @@ namespace UROVConfig
             if (a.IsOkAnswer)
             {
                 //пришли данные о свободной памяти
-                tbFREERAM.Text = a.Params[1];
+                tbFREERAM.Text = a.Params[1] + " байт";
             }
             else
             {
@@ -2021,6 +2033,9 @@ namespace UROVConfig
             Application.Idle += new EventHandler(Application_Idle);
 
             Text += ", v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            tbSoftwareVersion.Text = "v." + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString() + " от " +
+                Properties.Resources.BuildDate;
+            
         }
 
         private void InitTreeView()
@@ -3518,12 +3533,14 @@ namespace UROVConfig
         {
             lblVoltage1.BackColor = Color.LightGray;
             lblVoltage1.Text = "-";
+            /*
 
             lblVoltage2.BackColor = Color.LightGray;
             lblVoltage2.Text = "-";
 
             lblVoltage3.BackColor = Color.LightGray;
             lblVoltage3.Text = "-";
+            */
         }
 
         private void ParseVoltage(Answer a)
@@ -3561,6 +3578,7 @@ namespace UROVConfig
                 }
                 catch { }
 
+                /*
                 try
                 {
 
@@ -3610,7 +3628,7 @@ namespace UROVConfig
 
                 }
                 catch { }
-
+                */
 
             }
             else
@@ -4552,6 +4570,7 @@ namespace UROVConfig
             string s = "";
             s += Convert.ToString(nudRelayDelay.Value);
             s += PARAM_DELIMITER + Convert.ToString(nudACSDelay.Value);
+            s += PARAM_DELIMITER + Convert.ToString(nudMaxIdleTime.Value);
 
             PushCommandToQueue(SET_PREFIX + "RDELAY" + PARAM_DELIMITER + s, ParseSetRelayDelay);
         }
