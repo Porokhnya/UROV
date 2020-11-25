@@ -314,6 +314,11 @@ void SettingsClass::reloadSettings()
         maxIdleTime = INTERRUPT_MAX_IDLE_TIME;
       }
 
+       // читаем длину перемещения штанги
+      if(!read32(ROD_MOVE_LENGTH_STORE_ADDRESS,rodMoveLength))
+      {
+        rodMoveLength = DEFAULT_ROD_MOVE_LENGTH;
+      }
       
       
   } // if(eeprom)  
@@ -357,6 +362,12 @@ void SettingsClass::update()
   }
 
 #endif // !_CORE_TEMP_OFF  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setRodMoveLength(uint32_t val)
+{
+  rodMoveLength = val;
+  write32(ROD_MOVE_LENGTH_STORE_ADDRESS,rodMoveLength);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 uint8_t SettingsClass::getAsuTpFlags()

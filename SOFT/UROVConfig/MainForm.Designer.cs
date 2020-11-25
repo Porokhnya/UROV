@@ -32,32 +32,32 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Контроллер");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Архив", 6, 6);
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem1 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell1 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem2 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell2 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem5 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell5 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem6 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell6 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle43 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle46 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle47 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle48 = new System.Windows.Forms.DataGridViewCellStyle();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.connectStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusProgressMessage = new System.Windows.Forms.ToolStripStatusLabel();
@@ -259,6 +259,14 @@
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.label21 = new System.Windows.Forms.Label();
+            this.nudRodMoveLength = new System.Windows.Forms.NumericUpDown();
+            this.label22 = new System.Windows.Forms.Label();
+            this.btnSetRodSettings = new System.Windows.Forms.Button();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.label23 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -327,6 +335,10 @@
             this.plArchiveEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).BeginInit();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).BeginInit();
+            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -751,8 +763,8 @@
             // 
             this.plSection.BackColor = System.Drawing.Color.White;
             this.plSection.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.plSection.Controls.Add(this.plAdditionalSettings);
             this.plSection.Controls.Add(this.plMainSettings);
+            this.plSection.Controls.Add(this.plAdditionalSettings);
             this.plSection.Controls.Add(this.plSDSettings);
             this.plSection.Controls.Add(this.plStartPanel);
             this.plSection.Controls.Add(this.archiveLogDataGrid);
@@ -1412,6 +1424,7 @@
             this.flowLayoutPanel1.Controls.Add(this.plDelta);
             this.flowLayoutPanel1.Controls.Add(this.plMotoresourceCurrent);
             this.flowLayoutPanel1.Controls.Add(this.plImpulses);
+            this.flowLayoutPanel1.Controls.Add(this.panel2);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -2066,8 +2079,8 @@
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle33;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -2082,8 +2095,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle34;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -2098,8 +2111,8 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle35;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
@@ -2107,8 +2120,8 @@
             // 
             // Pulses
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle36;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -2156,23 +2169,23 @@
             // 
             // ethalonChart
             // 
-            chartArea1.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea1);
+            chartArea5.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea5);
             this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell1.Name = "PulsesCount";
-            legendItem1.Cells.Add(legendCell1);
-            legend1.CustomItems.Add(legendItem1);
-            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend1.Name = "Legend1";
-            this.ethalonChart.Legends.Add(legend1);
+            legendCell5.Name = "PulsesCount";
+            legendItem5.Cells.Add(legendCell5);
+            legend5.CustomItems.Add(legendItem5);
+            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend5.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend5);
             this.ethalonChart.Location = new System.Drawing.Point(0, 0);
             this.ethalonChart.Name = "ethalonChart";
-            series1.ChartArea = "ethalonChartArea";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.IsVisibleInLegend = false;
-            series1.Legend = "Legend1";
-            series1.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series1);
+            series5.ChartArea = "ethalonChartArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series5.IsVisibleInLegend = false;
+            series5.Legend = "Legend1";
+            series5.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series5);
             this.ethalonChart.Size = new System.Drawing.Size(200, 193);
             this.ethalonChart.TabIndex = 0;
             this.ethalonChart.Text = "chart1";
@@ -2265,8 +2278,8 @@
             // Num1
             // 
             this.Num1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num1.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num1.DefaultCellStyle = dataGridViewCellStyle37;
             this.Num1.HeaderText = "№";
             this.Num1.Name = "Num1";
             this.Num1.ReadOnly = true;
@@ -2281,8 +2294,8 @@
             // 
             // Temp1
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp1.DefaultCellStyle = dataGridViewCellStyle38;
             this.Temp1.HeaderText = "Температура";
             this.Temp1.Name = "Temp1";
             this.Temp1.ReadOnly = true;
@@ -2295,16 +2308,16 @@
             // 
             // Channel1
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel1.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel1.DefaultCellStyle = dataGridViewCellStyle39;
             this.Channel1.HeaderText = "Канал";
             this.Channel1.Name = "Channel1";
             this.Channel1.ReadOnly = true;
             // 
             // Pulses1
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle40;
             this.Pulses1.HeaderText = "Импульсов";
             this.Pulses1.Name = "Pulses1";
             this.Pulses1.ReadOnly = true;
@@ -2344,25 +2357,25 @@
             // 
             // archiveAthalonChart
             // 
-            chartArea2.Name = "ethalonChartArea";
-            this.archiveAthalonChart.ChartAreas.Add(chartArea2);
+            chartArea6.Name = "ethalonChartArea";
+            this.archiveAthalonChart.ChartAreas.Add(chartArea6);
             this.archiveAthalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell2.Name = "PulsesCount";
-            legendItem2.Cells.Add(legendCell2);
-            legend2.CustomItems.Add(legendItem2);
-            legend2.DockedToChartArea = "ethalonChartArea";
-            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend2.IsDockedInsideChartArea = false;
-            legend2.Name = "Legend1";
-            this.archiveAthalonChart.Legends.Add(legend2);
+            legendCell6.Name = "PulsesCount";
+            legendItem6.Cells.Add(legendCell6);
+            legend6.CustomItems.Add(legendItem6);
+            legend6.DockedToChartArea = "ethalonChartArea";
+            legend6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend6.IsDockedInsideChartArea = false;
+            legend6.Name = "Legend1";
+            this.archiveAthalonChart.Legends.Add(legend6);
             this.archiveAthalonChart.Location = new System.Drawing.Point(0, 0);
             this.archiveAthalonChart.Name = "archiveAthalonChart";
-            series2.ChartArea = "ethalonChartArea";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series2.IsVisibleInLegend = false;
-            series2.Legend = "Legend1";
-            series2.Name = "ethalonChartSerie";
-            this.archiveAthalonChart.Series.Add(series2);
+            series6.ChartArea = "ethalonChartArea";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series6.IsVisibleInLegend = false;
+            series6.Legend = "Legend1";
+            series6.Name = "ethalonChartSerie";
+            this.archiveAthalonChart.Series.Add(series6);
             this.archiveAthalonChart.Size = new System.Drawing.Size(200, 134);
             this.archiveAthalonChart.TabIndex = 2;
             this.archiveAthalonChart.Text = "chart1";
@@ -2458,8 +2471,8 @@
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle41;
             this.dataGridViewTextBoxColumn1.HeaderText = "№";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             this.dataGridViewTextBoxColumn1.ReadOnly = true;
@@ -2473,8 +2486,8 @@
             // 
             // dataGridViewTextBoxColumn3
             // 
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle42;
             this.dataGridViewTextBoxColumn3.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
@@ -2487,16 +2500,16 @@
             // 
             // dataGridViewTextBoxColumn5
             // 
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle43;
             this.dataGridViewTextBoxColumn5.HeaderText = "Штанга";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn6
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle44;
             this.dataGridViewTextBoxColumn6.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
             this.dataGridViewTextBoxColumn6.ReadOnly = true;
@@ -2522,8 +2535,8 @@
             // dataGridViewTextBoxColumn10
             // 
             this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle45;
             this.dataGridViewTextBoxColumn10.HeaderText = "№";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
             // 
@@ -2535,8 +2548,8 @@
             // 
             // dataGridViewTextBoxColumn12
             // 
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle46;
             this.dataGridViewTextBoxColumn12.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             // 
@@ -2547,15 +2560,15 @@
             // 
             // dataGridViewTextBoxColumn14
             // 
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle47;
             this.dataGridViewTextBoxColumn14.HeaderText = "Канал";
             this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
             // 
             // dataGridViewTextBoxColumn15
             // 
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle48;
             this.dataGridViewTextBoxColumn15.HeaderText = "Импульсов";
             this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
             // 
@@ -2577,6 +2590,116 @@
             // toolTip
             // 
             this.toolTip.IsBalloon = true;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel2.Controls.Add(this.panel7);
+            this.panel2.Controls.Add(this.panel8);
+            this.panel2.Location = new System.Drawing.Point(20, 315);
+            this.panel2.Margin = new System.Windows.Forms.Padding(10);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(2);
+            this.panel2.Size = new System.Drawing.Size(200, 275);
+            this.panel2.TabIndex = 5;
+            // 
+            // panel7
+            // 
+            this.panel7.BackColor = System.Drawing.Color.White;
+            this.panel7.Controls.Add(this.label21);
+            this.panel7.Controls.Add(this.nudRodMoveLength);
+            this.panel7.Controls.Add(this.label22);
+            this.panel7.Controls.Add(this.btnSetRodSettings);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(2, 26);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(196, 247);
+            this.panel7.TabIndex = 2;
+            // 
+            // label21
+            // 
+            this.label21.BackColor = System.Drawing.Color.LightYellow;
+            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label21.ForeColor = System.Drawing.Color.Black;
+            this.label21.Location = new System.Drawing.Point(13, 105);
+            this.label21.Name = "label21";
+            this.label21.Padding = new System.Windows.Forms.Padding(4);
+            this.label21.Size = new System.Drawing.Size(170, 97);
+            this.label21.TabIndex = 11;
+            this.label21.Text = "Величина перемещения привода штанги, мм.";
+            // 
+            // nudRodMoveLength
+            // 
+            this.nudRodMoveLength.Location = new System.Drawing.Point(16, 27);
+            this.nudRodMoveLength.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nudRodMoveLength.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudRodMoveLength.Name = "nudRodMoveLength";
+            this.nudRodMoveLength.Size = new System.Drawing.Size(167, 20);
+            this.nudRodMoveLength.TabIndex = 10;
+            this.toolTip.SetToolTip(this.nudRodMoveLength, "Величина перемещения привода штанги, мм.");
+            this.nudRodMoveLength.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.ForeColor = System.Drawing.Color.Black;
+            this.label22.Location = new System.Drawing.Point(13, 11);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(154, 13);
+            this.label22.TabIndex = 9;
+            this.label22.Text = "Величина перемещения, мм:";
+            // 
+            // btnSetRodSettings
+            // 
+            this.btnSetRodSettings.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetRodSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetRodSettings.ForeColor = System.Drawing.Color.Black;
+            this.btnSetRodSettings.Location = new System.Drawing.Point(16, 215);
+            this.btnSetRodSettings.Name = "btnSetRodSettings";
+            this.btnSetRodSettings.Size = new System.Drawing.Size(167, 23);
+            this.btnSetRodSettings.TabIndex = 8;
+            this.btnSetRodSettings.Text = "Установить";
+            this.btnSetRodSettings.UseVisualStyleBackColor = false;
+            this.btnSetRodSettings.Click += new System.EventHandler(this.btnSetRodSettings_Click);
+            // 
+            // panel8
+            // 
+            this.panel8.AutoSize = true;
+            this.panel8.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel8.Controls.Add(this.label23);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel8.Location = new System.Drawing.Point(2, 2);
+            this.panel8.Margin = new System.Windows.Forms.Padding(0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(196, 24);
+            this.panel8.TabIndex = 1;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label23.ForeColor = System.Drawing.Color.White;
+            this.label23.Location = new System.Drawing.Point(0, 0);
+            this.label23.Margin = new System.Windows.Forms.Padding(0);
+            this.label23.Name = "label23";
+            this.label23.Padding = new System.Windows.Forms.Padding(2);
+            this.label23.Size = new System.Drawing.Size(171, 24);
+            this.label23.TabIndex = 0;
+            this.label23.Text = "Настройки штанги";
             // 
             // MainForm
             // 
@@ -2697,6 +2820,13 @@
             this.plArchiveEthalonChart.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).EndInit();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2905,6 +3035,14 @@
         private System.Windows.Forms.NumericUpDown nudMaxIdleTime;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown nudRodMoveLength;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Button btnSetRodSettings;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Label label23;
     }
 }
 

@@ -1436,7 +1436,8 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "ECDELTA", ParseAskECDelta, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "SKIPC", ParseAskSkipCounter, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "ASUTPFLAGS", ParseAskAsuTpFlags, BeforeAskAsuTpFlags);
-                
+                PushCommandToQueue(GET_PREFIX + "RLENGTH", ParseAskRodMoveLength, BeforeAskRodMoveLength);
+
                 //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
                 RequestEthalons();
@@ -1519,6 +1520,12 @@ namespace UROVConfig
             PushCommandToQueue(GET_PREFIX + "FILE|ETL|ET2DWN.ETL", DummyAnswerReceiver, SetSDFileReadingFlagEthalon);
 
         }
+
+        private void BeforeAskRodMoveLength()
+        {
+            this.inSetRodSettingsToController = true;
+        }
+
 
         private void BeforeAskAsuTpFlags()
         {
@@ -1817,6 +1824,32 @@ namespace UROVConfig
 
         }
 
+        private void ParseAskRodMoveLength(Answer a)
+        {
+            this.inSetRodSettingsToController = false;
+
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.RodMoveLength = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.RodMoveLength = 0; }
+
+            }
+            else
+            {
+                Config.Instance.RodMoveLength = 0;
+            }
+
+            try
+            {
+                nudRodMoveLength.Value = Config.Instance.RodMoveLength;
+            }
+            catch
+            {
+                nudRodMoveLength.Value = 0;
+                Config.Instance.RodMoveLength = 0;
+            }
+
+        }
+
         private void ParseAskMotoresurceCurrent(Answer a)
         {
             if (a.IsOkAnswer)
@@ -2082,6 +2115,7 @@ namespace UROVConfig
             this.btnSetDelta.Enabled = bConnected && !inSetDeltaToController;
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
             this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
+            this.btnSetRodSettings.Enabled = bConnected && !inSetRodSettingsToController;
 
             this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
             this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
@@ -2474,6 +2508,26 @@ namespace UROVConfig
             {
                 nudEthalonCompareDelta.Value = Config.Instance.EthalonCompareDelta;
             }
+        }
+
+        private void ParseSetRodMoveLength(Answer a)
+        {
+            inSetRodSettingsToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.RodMoveLength = Convert.ToInt32(nudRodMoveLength.Value);
+
+                MessageBox.Show("Параметры обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                nudRodMoveLength.Value = Config.Instance.RodMoveLength;
+
+                MessageBox.Show("Ошибка обновления параметров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void ParseSetSkipCounter(Answer a)
@@ -3767,19 +3821,46 @@ namespace UROVConfig
 
             // получаем максимальное время импульса - это будет 100% по оси Y
             int maxPulseTime = 0;
-            for (int i = 1; i < timeList.Count; i++)
+            int minPulseTime = Int32.MaxValue;
+            int fullMoveTime = 0; // полное время перемещения
+            float avgPulseTime = 0; // средневзвешенная длительность импульса
+
+            if(timeList.Count > 1)
             {
-                maxPulseTime = Math.Max(maxPulseTime, (timeList[i] - timeList[i - 1]));
+                fullMoveTime = timeList[timeList.Count - 1];
+                float thisAvgPulseTime = 0;
+
+                for (int i = 1; i < timeList.Count; i++)
+                {
+                    int curPulseTime = (timeList[i] - timeList[i - 1]);
+                    thisAvgPulseTime += curPulseTime;
+
+                    maxPulseTime = Math.Max(maxPulseTime, curPulseTime);
+                    minPulseTime = Math.Min(minPulseTime, curPulseTime);
+                }
+
+                avgPulseTime = thisAvgPulseTime / timeList.Count - 1;
             }
 
             // int endStop = timeList.Count;
 
-            if (record.EthalonData.Count > 0)
+            if (record.EthalonData.Count > 1)
             {
+                float thisAvgPulseTime = 0;
+
                 for (int i = 1; i < record.EthalonData.Count; i++)
                 {
-                    maxPulseTime = Math.Max(maxPulseTime, (record.EthalonData[i] - record.EthalonData[i - 1]));
+                    int curPulseTime = (record.EthalonData[i] - record.EthalonData[i - 1]);
+                    thisAvgPulseTime += curPulseTime;
+
+                    maxPulseTime = Math.Max(maxPulseTime, curPulseTime);
+                    minPulseTime = Math.Min(minPulseTime, curPulseTime);
                 }
+
+                fullMoveTime = Math.Max(fullMoveTime, record.EthalonData[record.EthalonData.Count - 1]);
+                float avgPulseTime2 = thisAvgPulseTime / record.EthalonData.Count - 1;
+
+                avgPulseTime = (avgPulseTime + avgPulseTime2) / 2;
             }
 
             //endStop = Math.Min(endStop, record.EthalonData.Count);
@@ -4107,8 +4188,55 @@ namespace UROVConfig
             // устанавливаем интервал для меток на графике
             vcf.setInterval(step);
 
-            
-            // теперь пробуем для графика прерываний - переназначить метки
+
+            // теперь пробуем для графика прерываний - переназначить метки по оси Y
+            // у нас есть общее время перемещения штанги. У нас есть скорость перемещения.
+            // из всего этого надо правильно сформировать метки на графике.
+            // мы можем вычислить средневзвешенную скорость перемещения: v = S/t, где S - длина перемещения штанги, а t - общее время перемещения.
+            // также у нас чем больше время между импульсами - тем меньше скорость на конкретном участке графика, и наоборот.
+            // очевидно, что минимальная скорость - это 0. Максимальная скорость - это отношение средневзвешенной длительности импульса к минимальной длительности импульса,
+            // умноженное на средневзвешенную скорость.
+
+            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && fullMoveTime > 0 && avgPulseTime > 0)
+            {
+                int rodMoveLength = Config.Instance.RodMoveLength; // величина перемещения штанги, мм
+                // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
+                float avgSpeed = (Convert.ToSingle(rodMoveLength)*1000000) / fullMoveTime; // средняя скорость, мм/с
+
+                float coeff = avgPulseTime / minPulseTime; // отношение средневзвешенной длительности импульса к минимальной
+                float maxSpeed = (avgSpeed * coeff); // максимальная скорость, мм/с
+
+                // выяснили максимальную скорость, теперь добавляем метки
+                // округляем до ближайшей десятки вверх
+                int roundedUpSpeed = ((int)Math.Round(maxSpeed / 10.0)) * 10;
+                int totalLabelsCount = 6;
+                int labelStep = maxPulseTime / (totalLabelsCount+2);
+                int speedStep = roundedUpSpeed / (totalLabelsCount);
+
+                ChartArea area = vcf.chart.ChartAreas[0];
+                area.AxisY.CustomLabels.Clear();
+                area.AxisY.Interval = labelStep;
+                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+                int startOffset = -labelStep / 2;
+                int endOffset = labelStep / 2;
+                int counter = 0;
+
+
+                for (int i = 0; i <= totalLabelsCount; i++)
+                {
+                    string labelText = String.Format("{0} мм/с", speedStep*counter);
+                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisY.CustomLabels.Add(сLabel);
+                    startOffset = startOffset + labelStep;
+                    endOffset = endOffset + labelStep;
+                    counter++;
+                }
+
+
+            }
+
+            /*
             {
                 int interruptLabelsCount = 6;
                 step = maxPulseTime / interruptLabelsCount;
@@ -4125,13 +4253,14 @@ namespace UROVConfig
                 for (int i = 0; i < interruptLabelsCount; i++)
                 {
                     string labelText = String.Format("{0}us", maxPulseTime - counter);
-                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                    area.AxisY.CustomLabels.Add(monthLabel);
+                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisY.CustomLabels.Add(сLabel);
                     startOffset = startOffset + step;
                     endOffset = endOffset + step;
                     counter += step;
                 }
             }
+            */
             
 
             // теперь рисуем свои метки на Y осях токов
@@ -4957,6 +5086,16 @@ namespace UROVConfig
 
             tempAsuTPFlags = val;
             PushCommandToQueue(SET_PREFIX + "ASUTPFLAGS" + PARAM_DELIMITER + val.ToString(), ParseSetCurrentAsuTPFlags);
+        }
+
+        private bool inSetRodSettingsToController = true;
+        private void btnSetRodSettings_Click(object sender, EventArgs e)
+        {
+            inSetRodSettingsToController = true;
+            ShowWaitCursor(true);
+
+            string s = Convert.ToString(nudRodMoveLength.Value);
+            PushCommandToQueue(SET_PREFIX + "RLENGTH" + PARAM_DELIMITER + s, ParseSetRodMoveLength);
         }
     }
 

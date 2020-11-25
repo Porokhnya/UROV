@@ -40,6 +40,7 @@ const char SDTEST_COMMAND[] PROGMEM = "SDTEST"; // запустить тест S
 const char CURRENT_COEFF_COMMAND[] PROGMEM = "CCOEFF"; // коэффициент пересчёта по току
 const char ECDELTA_COMMAND[] PROGMEM = "ECDELTA"; // дельта времени сравнения импульсов эталона
 const char ASUTP_COMMAND[] PROGMEM = "ASUTPFLAGS"; // флаги выдачи сигналов на линию АСУ ТП
+const char RLENGTH_COMMAND[] PROGMEM = "RLENGTH"; // длина перемещения штанги
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -385,7 +386,21 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
               // недостаточно параметров
               commandHandled = printBackSETResult(false,commandName,pStream);
             }
-        } // DELTA_COMMAND               
+        } // DELTA_COMMAND
+        else
+        if(!strcmp_P(commandName, RLENGTH_COMMAND))
+        {
+            // запросили установить текущий моторесурс SET=RLENGTH|100
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setRLENGTH(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // RLENGTH_COMMAND                 
         else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
         {
@@ -539,6 +554,12 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             commandHandled = getSDTEST(commandName,cParser,pStream);                    
           
         } // SDTEST_COMMAND       
+        else
+        if(!strcmp_P(commandName, RLENGTH_COMMAND))
+        {
+            commandHandled = getRLENGTH(commandName,cParser,pStream);                    
+          
+        } // RLENGTH_COMMAND       
         else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
         {
@@ -1505,6 +1526,45 @@ bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pSt
   uint32_t resCurrent1 = atoi(parser.getArg(1));
 
   Settings.setMotoresourceMax(resCurrent1);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getRLENGTH(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 1)
+  {
+    return false;  
+  }
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getRodMoveLength());
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setRLENGTH(CommandParser& parser, Stream* pStream)
+{
+  if(parser.argsCount() < 2)
+  {
+    return false;
+  }
+  
+  uint32_t moveLength = atol(parser.getArg(1));
+
+  Settings.setRodMoveLength(moveLength);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

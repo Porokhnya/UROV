@@ -1043,7 +1043,11 @@ namespace UROVConfig
         private int maxIdleTime = 0;
         [XmlIgnore]
         public int MaxIdleTime { get { return maxIdleTime; } set { maxIdleTime = value; } }
-        
+
+        private int rodMoveLength = 0;
+        [XmlIgnore]
+        public int RodMoveLength { get { return rodMoveLength; } set { rodMoveLength = value; } }
+
 
         private string controllerGUID = "";
         [XmlIgnore]

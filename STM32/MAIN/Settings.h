@@ -100,6 +100,9 @@ public:
 
   uint32_t getMaxIdleTime() { return maxIdleTime; }
   void setMaxIdleTime(uint32_t val);
+
+  uint32_t getRodMoveLength() { return rodMoveLength; }
+  void setRodMoveLength(uint32_t val);
     
   private:
 
@@ -110,6 +113,7 @@ public:
 
     uint32_t transformerHighBorder, transformerLowBorder;
     uint32_t maxIdleTime;
+    uint32_t rodMoveLength;
 
     uint32_t skipCounter;
 

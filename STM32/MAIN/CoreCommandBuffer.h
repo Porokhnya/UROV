@@ -72,6 +72,9 @@ class CommandHandlerClass
 
   bool setMOTORESOURCE_CURRENT(CommandParser& parser, Stream* pStream);
   bool getMOTORESOURCE_CURRENT(const char* commandPassed, const CommandParser& parser, Stream* pStream);
+
+  bool setRLENGTH(CommandParser& parser, Stream* pStream);
+  bool getRLENGTH(const char* commandPassed, const CommandParser& parser, Stream* pStream);
   
   bool setMOTORESOURCE_MAX(CommandParser& parser, Stream* pStream);
   bool getMOTORESOURCE_MAX(const char* commandPassed, const CommandParser& parser, Stream* pStream);
