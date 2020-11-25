@@ -4197,7 +4197,7 @@ namespace UROVConfig
             // очевидно, что минимальная скорость - это 0. Максимальная скорость - это отношение средневзвешенной длительности импульса к минимальной длительности импульса,
             // умноженное на средневзвешенную скорость.
 
-            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && fullMoveTime > 0 && avgPulseTime > 0)
+            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0)
             {
                 int rodMoveLength = Config.Instance.RodMoveLength; // величина перемещения штанги, мм
                 // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
@@ -4290,24 +4290,25 @@ namespace UROVConfig
         private void AddCustomLabelsOfCurrent(ChartArea area, int maxCurrentValue)
         {
             int currentLabelsCount = 6;
-            float step = Convert.ToSingle(maxCurrentValue) / currentLabelsCount;
+            int labelStep = (maxCurrentValue) / (currentLabelsCount);
+            int currentStep = (maxCurrentValue) / (currentLabelsCount);
 
             area.AxisY.CustomLabels.Clear();
-            area.AxisY.Interval = step;
+            area.AxisY.Interval = labelStep;
             area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
 
-            float startOffset = -step / 2;
-            float endOffset = step / 2;
-            float counter = 0;
+            float startOffset = -labelStep / 2;
+            float endOffset = labelStep / 2;
+            int counter = 0;
 
-            for (int i = 0; i < currentLabelsCount; i++)
+            for (int i = 0; i <= currentLabelsCount; i++)
             {
-                string labelText = String.Format("{0:0.000}A", GetCurrentFromADC(counter));
-                CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                area.AxisY.CustomLabels.Add(monthLabel);
-                startOffset = startOffset + step;
-                endOffset = endOffset + step;
-                counter += step;
+                string labelText = String.Format("{0:0.000}A", GetCurrentFromADC(currentStep*counter));
+                CustomLabel cLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                area.AxisY.CustomLabels.Add(cLabel);
+                startOffset = startOffset + labelStep;
+                endOffset = endOffset + labelStep;
+                counter++;
             }
         }
 
@@ -4316,8 +4317,7 @@ namespace UROVConfig
             float result = 0;
             float CURRENT_DIVIDER = 1000.0f;
             float COEFF_1 = 5.0f;
-            float currentCoeff = 3160.0f;
-            currentCoeff /= 1000;
+            float currentCoeff = Convert.ToSingle(Config.Instance.CurrentCoeff)/1000;
 
             float intermediate = (COEFF_1 * adcVAL) / currentCoeff;
 
