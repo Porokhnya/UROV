@@ -31,6 +31,7 @@
 #include "Endstops.h"
 #include "RS485.h"
 #include "RelayGuard.h"
+#include "ModbusHandler.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoWire Wire1 = TwoWire(I2C2, PB11, PB10); // второй I2C
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -430,6 +431,9 @@ void setup()
 
  
 
+  DBGLN(F("Init MODBUS..."));
+  Modbus.begin();
+  DBGLN(F("MODBUS inited."));
 
 
 
@@ -504,7 +508,8 @@ void loop()
       badSDBlinkTimer = millis();
     }
   } // if
-  
+
+  Modbus.update();
 
   #ifndef _DELAYED_EVENT_OFF
     CoreDelayedEvent.update();
