@@ -4,7 +4,7 @@
   <description asmv2:iconFile="decima.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="UROVConfig" version="2.6.0.0" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="UROVConfig" version="2.7.0.0" language="neutral" processorArchitecture="msil" />
     <commandLine file="UROVConfig.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -44,13 +44,13 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="UROVConfig.exe" size="311296">
-      <assemblyIdentity name="UROVConfig" version="2.6.0.0" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="UROVConfig" version="2.7.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>sgjoZ4SydHJZRaz3sNSDXWSCjanPWQJq1U5EQD0fswQ=</dsig:DigestValue>
+        <dsig:DigestValue>37p/GrPowC87KkfXcDXjECYo3JXvYJAfTzMz+AsVpJk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

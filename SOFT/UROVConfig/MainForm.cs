@@ -3814,7 +3814,6 @@ namespace UROVConfig
             // смещение в микросекундах от данных по току до начала списка прерываний
             int pulsesOffset = record.DataArrivedTime;
 
-            //int xStep = 1;
 
             // СПИСОК ПРИХОДИТ НОРМАЛИЗОВАННЫМ ОТНОСИТЕЛЬНО ПЕРВОЙ ЗАПИСИ!!!
             List<int> timeList = record.InterruptData;
@@ -3839,10 +3838,9 @@ namespace UROVConfig
                     minPulseTime = Math.Min(minPulseTime, curPulseTime);
                 }
 
-                avgPulseTime = thisAvgPulseTime / timeList.Count - 1;
+                avgPulseTime = thisAvgPulseTime / (timeList.Count - 1);
             }
 
-            // int endStop = timeList.Count;
 
             if (record.EthalonData.Count > 1)
             {
@@ -3858,31 +3856,15 @@ namespace UROVConfig
                 }
 
                 fullMoveTime = Math.Max(fullMoveTime, record.EthalonData[record.EthalonData.Count - 1]);
-                float avgPulseTime2 = thisAvgPulseTime / record.EthalonData.Count - 1;
+                float avgPulseTime2 = thisAvgPulseTime / (record.EthalonData.Count - 1);
 
                 avgPulseTime = (avgPulseTime + avgPulseTime2) / 2;
             }
 
-            //endStop = Math.Min(endStop, record.EthalonData.Count);
 
-            //if (record.EthalonData.Count < 1)
-              //  endStop = timeList.Count;
-
-
-            //double xCoord = 0;
-            // DateTime xCoord = interruptTime;
-            //xCoord = xCoord.AddMilliseconds(pulsesOffset);
             int xCoord = pulsesOffset;
-             List<int> XValuesInterrupt = new List<int>();
-             List<double> YValuesInterrupt = new List<double>();
-
-            // добавляем фейковые начальные точки
-            //System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-            //ptFake1.XValue = xCoord;
-            //ptFake1.SetValueY(0);
-            //xCoord += xStep;
-            //interruptSerie.Points.Add(ptFake1);
-
+            List<int> XValuesInterrupt = new List<int>();
+            List<double> YValuesInterrupt = new List<double>();
 
             if(record.CurrentTimes.Count > 0)
             {
@@ -3893,7 +3875,6 @@ namespace UROVConfig
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
-//                    offsetLabelIndex = z;
                 }
             }
 
@@ -3904,27 +3885,39 @@ namespace UROVConfig
             // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
             int offsetLabelIndex = XValuesInterrupt.Count-1;
 
+            int maxInterruptYVal = 0;
+
 
             // теперь считаем все остальные точки
-            for (int i = 1; i < timeList.Count; i++)
+
+            if (timeList.Count > 1)
             {
-                int pulseTime = timeList[i] - timeList[i - 1];
-                //pulseTime *= 100;
 
-                int pulseTimePercents = (pulseTime*100) / maxPulseTime;
-                pulseTimePercents = 100 - pulseTimePercents;
+                for (int i = 1; i < timeList.Count; i++)
+                {
+                    int pulseTime = timeList[i] - timeList[i - 1];
+                    
 
-                // абсолютное инвертированное значение от maxPulseTime
-                // maxPulseTime = 100%
-                // x = pulseTimePercents
-                // x = (pulseTimePercents*maxPulseTime)/100;
+                    int pulseTimePercents = (pulseTime*100) / maxPulseTime;
 
-                xCoord += pulseTime;
-                XValuesInterrupt.Add(xCoord);
-                //YValuesInterrupt.Add(pulseTimePercents);
-                YValuesInterrupt.Add((pulseTimePercents * maxPulseTime) / 100);
+                    pulseTimePercents = 100 - pulseTimePercents;
 
-            } // for
+                    // абсолютное инвертированное значение от maxPulseTime
+                    // maxPulseTime = 100%
+                    // x = pulseTimePercents
+                    // x = (pulseTimePercents*maxPulseTime)/100;
+
+                    xCoord += pulseTime;
+                    XValuesInterrupt.Add(xCoord);
+
+                    int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
+                    maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
+                    YValuesInterrupt.Add(computedYVal);
+                    
+
+                } // for
+
+            }
 
             
             // убираем последний пик вверх
@@ -3999,18 +3992,10 @@ namespace UROVConfig
 
 
 
-            //xCoord =  interruptTime;
             xCoord = pulsesOffset;
-            //xCoord = xCoord.AddMilliseconds(pulsesOffset);
             List<int> XValuesEthalon = new List<int>();
             List<double> YValuesEthalon = new List<double>();
 
-            // добавляем фейковые начальные точки
-            //System.Windows.Forms.DataVisualization.Charting.DataPoint ptFake2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-            //ptFake2.XValue = xCoord;
-            //ptFake2.SetValueY(0);
-            //xCoord += xStep;
-            //ethalonSerie.Points.Add(ptFake2);
 
             XValuesEthalon.Add(xCoord);
             YValuesEthalon.Add(0);
@@ -4021,25 +4006,16 @@ namespace UROVConfig
                 for (int i = 1; i < record.EthalonData.Count; i++)
                 {
                     int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
-                    //pulseTime *= 100;
 
                     int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
                     pulseTimePercents = 100 - pulseTimePercents;
 
-
-                    // System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                    // pt.XValue = xCoord;
-                    // pt.SetValueY(pulseTimePercents);
-
-                    //  xCoord += xStep;
-
-                    //  ethalonSerie.Points.Add(pt);
-
-                    //xCoord = xCoord.AddMilliseconds(pulseTime);
                     xCoord += pulseTime;
                     XValuesEthalon.Add(xCoord);
-                    //YValuesEthalon.Add(pulseTimePercents);
-                    YValuesEthalon.Add((pulseTimePercents * maxPulseTime) / 100);
+
+                    int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
+                    maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
+                    YValuesInterrupt.Add(computedYVal);
 
                 } // for
             }
@@ -4197,8 +4173,11 @@ namespace UROVConfig
             // очевидно, что минимальная скорость - это 0. Максимальная скорость - это отношение средневзвешенной длительности импульса к минимальной длительности импульса,
             // умноженное на средневзвешенную скорость.
 
-            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0)
+            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
             {
+                // в maxInterruptYVal - у нас лежит максимальное значение по Y в условных единицах, т.е. 100% скорости перемещения
+
+
                 int rodMoveLength = Config.Instance.RodMoveLength; // величина перемещения штанги, мм
                 // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
                 float avgSpeed = (Convert.ToSingle(rodMoveLength)*1000000) / fullMoveTime; // средняя скорость, мм/с
@@ -4209,13 +4188,30 @@ namespace UROVConfig
                 // выяснили максимальную скорость, теперь добавляем метки
                 // округляем до ближайшей десятки вверх
                 int roundedUpSpeed = ((int)Math.Round(maxSpeed / 10.0)) * 10;
-                int totalLabelsCount = 6;
-                int labelStep = maxPulseTime / (totalLabelsCount+2);
-                int speedStep = roundedUpSpeed / (totalLabelsCount);
+
+                int divider = 10;
+                int totalLabelsCount = roundedUpSpeed / divider; // получили шкалу, кратную 10
+
+                int add = 2;
+                while(totalLabelsCount > 5)
+                {
+                    divider = 10*add;
+                    add++;
+                    totalLabelsCount = roundedUpSpeed / divider;
+                }
+                // эта шкала может быть очень частой, например, если у нас скорость большая
+
+              //  totalLabelsCount = 5; // ПОКА ЗАФИКСИРУЕМ ВРЕМЕННО, УБРАТЬ !!!
+
+                // maxInterruptYVal = 100% скорости перемещения
+
+                int labelStep = maxInterruptYVal / (totalLabelsCount);
 
                 ChartArea area = vcf.chart.ChartAreas[0];
                 area.AxisY.CustomLabels.Clear();
+
                 area.AxisY.Interval = labelStep;
+
                 area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
 
                 int startOffset = -labelStep / 2;
@@ -4225,13 +4221,25 @@ namespace UROVConfig
 
                 for (int i = 0; i <= totalLabelsCount; i++)
                 {
-                    string labelText = String.Format("{0} мм/с", speedStep*counter);
+                    // у нас maxSpeed = 100%
+                    // maxInterruptYVal = 100% скорости
+                    // labelStep*i = x% макс скорости
+                    // x% = (labelStep*i*100)/maxInterruptYVal
+                    // maxSpeed = 100%
+                    // speedComputed = x
+                    // speedComputed = (x*maxSpeed)/100;
+                    float speedComputed = (((labelStep * i * 100) / maxInterruptYVal)*maxSpeed)/ 100;
+
+                    string labelText = String.Format("{0:0.00} м/с", speedComputed / 1000);
+
                     CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
                     area.AxisY.CustomLabels.Add(сLabel);
+
                     startOffset = startOffset + labelStep;
                     endOffset = endOffset + labelStep;
                     counter++;
                 }
+                
 
 
             }
