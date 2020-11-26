@@ -32,32 +32,32 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Контроллер");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Архив", 6, 6);
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem5 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell5 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem6 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell6 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle43 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle46 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle47 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle48 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem1 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell1 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem2 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell2 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.connectStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusProgressMessage = new System.Windows.Forms.ToolStripStatusLabel();
@@ -97,6 +97,59 @@
             this.treeView = new System.Windows.Forms.TreeView();
             this.smallImages = new System.Windows.Forms.ImageList(this.components);
             this.plSection = new System.Windows.Forms.Panel();
+            this.plMainSettings = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.plInfo = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.tbSoftwareVersion = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.btnSetDateTime2 = new System.Windows.Forms.Button();
+            this.tbControllerTime = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tbFirmwareVersion = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.plDelta = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.nudEthalonCompareDelta = new System.Windows.Forms.NumericUpDown();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnSetDelta = new System.Windows.Forms.Button();
+            this.panel12 = new System.Windows.Forms.Panel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.plMotoresourceCurrent = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.lblMotoresourcePercents1 = new System.Windows.Forms.Label();
+            this.nudMotoresourceMax1 = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.btnSetMotoresourceCurrent = new System.Windows.Forms.Button();
+            this.nudMotoresourceCurrent1 = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.plImpulses = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.nudDelta1 = new System.Windows.Forms.NumericUpDown();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnSetPulses = new System.Windows.Forms.Button();
+            this.nudPulses1 = new System.Windows.Forms.NumericUpDown();
+            this.label15 = new System.Windows.Forms.Label();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.label21 = new System.Windows.Forms.Label();
+            this.nudRodMoveLength = new System.Windows.Forms.NumericUpDown();
+            this.label22 = new System.Windows.Forms.Label();
+            this.btnSetRodSettings = new System.Windows.Forms.Button();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.label23 = new System.Windows.Forms.Label();
             this.plAdditionalSettings = new System.Windows.Forms.Panel();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel25 = new System.Windows.Forms.Panel();
@@ -147,51 +200,6 @@
             this.btnSetAsuTpLags = new System.Windows.Forms.Button();
             this.panel48 = new System.Windows.Forms.Panel();
             this.label74 = new System.Windows.Forms.Label();
-            this.plMainSettings = new System.Windows.Forms.Panel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.plInfo = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.tbSoftwareVersion = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.btnSetDateTime2 = new System.Windows.Forms.Button();
-            this.tbControllerTime = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tbFirmwareVersion = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.plDelta = new System.Windows.Forms.Panel();
-            this.panel11 = new System.Windows.Forms.Panel();
-            this.nudEthalonCompareDelta = new System.Windows.Forms.NumericUpDown();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.nudSkipCounter = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.btnSetDelta = new System.Windows.Forms.Button();
-            this.panel12 = new System.Windows.Forms.Panel();
-            this.label20 = new System.Windows.Forms.Label();
-            this.plMotoresourceCurrent = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.label10 = new System.Windows.Forms.Label();
-            this.lblMotoresourcePercents1 = new System.Windows.Forms.Label();
-            this.nudMotoresourceMax1 = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.btnSetMotoresourceCurrent = new System.Windows.Forms.Button();
-            this.nudMotoresourceCurrent1 = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.plImpulses = new System.Windows.Forms.Panel();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.nudDelta1 = new System.Windows.Forms.NumericUpDown();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.btnSetPulses = new System.Windows.Forms.Button();
-            this.nudPulses1 = new System.Windows.Forms.NumericUpDown();
-            this.label15 = new System.Windows.Forms.Label();
-            this.panel10 = new System.Windows.Forms.Panel();
-            this.label16 = new System.Windows.Forms.Label();
             this.plSDSettings = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.treeViewSD = new System.Windows.Forms.TreeView();
@@ -259,14 +267,6 @@
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.label21 = new System.Windows.Forms.Label();
-            this.nudRodMoveLength = new System.Windows.Forms.NumericUpDown();
-            this.label22 = new System.Windows.Forms.Label();
-            this.btnSetRodSettings = new System.Windows.Forms.Button();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.label23 = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -279,6 +279,30 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.plSection.SuspendLayout();
+            this.plMainSettings.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.plInfo.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.plDelta.SuspendLayout();
+            this.panel11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
+            this.panel12.SuspendLayout();
+            this.plMotoresourceCurrent.SuspendLayout();
+            this.panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceMax1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceCurrent1)).BeginInit();
+            this.panel6.SuspendLayout();
+            this.plImpulses.SuspendLayout();
+            this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).BeginInit();
+            this.panel10.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).BeginInit();
+            this.panel8.SuspendLayout();
             this.plAdditionalSettings.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.panel25.SuspendLayout();
@@ -302,26 +326,6 @@
             this.panel46.SuspendLayout();
             this.panel47.SuspendLayout();
             this.panel48.SuspendLayout();
-            this.plMainSettings.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.plInfo.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.plDelta.SuspendLayout();
-            this.panel11.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
-            this.panel12.SuspendLayout();
-            this.plMotoresourceCurrent.SuspendLayout();
-            this.panel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceMax1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceCurrent1)).BeginInit();
-            this.panel6.SuspendLayout();
-            this.plImpulses.SuspendLayout();
-            this.panel9.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).BeginInit();
-            this.panel10.SuspendLayout();
             this.plSDSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
@@ -335,10 +339,6 @@
             this.plArchiveEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).BeginInit();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).BeginInit();
-            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -774,6 +774,697 @@
             this.plSection.Name = "plSection";
             this.plSection.Size = new System.Drawing.Size(1071, 587);
             this.plSection.TabIndex = 1;
+            // 
+            // plMainSettings
+            // 
+            this.plMainSettings.Controls.Add(this.flowLayoutPanel1);
+            this.plMainSettings.Location = new System.Drawing.Point(2, 0);
+            this.plMainSettings.Name = "plMainSettings";
+            this.plMainSettings.Size = new System.Drawing.Size(940, 635);
+            this.plMainSettings.TabIndex = 9;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.AutoScroll = true;
+            this.flowLayoutPanel1.BackColor = System.Drawing.Color.White;
+            this.flowLayoutPanel1.Controls.Add(this.plInfo);
+            this.flowLayoutPanel1.Controls.Add(this.plDelta);
+            this.flowLayoutPanel1.Controls.Add(this.plMotoresourceCurrent);
+            this.flowLayoutPanel1.Controls.Add(this.plImpulses);
+            this.flowLayoutPanel1.Controls.Add(this.panel2);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(940, 635);
+            this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // plInfo
+            // 
+            this.plInfo.BackColor = System.Drawing.Color.SteelBlue;
+            this.plInfo.Controls.Add(this.panel3);
+            this.plInfo.Controls.Add(this.panel4);
+            this.plInfo.Location = new System.Drawing.Point(20, 20);
+            this.plInfo.Margin = new System.Windows.Forms.Padding(10);
+            this.plInfo.Name = "plInfo";
+            this.plInfo.Padding = new System.Windows.Forms.Padding(2);
+            this.plInfo.Size = new System.Drawing.Size(200, 275);
+            this.plInfo.TabIndex = 0;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.White;
+            this.panel3.Controls.Add(this.tbSoftwareVersion);
+            this.panel3.Controls.Add(this.label13);
+            this.panel3.Controls.Add(this.label14);
+            this.panel3.Controls.Add(this.btnSetDateTime2);
+            this.panel3.Controls.Add(this.tbControllerTime);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.tbFirmwareVersion);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(2, 26);
+            this.panel3.Margin = new System.Windows.Forms.Padding(3, 11, 3, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(196, 247);
+            this.panel3.TabIndex = 2;
+            // 
+            // tbSoftwareVersion
+            // 
+            this.tbSoftwareVersion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbSoftwareVersion.Location = new System.Drawing.Point(16, 70);
+            this.tbSoftwareVersion.Name = "tbSoftwareVersion";
+            this.tbSoftwareVersion.ReadOnly = true;
+            this.tbSoftwareVersion.Size = new System.Drawing.Size(167, 20);
+            this.tbSoftwareVersion.TabIndex = 17;
+            this.tbSoftwareVersion.WordWrap = false;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.ForeColor = System.Drawing.Color.Black;
+            this.label13.Location = new System.Drawing.Point(13, 54);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(127, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "Версия конфигуратора:";
+            // 
+            // label14
+            // 
+            this.label14.BackColor = System.Drawing.Color.LightYellow;
+            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label14.ForeColor = System.Drawing.Color.Black;
+            this.label14.Location = new System.Drawing.Point(13, 142);
+            this.label14.Name = "label14";
+            this.label14.Padding = new System.Windows.Forms.Padding(4);
+            this.label14.Size = new System.Drawing.Size(170, 63);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Кнопка \"Установить время\" устанавливает время контроллера на системное время комп" +
+    "ьютера.";
+            // 
+            // btnSetDateTime2
+            // 
+            this.btnSetDateTime2.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetDateTime2.Enabled = false;
+            this.btnSetDateTime2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetDateTime2.ForeColor = System.Drawing.Color.Black;
+            this.btnSetDateTime2.Location = new System.Drawing.Point(16, 215);
+            this.btnSetDateTime2.Name = "btnSetDateTime2";
+            this.btnSetDateTime2.Size = new System.Drawing.Size(167, 23);
+            this.btnSetDateTime2.TabIndex = 9;
+            this.btnSetDateTime2.Text = "Установить время";
+            this.btnSetDateTime2.UseVisualStyleBackColor = false;
+            this.btnSetDateTime2.Click += new System.EventHandler(this.btnSetDateTime_Click);
+            // 
+            // tbControllerTime
+            // 
+            this.tbControllerTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbControllerTime.Location = new System.Drawing.Point(16, 113);
+            this.tbControllerTime.Name = "tbControllerTime";
+            this.tbControllerTime.ReadOnly = true;
+            this.tbControllerTime.Size = new System.Drawing.Size(167, 20);
+            this.tbControllerTime.TabIndex = 5;
+            this.tbControllerTime.WordWrap = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.Black;
+            this.label4.Location = new System.Drawing.Point(13, 97);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(111, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Время контроллера:";
+            // 
+            // tbFirmwareVersion
+            // 
+            this.tbFirmwareVersion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbFirmwareVersion.Location = new System.Drawing.Point(16, 26);
+            this.tbFirmwareVersion.Name = "tbFirmwareVersion";
+            this.tbFirmwareVersion.ReadOnly = true;
+            this.tbFirmwareVersion.Size = new System.Drawing.Size(167, 20);
+            this.tbFirmwareVersion.TabIndex = 1;
+            this.tbFirmwareVersion.WordWrap = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(13, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Версия ядра:";
+            // 
+            // panel4
+            // 
+            this.panel4.AutoSize = true;
+            this.panel4.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel4.Controls.Add(this.label1);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(2, 2);
+            this.panel4.Margin = new System.Windows.Forms.Padding(0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(196, 24);
+            this.panel4.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(0);
+            this.label1.Name = "label1";
+            this.label1.Padding = new System.Windows.Forms.Padding(2);
+            this.label1.Size = new System.Drawing.Size(123, 24);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Информация";
+            // 
+            // plDelta
+            // 
+            this.plDelta.BackColor = System.Drawing.Color.SteelBlue;
+            this.plDelta.Controls.Add(this.panel11);
+            this.plDelta.Controls.Add(this.panel12);
+            this.plDelta.Location = new System.Drawing.Point(240, 20);
+            this.plDelta.Margin = new System.Windows.Forms.Padding(10);
+            this.plDelta.Name = "plDelta";
+            this.plDelta.Padding = new System.Windows.Forms.Padding(2);
+            this.plDelta.Size = new System.Drawing.Size(200, 275);
+            this.plDelta.TabIndex = 4;
+            // 
+            // panel11
+            // 
+            this.panel11.BackColor = System.Drawing.Color.White;
+            this.panel11.Controls.Add(this.nudEthalonCompareDelta);
+            this.panel11.Controls.Add(this.label12);
+            this.panel11.Controls.Add(this.label9);
+            this.panel11.Controls.Add(this.nudSkipCounter);
+            this.panel11.Controls.Add(this.label5);
+            this.panel11.Controls.Add(this.btnSetDelta);
+            this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel11.Location = new System.Drawing.Point(2, 26);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(196, 247);
+            this.panel11.TabIndex = 2;
+            // 
+            // nudEthalonCompareDelta
+            // 
+            this.nudEthalonCompareDelta.Location = new System.Drawing.Point(16, 70);
+            this.nudEthalonCompareDelta.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudEthalonCompareDelta.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudEthalonCompareDelta.Name = "nudEthalonCompareDelta";
+            this.nudEthalonCompareDelta.Size = new System.Drawing.Size(167, 20);
+            this.nudEthalonCompareDelta.TabIndex = 13;
+            this.toolTip.SetToolTip(this.nudEthalonCompareDelta, "Отклонение эталонного времени длительности \r\nимпульсов при сравнении графиков.");
+            this.nudEthalonCompareDelta.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.ForeColor = System.Drawing.Color.Black;
+            this.label12.Location = new System.Drawing.Point(13, 54);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(152, 13);
+            this.label12.TabIndex = 12;
+            this.label12.Text = "Дельта времени сравнения:";
+            // 
+            // label9
+            // 
+            this.label9.BackColor = System.Drawing.Color.LightYellow;
+            this.label9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label9.ForeColor = System.Drawing.Color.Black;
+            this.label9.Location = new System.Drawing.Point(13, 105);
+            this.label9.Name = "label9";
+            this.label9.Padding = new System.Windows.Forms.Padding(4);
+            this.label9.Size = new System.Drawing.Size(170, 97);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "\"Пропускать...\" - какой по счёту импульс будет учитываться (1 - каждый, 2 - кажды" +
+    "й второй, и т.п.). \"Дельта\" - отклонение в мкс при сравнении с эталоном.";
+            // 
+            // nudSkipCounter
+            // 
+            this.nudSkipCounter.Location = new System.Drawing.Point(16, 27);
+            this.nudSkipCounter.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudSkipCounter.Name = "nudSkipCounter";
+            this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
+            this.nudSkipCounter.TabIndex = 10;
+            this.toolTip.SetToolTip(this.nudSkipCounter, resources.GetString("nudSkipCounter.ToolTip"));
+            this.nudSkipCounter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Location = new System.Drawing.Point(13, 11);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(128, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Пропускать импульсов:";
+            // 
+            // btnSetDelta
+            // 
+            this.btnSetDelta.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetDelta.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetDelta.ForeColor = System.Drawing.Color.Black;
+            this.btnSetDelta.Location = new System.Drawing.Point(16, 215);
+            this.btnSetDelta.Name = "btnSetDelta";
+            this.btnSetDelta.Size = new System.Drawing.Size(167, 23);
+            this.btnSetDelta.TabIndex = 8;
+            this.btnSetDelta.Text = "Установить";
+            this.btnSetDelta.UseVisualStyleBackColor = false;
+            this.btnSetDelta.Click += new System.EventHandler(this.btnSetDelta_Click);
+            // 
+            // panel12
+            // 
+            this.panel12.AutoSize = true;
+            this.panel12.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel12.Controls.Add(this.label20);
+            this.panel12.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel12.Location = new System.Drawing.Point(2, 2);
+            this.panel12.Margin = new System.Windows.Forms.Padding(0);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(196, 24);
+            this.panel12.TabIndex = 1;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label20.ForeColor = System.Drawing.Color.White;
+            this.label20.Location = new System.Drawing.Point(0, 0);
+            this.label20.Margin = new System.Windows.Forms.Padding(0);
+            this.label20.Name = "label20";
+            this.label20.Padding = new System.Windows.Forms.Padding(2);
+            this.label20.Size = new System.Drawing.Size(174, 24);
+            this.label20.TabIndex = 0;
+            this.label20.Text = "Дельты импульсов";
+            // 
+            // plMotoresourceCurrent
+            // 
+            this.plMotoresourceCurrent.BackColor = System.Drawing.Color.SteelBlue;
+            this.plMotoresourceCurrent.Controls.Add(this.panel5);
+            this.plMotoresourceCurrent.Controls.Add(this.panel6);
+            this.plMotoresourceCurrent.Location = new System.Drawing.Point(460, 20);
+            this.plMotoresourceCurrent.Margin = new System.Windows.Forms.Padding(10);
+            this.plMotoresourceCurrent.Name = "plMotoresourceCurrent";
+            this.plMotoresourceCurrent.Padding = new System.Windows.Forms.Padding(2);
+            this.plMotoresourceCurrent.Size = new System.Drawing.Size(200, 275);
+            this.plMotoresourceCurrent.TabIndex = 1;
+            // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.Color.White;
+            this.panel5.Controls.Add(this.label10);
+            this.panel5.Controls.Add(this.lblMotoresourcePercents1);
+            this.panel5.Controls.Add(this.nudMotoresourceMax1);
+            this.panel5.Controls.Add(this.label11);
+            this.panel5.Controls.Add(this.btnSetMotoresourceCurrent);
+            this.panel5.Controls.Add(this.nudMotoresourceCurrent1);
+            this.panel5.Controls.Add(this.label7);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(2, 26);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(196, 247);
+            this.panel5.TabIndex = 2;
+            // 
+            // label10
+            // 
+            this.label10.BackColor = System.Drawing.Color.LightYellow;
+            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label10.ForeColor = System.Drawing.Color.Black;
+            this.label10.Location = new System.Drawing.Point(13, 120);
+            this.label10.Name = "label10";
+            this.label10.Padding = new System.Windows.Forms.Padding(4);
+            this.label10.Size = new System.Drawing.Size(170, 82);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Показывает, сколько прибор отработал от максимального ресурса. Его можно установи" +
+    "ть на нужное значение.\r\n";
+            // 
+            // lblMotoresourcePercents1
+            // 
+            this.lblMotoresourcePercents1.BackColor = System.Drawing.Color.White;
+            this.lblMotoresourcePercents1.ForeColor = System.Drawing.Color.Green;
+            this.lblMotoresourcePercents1.Location = new System.Drawing.Point(108, 27);
+            this.lblMotoresourcePercents1.Name = "lblMotoresourcePercents1";
+            this.lblMotoresourcePercents1.Size = new System.Drawing.Size(75, 13);
+            this.lblMotoresourcePercents1.TabIndex = 9;
+            this.lblMotoresourcePercents1.Text = "0%";
+            this.lblMotoresourcePercents1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // nudMotoresourceMax1
+            // 
+            this.nudMotoresourceMax1.Location = new System.Drawing.Point(19, 70);
+            this.nudMotoresourceMax1.Maximum = new decimal(new int[] {
+            1410065408,
+            2,
+            0,
+            0});
+            this.nudMotoresourceMax1.Name = "nudMotoresourceMax1";
+            this.nudMotoresourceMax1.Size = new System.Drawing.Size(167, 20);
+            this.nudMotoresourceMax1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudMotoresourceMax1, "Максимальный ресурс системы.");
+            this.nudMotoresourceMax1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.ForeColor = System.Drawing.Color.Black;
+            this.label11.Location = new System.Drawing.Point(16, 56);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(78, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Макс. ресурс:";
+            // 
+            // btnSetMotoresourceCurrent
+            // 
+            this.btnSetMotoresourceCurrent.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetMotoresourceCurrent.Enabled = false;
+            this.btnSetMotoresourceCurrent.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetMotoresourceCurrent.ForeColor = System.Drawing.Color.Black;
+            this.btnSetMotoresourceCurrent.Location = new System.Drawing.Point(16, 215);
+            this.btnSetMotoresourceCurrent.Name = "btnSetMotoresourceCurrent";
+            this.btnSetMotoresourceCurrent.Size = new System.Drawing.Size(167, 23);
+            this.btnSetMotoresourceCurrent.TabIndex = 8;
+            this.btnSetMotoresourceCurrent.Text = "Установить";
+            this.btnSetMotoresourceCurrent.UseVisualStyleBackColor = false;
+            this.btnSetMotoresourceCurrent.Click += new System.EventHandler(this.btnSetMotoresourceCurrent_Click);
+            // 
+            // nudMotoresourceCurrent1
+            // 
+            this.nudMotoresourceCurrent1.Location = new System.Drawing.Point(19, 25);
+            this.nudMotoresourceCurrent1.Maximum = new decimal(new int[] {
+            1410065408,
+            2,
+            0,
+            0});
+            this.nudMotoresourceCurrent1.Name = "nudMotoresourceCurrent1";
+            this.nudMotoresourceCurrent1.Size = new System.Drawing.Size(86, 20);
+            this.nudMotoresourceCurrent1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudMotoresourceCurrent1, "Количество срабатываний системы.");
+            this.nudMotoresourceCurrent1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Black;
+            this.label7.Location = new System.Drawing.Point(16, 11);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(123, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Наработанный ресурс:";
+            // 
+            // panel6
+            // 
+            this.panel6.AutoSize = true;
+            this.panel6.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel6.Controls.Add(this.label8);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel6.Location = new System.Drawing.Point(2, 2);
+            this.panel6.Margin = new System.Windows.Forms.Padding(0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(196, 24);
+            this.panel6.TabIndex = 1;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(0, 0);
+            this.label8.Margin = new System.Windows.Forms.Padding(0);
+            this.label8.Name = "label8";
+            this.label8.Padding = new System.Windows.Forms.Padding(2);
+            this.label8.Size = new System.Drawing.Size(113, 24);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Моторесурс";
+            // 
+            // plImpulses
+            // 
+            this.plImpulses.BackColor = System.Drawing.Color.SteelBlue;
+            this.plImpulses.Controls.Add(this.panel9);
+            this.plImpulses.Controls.Add(this.panel10);
+            this.plImpulses.Location = new System.Drawing.Point(680, 20);
+            this.plImpulses.Margin = new System.Windows.Forms.Padding(10);
+            this.plImpulses.Name = "plImpulses";
+            this.plImpulses.Padding = new System.Windows.Forms.Padding(2);
+            this.plImpulses.Size = new System.Drawing.Size(200, 275);
+            this.plImpulses.TabIndex = 3;
+            // 
+            // panel9
+            // 
+            this.panel9.BackColor = System.Drawing.Color.White;
+            this.panel9.Controls.Add(this.nudDelta1);
+            this.panel9.Controls.Add(this.label19);
+            this.panel9.Controls.Add(this.label6);
+            this.panel9.Controls.Add(this.btnSetPulses);
+            this.panel9.Controls.Add(this.nudPulses1);
+            this.panel9.Controls.Add(this.label15);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(2, 26);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(196, 247);
+            this.panel9.TabIndex = 2;
+            // 
+            // nudDelta1
+            // 
+            this.nudDelta1.Location = new System.Drawing.Point(16, 70);
+            this.nudDelta1.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudDelta1.Name = "nudDelta1";
+            this.nudDelta1.Size = new System.Drawing.Size(167, 20);
+            this.nudDelta1.TabIndex = 11;
+            this.toolTip.SetToolTip(this.nudDelta1, "Дельта кол-ва импульсов при сравнении с эталоном.");
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.ForeColor = System.Drawing.Color.Black;
+            this.label19.Location = new System.Drawing.Point(13, 54);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(84, 13);
+            this.label19.TabIndex = 10;
+            this.label19.Text = "Дельта кол-ва:";
+            // 
+            // label6
+            // 
+            this.label6.BackColor = System.Drawing.Color.LightYellow;
+            this.label6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label6.ForeColor = System.Drawing.Color.Black;
+            this.label6.Location = new System.Drawing.Point(13, 120);
+            this.label6.Name = "label6";
+            this.label6.Padding = new System.Windows.Forms.Padding(4);
+            this.label6.Size = new System.Drawing.Size(170, 82);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Образцовое количество импульсов со штанги, для сравнения с графиком эталона. Дель" +
+    "та - отклонение от образца.";
+            // 
+            // btnSetPulses
+            // 
+            this.btnSetPulses.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetPulses.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetPulses.ForeColor = System.Drawing.Color.Black;
+            this.btnSetPulses.Location = new System.Drawing.Point(16, 215);
+            this.btnSetPulses.Name = "btnSetPulses";
+            this.btnSetPulses.Size = new System.Drawing.Size(167, 23);
+            this.btnSetPulses.TabIndex = 8;
+            this.btnSetPulses.Text = "Установить";
+            this.btnSetPulses.UseVisualStyleBackColor = false;
+            this.btnSetPulses.Click += new System.EventHandler(this.btnSetPulses_Click);
+            // 
+            // nudPulses1
+            // 
+            this.nudPulses1.Location = new System.Drawing.Point(16, 27);
+            this.nudPulses1.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.nudPulses1.Name = "nudPulses1";
+            this.nudPulses1.Size = new System.Drawing.Size(167, 20);
+            this.nudPulses1.TabIndex = 5;
+            this.toolTip.SetToolTip(this.nudPulses1, "Эталонное кол-во импульсов при срабатывании.");
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.ForeColor = System.Drawing.Color.Black;
+            this.label15.Location = new System.Drawing.Point(13, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(100, 13);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "Эталонное кол-во:";
+            // 
+            // panel10
+            // 
+            this.panel10.AutoSize = true;
+            this.panel10.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel10.Controls.Add(this.label16);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel10.Location = new System.Drawing.Point(2, 2);
+            this.panel10.Margin = new System.Windows.Forms.Padding(0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(196, 24);
+            this.panel10.TabIndex = 1;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label16.ForeColor = System.Drawing.Color.White;
+            this.label16.Location = new System.Drawing.Point(0, 0);
+            this.label16.Margin = new System.Windows.Forms.Padding(0);
+            this.label16.Name = "label16";
+            this.label16.Padding = new System.Windows.Forms.Padding(2);
+            this.label16.Size = new System.Drawing.Size(97, 24);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "Импульсы";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel2.Controls.Add(this.panel7);
+            this.panel2.Controls.Add(this.panel8);
+            this.panel2.Location = new System.Drawing.Point(20, 315);
+            this.panel2.Margin = new System.Windows.Forms.Padding(10);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(2);
+            this.panel2.Size = new System.Drawing.Size(200, 275);
+            this.panel2.TabIndex = 5;
+            // 
+            // panel7
+            // 
+            this.panel7.BackColor = System.Drawing.Color.White;
+            this.panel7.Controls.Add(this.label21);
+            this.panel7.Controls.Add(this.nudRodMoveLength);
+            this.panel7.Controls.Add(this.label22);
+            this.panel7.Controls.Add(this.btnSetRodSettings);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(2, 26);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(196, 247);
+            this.panel7.TabIndex = 2;
+            // 
+            // label21
+            // 
+            this.label21.BackColor = System.Drawing.Color.LightYellow;
+            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label21.ForeColor = System.Drawing.Color.Black;
+            this.label21.Location = new System.Drawing.Point(13, 105);
+            this.label21.Name = "label21";
+            this.label21.Padding = new System.Windows.Forms.Padding(4);
+            this.label21.Size = new System.Drawing.Size(170, 97);
+            this.label21.TabIndex = 11;
+            this.label21.Text = "Величина перемещения привода штанги, мм.";
+            // 
+            // nudRodMoveLength
+            // 
+            this.nudRodMoveLength.Location = new System.Drawing.Point(16, 27);
+            this.nudRodMoveLength.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nudRodMoveLength.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudRodMoveLength.Name = "nudRodMoveLength";
+            this.nudRodMoveLength.Size = new System.Drawing.Size(167, 20);
+            this.nudRodMoveLength.TabIndex = 10;
+            this.toolTip.SetToolTip(this.nudRodMoveLength, "Величина перемещения привода штанги, мм.");
+            this.nudRodMoveLength.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.ForeColor = System.Drawing.Color.Black;
+            this.label22.Location = new System.Drawing.Point(13, 11);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(154, 13);
+            this.label22.TabIndex = 9;
+            this.label22.Text = "Величина перемещения, мм:";
+            // 
+            // btnSetRodSettings
+            // 
+            this.btnSetRodSettings.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetRodSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetRodSettings.ForeColor = System.Drawing.Color.Black;
+            this.btnSetRodSettings.Location = new System.Drawing.Point(16, 215);
+            this.btnSetRodSettings.Name = "btnSetRodSettings";
+            this.btnSetRodSettings.Size = new System.Drawing.Size(167, 23);
+            this.btnSetRodSettings.TabIndex = 8;
+            this.btnSetRodSettings.Text = "Установить";
+            this.btnSetRodSettings.UseVisualStyleBackColor = false;
+            this.btnSetRodSettings.Click += new System.EventHandler(this.btnSetRodSettings_Click);
+            // 
+            // panel8
+            // 
+            this.panel8.AutoSize = true;
+            this.panel8.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel8.Controls.Add(this.label23);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel8.Location = new System.Drawing.Point(2, 2);
+            this.panel8.Margin = new System.Windows.Forms.Padding(0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(196, 24);
+            this.panel8.TabIndex = 1;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label23.ForeColor = System.Drawing.Color.White;
+            this.label23.Location = new System.Drawing.Point(0, 0);
+            this.label23.Margin = new System.Windows.Forms.Padding(0);
+            this.label23.Name = "label23";
+            this.label23.Padding = new System.Windows.Forms.Padding(2);
+            this.label23.Size = new System.Drawing.Size(171, 24);
+            this.label23.TabIndex = 0;
+            this.label23.Text = "Настройки штанги";
             // 
             // plAdditionalSettings
             // 
@@ -1408,587 +2099,6 @@
             this.label74.TabIndex = 0;
             this.label74.Text = "Сигналы на АСУ ТП";
             // 
-            // plMainSettings
-            // 
-            this.plMainSettings.Controls.Add(this.flowLayoutPanel1);
-            this.plMainSettings.Location = new System.Drawing.Point(2, 0);
-            this.plMainSettings.Name = "plMainSettings";
-            this.plMainSettings.Size = new System.Drawing.Size(940, 635);
-            this.plMainSettings.TabIndex = 9;
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.AutoScroll = true;
-            this.flowLayoutPanel1.BackColor = System.Drawing.Color.White;
-            this.flowLayoutPanel1.Controls.Add(this.plInfo);
-            this.flowLayoutPanel1.Controls.Add(this.plDelta);
-            this.flowLayoutPanel1.Controls.Add(this.plMotoresourceCurrent);
-            this.flowLayoutPanel1.Controls.Add(this.plImpulses);
-            this.flowLayoutPanel1.Controls.Add(this.panel2);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(940, 635);
-            this.flowLayoutPanel1.TabIndex = 0;
-            // 
-            // plInfo
-            // 
-            this.plInfo.BackColor = System.Drawing.Color.SteelBlue;
-            this.plInfo.Controls.Add(this.panel3);
-            this.plInfo.Controls.Add(this.panel4);
-            this.plInfo.Location = new System.Drawing.Point(20, 20);
-            this.plInfo.Margin = new System.Windows.Forms.Padding(10);
-            this.plInfo.Name = "plInfo";
-            this.plInfo.Padding = new System.Windows.Forms.Padding(2);
-            this.plInfo.Size = new System.Drawing.Size(200, 275);
-            this.plInfo.TabIndex = 0;
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.White;
-            this.panel3.Controls.Add(this.tbSoftwareVersion);
-            this.panel3.Controls.Add(this.label13);
-            this.panel3.Controls.Add(this.label14);
-            this.panel3.Controls.Add(this.btnSetDateTime2);
-            this.panel3.Controls.Add(this.tbControllerTime);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Controls.Add(this.tbFirmwareVersion);
-            this.panel3.Controls.Add(this.label2);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(2, 26);
-            this.panel3.Margin = new System.Windows.Forms.Padding(3, 11, 3, 3);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(196, 247);
-            this.panel3.TabIndex = 2;
-            // 
-            // tbSoftwareVersion
-            // 
-            this.tbSoftwareVersion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbSoftwareVersion.Location = new System.Drawing.Point(16, 70);
-            this.tbSoftwareVersion.Name = "tbSoftwareVersion";
-            this.tbSoftwareVersion.ReadOnly = true;
-            this.tbSoftwareVersion.Size = new System.Drawing.Size(167, 20);
-            this.tbSoftwareVersion.TabIndex = 17;
-            this.tbSoftwareVersion.WordWrap = false;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.ForeColor = System.Drawing.Color.Black;
-            this.label13.Location = new System.Drawing.Point(13, 54);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(127, 13);
-            this.label13.TabIndex = 16;
-            this.label13.Text = "Версия конфигуратора:";
-            // 
-            // label14
-            // 
-            this.label14.BackColor = System.Drawing.Color.LightYellow;
-            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label14.ForeColor = System.Drawing.Color.Black;
-            this.label14.Location = new System.Drawing.Point(13, 142);
-            this.label14.Name = "label14";
-            this.label14.Padding = new System.Windows.Forms.Padding(4);
-            this.label14.Size = new System.Drawing.Size(170, 63);
-            this.label14.TabIndex = 12;
-            this.label14.Text = "Кнопка \"Установить время\" устанавливает время контроллера на системное время комп" +
-    "ьютера.";
-            // 
-            // btnSetDateTime2
-            // 
-            this.btnSetDateTime2.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetDateTime2.Enabled = false;
-            this.btnSetDateTime2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetDateTime2.ForeColor = System.Drawing.Color.Black;
-            this.btnSetDateTime2.Location = new System.Drawing.Point(16, 215);
-            this.btnSetDateTime2.Name = "btnSetDateTime2";
-            this.btnSetDateTime2.Size = new System.Drawing.Size(167, 23);
-            this.btnSetDateTime2.TabIndex = 9;
-            this.btnSetDateTime2.Text = "Установить время";
-            this.btnSetDateTime2.UseVisualStyleBackColor = false;
-            this.btnSetDateTime2.Click += new System.EventHandler(this.btnSetDateTime_Click);
-            // 
-            // tbControllerTime
-            // 
-            this.tbControllerTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbControllerTime.Location = new System.Drawing.Point(16, 113);
-            this.tbControllerTime.Name = "tbControllerTime";
-            this.tbControllerTime.ReadOnly = true;
-            this.tbControllerTime.Size = new System.Drawing.Size(167, 20);
-            this.tbControllerTime.TabIndex = 5;
-            this.tbControllerTime.WordWrap = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(13, 97);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(111, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Время контроллера:";
-            // 
-            // tbFirmwareVersion
-            // 
-            this.tbFirmwareVersion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFirmwareVersion.Location = new System.Drawing.Point(16, 26);
-            this.tbFirmwareVersion.Name = "tbFirmwareVersion";
-            this.tbFirmwareVersion.ReadOnly = true;
-            this.tbFirmwareVersion.Size = new System.Drawing.Size(167, 20);
-            this.tbFirmwareVersion.TabIndex = 1;
-            this.tbFirmwareVersion.WordWrap = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(13, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Версия ядра:";
-            // 
-            // panel4
-            // 
-            this.panel4.AutoSize = true;
-            this.panel4.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(2, 2);
-            this.panel4.Margin = new System.Windows.Forms.Padding(0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(196, 24);
-            this.panel4.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(0);
-            this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(2);
-            this.label1.Size = new System.Drawing.Size(123, 24);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Информация";
-            // 
-            // plDelta
-            // 
-            this.plDelta.BackColor = System.Drawing.Color.SteelBlue;
-            this.plDelta.Controls.Add(this.panel11);
-            this.plDelta.Controls.Add(this.panel12);
-            this.plDelta.Location = new System.Drawing.Point(240, 20);
-            this.plDelta.Margin = new System.Windows.Forms.Padding(10);
-            this.plDelta.Name = "plDelta";
-            this.plDelta.Padding = new System.Windows.Forms.Padding(2);
-            this.plDelta.Size = new System.Drawing.Size(200, 275);
-            this.plDelta.TabIndex = 4;
-            // 
-            // panel11
-            // 
-            this.panel11.BackColor = System.Drawing.Color.White;
-            this.panel11.Controls.Add(this.nudEthalonCompareDelta);
-            this.panel11.Controls.Add(this.label12);
-            this.panel11.Controls.Add(this.label9);
-            this.panel11.Controls.Add(this.nudSkipCounter);
-            this.panel11.Controls.Add(this.label5);
-            this.panel11.Controls.Add(this.btnSetDelta);
-            this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel11.Location = new System.Drawing.Point(2, 26);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(196, 247);
-            this.panel11.TabIndex = 2;
-            // 
-            // nudEthalonCompareDelta
-            // 
-            this.nudEthalonCompareDelta.Location = new System.Drawing.Point(16, 70);
-            this.nudEthalonCompareDelta.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.nudEthalonCompareDelta.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudEthalonCompareDelta.Name = "nudEthalonCompareDelta";
-            this.nudEthalonCompareDelta.Size = new System.Drawing.Size(167, 20);
-            this.nudEthalonCompareDelta.TabIndex = 13;
-            this.toolTip.SetToolTip(this.nudEthalonCompareDelta, "Отклонение эталонного времени длительности \r\nимпульсов при сравнении графиков.");
-            this.nudEthalonCompareDelta.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.ForeColor = System.Drawing.Color.Black;
-            this.label12.Location = new System.Drawing.Point(13, 54);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(152, 13);
-            this.label12.TabIndex = 12;
-            this.label12.Text = "Дельта времени сравнения:";
-            // 
-            // label9
-            // 
-            this.label9.BackColor = System.Drawing.Color.LightYellow;
-            this.label9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(13, 105);
-            this.label9.Name = "label9";
-            this.label9.Padding = new System.Windows.Forms.Padding(4);
-            this.label9.Size = new System.Drawing.Size(170, 97);
-            this.label9.TabIndex = 11;
-            this.label9.Text = "\"Пропускать...\" - какой по счёту импульс будет учитываться (1 - каждый, 2 - кажды" +
-    "й второй, и т.п.). \"Дельта\" - отклонение в мкс при сравнении с эталоном.";
-            // 
-            // nudSkipCounter
-            // 
-            this.nudSkipCounter.Location = new System.Drawing.Point(16, 27);
-            this.nudSkipCounter.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.nudSkipCounter.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudSkipCounter.Name = "nudSkipCounter";
-            this.nudSkipCounter.Size = new System.Drawing.Size(167, 20);
-            this.nudSkipCounter.TabIndex = 10;
-            this.toolTip.SetToolTip(this.nudSkipCounter, resources.GetString("nudSkipCounter.ToolTip"));
-            this.nudSkipCounter.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(13, 11);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(128, 13);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Пропускать импульсов:";
-            // 
-            // btnSetDelta
-            // 
-            this.btnSetDelta.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetDelta.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetDelta.ForeColor = System.Drawing.Color.Black;
-            this.btnSetDelta.Location = new System.Drawing.Point(16, 215);
-            this.btnSetDelta.Name = "btnSetDelta";
-            this.btnSetDelta.Size = new System.Drawing.Size(167, 23);
-            this.btnSetDelta.TabIndex = 8;
-            this.btnSetDelta.Text = "Установить";
-            this.btnSetDelta.UseVisualStyleBackColor = false;
-            this.btnSetDelta.Click += new System.EventHandler(this.btnSetDelta_Click);
-            // 
-            // panel12
-            // 
-            this.panel12.AutoSize = true;
-            this.panel12.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel12.Controls.Add(this.label20);
-            this.panel12.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel12.Location = new System.Drawing.Point(2, 2);
-            this.panel12.Margin = new System.Windows.Forms.Padding(0);
-            this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(196, 24);
-            this.panel12.TabIndex = 1;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label20.ForeColor = System.Drawing.Color.White;
-            this.label20.Location = new System.Drawing.Point(0, 0);
-            this.label20.Margin = new System.Windows.Forms.Padding(0);
-            this.label20.Name = "label20";
-            this.label20.Padding = new System.Windows.Forms.Padding(2);
-            this.label20.Size = new System.Drawing.Size(174, 24);
-            this.label20.TabIndex = 0;
-            this.label20.Text = "Дельты импульсов";
-            // 
-            // plMotoresourceCurrent
-            // 
-            this.plMotoresourceCurrent.BackColor = System.Drawing.Color.SteelBlue;
-            this.plMotoresourceCurrent.Controls.Add(this.panel5);
-            this.plMotoresourceCurrent.Controls.Add(this.panel6);
-            this.plMotoresourceCurrent.Location = new System.Drawing.Point(460, 20);
-            this.plMotoresourceCurrent.Margin = new System.Windows.Forms.Padding(10);
-            this.plMotoresourceCurrent.Name = "plMotoresourceCurrent";
-            this.plMotoresourceCurrent.Padding = new System.Windows.Forms.Padding(2);
-            this.plMotoresourceCurrent.Size = new System.Drawing.Size(200, 275);
-            this.plMotoresourceCurrent.TabIndex = 1;
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.Color.White;
-            this.panel5.Controls.Add(this.label10);
-            this.panel5.Controls.Add(this.lblMotoresourcePercents1);
-            this.panel5.Controls.Add(this.nudMotoresourceMax1);
-            this.panel5.Controls.Add(this.label11);
-            this.panel5.Controls.Add(this.btnSetMotoresourceCurrent);
-            this.panel5.Controls.Add(this.nudMotoresourceCurrent1);
-            this.panel5.Controls.Add(this.label7);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(2, 26);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(196, 247);
-            this.panel5.TabIndex = 2;
-            // 
-            // label10
-            // 
-            this.label10.BackColor = System.Drawing.Color.LightYellow;
-            this.label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label10.ForeColor = System.Drawing.Color.Black;
-            this.label10.Location = new System.Drawing.Point(13, 120);
-            this.label10.Name = "label10";
-            this.label10.Padding = new System.Windows.Forms.Padding(4);
-            this.label10.Size = new System.Drawing.Size(170, 82);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "Показывает, сколько прибор отработал от максимального ресурса. Его можно установи" +
-    "ть на нужное значение.\r\n";
-            // 
-            // lblMotoresourcePercents1
-            // 
-            this.lblMotoresourcePercents1.BackColor = System.Drawing.Color.White;
-            this.lblMotoresourcePercents1.ForeColor = System.Drawing.Color.Green;
-            this.lblMotoresourcePercents1.Location = new System.Drawing.Point(108, 27);
-            this.lblMotoresourcePercents1.Name = "lblMotoresourcePercents1";
-            this.lblMotoresourcePercents1.Size = new System.Drawing.Size(75, 13);
-            this.lblMotoresourcePercents1.TabIndex = 9;
-            this.lblMotoresourcePercents1.Text = "0%";
-            this.lblMotoresourcePercents1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // nudMotoresourceMax1
-            // 
-            this.nudMotoresourceMax1.Location = new System.Drawing.Point(19, 70);
-            this.nudMotoresourceMax1.Maximum = new decimal(new int[] {
-            1410065408,
-            2,
-            0,
-            0});
-            this.nudMotoresourceMax1.Name = "nudMotoresourceMax1";
-            this.nudMotoresourceMax1.Size = new System.Drawing.Size(167, 20);
-            this.nudMotoresourceMax1.TabIndex = 5;
-            this.toolTip.SetToolTip(this.nudMotoresourceMax1, "Максимальный ресурс системы.");
-            this.nudMotoresourceMax1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.ForeColor = System.Drawing.Color.Black;
-            this.label11.Location = new System.Drawing.Point(16, 56);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(78, 13);
-            this.label11.TabIndex = 0;
-            this.label11.Text = "Макс. ресурс:";
-            // 
-            // btnSetMotoresourceCurrent
-            // 
-            this.btnSetMotoresourceCurrent.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetMotoresourceCurrent.Enabled = false;
-            this.btnSetMotoresourceCurrent.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetMotoresourceCurrent.ForeColor = System.Drawing.Color.Black;
-            this.btnSetMotoresourceCurrent.Location = new System.Drawing.Point(16, 215);
-            this.btnSetMotoresourceCurrent.Name = "btnSetMotoresourceCurrent";
-            this.btnSetMotoresourceCurrent.Size = new System.Drawing.Size(167, 23);
-            this.btnSetMotoresourceCurrent.TabIndex = 8;
-            this.btnSetMotoresourceCurrent.Text = "Установить";
-            this.btnSetMotoresourceCurrent.UseVisualStyleBackColor = false;
-            this.btnSetMotoresourceCurrent.Click += new System.EventHandler(this.btnSetMotoresourceCurrent_Click);
-            // 
-            // nudMotoresourceCurrent1
-            // 
-            this.nudMotoresourceCurrent1.Location = new System.Drawing.Point(19, 25);
-            this.nudMotoresourceCurrent1.Maximum = new decimal(new int[] {
-            1410065408,
-            2,
-            0,
-            0});
-            this.nudMotoresourceCurrent1.Name = "nudMotoresourceCurrent1";
-            this.nudMotoresourceCurrent1.Size = new System.Drawing.Size(86, 20);
-            this.nudMotoresourceCurrent1.TabIndex = 5;
-            this.toolTip.SetToolTip(this.nudMotoresourceCurrent1, "Количество срабатываний системы.");
-            this.nudMotoresourceCurrent1.ValueChanged += new System.EventHandler(this.MotoresourceCurrentValueChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.ForeColor = System.Drawing.Color.Black;
-            this.label7.Location = new System.Drawing.Point(16, 11);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(123, 13);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Наработанный ресурс:";
-            // 
-            // panel6
-            // 
-            this.panel6.AutoSize = true;
-            this.panel6.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel6.Controls.Add(this.label8);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel6.Location = new System.Drawing.Point(2, 2);
-            this.panel6.Margin = new System.Windows.Forms.Padding(0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(196, 24);
-            this.panel6.TabIndex = 1;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(0, 0);
-            this.label8.Margin = new System.Windows.Forms.Padding(0);
-            this.label8.Name = "label8";
-            this.label8.Padding = new System.Windows.Forms.Padding(2);
-            this.label8.Size = new System.Drawing.Size(113, 24);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Моторесурс";
-            // 
-            // plImpulses
-            // 
-            this.plImpulses.BackColor = System.Drawing.Color.SteelBlue;
-            this.plImpulses.Controls.Add(this.panel9);
-            this.plImpulses.Controls.Add(this.panel10);
-            this.plImpulses.Location = new System.Drawing.Point(680, 20);
-            this.plImpulses.Margin = new System.Windows.Forms.Padding(10);
-            this.plImpulses.Name = "plImpulses";
-            this.plImpulses.Padding = new System.Windows.Forms.Padding(2);
-            this.plImpulses.Size = new System.Drawing.Size(200, 275);
-            this.plImpulses.TabIndex = 3;
-            // 
-            // panel9
-            // 
-            this.panel9.BackColor = System.Drawing.Color.White;
-            this.panel9.Controls.Add(this.nudDelta1);
-            this.panel9.Controls.Add(this.label19);
-            this.panel9.Controls.Add(this.label6);
-            this.panel9.Controls.Add(this.btnSetPulses);
-            this.panel9.Controls.Add(this.nudPulses1);
-            this.panel9.Controls.Add(this.label15);
-            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(2, 26);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(196, 247);
-            this.panel9.TabIndex = 2;
-            // 
-            // nudDelta1
-            // 
-            this.nudDelta1.Location = new System.Drawing.Point(16, 70);
-            this.nudDelta1.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.nudDelta1.Name = "nudDelta1";
-            this.nudDelta1.Size = new System.Drawing.Size(167, 20);
-            this.nudDelta1.TabIndex = 11;
-            this.toolTip.SetToolTip(this.nudDelta1, "Дельта кол-ва импульсов при сравнении с эталоном.");
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.ForeColor = System.Drawing.Color.Black;
-            this.label19.Location = new System.Drawing.Point(13, 54);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(84, 13);
-            this.label19.TabIndex = 10;
-            this.label19.Text = "Дельта кол-ва:";
-            // 
-            // label6
-            // 
-            this.label6.BackColor = System.Drawing.Color.LightYellow;
-            this.label6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.ForeColor = System.Drawing.Color.Black;
-            this.label6.Location = new System.Drawing.Point(13, 120);
-            this.label6.Name = "label6";
-            this.label6.Padding = new System.Windows.Forms.Padding(4);
-            this.label6.Size = new System.Drawing.Size(170, 82);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Образцовое количество импульсов со штанги, для сравнения с графиком эталона. Дель" +
-    "та - отклонение от образца.";
-            // 
-            // btnSetPulses
-            // 
-            this.btnSetPulses.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetPulses.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetPulses.ForeColor = System.Drawing.Color.Black;
-            this.btnSetPulses.Location = new System.Drawing.Point(16, 215);
-            this.btnSetPulses.Name = "btnSetPulses";
-            this.btnSetPulses.Size = new System.Drawing.Size(167, 23);
-            this.btnSetPulses.TabIndex = 8;
-            this.btnSetPulses.Text = "Установить";
-            this.btnSetPulses.UseVisualStyleBackColor = false;
-            this.btnSetPulses.Click += new System.EventHandler(this.btnSetPulses_Click);
-            // 
-            // nudPulses1
-            // 
-            this.nudPulses1.Location = new System.Drawing.Point(16, 27);
-            this.nudPulses1.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-            this.nudPulses1.Name = "nudPulses1";
-            this.nudPulses1.Size = new System.Drawing.Size(167, 20);
-            this.nudPulses1.TabIndex = 5;
-            this.toolTip.SetToolTip(this.nudPulses1, "Эталонное кол-во импульсов при срабатывании.");
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.ForeColor = System.Drawing.Color.Black;
-            this.label15.Location = new System.Drawing.Point(13, 11);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(100, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Эталонное кол-во:";
-            // 
-            // panel10
-            // 
-            this.panel10.AutoSize = true;
-            this.panel10.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel10.Controls.Add(this.label16);
-            this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel10.Location = new System.Drawing.Point(2, 2);
-            this.panel10.Margin = new System.Windows.Forms.Padding(0);
-            this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(196, 24);
-            this.panel10.TabIndex = 1;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label16.ForeColor = System.Drawing.Color.White;
-            this.label16.Location = new System.Drawing.Point(0, 0);
-            this.label16.Margin = new System.Windows.Forms.Padding(0);
-            this.label16.Name = "label16";
-            this.label16.Padding = new System.Windows.Forms.Padding(2);
-            this.label16.Size = new System.Drawing.Size(97, 24);
-            this.label16.TabIndex = 0;
-            this.label16.Text = "Импульсы";
-            // 
             // plSDSettings
             // 
             this.plSDSettings.Controls.Add(this.splitContainer3);
@@ -2079,8 +2189,8 @@
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle33;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle1;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -2095,8 +2205,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle34;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle2;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -2111,8 +2221,8 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle35;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle3;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
@@ -2120,8 +2230,8 @@
             // 
             // Pulses
             // 
-            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle36;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle4;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -2169,23 +2279,23 @@
             // 
             // ethalonChart
             // 
-            chartArea5.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea5);
+            chartArea1.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea1);
             this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell5.Name = "PulsesCount";
-            legendItem5.Cells.Add(legendCell5);
-            legend5.CustomItems.Add(legendItem5);
-            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend5.Name = "Legend1";
-            this.ethalonChart.Legends.Add(legend5);
+            legendCell1.Name = "PulsesCount";
+            legendItem1.Cells.Add(legendCell1);
+            legend1.CustomItems.Add(legendItem1);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend1);
             this.ethalonChart.Location = new System.Drawing.Point(0, 0);
             this.ethalonChart.Name = "ethalonChart";
-            series5.ChartArea = "ethalonChartArea";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series5.IsVisibleInLegend = false;
-            series5.Legend = "Legend1";
-            series5.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series5);
+            series1.ChartArea = "ethalonChartArea";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.IsVisibleInLegend = false;
+            series1.Legend = "Legend1";
+            series1.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series1);
             this.ethalonChart.Size = new System.Drawing.Size(200, 193);
             this.ethalonChart.TabIndex = 0;
             this.ethalonChart.Text = "chart1";
@@ -2278,8 +2388,8 @@
             // Num1
             // 
             this.Num1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num1.DefaultCellStyle = dataGridViewCellStyle37;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num1.DefaultCellStyle = dataGridViewCellStyle5;
             this.Num1.HeaderText = "№";
             this.Num1.Name = "Num1";
             this.Num1.ReadOnly = true;
@@ -2294,8 +2404,8 @@
             // 
             // Temp1
             // 
-            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp1.DefaultCellStyle = dataGridViewCellStyle38;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp1.DefaultCellStyle = dataGridViewCellStyle6;
             this.Temp1.HeaderText = "Температура";
             this.Temp1.Name = "Temp1";
             this.Temp1.ReadOnly = true;
@@ -2308,16 +2418,16 @@
             // 
             // Channel1
             // 
-            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel1.DefaultCellStyle = dataGridViewCellStyle39;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel1.DefaultCellStyle = dataGridViewCellStyle7;
             this.Channel1.HeaderText = "Канал";
             this.Channel1.Name = "Channel1";
             this.Channel1.ReadOnly = true;
             // 
             // Pulses1
             // 
-            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle40;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses1.DefaultCellStyle = dataGridViewCellStyle8;
             this.Pulses1.HeaderText = "Импульсов";
             this.Pulses1.Name = "Pulses1";
             this.Pulses1.ReadOnly = true;
@@ -2357,25 +2467,25 @@
             // 
             // archiveAthalonChart
             // 
-            chartArea6.Name = "ethalonChartArea";
-            this.archiveAthalonChart.ChartAreas.Add(chartArea6);
+            chartArea2.Name = "ethalonChartArea";
+            this.archiveAthalonChart.ChartAreas.Add(chartArea2);
             this.archiveAthalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell6.Name = "PulsesCount";
-            legendItem6.Cells.Add(legendCell6);
-            legend6.CustomItems.Add(legendItem6);
-            legend6.DockedToChartArea = "ethalonChartArea";
-            legend6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend6.IsDockedInsideChartArea = false;
-            legend6.Name = "Legend1";
-            this.archiveAthalonChart.Legends.Add(legend6);
+            legendCell2.Name = "PulsesCount";
+            legendItem2.Cells.Add(legendCell2);
+            legend2.CustomItems.Add(legendItem2);
+            legend2.DockedToChartArea = "ethalonChartArea";
+            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend2.IsDockedInsideChartArea = false;
+            legend2.Name = "Legend1";
+            this.archiveAthalonChart.Legends.Add(legend2);
             this.archiveAthalonChart.Location = new System.Drawing.Point(0, 0);
             this.archiveAthalonChart.Name = "archiveAthalonChart";
-            series6.ChartArea = "ethalonChartArea";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series6.IsVisibleInLegend = false;
-            series6.Legend = "Legend1";
-            series6.Name = "ethalonChartSerie";
-            this.archiveAthalonChart.Series.Add(series6);
+            series2.ChartArea = "ethalonChartArea";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.IsVisibleInLegend = false;
+            series2.Legend = "Legend1";
+            series2.Name = "ethalonChartSerie";
+            this.archiveAthalonChart.Series.Add(series2);
             this.archiveAthalonChart.Size = new System.Drawing.Size(200, 134);
             this.archiveAthalonChart.TabIndex = 2;
             this.archiveAthalonChart.Text = "chart1";
@@ -2471,8 +2581,8 @@
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle41;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle9;
             this.dataGridViewTextBoxColumn1.HeaderText = "№";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             this.dataGridViewTextBoxColumn1.ReadOnly = true;
@@ -2486,8 +2596,8 @@
             // 
             // dataGridViewTextBoxColumn3
             // 
-            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle42;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn3.DefaultCellStyle = dataGridViewCellStyle10;
             this.dataGridViewTextBoxColumn3.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.ReadOnly = true;
@@ -2500,16 +2610,16 @@
             // 
             // dataGridViewTextBoxColumn5
             // 
-            dataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle43;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn5.DefaultCellStyle = dataGridViewCellStyle11;
             this.dataGridViewTextBoxColumn5.HeaderText = "Штанга";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             // 
             // dataGridViewTextBoxColumn6
             // 
-            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle44;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle12;
             this.dataGridViewTextBoxColumn6.HeaderText = "Сравнение";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
             this.dataGridViewTextBoxColumn6.ReadOnly = true;
@@ -2535,8 +2645,8 @@
             // dataGridViewTextBoxColumn10
             // 
             this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle45;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle13;
             this.dataGridViewTextBoxColumn10.HeaderText = "№";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
             // 
@@ -2548,8 +2658,8 @@
             // 
             // dataGridViewTextBoxColumn12
             // 
-            dataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle46;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle14;
             this.dataGridViewTextBoxColumn12.HeaderText = "Температура";
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
             // 
@@ -2560,15 +2670,15 @@
             // 
             // dataGridViewTextBoxColumn14
             // 
-            dataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle47;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn14.DefaultCellStyle = dataGridViewCellStyle15;
             this.dataGridViewTextBoxColumn14.HeaderText = "Канал";
             this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
             // 
             // dataGridViewTextBoxColumn15
             // 
-            dataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle48;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn15.DefaultCellStyle = dataGridViewCellStyle16;
             this.dataGridViewTextBoxColumn15.HeaderText = "Импульсов";
             this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
             // 
@@ -2590,116 +2700,6 @@
             // toolTip
             // 
             this.toolTip.IsBalloon = true;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel2.Controls.Add(this.panel7);
-            this.panel2.Controls.Add(this.panel8);
-            this.panel2.Location = new System.Drawing.Point(20, 315);
-            this.panel2.Margin = new System.Windows.Forms.Padding(10);
-            this.panel2.Name = "panel2";
-            this.panel2.Padding = new System.Windows.Forms.Padding(2);
-            this.panel2.Size = new System.Drawing.Size(200, 275);
-            this.panel2.TabIndex = 5;
-            // 
-            // panel7
-            // 
-            this.panel7.BackColor = System.Drawing.Color.White;
-            this.panel7.Controls.Add(this.label21);
-            this.panel7.Controls.Add(this.nudRodMoveLength);
-            this.panel7.Controls.Add(this.label22);
-            this.panel7.Controls.Add(this.btnSetRodSettings);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(2, 26);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(196, 247);
-            this.panel7.TabIndex = 2;
-            // 
-            // label21
-            // 
-            this.label21.BackColor = System.Drawing.Color.LightYellow;
-            this.label21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label21.ForeColor = System.Drawing.Color.Black;
-            this.label21.Location = new System.Drawing.Point(13, 105);
-            this.label21.Name = "label21";
-            this.label21.Padding = new System.Windows.Forms.Padding(4);
-            this.label21.Size = new System.Drawing.Size(170, 97);
-            this.label21.TabIndex = 11;
-            this.label21.Text = "Величина перемещения привода штанги, мм.";
-            // 
-            // nudRodMoveLength
-            // 
-            this.nudRodMoveLength.Location = new System.Drawing.Point(16, 27);
-            this.nudRodMoveLength.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.nudRodMoveLength.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudRodMoveLength.Name = "nudRodMoveLength";
-            this.nudRodMoveLength.Size = new System.Drawing.Size(167, 20);
-            this.nudRodMoveLength.TabIndex = 10;
-            this.toolTip.SetToolTip(this.nudRodMoveLength, "Величина перемещения привода штанги, мм.");
-            this.nudRodMoveLength.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.ForeColor = System.Drawing.Color.Black;
-            this.label22.Location = new System.Drawing.Point(13, 11);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(154, 13);
-            this.label22.TabIndex = 9;
-            this.label22.Text = "Величина перемещения, мм:";
-            // 
-            // btnSetRodSettings
-            // 
-            this.btnSetRodSettings.BackColor = System.Drawing.Color.LightGreen;
-            this.btnSetRodSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSetRodSettings.ForeColor = System.Drawing.Color.Black;
-            this.btnSetRodSettings.Location = new System.Drawing.Point(16, 215);
-            this.btnSetRodSettings.Name = "btnSetRodSettings";
-            this.btnSetRodSettings.Size = new System.Drawing.Size(167, 23);
-            this.btnSetRodSettings.TabIndex = 8;
-            this.btnSetRodSettings.Text = "Установить";
-            this.btnSetRodSettings.UseVisualStyleBackColor = false;
-            this.btnSetRodSettings.Click += new System.EventHandler(this.btnSetRodSettings_Click);
-            // 
-            // panel8
-            // 
-            this.panel8.AutoSize = true;
-            this.panel8.BackColor = System.Drawing.Color.SteelBlue;
-            this.panel8.Controls.Add(this.label23);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel8.Location = new System.Drawing.Point(2, 2);
-            this.panel8.Margin = new System.Windows.Forms.Padding(0);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(196, 24);
-            this.panel8.TabIndex = 1;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label23.ForeColor = System.Drawing.Color.White;
-            this.label23.Location = new System.Drawing.Point(0, 0);
-            this.label23.Margin = new System.Windows.Forms.Padding(0);
-            this.label23.Name = "label23";
-            this.label23.Padding = new System.Windows.Forms.Padding(2);
-            this.label23.Size = new System.Drawing.Size(171, 24);
-            this.label23.TabIndex = 0;
-            this.label23.Text = "Настройки штанги";
             // 
             // MainForm
             // 
@@ -2735,6 +2735,45 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.plSection.ResumeLayout(false);
+            this.plMainSettings.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.plInfo.ResumeLayout(false);
+            this.plInfo.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            this.plDelta.ResumeLayout(false);
+            this.plDelta.PerformLayout();
+            this.panel11.ResumeLayout(false);
+            this.panel11.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
+            this.panel12.ResumeLayout(false);
+            this.panel12.PerformLayout();
+            this.plMotoresourceCurrent.ResumeLayout(false);
+            this.plMotoresourceCurrent.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceMax1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceCurrent1)).EndInit();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
+            this.plImpulses.ResumeLayout(false);
+            this.plImpulses.PerformLayout();
+            this.panel9.ResumeLayout(false);
+            this.panel9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).EndInit();
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).EndInit();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.plAdditionalSettings.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.panel25.ResumeLayout(false);
@@ -2773,38 +2812,6 @@
             this.panel47.PerformLayout();
             this.panel48.ResumeLayout(false);
             this.panel48.PerformLayout();
-            this.plMainSettings.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.plInfo.ResumeLayout(false);
-            this.plInfo.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            this.plDelta.ResumeLayout(false);
-            this.plDelta.PerformLayout();
-            this.panel11.ResumeLayout(false);
-            this.panel11.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
-            this.panel12.ResumeLayout(false);
-            this.panel12.PerformLayout();
-            this.plMotoresourceCurrent.ResumeLayout(false);
-            this.plMotoresourceCurrent.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceMax1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMotoresourceCurrent1)).EndInit();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.plImpulses.ResumeLayout(false);
-            this.plImpulses.PerformLayout();
-            this.panel9.ResumeLayout(false);
-            this.panel9.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudDelta1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudPulses1)).EndInit();
-            this.panel10.ResumeLayout(false);
-            this.panel10.PerformLayout();
             this.plSDSettings.ResumeLayout(false);
             this.plSDSettings.PerformLayout();
             this.splitContainer3.Panel1.ResumeLayout(false);
@@ -2820,13 +2827,6 @@
             this.plArchiveEthalonChart.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).EndInit();
             this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudRodMoveLength)).EndInit();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

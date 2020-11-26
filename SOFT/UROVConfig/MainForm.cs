@@ -213,7 +213,7 @@ namespace UROVConfig
             }
             else if (upStr.EndsWith(".ETL"))
             {
-                CreateChart(content, this.ethalonChart);
+                CreateEthalonChart(content, this.ethalonChart, Config.Instance.RodMoveLength);
                 this.plEthalonChart.BringToFront();
             }
         }
@@ -443,6 +443,20 @@ namespace UROVConfig
 
                                 // далее идёт байт номера канала
                                 curRecord.PreviewCount = Read16(content, readed); readed += 2;
+                            }
+                            break;
+
+                        case LogRecordType.RodMoveLength:
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                curRecord.RodMoveLength = Read32(content, readed); readed += 4;
                             }
                             break;
 
@@ -864,7 +878,7 @@ namespace UROVConfig
             }
         }
 
-        private void CreateChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart)
+        private void CreateEthalonChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int rodMoveLength)
         {
 
             System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
@@ -938,7 +952,7 @@ namespace UROVConfig
                 int endOffset = step / 2;
                 int counter = 0;
 
-                for (int i = 0; i < /*customLabelsCount*/clCount; i++)
+                for (int i = 0; i < clCount; i++)
                 {
                     string labelText = String.Format("{0}ms", counter / 1000);
                     CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
@@ -954,9 +968,19 @@ namespace UROVConfig
 
             // получаем максимальное время импульса - это будет 100% по оси Y
             int maxPulseTime = 0;
+            int minPulseTime = Int32.MaxValue;
+            int fullMoveTime = 0;
+
+            if(timeList.Count > 1)
+            {
+                fullMoveTime = timeList[timeList.Count - 1];
+            }
+
             for (int i = 1; i < timeList.Count; i++)
             {
-                maxPulseTime = Math.Max(maxPulseTime, (timeList[i] - timeList[i - 1]));
+                int pulseTime = (timeList[i] - timeList[i - 1]);
+                maxPulseTime = Math.Max(maxPulseTime, pulseTime);
+                minPulseTime = Math.Min(minPulseTime, pulseTime);
             }
 
             int xCoord = 0;
@@ -964,29 +988,103 @@ namespace UROVConfig
             List<double> YValuesEthalon = new List<double>();
 
             // теперь считаем все остальные точки
+            int maxInterruptYVal = 0;
+            float avgPulseTime = 0;
+
             for (int i = 1; i < timeList.Count; i++)
             {
                 int pulseTime = timeList[i] - timeList[i - 1];
-                //pulseTime *= 100;
+
+                avgPulseTime += pulseTime;
 
                 int pulseTimePercents = (pulseTime*100) / maxPulseTime;
                 pulseTimePercents = 100 - pulseTimePercents;
 
-
-                //System.Windows.Forms.DataVisualization.Charting.DataPoint pt = new System.Windows.Forms.DataVisualization.Charting.DataPoint();
-                //pt.XValue = xCoord;
-                //pt.SetValueY(pulseTimePercents);
-
-                xCoord += pulseTime;// xStep;
+                xCoord += pulseTime;
                 XValuesEthalon.Add(xCoord);
                 YValuesEthalon.Add(pulseTimePercents);
 
-                //s.Points.Add(pt);
+                maxInterruptYVal = Math.Max(maxInterruptYVal, pulseTimePercents);
 
             } // for
 
+            if (timeList.Count > 1)
+            {
+                avgPulseTime = avgPulseTime / (timeList.Count - 1);
+            }
 
-            s.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
+                s.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
+
+            AddCustomSpeedLabels(targetChart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
+
+          
+        }
+
+        void AddCustomSpeedLabels(ChartArea area, int timeListCount, int minPulseTime, float avgPulseTime, int fullMoveTime, int maxInterruptYVal, int rodMoveLength)
+        {
+            if (timeListCount > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
+            {
+                // в maxInterruptYVal - у нас лежит максимальное значение по Y в условных единицах, т.е. 100% скорости перемещения
+
+
+                // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
+                float avgSpeed = (Convert.ToSingle(rodMoveLength) * 1000000) / fullMoveTime; // средняя скорость, мм/с
+
+                float coeff = avgPulseTime / minPulseTime; // отношение средневзвешенной длительности импульса к минимальной
+                float maxSpeed = (avgSpeed * coeff); // максимальная скорость, мм/с
+
+                // выяснили максимальную скорость, теперь добавляем метки
+                // округляем до ближайшей десятки вверх
+                int roundedUpSpeed = ((int)Math.Round(maxSpeed / 10.0)) * 10;
+
+                int divider = 10;
+                int totalLabelsCount = roundedUpSpeed / divider; // получили шкалу, кратную 10
+
+                int add = 2;
+                while (totalLabelsCount > 5)
+                {
+                    divider = 10 * add;
+                    add++;
+                    totalLabelsCount = roundedUpSpeed / divider;
+                }
+                // эта шкала может быть очень частой, например, если у нас скорость большая
+
+                int labelStep = maxInterruptYVal / (totalLabelsCount);
+
+                area.AxisY.CustomLabels.Clear();
+                area.AxisY.Interval = labelStep;
+
+                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+                int startOffset = -labelStep / 2;
+                int endOffset = labelStep / 2;
+                int counter = 0;
+
+
+                for (int i = 0; i <= totalLabelsCount; i++)
+                {
+                    // у нас maxSpeed = 100%
+                    // maxInterruptYVal = 100% скорости
+                    // labelStep*i = x% макс скорости
+                    // x% = (labelStep*i*100)/maxInterruptYVal
+                    // maxSpeed = 100%
+                    // speedComputed = x
+                    // speedComputed = (x*maxSpeed)/100;
+                    float speedComputed = (((labelStep * i * 100) / maxInterruptYVal) * maxSpeed) / 100;
+
+                    string labelText = String.Format("{0:0.00} м/с", speedComputed / 1000);
+
+                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisY.CustomLabels.Add(сLabel);
+
+                    startOffset = startOffset + labelStep;
+                    endOffset = endOffset + labelStep;
+                    counter++;
+                }
+
+
+
+            }
         }
 
         /// <summary>
@@ -4015,7 +4113,7 @@ namespace UROVConfig
 
                     int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
                     maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
-                    YValuesInterrupt.Add(computedYVal);
+                    YValuesEthalon.Add(computedYVal);
 
                 } // for
             }
@@ -4173,12 +4271,16 @@ namespace UROVConfig
             // очевидно, что минимальная скорость - это 0. Максимальная скорость - это отношение средневзвешенной длительности импульса к минимальной длительности импульса,
             // умноженное на средневзвешенную скорость.
 
+            int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
+            AddCustomSpeedLabels(vcf.chart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
+
+            /*
             if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
             {
                 // в maxInterruptYVal - у нас лежит максимальное значение по Y в условных единицах, т.е. 100% скорости перемещения
 
 
-                int rodMoveLength = Config.Instance.RodMoveLength; // величина перемещения штанги, мм
+                int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
                 // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
                 float avgSpeed = (Convert.ToSingle(rodMoveLength)*1000000) / fullMoveTime; // средняя скорость, мм/с
 
@@ -4243,6 +4345,7 @@ namespace UROVConfig
 
 
             }
+            */
 
             /*
             {
@@ -4269,7 +4372,7 @@ namespace UROVConfig
                 }
             }
             */
-            
+
 
             // теперь рисуем свои метки на Y осях токов
             if (record.CurrentTimes.Count > 0) // есть токи
@@ -4604,10 +4707,18 @@ namespace UROVConfig
             DateTime modification = System.IO.File.GetLastWriteTime(fname);
             archiveEthalonChartExportFileName = modification.ToString("yyyy-MM-dd HH.mm");
 
+            string settingsFileName = Application.StartupPath + "\\Archive\\" + atei.Parent.Parent.GUID + "\\Settings\\settings.xml";
+            ArchiveSettings aSett = ArchiveSettings.Load(settingsFileName);
+            int rodMoveLength = Config.Instance.RodMoveLength;
+            if(aSett != null)
+            {
+                rodMoveLength = aSett.RodMoveLength;
+            }
+
             try
             {
                 List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
-                CreateChart(content, this.archiveAthalonChart);
+                CreateEthalonChart(content, this.archiveAthalonChart, rodMoveLength);
                 this.plArchiveEthalonChart.BringToFront();
             }
             catch { }
@@ -4624,7 +4735,6 @@ namespace UROVConfig
                 await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
             }
 
-            //List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
             List<byte> content = new List<byte>(result);
             ShowLogFile(content, this.archiveLogDataGrid, "1", false,frm,null,false);
             this.archiveLogDataGrid.BringToFront();
@@ -4641,11 +4751,7 @@ namespace UROVConfig
             frm.Update();
             try
             {
-                /*
-                List<byte> content = new List<byte>(System.IO.File.ReadAllBytes(fname));
-                ShowLogFile(content, this.archiveLogDataGrid, "1", false);
-                this.archiveLogDataGrid.BringToFront();
-                */
+
                 DoReadArchiveLog(frm, fname);
             }
             catch {

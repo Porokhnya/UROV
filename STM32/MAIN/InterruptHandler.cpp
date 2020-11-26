@@ -424,6 +424,25 @@ uint32_t InterruptHandlerClass::writeLogRecord(uint16_t previewCount, int32_t da
     #endif
   }  
 
+
+  // пишем длину перемещения штанги
+  workBuff[0] = recordRodMoveLength;
+  uint32_t rml = Settings.getRodMoveLength();
+  memcpy(&(workBuff[1]),&rml,4);
+
+  if(toEEPROM)
+  {
+    eeprom->write(curEEPROMWriteAddress,workBuff,5);
+    written += 5;
+    curEEPROMWriteAddress += 5;    
+  }
+  else
+  {
+    #ifndef _SD_OFF
+    Logger.write(workBuff,5);    
+    #endif
+  }  
+
   // пишем список прерываний
   if(_list.size() > 1)
   {

@@ -77,6 +77,7 @@ namespace UROVConfig
         OscDataFollow, // идут данные по току для канала
         DataArrivedTime, // смещение от начала записей по току до начала данных по прерыванию, миллисекунд
         PreviewCount, // кол-во записей в предпросмотре по току
+        RodMoveLength, // длина перемещения штанги, мм
 
     }
 
@@ -182,6 +183,7 @@ namespace UROVConfig
         public List<int> CurrentData3 = new List<int>();
 
         public int PreviewCount = 0;
+        public int RodMoveLength = 50;
     }
 
     public class SDNodeTagHelper
@@ -781,12 +783,16 @@ namespace UROVConfig
         [XmlElement("delta3")]
         public int Delta3 { get { return delta3; } set { delta3 = value; } }
 
+        private int rodMoveLength = 50;
+        [XmlElement("rodMoveTime")]
+        public int RodMoveLength { get { return rodMoveLength; } set { rodMoveLength = value; } }
 
         public void ApplyFromConfig()
         {
             Config c = Config.Instance;
 
             this.motoresourceMax1 = c.MotoresourceMax1;
+            this.rodMoveLength = c.RodMoveLength;
             //DEPRECATED: this.motoresourceMax2 = c.MotoresourceMax2;
             //DEPRECATED: this.motoresourceMax3 = c.MotoresourceMax3;
 
@@ -803,7 +809,7 @@ namespace UROVConfig
 
         }
 
-        public ArchiveSettings Load(string filename)
+        public static ArchiveSettings Load(string filename)
         {
             ArchiveSettings toLoad = null;
             try
@@ -1044,7 +1050,7 @@ namespace UROVConfig
         [XmlIgnore]
         public int MaxIdleTime { get { return maxIdleTime; } set { maxIdleTime = value; } }
 
-        private int rodMoveLength = 0;
+        private int rodMoveLength = 50;
         [XmlIgnore]
         public int RodMoveLength { get { return rodMoveLength; } set { rodMoveLength = value; } }
 

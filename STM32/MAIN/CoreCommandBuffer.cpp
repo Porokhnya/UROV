@@ -1038,6 +1038,7 @@ bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 	{
 		eint.saveList(ed);
 	}
+ 
   InterruptHandler.resume(); // включаем обработчик прерываний
 
 	if (result)
@@ -1895,6 +1896,7 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 	timer = millis();
 
   adcSampler.stopCollectPreview();
+  adcSampler.stopCollectCurrent();
  
 	oldSubscriber = InterruptHandler.getSubscriber();
 	InterruptHandler.setSubscriber(this);
@@ -1909,19 +1911,20 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 		}
 	}
 
-	InterruptHandler.setSubscriber(oldSubscriber);
+ //Serial.print("SIZE = ");
+ //Serial.println(InterruptData.size());
   
+	bool result =  done && InterruptData.size();
+
+  InterruptHandler.setSubscriber(oldSubscriber);  
   adcSampler.startCollectPreview();
   
-  // возобновляем работу прерываний
-  InterruptHandler.resume();
-  
-	return done && InterruptData.size();
-
+  return result;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult result)
 {
+  //Serial.println("INTERRUPT RAISED");
   done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
