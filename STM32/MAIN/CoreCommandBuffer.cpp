@@ -762,12 +762,7 @@ bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
       fileName += parser.getArg(i);
     }
 
-    bool isLoggerPaused = false;
-    if(Logger.getCurrentLogFileName().endsWith(fileName))
-    {
-      isLoggerPaused = true;
-      Logger.pause();
-    }
+    Logger.pause();
     
     FileUtils::deleteFile(fileName);
 
@@ -776,10 +771,7 @@ bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
     pStream->print(CORE_COMMAND_PARAM_DELIMITER);
     pStream->println(CORE_COMMAND_DONE);    
 
-    if(isLoggerPaused)
-    {
-      Logger.resume();
-    }
+    Logger.resume();
 
     return true;
 
