@@ -34,6 +34,11 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
+volatile bool canCatchRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
+volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
+volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
+DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
+//--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
 
@@ -180,17 +185,28 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
 
     #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+
+      if(canCatchRotationDirection)
+      {
+        canCatchRotationDirection = false;
+
         // определяем направление вращения энкодера.
-        if (digitalRead(ENCODER_PIN2))
-        {
-          // по часовой
-          Settings.setRodDirection(rpUp);
-        }
-        else
-        {
-          // против часовой
-          Settings.setRodDirection(rpDown);
-        }
+        initialDirection = digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+        lastKnownDirection = initialDirection;      
+        Settings.setRodDirection((RodDirection)initialDirection);
+        
+      } // canCatchRotationDirection
+      else
+      {
+         // тут проверяем, не изменилось ли направление вращения энкодера?
+         uint8_t curDirection = digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+         if(curDirection != lastKnownDirection)
+         {
+           // направление вращения энкодера изменилось, надо сохранить информацию об этом
+           lastKnownDirection = curDirection;
+           DirectionInfo.add(lastKnownDirection, micros()); 
+         }
+      }
     #endif
        
 }
@@ -244,7 +260,22 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-uint32_t InterruptHandlerClass::writeLogRecord(uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirOffset)
+{
+  size_t sz = list.size();
+  
+  if(sz < 1 || !dirOffset)
+    return;
+
+  // нормализуем список, отнимая от всех значений указанное
+
+  for(size_t i=0;i<sz;i++)
+  {
+    list[i] = (list[i] - dirOffset);
+  }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData, uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
 {
 
@@ -295,7 +326,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(uint16_t previewCount, int32_t da
   }
   
   // пишем положение штанги
-  RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
+  RodDirection rodPos = Settings.getRodDirection();
 
   workBuff[0] = recordRodPosition;
   workBuff[1] = rodPos;
@@ -579,6 +610,39 @@ uint32_t InterruptHandlerClass::writeLogRecord(uint16_t previewCount, int32_t da
     }
   }
 
+
+  // пишем данные по изменения направления вращения энкодера
+  if (directionData.times.size() > 0)
+  {
+    workBuff[0] = recordDirectionData;
+    uint16_t dataLen = directionData.times.size();
+    memcpy(&(workBuff[1]), &dataLen, 2);
+
+    if(toEEPROM)
+    {
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;
+ 
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.times.pData(), directionData.times.size()*sizeof(uint32_t));
+    written += directionData.times.size()*sizeof(uint32_t);
+    curEEPROMWriteAddress += directionData.times.size()*sizeof(uint32_t);
+
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.directions.pData(), directionData.directions.size()*sizeof(uint8_t));
+    written += directionData.directions.size()*sizeof(uint8_t);
+    curEEPROMWriteAddress += directionData.directions.size()*sizeof(uint8_t);
+
+    }
+    else
+    {
+      #ifndef _SD_OFF
+      Logger.write(workBuff, 3);
+      Logger.write((uint8_t*)directionData.times.pData(), directionData.times.size() * sizeof(uint32_t));
+      Logger.write((uint8_t*)directionData.directions.pData(), directionData.directions.size() * sizeof(uint8_t));
+     #endif
+    }
+  }
+
   // заканчиваем запись
   workBuff[0] = recordInterruptRecordEnd;
   if(toEEPROM)
@@ -601,6 +665,7 @@ return written;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void InterruptHandlerClass::writeToLog(
+  DirectionInfoData& directionData,
   uint16_t previewCount,
   int32_t dataArrivedTime, 
   DS3231Time& tm,
@@ -757,7 +822,7 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   //if(lst1.size() > 1)
   {
-    uint32_t written = writeLogRecord(previewCount, dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
+    uint32_t written = writeLogRecord(directionData, previewCount, dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
     eepromAddress += written;
     recordTotalLength += written;
   } // if
@@ -823,6 +888,7 @@ void InterruptHandlerClass::resume()
 
   paused = false;
   InterruptData.empty();
+  DirectionInfo.clear(); // очищаем список направлений движений
   machineState = msIdle; // состояние конечного автомата
   canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
   downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты  
@@ -911,6 +977,7 @@ void InterruptHandlerClass::update()
                 
                 encoderTimer = micros();
                 canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+                canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
                 machineState = msHandlePeakReason; // переключаемся на ветку обработки причины срабатывания "превышение по току"
                 relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
@@ -945,6 +1012,7 @@ void InterruptHandlerClass::update()
         
         encoderTimer = micros();
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+        canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
         machineState = msHandleRelayReason; // переключаемся на ветку обработки причины срабатывания "срабатывание внешней защиты"
         relayTrigCatched = true; // сохраняем флаг срабатывание внешней защиты
@@ -983,6 +1051,7 @@ void InterruptHandlerClass::update()
         
         encoderTimer = micros();
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
+        canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
         machineState = msWaitForCollectEncoderPulses; // переключаемся на ветку ожидания окончания импульсов с энкодера
         relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
@@ -1064,33 +1133,6 @@ void InterruptHandlerClass::update()
             } // !peakAlarmFlag
              
           } // else
-
-
-          /*
-          if(peakAlarmFlag || catchedPulses > 0)
-          {
-            // было зафиксировано превышение по току, или пойманы импульсы с энкодера
-            asuTPAlarmFlag = true; // взводим флаг аварии
-            
-            // даём поработать обработчику энкодера некоторое время ещё
-            encoderTimer = micros();
-            machineState = msWaitForCollectEncoderPulses;            
-            
-          } // if(peakAlarmFlag || catchedPulses > 0)
-          else
-          {
-            // ни импульсов с энкодера, ни превышения по току - это ложное срабатывание защиты
-            noInterrupts();
-              canHandleEncoder = false; // выключаем обработку импульсов энкодера
-              #ifdef PREDICT_ENABLED
-              predictOn(); // включаем сбор предсказаний          
-              #endif
-            interrupts();
-
-             // переключаемся на ветку ожидания отщёлкивания концевика защиты
-              machineState = msWaitGuardRelease;
-          } // else
-          */
         
         } // if(micros() - trigReasonTimer >= Settings.getRelayDelay())
     }
@@ -1219,6 +1261,14 @@ void InterruptHandlerClass::update()
         // нормализуем список времен записей по току
         normalizeList(OscillData.times);
 
+        // нормализуем список времён для направлений движения штанги
+        uint32_t dirOffset = 0;
+        if(InterruptData.size() > 0)
+        {
+          dirOffset = InterruptData[0];
+        }
+        normalizeList(DirectionInfo.times, dirOffset);
+
          // нормализуем список прерываний
          normalizeList(InterruptData);
 
@@ -1300,15 +1350,45 @@ void InterruptHandlerClass::update()
         }
 
             if(needToLog)
-            {  
+            { 
+              //TODO: ПОКА ТЕСТОВЫЕ ДАННЫЕ ПО ИЗМЕНЕНИЮ НАПРАВЛЕНИЯ ДВИЖЕНИЯ ШТАНГИ, ЗАКОММЕНТИРОВАТЬ!!!
+               if(InterruptData.size() > 10)
+               {
+                  DirectionInfo.clear();
+                  
+                  uint8_t countOfFakeRecords = 4;
+                  size_t offset = InterruptData.size() / countOfFakeRecords; // N записей
+                  RodDirection dir = Settings.getRodDirection(); // получили первоначальное направление вращения штанги
+
+                  // последовательно меняем направления на противоположные
+                  for(uint8_t i=1;i<=countOfFakeRecords;i++)
+                  {
+                    if(dir == rpUp)
+                    {
+                      dir = rpDown;
+                    }
+                    else
+                    {
+                      dir = rpUp;
+                    }
+
+                    size_t recIdx = i*offset - 1;
+                    uint32_t timeVal = InterruptData[recIdx];
+
+                    DirectionInfo.add(dir,timeVal);
+                  } // for
+                
+               }
+              // КОНЕЦ ТЕСТОВЫХ ДАННЫХ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              
            //   Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
-              writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
+              writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
               
               #ifndef _SD_OFF
                   //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
                   // надо записать в лог дату срабатывания системы
-                  writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);
+                  writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);
               #endif // !_SD_OFF
 
 //              Serial.println("STAGE WRITE TO LOG END"); Serial.flush();
@@ -1405,416 +1485,7 @@ void InterruptHandlerClass::update()
 
     
   } // switch(machineState)
-  /*
-  switch(machineState)
-  {
-    case msIdle:
-    {
-      // в режиме ожидания, проверяем, не сработало ли реле защиты?
-      
-      if(hasRelayTriggered())
-      {
-        // сработало реле защиты
-
-        noInterrupts();
-        // запрещаем собирать данные превью по току
-        adcSampler.stopCollectPreview();
-        // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
-        adcSampler.startCollectCurrent();
-        
-
-        #ifdef PREDICT_ENABLED
-          predictOff(); // отключаем сбор предсказаний
-        #endif
-
-        interrupts();
-        
-     //   DBGLN(F("RELAY TRIGGERED, WAIT FOR PULSES BEGIN..."));
-        
-        timer = micros(); // запоминаем время срабатывания реле защиты
-                         
-        //переключаемся на ветку сбора данных по прерываниям, с энкодера
-        machineState = msWaitHandleInterrupts;
-
-        // запоминаем причину срабатывания
-        trigReason = REASON_RELAY;
-        trigReasonTimer = micros();
-
-      }
-      #ifdef PREDICT_ENABLED
-      else
-      if(predictTriggered()) // сработало предсказание?
-      {
-
-        noInterrupts();
-
-        // запрещаем собирать данные превью по току
-        adcSampler.stopCollectPreview();
-
-        // и говорим АЦП, чтобы собирало данные по току до момента окончания событий
-        adcSampler.startCollectCurrent();
-
-        interrupts();
-
-
-        // сохраняем время срабатывания защиты
-        relayTriggeredTime = RealtimeClock.getTime();
-         // сохраняем состояние нижнего концевика, с выключением прерываний
-        downEndstopTriggered = RodDownEndstopTriggered(true);
-
-      //  DBGLN(F("PREDICT TRIGGERED, COLLECT PULSES..."));
-
-        noInterrupts();
-        
-          InterruptData.empty(); // очищаем список прерываний
-          
-          // тут копируем полученные в предсказании импульсы в список
-          for(size_t k=0;k<predictList.size();k++)
-          {
-            InterruptData.push_back(predictList[k]);
-          }          
-
-          predictOff(); // выключаем предсказания
-          
-          timer = micros();
-          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
-          machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
-          
-        // запоминаем причину срабатывания
-        trigReason = REASON_PREDICT;
-        trigReasonTimer = micros();
-
-                    
-        interrupts();
-                           
-      } // predictTriggered()      
-      #endif // PREDICT_ENABLED
-    }
-    break; // msIdle
-
-    case msWaitHandleInterrupts:
-    {
-      // ждём начала импульсов с энкодера
-      if(micros() - timer >= Settings.getRelayDelay())
-      {
-     //   DBGLN(F("WAIT DONE, COLLECT ENCODER PULSES..."));
-                
-        noInterrupts();
-        //  InterruptData.empty(); // очищаем список прерываний
-          timer = micros();
-          canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
-          machineState = msHandleInterrupts; // можем собирать прерывания с энкодера
-          
-          if(trigReason == REASON_RELAY) // причиной срабатывания был сигнал внешней защиты
-          {
-            trigReasonTimer = micros(); // устанавливаем таймер ожидания только после ожидания, настроенного через конфигуратор
-          }
-        interrupts(); 
-           
-      }
-    }
-    break; // msWaitHandleInterrupts
-
-    case msHandleInterrupts:
-    {
-      // собираем прерывания с энкодера
-      
-      noInterrupts();      
-          uint32_t thisTimer = timer; // копируем значение времени последнего прерывания с энкодера локально
-          size_t catchedPulses = InterruptData.size();
-      interrupts();
-
-      if(trigReason == REASON_RELAY) // причиной срабатывания был сигнал внешней защиты, проверяем, насколько давно были импульсы с энкодера
-      {
-          if(micros() - trigReasonTimer >= 20000ul)
-          {
-            // проверяем - готовы ли данные по детектированию пика токов?
-            if(adcSampler.currentPeakDataAvailable())
-            {
-              trigReason = 0; // сбрасываем причину срабатывания
-            
-              // прошло 20 миллисекунд, можно проверять, всё ли в порядке
-              // если нет импульсов с энкодера - это авария
-
-              pause(); // ставим на паузу
-
-              if(catchedPulses < 1)
-              {
-                  //Если ток на линиях НЕ УВЕЛИЧИЛСЯ - это ЛОЖНОЕ срабатывание защиты, и сигнал выдавать НЕ НУЖНО!
-                  
-                  uint32_t highBorder = adcSampler.getHighBorder(); // получаем верхний порог по току
-                  uint16_t currentPeakChannel1 = 0,currentPeakChannel2 = 0,currentPeakChannel3 = 0;
-
-                  // получаем усреднённые данные по току на каналах
-                  adcSampler.getCurrentPeakData(currentPeakChannel1,currentPeakChannel2,currentPeakChannel3);
-
-                  // теперь проверяем - если было превышение по току - только тогда выдаём сигнал.
-                  bool hasCurrentPeakHighBorderAlarm = currentPeakChannel1 >= highBorder || currentPeakChannel2 >= highBorder || currentPeakChannel3 >= highBorder;
-
-                  if(hasCurrentPeakHighBorderAlarm)
-                  {
-                    
-                      // за 20 миллисекунд не поймали ни одного импульса с энкодера, было превышение по току -  это авария
-                      
-                      Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
-                      Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
-                      
-                      uint8_t asuTpFlags = Settings.getAsuTpFlags();
-    
-                      if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
-                      {
-                        // Формируем сигнал срабатывания системы на выводах АСУ ТП
-                        // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
-                        digitalWrite(out_asu_tp3,asu_tp_level);
-                      }
-    
-                  } // if(hasCurrentPeakHighBorderAlarm)
-        
-        
-              } // if(catchedPulses < 1)
-
-              // говорим АЦП прекратить собирать данные по току
-              adcSampler.stopCollectCurrent();
-
-              // переключаемся на ветку ожидания отщёлкивания концевика защиты
-              machineState = msWaitGuardRelease;
-            
-              resume(); // продолжаем работу
-            
-            } // if(adcSampler.currentPeakDataAvailable())
-            
-          } // if(micros() - trigReasonTimer >= 20000ul)
-          
-      } // if(trigReason == REASON_RELAY)
-      
-      if(micros() - thisTimer >= INTERRUPT_MAX_IDLE_TIME) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
-      {
-
-    //    Serial.println("START WORK WITH INTERRUPT, STAGE 1!"); Serial.flush();
-
-        PAUSE_ADC; // останавливаем АЦП на время
-
-        pause(); // ставим на паузу
-              
-        noInterrupts();
-          canHandleEncoder = false; // выключаем обработку импульсов энкодера
-          #ifdef PREDICT_ENABLED
-          predictOn(); // включаем сбор предсказаний          
-          #endif
-        interrupts(); 
-        
-
- //      Serial.println("STAGE 2"); Serial.flush();
-
-        uint8_t asuTpFlags = Settings.getAsuTpFlags();
-
-        // обновляем моторесурс, т.к. было срабатывание защиты
-        uint32_t motoresource = Settings.getMotoresource();
-        motoresource++;
-        Settings.setMotoresource(motoresource);
-        
-
-//        Serial.println("STAGE 3"); Serial.flush();
-
-        // проверяем, авария ли?
-        hasAlarm = !InterruptData.size();
-        
-        // выставляем флаг аварии, в зависимости от наличия данных в списках
-        if(hasAlarm)
-        {
-  //        Serial.println("STAGE ALARM"); Serial.flush();
-          Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
-        }    
-
-
-//        Serial.println("STAGE 4"); Serial.flush();
-
-
-        noInterrupts();
-        
-           // заканчиваем сбор данных по току, копируем данные по току в локальный список
-           
-            // говорим АЦП прекратить собирать данные по току
-            adcSampler.stopCollectCurrent();
-
-           uint16_t previewCount;
-           OscillData.clear();
-           OscillData = adcSampler.getListOfCurrent(previewCount);//false);
-
-          // разрешаем собирать данные превью по току
-          adcSampler.startCollectPreview();
-           
-        
-        interrupts();
-
-
-
-  //      Serial.println("STAGE 5"); Serial.flush();
-        
-
-        // вычисляем смещение от начала записи по току до начала поступления данных
-        
-        int32_t datArrivTm = 0;
-        if(OscillData.times.size() > 0 && InterruptData.size() > 0)
-        {          
-          // высчитываем дату поступления данных
-          datArrivTm = 250ul*CURRENT_TIMER_PERIOD * CURRENT_AVG_SAMPLES * previewCount;
-        }
-
-        //TODO: УБРАТЬ!!!
-        //datArrivTm = 400000;
-
-//        Serial.println("STAGE 6"); Serial.flush();
-
-
-        // нормализуем список времен записей по току
-        normalizeList(OscillData.times);
-
-         // нормализуем список прерываний
-         normalizeList(InterruptData);
-
-//         Serial.println("STAGE 7"); Serial.flush();
-
-         // начинаем работать со списком прерываний
-         EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
-         EthalonCompareNumber compareNumber1;
-         String ethalonFileName;
-
-          bool needToLog = false;
-
-        // теперь смотрим - надо ли нам самим чего-то обрабатывать?
-        if(InterruptData.size() > 1)
-        {
-//          Serial.println("STAGE TEST DIODE ON"); Serial.flush();
-          
-//            DBG("Прерывание содержит данные: ");
-//            DBGLN(InterruptData.size());
-    
-          // зажигаем светодиод "ТЕСТ" (желтый)
-          Feedback.testDiode();
-
-
-          if(asuTpFlags & 1) // только если флаг выдачи сигнала в первую линию АСУ ТП - установлен
-          {
-              // Формируем сигнал срабатывания системы на выводах АСУ ТП 
-              // №1 - НО контакта: в схему УРОВ (срабатывание УРОВ) (параллельно желтому светодиоду)
-              digitalWrite(out_asu_tp1,asu_tp_level);
-          }
-    
-          needToLog = true; // говорим, что надо записать в лог
-
-
- // ЗАКОММЕНТИРОВАЛ АВТОСОХРАНЕНИЕ ЭТАЛОНА
- 
-          // проверяем, есть ли у нас эталоны на SD? Если нет - создаём их.
-          // эталон движения вверх
-//        if(!FileUtils::isEthalonExists(0,true))
-//          {
-//            FileUtils::saveEthalon(0,true,InterruptData);
-//          }
-          
-          // эталон движения вниз
-//          if(!FileUtils::isEthalonExists(0,false))
-//          {
-//            FileUtils::saveEthalon(0,false,InterruptData);
-//          }
-            
-           // здесь мы можем обрабатывать список сами - в нём ЕСТЬ данные
-           compareRes1 = EthalonComparer::Compare(InterruptData, 0,compareNumber1, ethalonFileName);//ethalonData1);
-
-
-//            Serial.println("STAGE 8"); Serial.flush();
-    
-           if(compareRes1 == COMPARE_RESULT_MatchEthalon)
-            {}
-           else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
-           {
-//              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
-              Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
-              Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
-              
-              if(asuTpFlags & 4) // только если флаг выдачи сигнала в третью линию АСУ ТП - установлен
-              {
-                // Формируем сигнал срабатывания системы на выводах АСУ ТП
-                // №3 - НО контакт: «неисправность выключателя» (параллельно красному светодиоду. При выходе параметров кривой движения за допустимые границы)
-                digitalWrite(out_asu_tp3,asu_tp_level);
-              }
-
-              
-           }
-        } // if(InterruptData.size() > 1)
-
-            if(needToLog)
-            {  
-//              Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
-              // записываем последнее срабатывание в EEPROM
-              writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
-              
-              #ifndef _SD_OFF
-                  //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
-                  // надо записать в лог дату срабатывания системы
-                  writeToLog(previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
-              #endif // !_SD_OFF
-
-//              Serial.println("STAGE WRITE TO LOG END"); Serial.flush();
-              
-            } // needToLog
-
-
-        bool wantToInformSubscriber = (InterruptData.size() > 1);
-
-        if(wantToInformSubscriber)
-        { 
-          //  DBGLN(F("Надо уведомить подписчика прерываний!"));
-          if(subscriber)
-          {
-//            Serial.println("STAGE INFORM SUBSCRIBER BEGIN"); Serial.flush();
-            //  DBGLN(F("Подписчик найден!"));  
-              
-            // уведомляем подписчика
-            informSubscriber(&OscillData,compareRes1);
-
-//            Serial.println("STAGE INFORM SUBSCRIBER END"); Serial.flush();
-    
-          } // if(subscriber)
-          else
-          {
-//            Serial.println("STAGE RESUME BEGIN 1"); Serial.flush();
-            resume(); // подписчика нет, просто начинаем сначала            
-//            Serial.println("STAGE RESUME END 1"); Serial.flush();
-          }
-          
-        }   // if(wantToInformSubscriber)
-        else
-        {
-//          Serial.println("STAGE RESUME BEGIN 2"); Serial.flush();
-          resume(); // подписчика нет, просто начинаем сначала
-//          Serial.println("STAGE RESUME END 2"); Serial.flush();
-        }
-                
-
-        // переключаемся на ветку ожидания отщёлкивания концевика защиты
-        machineState = msWaitGuardRelease;
-
-      }
-
-    }
-    break; // msHandleInterrupts
-
-    case msWaitGuardRelease:
-    {
-      // ждём отщёлкивания концевика защиты
-      if(!hasRelayTriggered())
-      {
-         // концевик разомкнут, переходим в режим ожидания срабатывания защиты
-         machineState = msIdle;
-      }
-      
-    } // msWaitGuardRelease
-    break;
-    
-  } // switch  
-  */
+  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* InterruptHandlerClass::getSubscriber()

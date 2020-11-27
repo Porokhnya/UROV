@@ -78,6 +78,7 @@ namespace UROVConfig
         DataArrivedTime, // смещение от начала записей по току до начала данных по прерыванию, миллисекунд
         PreviewCount, // кол-во записей в предпросмотре по току
         RodMoveLength, // длина перемещения штанги, мм
+        DirectionData, // данные по изменению направления вращения энкодера
 
     }
 
@@ -181,6 +182,9 @@ namespace UROVConfig
         public List<int> CurrentData1 = new List<int>();
         public List<int> CurrentData2 = new List<int>();
         public List<int> CurrentData3 = new List<int>();
+
+        public List<int> DirectionTimes = new List<int>();
+        public List<int> Directions = new List<int>();
 
         public int PreviewCount = 0;
         public int RodMoveLength = 50;

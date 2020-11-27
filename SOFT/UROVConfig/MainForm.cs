@@ -665,6 +665,40 @@ namespace UROVConfig
                             }
                             break;
 
+                        case LogRecordType.DirectionData: // идут данные по изменению направления вращения энкодера
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                curRecord.DirectionTimes.Clear();
+                                curRecord.Directions.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по времени сбора записей
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.DirectionTimes.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 1 байту записей с изменившимся направлением движения энкодера
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = content[readed]; readed++;
+                                    curRecord.Directions.Add(curData);
+
+                                } // for
+
+                            }
+                            break;
+
                         case LogRecordType.InterruptDataBegin:
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
@@ -4274,104 +4308,44 @@ namespace UROVConfig
             int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
             AddCustomSpeedLabels(vcf.chart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
 
-            /*
-            if (record.InterruptData.Count > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
+            if(record.InterruptData.Count > 0 && record.DirectionTimes.Count > 0)
             {
-                // в maxInterruptYVal - у нас лежит максимальное значение по Y в условных единицах, т.е. 100% скорости перемещения
+                // тут раскрашиваем график направлениями движения
 
+                RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
 
-                int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
-                // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
-                float avgSpeed = (Convert.ToSingle(rodMoveLength)*1000000) / fullMoveTime; // средняя скорость, мм/с
-
-                float coeff = avgPulseTime / minPulseTime; // отношение средневзвешенной длительности импульса к минимальной
-                float maxSpeed = (avgSpeed * coeff); // максимальная скорость, мм/с
-
-                // выяснили максимальную скорость, теперь добавляем метки
-                // округляем до ближайшей десятки вверх
-                int roundedUpSpeed = ((int)Math.Round(maxSpeed / 10.0)) * 10;
-
-                int divider = 10;
-                int totalLabelsCount = roundedUpSpeed / divider; // получили шкалу, кратную 10
-
-                int add = 2;
-                while(totalLabelsCount > 5)
-                {
-                    divider = 10*add;
-                    add++;
-                    totalLabelsCount = roundedUpSpeed / divider;
-                }
-                // эта шкала может быть очень частой, например, если у нас скорость большая
-
-              //  totalLabelsCount = 5; // ПОКА ЗАФИКСИРУЕМ ВРЕМЕННО, УБРАТЬ !!!
-
-                // maxInterruptYVal = 100% скорости перемещения
-
-                int labelStep = maxInterruptYVal / (totalLabelsCount);
-
-                ChartArea area = vcf.chart.ChartAreas[0];
-                area.AxisY.CustomLabels.Clear();
-
-                area.AxisY.Interval = labelStep;
-
-                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
-
-                int startOffset = -labelStep / 2;
-                int endOffset = labelStep / 2;
-                int counter = 0;
-
-
-                for (int i = 0; i <= totalLabelsCount; i++)
-                {
-                    // у нас maxSpeed = 100%
-                    // maxInterruptYVal = 100% скорости
-                    // labelStep*i = x% макс скорости
-                    // x% = (labelStep*i*100)/maxInterruptYVal
-                    // maxSpeed = 100%
-                    // speedComputed = x
-                    // speedComputed = (x*maxSpeed)/100;
-                    float speedComputed = (((labelStep * i * 100) / maxInterruptYVal)*maxSpeed)/ 100;
-
-                    string labelText = String.Format("{0:0.00} м/с", speedComputed / 1000);
-
-                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                    area.AxisY.CustomLabels.Add(сLabel);
-
-                    startOffset = startOffset + labelStep;
-                    endOffset = endOffset + labelStep;
-                    counter++;
-                }
+                // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
                 
+                int pointsIterator = 0;
+                Color curSerieColor = Color.SteelBlue;
 
-
-            }
-            */
-
-            /*
-            {
-                int interruptLabelsCount = 6;
-                step = maxPulseTime / interruptLabelsCount;
-
-                ChartArea area = vcf.chart.ChartAreas[0];
-                area.AxisY.CustomLabels.Clear();
-                area.AxisY.Interval = step;
-                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
-
-                int startOffset = -step / 2;
-                int endOffset = step / 2;
-                int counter = 0;
-
-                for (int i = 0; i < interruptLabelsCount; i++)
+                for(int i=0;i< record.DirectionTimes.Count;i++)
                 {
-                    string labelText = String.Format("{0}us", maxPulseTime - counter);
-                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
-                    area.AxisY.CustomLabels.Add(сLabel);
-                    startOffset = startOffset + step;
-                    endOffset = endOffset + step;
-                    counter += step;
-                }
+                    int changeTime = record.DirectionTimes[i];
+                    RodPosition changeTo = (RodPosition)record.Directions[i];
+
+                    // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
+                    for(int k=pointsIterator;k<interruptSerie.Points.Count;k++, pointsIterator++)
+                    {
+                        if(interruptSerie.Points[k].XValue >= (changeTime + record.DataArrivedTime))
+                        {
+                            break;
+                        }
+
+                        interruptSerie.Points[k].Color = curSerieColor;
+                    } // for
+
+                    if(changeTo == initialDirection)
+                    {
+                        curSerieColor = Color.SteelBlue;
+                    }
+                    else
+                    {
+                        curSerieColor = Color.OrangeRed;
+                    }
+
+                } // for
             }
-            */
 
 
             // теперь рисуем свои метки на Y осях токов

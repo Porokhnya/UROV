@@ -144,16 +144,18 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
    Screen.update();
 	}
 
+  DirectionInfoData emptyDirectionInfo;
+
   if (needToLog)
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+    InterruptHandlerClass::writeToLog(emptyDirectionInfo, previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+    InterruptHandlerClass::writeToLog(emptyDirectionInfo, previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog
