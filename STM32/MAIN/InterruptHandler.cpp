@@ -40,7 +40,8 @@ volatile uint8_t lastKnownDirection = 0xFF;     // последнее извес
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
 volatile bool aFlag = 0;
 volatile bool bFlag = 0;
-volatile uint8_t rotationDirection = rpUp;
+volatile uint8_t rotationDirection = 0xFF;
+volatile uint8_t transitionState = 0; // таблица переходов энкодера
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -122,10 +123,40 @@ uint8_t GetRotationDirection() // возвращает направление д
   return rotationDirection;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+void saveTransitionState()
+{
+  uint8_t aState = digitalRead(ENCODER_PIN1);
+  uint8_t bState = digitalRead(ENCODER_PIN2);
+
+  transitionState <<= 1;
+  transitionState |= aState;
+  transitionState <<= 1;
+  transitionState |= bState;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void handleDirection()
+{
+    if(transitionState == 11 || transitionState == 14)
+    {
+      //CW!
+      rotationDirection = rpUp; // clockwise
+    }
+    else if(transitionState == 7 || transitionState == 13)
+    {
+      //CCW!
+      rotationDirection = rpDown; // counter-clockwise
+    }
+    else
+    {
+      //UNKNOWN!
+      rotationDirection = 0xFF;
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
-  
+/*  
   uint8_t aState = digitalRead(ENCODER_PIN1);
   uint8_t bState = digitalRead(ENCODER_PIN2);
 
@@ -139,14 +170,24 @@ void  CheckRotationDirectionA() // определяет направление �
   {
     bFlag = 1;
   }
-  
+*/
+  aFlag = 1;
+  saveTransitionState();
+
+  if(bFlag)
+  {
+    aFlag = 0;
+    bFlag = 0;
+    handleDirection();
+    transitionState = 0;
+  }
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void CheckRotationDirectionB() // прерывание на пине В энкодера
 {
   noInterrupts();
-
+/*
   uint8_t aState = digitalRead(ENCODER_PIN1);
   uint8_t bState = digitalRead(ENCODER_PIN2);
 
@@ -160,6 +201,17 @@ void CheckRotationDirectionB() // прерывание на пине В энко
   {
     aFlag = 1;
   }
+*/
+  bFlag = 1;
+  saveTransitionState();
+
+  if(aFlag)
+  {
+    aFlag = 0;
+    bFlag = 0;
+    handleDirection();
+    transitionState = 0;
+  }  
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -239,12 +291,16 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
       if(canCatchInitialRotationDirection)
       {
-        canCatchInitialRotationDirection = false;
-
-        // определяем направление вращения энкодера.
-        initialDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
-        lastKnownDirection = initialDirection;      
-        Settings.setRodDirection((RodDirection)initialDirection);
+        uint8_t dir = GetRotationDirection();
+        if(dir != 0xFF)
+        {
+          canCatchInitialRotationDirection = false;
+  
+          // определяем направление вращения энкодера.
+          initialDirection = dir; //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+          lastKnownDirection = initialDirection;      
+          Settings.setRodDirection((RodDirection)initialDirection);
+        }
         
       } // canCatchInitialRotationDirection
       else
@@ -252,7 +308,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
          // тут проверяем, не изменилось ли направление вращения энкодера?
          uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
          
-         if(curDirection != lastKnownDirection)
+         if(curDirection != 0xFF && (curDirection != lastKnownDirection) )
          {
            // направление вращения энкодера изменилось, надо сохранить информацию об этом
            lastKnownDirection = curDirection;
