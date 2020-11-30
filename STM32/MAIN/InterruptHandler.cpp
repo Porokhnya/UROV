@@ -34,11 +34,13 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
-volatile bool canCatchRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
+volatile bool canCatchInitialRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
 volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
-volatile uint32_t directionMicros = 0; // время регистрации импульсов на пине 2 энкодера
+volatile bool aFlag = 0;
+volatile bool bFlag = 0;
+volatile uint8_t rotationDirection = rpUp;
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -115,31 +117,56 @@ void copyPredictToList() // копируем предсказания в спи�
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL; // подписчик для обработки результатов пачки прерываний
 //--------------------------------------------------------------------------------------------------------------------------------------
-uint8_t GetRotationDirection(uint32_t tm) // определяет направление движения энкодера
+uint8_t GetRotationDirection() // возвращает направление движения энкодера
 {
-  uint8_t result = rpUp; // считаем, что движемся вверх
+  return rotationDirection;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
+{
+  noInterrupts();
   
-  if(tm < directionMicros) // Если время ENCODER_PIN1 меньше времени ENCODER_PIN2
-  {
-    result = rpUp; // движемся в одну сторону, вверх
-  }
-  else if(tm >= directionMicros || directionMicros == 0) //Если время ENCODER_PIN1 больше времени ENCODER_PIN2 или время ENCODER_PIN2 равно нулю - значит движемся в обратную сторону
-  {
-    result = rpDown; // движемся в обратную сторону, вниз
-  }
+  uint8_t aState = digitalRead(ENCODER_PIN1);
+  uint8_t bState = digitalRead(ENCODER_PIN2);
 
-  directionMicros = 0; // По окончании сравнения переменную времени ENCODER_PIN2 обнуляем, устанавливаем в исходное состояние.
-
-  return result;
+  if(aState && bState && aFlag)
+  {
+    rotationDirection = rpDown;
+    bFlag = 0;
+    aFlag = 0;
+  }
+  else if (bState) 
+  {
+    bFlag = 1;
+  }
+  
+  interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void EncoderDirectionCatch() // прерывание на втором пине энкодера
+void CheckRotationDirectionB() // прерывание на пине В энкодера
 {
-  directionMicros = micros();
+  noInterrupts();
+
+  uint8_t aState = digitalRead(ENCODER_PIN1);
+  uint8_t bState = digitalRead(ENCODER_PIN2);
+
+  if (aState && bState && bFlag) 
+  { 
+    rotationDirection = rpUp;
+    bFlag = 0;
+    aFlag = 0;
+  }
+  else if (aState)
+  {
+    aFlag = 1;
+  }
+  interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void EncoderPulsesHandler() // обработчик импульсов энкодера
+void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
+  CheckRotationDirectionA();
+  
   if(paused) // на паузе
   {
     return;
@@ -210,20 +237,20 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
     #ifndef DISABLE_CATCH_ENCODER_DIRECTION
 
-      if(canCatchRotationDirection)
+      if(canCatchInitialRotationDirection)
       {
-        canCatchRotationDirection = false;
+        canCatchInitialRotationDirection = false;
 
         // определяем направление вращения энкодера.
-        initialDirection = GetRotationDirection(micros()); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+        initialDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
         lastKnownDirection = initialDirection;      
         Settings.setRodDirection((RodDirection)initialDirection);
         
-      } // canCatchRotationDirection
+      } // canCatchInitialRotationDirection
       else
       {
          // тут проверяем, не изменилось ли направление вращения энкодера?
-         uint8_t curDirection = GetRotationDirection(micros()); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
          
          if(curDirection != lastKnownDirection)
          {
@@ -267,7 +294,7 @@ void InterruptHandlerClass::begin()
 
   // считаем импульсы на штанге по прерыванию
   attachInterrupt((ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
-  attachInterrupt((ENCODER_PIN2),EncoderDirectionCatch, ENCODER_INTERRUPT_LEVEL);
+  attachInterrupt((ENCODER_PIN2),CheckRotationDirectionB, ENCODER_INTERRUPT_LEVEL);
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -1005,7 +1032,7 @@ void InterruptHandlerClass::update()
                 
                 encoderTimer = micros();
                 canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
-                canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+                canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
                 machineState = msHandlePeakReason; // переключаемся на ветку обработки причины срабатывания "превышение по току"
                 relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
@@ -1040,7 +1067,7 @@ void InterruptHandlerClass::update()
         
         encoderTimer = micros();
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
-        canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+        canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
         machineState = msHandleRelayReason; // переключаемся на ветку обработки причины срабатывания "срабатывание внешней защиты"
         relayTrigCatched = true; // сохраняем флаг срабатывание внешней защиты
@@ -1079,7 +1106,7 @@ void InterruptHandlerClass::update()
         
         encoderTimer = micros();
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
-        canCatchRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+        canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
         machineState = msWaitForCollectEncoderPulses; // переключаемся на ветку ожидания окончания импульсов с энкодера
         relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
