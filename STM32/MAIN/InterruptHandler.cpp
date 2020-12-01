@@ -357,18 +357,16 @@ void InterruptHandlerClass::begin()
 // резервируем память
   InterruptData.reserve(MAX_PULSES_TO_CATCH);
 
-
-  // настраиваем первый выход энкодера на чтение
-/*  
-#if (ENCODER_INTERRUPT_LEVEL == RISING)
-  pinMode(ENCODER_PIN1, INPUT_PULLUP);
-#else
-  pinMode(ENCODER_PIN1, INPUT);
-#endif
+/*
+  // настраиваем выхода энкодера на чтение
+  #if (ENCODER_INTERRUPT_LEVEL == RISING)
+    pinMode(ENCODER_PIN1, INPUT_PULLUP);
+    pinMode(ENCODER_PIN2, INPUT_PULLUP);
+  #else
+    pinMode(ENCODER_PIN1, INPUT);
+    pinMode(ENCODER_PIN2, INPUT);
+  #endif
 */
-
-  // настраиваем второй выход энкодера на чтение
- // pinMode(ENCODER_PIN2, INPUT_PULLUP);
 
   // ждём, пока устаканится питание
   delay(50);
