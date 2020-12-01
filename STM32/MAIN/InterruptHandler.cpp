@@ -124,6 +124,8 @@ void resetTransitionState()
   aFlag = 0;
   bFlag = 0;
   rotationDirection = 0xFF;
+  initialDirection = 0xFF;
+  lastKnownDirection = 0xFF;
  // transitionState = 0;
   interrupts();
 }
