@@ -170,9 +170,10 @@ void handleDirection()
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
-  
-  uint8_t aState = digitalRead(ENCODER_PIN1);
-  uint8_t bState = digitalRead(ENCODER_PIN2);
+
+  uint16_t reading = GPIOC->IDR;
+  uint8_t aState = reading & 0b0000000000010000;//digitalRead(ENCODER_PIN1);
+  uint8_t bState = reading & 0b0000000000000100;//digitalRead(ENCODER_PIN2);
 
   if(aState && bState && aFlag)
   {
@@ -203,9 +204,13 @@ void  CheckRotationDirectionA() // определяет направление �
 void CheckRotationDirectionB() // прерывание на пине В энкодера
 {
   noInterrupts();
-
+/*
   uint8_t aState = digitalRead(ENCODER_PIN1);
   uint8_t bState = digitalRead(ENCODER_PIN2);
+*/
+  uint16_t reading = GPIOC->IDR;
+  uint8_t aState = reading & 0b0000000000010000;//digitalRead(ENCODER_PIN1);
+  uint8_t bState = reading & 0b0000000000000100;//digitalRead(ENCODER_PIN2);
 
   if (aState && bState && bFlag) 
   { 
