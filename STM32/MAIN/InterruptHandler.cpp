@@ -38,8 +38,8 @@ volatile bool canCatchInitialRotationDirection = false; // флаг, что мы
 volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
-volatile bool aFlag = 0;
-volatile bool bFlag = 0;
+volatile uint8_t aFlag = 0;
+volatile uint8_t bFlag = 0;
 volatile uint8_t rotationDirection = 0xFF;
 volatile uint8_t transitionState = 0; // таблица переходов энкодера
 //--------------------------------------------------------------------------------------------------------------------------------------
