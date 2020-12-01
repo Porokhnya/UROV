@@ -318,15 +318,19 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       else
       {
          // тут проверяем, не изменилось ли направление вращения энкодера?
-         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
          noInterrupts();
-         if(curDirection != 0xFF && (curDirection != lastKnownDirection) )
+         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+         uint8_t lk = lastKnownDirection;
+         interrupts();
+         
+         if(curDirection != 0xFF && (curDirection != lk) )
          {
            // направление вращения энкодера изменилось, надо сохранить информацию об этом
-           lastKnownDirection = curDirection;
-           DirectionInfo.add(lastKnownDirection, micros()); 
+           noInterrupts();
+           lastKnownDirection = curDirection;           
+           DirectionInfo.add(lastKnownDirection, micros());
+           interrupts();
          }
-         interrupts();
       }
     #endif
        
