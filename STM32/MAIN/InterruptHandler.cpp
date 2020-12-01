@@ -304,12 +304,14 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
         uint8_t dir = GetRotationDirection();
         if(dir != 0xFF)
         {
+          noInterrupts();
           canCatchInitialRotationDirection = false;
   
           // определяем направление вращения энкодера.
           initialDirection = dir; //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
           lastKnownDirection = initialDirection;      
           Settings.setRodDirection((RodDirection)initialDirection);
+          interrupts();
         }
         
       } // canCatchInitialRotationDirection
@@ -317,13 +319,14 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       {
          // тут проверяем, не изменилось ли направление вращения энкодера?
          uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
-         
+         noInterrupts();
          if(curDirection != 0xFF && (curDirection != lastKnownDirection) )
          {
            // направление вращения энкодера изменилось, надо сохранить информацию об этом
            lastKnownDirection = curDirection;
            DirectionInfo.add(lastKnownDirection, micros()); 
          }
+         interrupts();
       }
     #endif
        
