@@ -370,6 +370,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       if(directionToSave != 0xFF)
       {
         DirectionInfo.add(directionToSave, now);
+        directionToSave = 0xFF;
       }
     }
     
