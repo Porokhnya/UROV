@@ -41,7 +41,7 @@ DirectionInfoData DirectionInfo;  // список изменений напра�
 volatile uint8_t aFlag = 0;
 volatile uint8_t bFlag = 0;
 volatile uint8_t rotationDirection = 0xFF;
-//volatile uint8_t transitionState = 0; // таблица переходов энкодера
+volatile uint8_t transitionState = 0; // таблица переходов энкодера
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -126,7 +126,7 @@ void resetTransitionState()
   rotationDirection = 0xFF;
   initialDirection = 0xFF;
   lastKnownDirection = 0xFF;
- // transitionState = 0;
+  transitionState = 0;
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -135,7 +135,6 @@ uint8_t GetRotationDirection() // возвращает направление д
   return rotationDirection;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-/*
 void saveTransitionState()
 {
   uint8_t aState = digitalRead(ENCODER_PIN1);
@@ -165,16 +164,15 @@ void handleDirection()
       rotationDirection = 0xFF;
     }
 }
-*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
 
   //uint16_t reading = GPIOC->IDR;
-  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
-  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
-
+//  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
+//  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
+/*
   if(aState && bState && aFlag)
   {
     rotationDirection = rpDown;
@@ -185,8 +183,9 @@ void  CheckRotationDirectionA() // определяет направление �
   {
     bFlag = 1;
   }
+*/
   
-/*
+
   aFlag = 1;
   saveTransitionState();
 
@@ -197,21 +196,19 @@ void  CheckRotationDirectionA() // определяет направление �
     handleDirection();
     transitionState = 0;
   }
-*/  
+  
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void CheckRotationDirectionB() // прерывание на пине В энкодера
 {
   noInterrupts();
-/*
-  uint8_t aState = digitalRead(ENCODER_PIN1);
-  uint8_t bState = digitalRead(ENCODER_PIN2);
-*/
-  //uint16_t reading = GPIOC->IDR;
-  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
-  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
 
+  //uint16_t reading = GPIOC->IDR;
+//  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
+//  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
+
+/*
   if (aState && bState && bFlag) 
   { 
     rotationDirection = rpUp;
@@ -222,9 +219,9 @@ void CheckRotationDirectionB() // прерывание на пине В энко
   {
     aFlag = 1;
   }
+*/
 
 
-/*
   bFlag = 1;
   saveTransitionState();
 
@@ -235,7 +232,7 @@ void CheckRotationDirectionB() // прерывание на пине В энко
     handleDirection();
     transitionState = 0;
   }  
-*/  
+  
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------

@@ -4327,7 +4327,7 @@ namespace UROVConfig
                     // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
                     for(int k=pointsIterator;k<interruptSerie.Points.Count;k++, pointsIterator++)
                     {
-                        if(interruptSerie.Points[k].XValue >= (changeTime + record.DataArrivedTime))
+                        if(interruptSerie.Points[k].XValue > (changeTime + record.DataArrivedTime))
                         {
                             break;
                         }
@@ -4345,7 +4345,7 @@ namespace UROVConfig
                     }
 
                 } // for
-            }
+            } // for
 
 
             // теперь рисуем свои метки на Y осях токов
