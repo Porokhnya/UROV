@@ -42,6 +42,8 @@ volatile uint8_t aFlag = 0;
 volatile uint8_t bFlag = 0;
 volatile uint8_t rotationDirection = 0xFF;
 volatile uint8_t transitionState = 0; // таблица переходов энкодера
+volatile bool canSaveDirectionChange = false;
+volatile uint8_t directionToSave = 0xFF;
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -127,6 +129,8 @@ void resetTransitionState()
   initialDirection = 0xFF;
   lastKnownDirection = 0xFF;
   transitionState = 0;
+  canSaveDirectionChange = false;
+  directionToSave = 0xFF;
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -311,8 +315,10 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
          {
            // направление вращения энкодера изменилось, надо сохранить информацию об этом
            noInterrupts();
-           lastKnownDirection = curDirection;           
-           DirectionInfo.add(lastKnownDirection, micros());
+           lastKnownDirection = curDirection;
+           directionToSave = curDirection;
+           canSaveDirectionChange = true;          
+           //DirectionInfo.add(lastKnownDirection, micros());
            interrupts();
          }
       }
@@ -357,6 +363,16 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
   
     uint32_t now = micros();
     InterruptData.push_back(now);
+    
+    if(canSaveDirectionChange)
+    {
+      canSaveDirectionChange = false;
+      if(directionToSave != 0xFF)
+      {
+        DirectionInfo.add(directionToSave, now);
+      }
+    }
+    
     encoderTimer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
 
