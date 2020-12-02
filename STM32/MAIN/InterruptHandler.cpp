@@ -253,7 +253,33 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
-  CheckRotationDirectionA();
+  CheckRotationDirectionA(); 
+  
+  if(paused) // на паузе
+  {
+    return;
+  }
+
+  // тут проверяем, надо ли пропустить N импульсов
+  uint32_t toSkip = Settings.getSkipCounter();
+
+  if(toSkip > 1) // каждый первый - пропускать бессмысленно.
+  {
+      interruptSkipCounter++;
+      if(interruptSkipCounter % toSkip)
+      {
+         // надо пропустить
+         return;
+      }
+      else
+      {
+        interruptSkipCounter = 0;
+      }
+  }
+  else
+  {
+    interruptSkipCounter = 0;
+  }
 
     #ifndef DISABLE_CATCH_ENCODER_DIRECTION
 
@@ -290,33 +316,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
            interrupts();
          }
       }
-    #endif  
-  
-  if(paused) // на паузе
-  {
-    return;
-  }
-
-  // тут проверяем, надо ли пропустить N импульсов
-  uint32_t toSkip = Settings.getSkipCounter();
-
-  if(toSkip > 1) // каждый первый - пропускать бессмысленно.
-  {
-      interruptSkipCounter++;
-      if(interruptSkipCounter % toSkip)
-      {
-         // надо пропустить
-         return;
-      }
-      else
-      {
-        interruptSkipCounter = 0;
-      }
-  }
-  else
-  {
-    interruptSkipCounter = 0;
-  }
+    #endif   // DISABLE_CATCH_ENCODER_DIRECTION 
   
   #ifdef PREDICT_ENABLED // включены предсказания?
   
