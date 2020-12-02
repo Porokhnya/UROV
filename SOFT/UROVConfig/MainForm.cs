@@ -4317,7 +4317,10 @@ namespace UROVConfig
                 // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
                 
                 int pointsIterator = 0;
-                Color curSerieColor = Color.SteelBlue;
+                Color cwColor = Color.SteelBlue;
+                Color ccwColor = Color.OrangeRed;
+
+                Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
 
                 for(int i=0;i< record.DirectionTimes.Count;i++)
                 {
@@ -4335,13 +4338,13 @@ namespace UROVConfig
                         interruptSerie.Points[k].Color = curSerieColor;
                     } // for
 
-                    if(changeTo == initialDirection)
+                    if(changeTo == RodPosition.Up)//initialDirection)
                     {
-                        curSerieColor = Color.SteelBlue;
+                        curSerieColor = cwColor;
                     }
                     else
                     {
-                        curSerieColor = Color.OrangeRed;
+                        curSerieColor = ccwColor;
                     }
 
                 } // for
