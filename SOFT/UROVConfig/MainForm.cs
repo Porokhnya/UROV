@@ -4335,13 +4335,13 @@ namespace UROVConfig
                         interruptSerie.Points[k].Color = curSerieColor;
                     } // for
 
-                    if(changeTo == RodPosition.Up) //initialDirection)
+                    if(changeTo == initialDirection)
                     {
-                        curSerieColor = Color.Yellow;//Color.SteelBlue;
+                        curSerieColor = Color.SteelBlue;
                     }
                     else
                     {
-                        curSerieColor = Color.Salmon;//Color.OrangeRed;
+                        curSerieColor = Color.OrangeRed;
                     }
 
                 } // for

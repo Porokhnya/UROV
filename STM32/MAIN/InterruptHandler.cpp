@@ -171,9 +171,9 @@ void  CheckRotationDirectionA() // определяет направление �
 {
   noInterrupts();
 
-  uint16_t reading = GPIOC->IDR;
-  uint8_t aState = reading & 0b0000000000010000;//digitalRead(ENCODER_PIN1);
-  uint8_t bState = reading & 0b0000000000000100;//digitalRead(ENCODER_PIN2);
+  //uint16_t reading = GPIOC->IDR;
+  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
+  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
 
   if(aState && bState && aFlag)
   {
@@ -208,9 +208,9 @@ void CheckRotationDirectionB() // прерывание на пине В энко
   uint8_t aState = digitalRead(ENCODER_PIN1);
   uint8_t bState = digitalRead(ENCODER_PIN2);
 */
-  uint16_t reading = GPIOC->IDR;
-  uint8_t aState = reading & 0b0000000000010000;//digitalRead(ENCODER_PIN1);
-  uint8_t bState = reading & 0b0000000000000100;//digitalRead(ENCODER_PIN2);
+  //uint16_t reading = GPIOC->IDR;
+  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
+  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
 
   if (aState && bState && bFlag) 
   { 
@@ -1494,6 +1494,7 @@ void InterruptHandlerClass::update()
 
             if(needToLog)
             { 
+              /*
               //TODO: ПОКА ТЕСТОВЫЕ ДАННЫЕ ПО ИЗМЕНЕНИЮ НАПРАВЛЕНИЯ ДВИЖЕНИЯ ШТАНГИ, ЗАКОММЕНТИРОВАТЬ!!!
                if(InterruptData.size() > 10)
                {
@@ -1523,6 +1524,7 @@ void InterruptHandlerClass::update()
                 
                }
               // КОНЕЦ ТЕСТОВЫХ ДАННЫХ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              */
               
            //   Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
