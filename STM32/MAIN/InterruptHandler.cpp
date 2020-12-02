@@ -239,6 +239,43 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
   CheckRotationDirectionA();
+
+    #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+
+      if(canCatchInitialRotationDirection)
+      {
+        uint8_t dir = GetRotationDirection();
+        if(dir != 0xFF)
+        {
+          noInterrupts();
+          canCatchInitialRotationDirection = false;
+  
+          // определяем направление вращения энкодера.
+          initialDirection = dir; //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+          lastKnownDirection = initialDirection;      
+          Settings.setRodDirection((RodDirection)initialDirection);
+          interrupts();
+        }
+        
+      } // canCatchInitialRotationDirection
+      else
+      {
+         // тут проверяем, не изменилось ли направление вращения энкодера?
+         noInterrupts();
+         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+         uint8_t lk = lastKnownDirection;
+         interrupts();
+         
+         if(curDirection != 0xFF && (curDirection != lk) )
+         {
+           // направление вращения энкодера изменилось, надо сохранить информацию об этом
+           noInterrupts();
+           lastKnownDirection = curDirection;           
+           DirectionInfo.add(lastKnownDirection, micros());
+           interrupts();
+         }
+      }
+    #endif  
   
   if(paused) // на паузе
   {
@@ -308,42 +345,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     encoderTimer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
 
-    #ifndef DISABLE_CATCH_ENCODER_DIRECTION
 
-      if(canCatchInitialRotationDirection)
-      {
-        uint8_t dir = GetRotationDirection();
-        if(dir != 0xFF)
-        {
-          noInterrupts();
-          canCatchInitialRotationDirection = false;
-  
-          // определяем направление вращения энкодера.
-          initialDirection = dir; //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
-          lastKnownDirection = initialDirection;      
-          Settings.setRodDirection((RodDirection)initialDirection);
-          interrupts();
-        }
-        
-      } // canCatchInitialRotationDirection
-      else
-      {
-         // тут проверяем, не изменилось ли направление вращения энкодера?
-         noInterrupts();
-         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
-         uint8_t lk = lastKnownDirection;
-         interrupts();
-         
-         if(curDirection != 0xFF && (curDirection != lk) )
-         {
-           // направление вращения энкодера изменилось, надо сохранить информацию об этом
-           noInterrupts();
-           lastKnownDirection = curDirection;           
-           DirectionInfo.add(lastKnownDirection, micros());
-           interrupts();
-         }
-      }
-    #endif
        
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
