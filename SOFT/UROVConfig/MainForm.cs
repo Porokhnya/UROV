@@ -4348,7 +4348,7 @@ namespace UROVConfig
                     }
 
                 } // for
-            } // for
+            } // if
 
 
             // теперь рисуем свои метки на Y осях токов

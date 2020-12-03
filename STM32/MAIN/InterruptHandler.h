@@ -13,11 +13,16 @@ class DirectionInfoData
   public:
     DirectionInfoData()
     {
-      
     }
 
     InterruptTimeList times;
     Vector<uint8_t> directions;
+
+    void begin()
+    {
+      times.reserve(50);
+      directions.reserve(50);      
+    }
 
     void clear()
     {
