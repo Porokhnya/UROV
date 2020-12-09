@@ -4338,11 +4338,10 @@ namespace UROVConfig
 
                             int changeDirectionIdx = k;
 
-                            // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
-
-
                             if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
                             {
+
+                                // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
                                 if (k > 0)
                                 {
                                     if (interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k - 1].YValues[0])
