@@ -34,6 +34,7 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
+//volatile bool directionChanged = false; // флаг изменения направления вращения энкодера
 volatile bool canCatchInitialRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
 volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
@@ -89,6 +90,10 @@ void predictOn() // включаем предсказание
 bool predictTriggered() // возвращает флаг срабатывания предсказания, однократно (т.е. флаг срабатывания предсказания сбрасывается перед выходом из функции)
 {
   bool f = predictTriggeredFlag;
+  predictTriggeredFlag = false;
+  return f;
+  /*
+  bool f = predictTriggeredFlag;
   if(f)
   {
     noInterrupts();
@@ -96,6 +101,7 @@ bool predictTriggered() // возвращает флаг срабатывани�
     interrupts();
   }
   return f;
+  */
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 #endif // PREDICT_ENABLED
@@ -130,6 +136,7 @@ void resetTransitionState()
   transitionState = 0;
   canSaveDirectionChange = false;
   directionToSave = 0xFF;
+  //directionChanged = false;
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -149,8 +156,10 @@ void saveTransitionState()
   transitionState |= bState;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void handleDirection()
+void handleDirection() // смотрим, в какую сторону крутится энкодер, по таблице переходов
 {
+  //  uint8_t lastDir = rotationDirection;
+    
     if(transitionState == 11 || transitionState == 14)
     {
       //CW!
@@ -166,32 +175,20 @@ void handleDirection()
       //UNKNOWN!
       rotationDirection = 0xFF;
     }
+
+  //  directionChanged = (lastDir != rotationDirection);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
 
-  //uint16_t reading = GPIOC->IDR;
-//  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
-//  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
-/*
-  if(aState && bState && aFlag)
-  {
-    rotationDirection = rpDown;
-    bFlag = 0;
-    aFlag = 0;
-  }
-  else if (aState) 
-  {
-    bFlag = 1;
-  }
-*/
 
   if(aFlag) // ситуация, когда повторно приходит импульс A. Это может случиться, когда пришёл импульс A, мы установили aFlag, но импульс B был пропущен, и aFlag не обнулился.
   {
     transitionState = 0;
     aFlag = 0;
+    bFlag = 0;
     interrupts();
     return;
   }
@@ -200,7 +197,7 @@ void  CheckRotationDirectionA() // определяет направление �
   aFlag = 1;
   saveTransitionState();
 
-  if(bFlag)
+  if(bFlag) // также недавно был высокий на пине В, поэтому - надо посмотреть, что в таблице переходов, и сохранить направление движения энкодера
   {
     aFlag = 0;
     bFlag = 0;
@@ -215,35 +212,21 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 {
   noInterrupts();
 
-  //uint16_t reading = GPIOC->IDR;
-//  uint8_t aState = /*reading & 0b0000000000010000;/*/digitalRead(ENCODER_PIN1);
-//  uint8_t bState = /*reading & 0b0000000000000100;/*/digitalRead(ENCODER_PIN2);
-
-/*
-  if (aState && bState && bFlag) 
-  { 
-    rotationDirection = rpUp;
-    bFlag = 0;
-    aFlag = 0;
-  }
-  else if (bState)
-  {
-    aFlag = 1;
-  }
-*/
 
   if(bFlag) // ситуация, когда повторно приходит импульс В. Это может случиться, когда пришёл импульс В, мы установили bFlag, но импульс А был пропущен, и bFlag не обнулился.
   {
     transitionState = 0;
     bFlag = 0;
+    aFlag = 0;
     interrupts();
     return;
   }
 
+
   bFlag = 1;
   saveTransitionState();
 
-  if(aFlag)
+  if(aFlag) // также недавно был высокий на пине А, поэтому - надо посмотреть, что в таблице переходов, и сохранить направление движения энкодера
   {
     aFlag = 0;
     bFlag = 0;
@@ -256,7 +239,7 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
-  CheckRotationDirectionA(); 
+  CheckRotationDirectionA(); // определяем направление движения энкодера
   
   if(paused) // на паузе
   {
@@ -294,8 +277,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
           noInterrupts();
           canCatchInitialRotationDirection = false;
   
-          // определяем направление вращения энкодера.
-          initialDirection = dir; //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+          // сохраняем направление вращения энкодера
+          initialDirection = dir;
           lastKnownDirection = initialDirection;      
           Settings.setRodDirection((RodDirection)initialDirection);
           interrupts();
@@ -305,14 +288,30 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       else
       {
          // тут проверяем, не изменилось ли направление вращения энкодера?
+         /*
+         if(directionChanged)
+         {
+          // изменилось направление вращения энкодера
+          uint8_t curDirection = GetRotationDirection();
+          if(curDirection != 0xFF)
+          {
+            noInterrupts();
+             directionToSave = curDirection;
+             canSaveDirectionChange = true;          
+           interrupts();
+          }
+          
+         } // directionChanged
+         */
+         
          noInterrupts();
-         uint8_t curDirection = GetRotationDirection(); //digitalRead(ENCODER_PIN2) ? rpUp : rpDown;
+         uint8_t curDirection = GetRotationDirection();
          uint8_t lk = lastKnownDirection;
          interrupts();
          
          if(curDirection != 0xFF && (curDirection != lk) )
          {
-           // направление вращения энкодера изменилось, надо сохранить информацию об этом
+           // направление вращения энкодера изменилось, надо сохранить информацию об этом при следующем поступлении импульсов в список
            noInterrupts();
            lastKnownDirection = curDirection;
            directionToSave = curDirection;
@@ -320,6 +319,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
            //DirectionInfo.add(lastKnownDirection, micros());
            interrupts();
          }
+         
+         
       }
     #endif   // DISABLE_CATCH_ENCODER_DIRECTION 
   
@@ -361,9 +362,10 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
   }
   
     uint32_t now = micros();
-    InterruptData.push_back(now);
-    
-    if(canSaveDirectionChange)
+
+
+    InterruptData.push_back(now);    
+    if(canSaveDirectionChange) // нас попросили синхронизировать смену направления вращения энкодера с очередной записью в списке прерываний
     {
       canSaveDirectionChange = false;
       if(directionToSave != 0xFF)
@@ -372,6 +374,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
         directionToSave = 0xFF;
       }
     }
+    
     
     encoderTimer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
@@ -420,7 +423,9 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   size_t sz = list.size();
   
   if(sz < 2)
+  {
     return;
+  }
 
   // нормализуем список относительно первого значения
   uint32_t first = list[0];
@@ -437,7 +442,9 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirO
   size_t sz = list.size();
   
   if(sz < 1 || !dirOffset)
+  {
     return;
+  }
 
   // нормализуем список, отнимая от всех значений указанное
 
@@ -1168,7 +1175,7 @@ void InterruptHandlerClass::update()
 
         } // if(adcSampler.currentPeakDataAvailable())
         else
-        if(hasRelayTriggered())
+        if(hasRelayTriggered()) // сработало реле защиты?
         {
         //  Serial.println(F("EXTERNAL SIGNAL DETECTED !!!"));
        
@@ -1297,6 +1304,7 @@ void InterruptHandlerClass::update()
               
               noInterrupts();
                 canHandleEncoder = false; // выключаем обработку импульсов энкодера
+                
                 #ifdef PREDICT_ENABLED
                 predictOn(); // включаем сбор предсказаний          
                 #endif
@@ -1367,6 +1375,7 @@ void InterruptHandlerClass::update()
               
         noInterrupts();
           canHandleEncoder = false; // выключаем обработку импульсов энкодера
+          
           #ifdef PREDICT_ENABLED
           predictOn(); // включаем сбор предсказаний          
           #endif
@@ -1408,7 +1417,7 @@ void InterruptHandlerClass::update()
 
            uint16_t previewCount;
            OscillData.clear();
-           OscillData = adcSampler.getListOfCurrent(previewCount);//false);
+           OscillData = adcSampler.getListOfCurrent(previewCount);
 
           // разрешаем собирать данные превью по току
           adcSampler.startCollectPreview();

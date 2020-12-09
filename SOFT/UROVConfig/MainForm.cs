@@ -4308,46 +4308,99 @@ namespace UROVConfig
             int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
             AddCustomSpeedLabels(vcf.chart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
 
-            if(record.InterruptData.Count > 0 && record.DirectionTimes.Count > 0)
+            if(record.InterruptData.Count > 0)
             {
                 // тут раскрашиваем график направлениями движения
-
-                RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
-
-                // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
-                
-                int pointsIterator = 0;
                 Color cwColor = Color.SteelBlue;
                 Color ccwColor = Color.OrangeRed;
 
-                Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
 
-                for(int i=0;i< record.DirectionTimes.Count;i++)
+                if (record.DirectionTimes.Count > 0)
                 {
-                    int changeTime = record.DirectionTimes[i];
-                    RodPosition changeTo = (RodPosition)record.Directions[i];
 
-                    // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
-                    for(int k=pointsIterator;k<interruptSerie.Points.Count;k++, pointsIterator++)
+                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
+
+                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
+
+                    int pointsIterator = 0;
+
+                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
+
+                    for (int i = 0; i < record.DirectionTimes.Count; i++)
                     {
-                        if(interruptSerie.Points[k].XValue > (changeTime + record.DataArrivedTime))
+                        int changeTime = record.DirectionTimes[i];
+                        RodPosition changeTo = (RodPosition)record.Directions[i];
+
+                        // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
+                        for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
                         {
-                            break;
+                            interruptSerie.Points[k].Color = curSerieColor;
+
+                            int changeDirectionIdx = k;
+
+                            // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
+
+
+                            if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
+                            {
+                                if (k > 0)
+                                {
+                                    if (interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k - 1].YValues[0])
+                                    {
+                                        // точка слева имеем меньшую скорость
+                                        changeDirectionIdx = k - 1; // делаем маркер левее
+                                        interruptSerie.Points[k].Color = curSerieColor == cwColor ? ccwColor : cwColor; // меняем цвет точки
+                                    }
+                                }
+                                /*
+                                interruptSerie.Points[changeDirectionIdx].Label = String.Format("СМЕНА НАПРАВЛЕНИЯ, {0} us", Convert.ToInt32(interruptSerie.Points[changeDirectionIdx].XValue));
+                                interruptSerie.Points[changeDirectionIdx].LabelBorderDashStyle = ChartDashStyle.Solid;
+                                interruptSerie.Points[changeDirectionIdx].LabelBorderWidth = 1;
+                                interruptSerie.Points[changeDirectionIdx].LabelBorderColor = Color.Black;
+                                interruptSerie.Points[changeDirectionIdx].LabelBackColor = Color.Black;
+                                interruptSerie.Points[changeDirectionIdx].LabelForeColor = Color.White;
+                                */
+                                interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
+                                interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
+                                interruptSerie.Points[changeDirectionIdx].MarkerSize = 6;
+
+                                pointsIterator++;
+                                break;
+                            }
+
+                        } // for
+
+                        if (changeTo == RodPosition.Up)//initialDirection)
+                        {
+                            curSerieColor = cwColor;
+                        }
+                        else
+                        {
+                            curSerieColor = ccwColor;
                         }
 
+
+                    } // for
+
+                    // забиваем все остальные точки
+                    for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
+                    {
                         interruptSerie.Points[k].Color = curSerieColor;
                     } // for
 
-                    if(changeTo == RodPosition.Up)//initialDirection)
-                    {
-                        curSerieColor = cwColor;
-                    }
-                    else
-                    {
-                        curSerieColor = ccwColor;
-                    }
+                } // record.DirectionTimes.Count > 0
+                else
+                {
+                    // нет смены направления движения
+                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
 
-                } // for
+                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
+                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
+                    for (int k = 0; k < interruptSerie.Points.Count; k++)
+                    {
+                        interruptSerie.Points[k].Color = curSerieColor;
+                    }
+                } // else 
             } // if
 
 

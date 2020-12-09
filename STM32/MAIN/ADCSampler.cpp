@@ -240,7 +240,9 @@ ADCSampler::ADCSampler()
   _stopped = false;
 
   currentPeakDataReady = false;
+  #ifndef _CURRENT_COLLECT_OFF
   currentPeakTimer = 0;
+  #endif // _CURRENT_COLLECT_OFF
 
   canCollectCurrent = false;
   currentTimer = 0;
@@ -248,6 +250,8 @@ ADCSampler::ADCSampler()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::startCollectCurrent()
 {
+#ifndef _ADC_OFF
+  
   noInterrupts();
   
   currentTimes.clear();
@@ -268,6 +272,7 @@ void ADCSampler::startCollectCurrent()
   canCollectCurrent = true;
   
   interrupts();
+#endif  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::stopCollectCurrent()
@@ -286,6 +291,9 @@ void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& av
 {
   
   avg1 = avg2 = avg3 = 0;
+
+#ifndef _ADC_OFF
+  
   PAUSE_ADC; // останавливаем АЦП на время
   
   if(!currentPeakDataReady)
@@ -296,6 +304,7 @@ void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& av
   avg1 = currentPeakBuffers[currentPeakBufferIndex][0];
   avg2 = currentPeakBuffers[currentPeakBufferIndex][1];
   avg3 = currentPeakBuffers[currentPeakBufferIndex][2];
+#endif // _ADC_OFF
 
   currentPeakDataReady = false;
 }
@@ -358,7 +367,9 @@ void ADCSampler::end()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3,  uint16_t raw1, uint16_t raw2, uint16_t raw3)
 {
-#ifndef _CURRENT_COLLECT_OFF
+#ifndef _ADC_OFF
+  
+  #ifndef _CURRENT_COLLECT_OFF
   
       arr1[samplesCounter] = raw1;
       arr2[samplesCounter] = raw2;
@@ -372,7 +383,9 @@ bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* ar
          // HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_5);
           return true;
       }
-#endif // #ifndef _CURRENT_COLLECT_OFF      
+  #endif // #ifndef _CURRENT_COLLECT_OFF      
+
+#endif // #ifndef _ADC_OFF
 
  return false;     
 }
@@ -380,8 +393,10 @@ bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* ar
 void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
 {
   avg1 = avg2 = avg3 = 0;
-  
-#ifndef _CURRENT_COLLECT_OFF  
+
+#ifndef _ADC_OFF  
+
+  #ifndef _CURRENT_COLLECT_OFF  
 
   uint32_t chMin1 = 0xFFFFFFFF;
   uint32_t chMin2 = 0xFFFFFFFF;
@@ -422,6 +437,7 @@ void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volati
   avg3 = chMax3/CURRENT_AVG_SAMPLES - chMin3/CURRENT_AVG_SAMPLES;
 
   #endif // #ifndef _CURRENT_COLLECT_OFF
+#endif // #ifndef _ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::stopCollectPreview()
@@ -433,6 +449,8 @@ void ADCSampler::stopCollectPreview()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ADCSampler::startCollectPreview()
 {
+#ifndef _ADC_OFF
+  
   noInterrupts();
       currentPreviewData.clear();
       #ifndef _CURRENT_COLLECT_OFF
@@ -440,7 +458,9 @@ void ADCSampler::startCollectPreview()
       #endif
       currentPreviewOscillTimer = 0;  
       canCollectCurrentPreviewData = true;
-  interrupts();     
+  interrupts();  
+
+#endif // #ifndef _ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withNoInterrupts)
@@ -494,7 +514,7 @@ CurrentCircularBuffer CurrentCircularBuffer::normalize()
   // вот тут надо скопировать буфер так, чтобы учитывать индекс первой записи
   CurrentCircularBuffer result;
 
-  if(/*times.size()*/recordsCount < CURRENT_LIST_SIZE)
+  if(recordsCount < CURRENT_LIST_SIZE)
   {
     result = *this;
   }
@@ -504,7 +524,7 @@ CurrentCircularBuffer CurrentCircularBuffer::normalize()
     size_t readIndex = firstRecordIndex;
     size_t writeIndex = 0;
 
-    for(size_t i=0;i</*times.size()*/recordsCount;i++)
+    for(size_t i=0;i<recordsCount;i++)
     {
       
         result.times[writeIndex] = (times[readIndex]);

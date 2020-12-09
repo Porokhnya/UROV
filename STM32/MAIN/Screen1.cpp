@@ -622,7 +622,9 @@ void Screen1::doUpdate(TFTMenu* menu)
 
 #ifndef _ADC_OFF
   if(canLoopADC)
+  {
     loopADC();
+  }
 #endif // !_ADC_OFF
 	// тут обновляем внутреннее состояние
 }

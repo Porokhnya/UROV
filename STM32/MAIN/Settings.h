@@ -88,7 +88,7 @@ public:
 	RodDirection getRodDirection() { return rodDirection; }
 	void setRodDirection(RodDirection val) { rodDirection = val; }
 
-  uint32_t getSkipCounter() {return skipCounter; }
+  uint32_t getSkipCounter()  __attribute__((always_inline)) {return skipCounter; }
   void setSkipCounter(uint32_t val);
 
 

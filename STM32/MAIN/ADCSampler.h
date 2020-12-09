@@ -80,9 +80,6 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
   
   public:
 
-    // максимальное кол-во записей по току в списке
-  //  static const uint32_t MAX_RECORDS = CURRENT_LIST_SIZE;
-
     CurrentCircularBuffer()
     {
       firstRecordIndex = 0;
@@ -95,15 +92,7 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
   {    
     firstRecordIndex = 0;
     writeIterator = 0;
-    recordsCount = 0;
-
-    /*
-    times.clear();
-    data1.clear();
-    data2.clear();
-    data3.clear();
-    */
-        
+    recordsCount = 0;        
   }
 
   void init()
@@ -161,38 +150,7 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
       writeIterator = 0;
     } 
     interrupts();
-    
-    /*
-    if(times.size() >= size_t(MAX_RECORDS))
-    {
-      // достигли конца списка, надо начинать сначала.
-      // для этого увеличиваем указатель первой записи в списке, и пишем
-      // на нужное место переданные данные.
-
-      size_t writeIndex = times.size() - (times.size() - firstRecordIndex);
-
-      // теперь пишем по нужному адресу
-      times[writeIndex] = tm;
-      data1[writeIndex] = channel1;
-      data2[writeIndex] = channel2;
-      data3[writeIndex] = channel3;
-      
-      // увеличиваем указатель самой ранней записи
-      firstRecordIndex++;
-      if(firstRecordIndex >= MAX_RECORDS)
-      {
-        firstRecordIndex = 0; 
-      }
-
-
-      return;
-    }
-    
-    times.push_back(tm);
-    data1.push_back(channel1);
-    data2.push_back(channel2);
-    data3.push_back(channel3);
-    */
+   
     
   }
 
@@ -202,15 +160,6 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
     volatile uint16_t data2[CURRENT_LIST_SIZE];
     volatile uint16_t data3[CURRENT_LIST_SIZE];
 
-  /*
-  UInt32Vector times; // время занесения записи, micros()
-
-  // данные по АЦП
-  UInt16Vector data1;
-  UInt16Vector data2;
-  UInt16Vector data3;
-  */
-
   CurrentCircularBuffer& operator=(const CurrentCircularBuffer& rhs)
   {
     
@@ -218,12 +167,7 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
     {
       return *this;
     }
-/*
-      times = rhs.times;
-      data1 = rhs.data1;
-      data2 = rhs.data2;
-      data3 = rhs.data3;
-*/
+
 noInterrupts();
       memcpy((void*)times,(void*)rhs.times,sizeof(times));      
       memcpy((void*)data1,(void*)rhs.data1,sizeof(data1));      
