@@ -4340,7 +4340,7 @@ namespace UROVConfig
 
                             if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
                             {
-
+                                
                                 // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
                                 if (k > 0)
                                 {
@@ -4351,6 +4351,9 @@ namespace UROVConfig
                                         interruptSerie.Points[k].Color = curSerieColor == cwColor ? ccwColor : cwColor; // меняем цвет точки
                                     }
                                 }
+                                
+
+
                                 /*
                                 interruptSerie.Points[changeDirectionIdx].Label = String.Format("СМЕНА НАПРАВЛЕНИЯ, {0} us", Convert.ToInt32(interruptSerie.Points[changeDirectionIdx].XValue));
                                 interruptSerie.Points[changeDirectionIdx].LabelBorderDashStyle = ChartDashStyle.Solid;
