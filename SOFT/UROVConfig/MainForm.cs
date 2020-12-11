@@ -4346,12 +4346,23 @@ namespace UROVConfig
                                 {
                                     if (interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k - 1].YValues[0])
                                     {
-                                        // точка слева имеем меньшую скорость
+                                        // точка слева имеет меньшую скорость
                                         changeDirectionIdx = k - 1; // делаем маркер левее
                                         interruptSerie.Points[k].Color = curSerieColor == cwColor ? ccwColor : cwColor; // меняем цвет точки
                                     }
+                                }                                
+
+                                // проверяем, нет ли справа скорости меньше?
+                                if(k < interruptSerie.Points.Count - 1)
+                                {
+                                    if(interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k + 1].YValues[0])
+                                    {
+                                        // точка справа имеет меньшую скорость
+                                        changeDirectionIdx = k + 1; // делаем маркер правее
+                                        interruptSerie.Points[k+1].Color = curSerieColor;
+                                        pointsIterator++;
+                                    }
                                 }
-                                
 
 
                                 /*

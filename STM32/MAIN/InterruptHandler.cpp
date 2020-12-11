@@ -41,7 +41,7 @@ DirectionInfoData DirectionInfo;  // список изменений напра�
 volatile uint8_t aFlag = 0;
 volatile uint8_t bFlag = 0;
 volatile uint8_t rotationDirection = 0xFF;
-volatile uint8_t transitionState = 0; // таблица переходов энкодера
+//volatile uint8_t transitionState = 0; // таблица переходов энкодера
 volatile bool canSaveDirectionChange = false;
 volatile uint8_t directionToSave = 0xFF;
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ void resetTransitionState()
   rotationDirection = 0xFF;
   initialDirection = 0xFF;
   lastKnownDirection = 0xFF;
-  transitionState = 0;
+//  transitionState = 0;
   canSaveDirectionChange = false;
   directionToSave = 0xFF;
   interrupts();
@@ -143,6 +143,7 @@ uint8_t GetRotationDirection() // возвращает направление д
   return rotationDirection;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void saveTransitionState()
 {
   uint8_t aState = digitalRead(ENCODER_PIN1);
@@ -173,12 +174,28 @@ void handleDirection() // смотрим, в какую сторону крут�
     }
 
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
 
+  uint8_t aState = digitalRead(ENCODER_PIN1);
+  uint8_t bState = digitalRead(ENCODER_PIN2);
 
+ if(aState && bState && aFlag) 
+ { 
+    //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
+    rotationDirection = rpDown; //decrement the encoder's position count
+    bFlag = 0; //reset flags for the next turn
+    aFlag = 0; //reset flags for the next turn
+  }
+  else if (aState) 
+  {
+    bFlag = 1; //signal that we're expecting pinB to signal the transition to detent from free rotation
+  }
+
+/*
   if(aFlag) // ситуация, когда повторно приходит импульс A. Это может случиться, когда пришёл импульс A, мы установили aFlag, но импульс B был пропущен, и aFlag не обнулился.
   {
     // эта ситуация также может случиться при смене направления вращения, поэтому сохранять состояние - надо !
@@ -200,7 +217,7 @@ void  CheckRotationDirectionA() // определяет направление �
     handleDirection();
     transitionState = 0;
   }
-  
+*/  
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -208,6 +225,22 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 {
   noInterrupts();
 
+  uint8_t aState = digitalRead(ENCODER_PIN1);
+  uint8_t bState = digitalRead(ENCODER_PIN2);
+
+  if (aState && bState && bFlag) 
+  {     
+    //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
+    rotationDirection = rpUp; //increment the encoder's position count
+    bFlag = 0; //reset flags for the next turn
+    aFlag = 0; //reset flags for the next turn
+  }
+  else if (bState) 
+  {
+    aFlag = 1; //signal that we're expecting pinA to signal the transition to detent from free rotation  
+  }
+
+/*
   if(bFlag) // ситуация, когда повторно приходит импульс В. Это может случиться, когда пришёл импульс В, мы установили bFlag, но импульс А был пропущен, и bFlag не обнулился.
   {
     // эта ситуация также может случиться при смене направления вращения, поэтому сохранять состояние - надо !
@@ -229,7 +262,7 @@ void CheckRotationDirectionB() // прерывание на пине В энко
     handleDirection();
     transitionState = 0;
   }  
-  
+  */
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
