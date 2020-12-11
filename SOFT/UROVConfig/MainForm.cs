@@ -4364,15 +4364,6 @@ namespace UROVConfig
                                     }
                                 }
 
-
-                                /*
-                                interruptSerie.Points[changeDirectionIdx].Label = String.Format("СМЕНА НАПРАВЛЕНИЯ, {0} us", Convert.ToInt32(interruptSerie.Points[changeDirectionIdx].XValue));
-                                interruptSerie.Points[changeDirectionIdx].LabelBorderDashStyle = ChartDashStyle.Solid;
-                                interruptSerie.Points[changeDirectionIdx].LabelBorderWidth = 1;
-                                interruptSerie.Points[changeDirectionIdx].LabelBorderColor = Color.Black;
-                                interruptSerie.Points[changeDirectionIdx].LabelBackColor = Color.Black;
-                                interruptSerie.Points[changeDirectionIdx].LabelForeColor = Color.White;
-                                */
                                 interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
                                 interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
                                 interruptSerie.Points[changeDirectionIdx].MarkerSize = 6;
