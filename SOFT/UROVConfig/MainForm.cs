@@ -4308,6 +4308,22 @@ namespace UROVConfig
             int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Config.Instance.RodMoveLength; // величина перемещения штанги, мм
             AddCustomSpeedLabels(vcf.chart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
 
+
+            Color cwColor = Color.SteelBlue;
+            Color ccwColor = Color.LimeGreen;
+
+            if(record.RodPosition == RodPosition.Up) // штанга двигалась вверх
+            {
+                interruptSerie.Color = cwColor;
+               
+            } // if
+            else // штанга двигалась вниз
+            {
+                interruptSerie.Color = ccwColor;
+            } // else
+
+
+            /*
             if(record.InterruptData.Count > 0)
             {
                 // тут раскрашиваем график направлениями движения
@@ -4406,6 +4422,7 @@ namespace UROVConfig
                     }
                 } // else 
             } // if
+            */
 
 
             // теперь рисуем свои метки на Y осях токов

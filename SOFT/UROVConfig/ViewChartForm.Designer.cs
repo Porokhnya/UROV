@@ -202,7 +202,7 @@
             series1.BorderWidth = 6;
             series1.ChartArea = "ethalonChartArea";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Color = System.Drawing.Color.LightGreen;
+            series1.Color = System.Drawing.Color.DimGray;
             series1.Legend = "Legend1";
             series1.LegendText = "Эталон";
             series1.Name = "serieEthalon";
