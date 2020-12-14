@@ -180,8 +180,10 @@ void  CheckRotationDirectionA() // определяет направление �
 {
   noInterrupts();
 
-  uint8_t aState = digitalRead(ENCODER_PIN1);
-  uint8_t bState = digitalRead(ENCODER_PIN2);
+  uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
+  uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
+  //uint8_t aState = digitalRead(ENCODER_PIN1);
+  //uint8_t bState = digitalRead(ENCODER_PIN2);
 
  if(aState && bState && aFlag) 
  { 
@@ -225,8 +227,10 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 {
   noInterrupts();
 
-  uint8_t aState = digitalRead(ENCODER_PIN1);
-  uint8_t bState = digitalRead(ENCODER_PIN2);
+  uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
+  uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
+  //uint8_t aState = digitalRead(ENCODER_PIN1);
+  //uint8_t bState = digitalRead(ENCODER_PIN2);
 
   if (aState && bState && bFlag) 
   {     
@@ -381,12 +385,14 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     InterruptData.push_back(now);    
     if(canSaveDirectionChange) // нас попросили синхронизировать смену направления вращения энкодера с очередной записью в списке прерываний
     {
+      noInterrupts();
       canSaveDirectionChange = false;
       if(directionToSave != 0xFF)
       {
         DirectionInfo.add(directionToSave, now);
         directionToSave = 0xFF;
       }
+      interrupts();
     }
     
     
@@ -411,7 +417,7 @@ void InterruptHandlerClass::begin()
     predictList.reserve(PREDICT_PULSES*2);
   #endif
 
-/*
+
   // настраиваем выхода энкодера на чтение
   #if (ENCODER_INTERRUPT_LEVEL == RISING)
     pinMode(ENCODER_PIN1, INPUT_PULLUP);
@@ -420,7 +426,7 @@ void InterruptHandlerClass::begin()
     pinMode(ENCODER_PIN1, INPUT);
     pinMode(ENCODER_PIN2, INPUT);
   #endif
-*/
+
 
   // ждём, пока устаканится питание
   delay(50);
