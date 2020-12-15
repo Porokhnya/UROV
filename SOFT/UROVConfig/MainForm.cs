@@ -4354,6 +4354,7 @@ namespace UROVConfig
                             if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
                             {
                                 
+                                /*
                                 // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
                                 if (k > 0)
                                 {
@@ -4376,6 +4377,7 @@ namespace UROVConfig
                                         pointsIterator++;
                                     }
                                 }
+                                */
 
                                 interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
                                 interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
