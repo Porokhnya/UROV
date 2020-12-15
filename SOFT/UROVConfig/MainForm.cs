@@ -674,19 +674,11 @@ namespace UROVConfig
                                     break;
                                 }
 
-                                curRecord.DirectionTimes.Clear();
+                                //curRecord.DirectionTimes.Clear();
                                 curRecord.Directions.Clear();
 
                                 // следом идут 2 байта длины данных
                                 int dataLen = Read16(content, readed); readed += 2;
-
-                                // далее идут пачки по 4 байта записей по времени сбора записей
-                                for (int k = 0; k < dataLen; k++)
-                                {
-                                    int curData = Read32(content, readed); readed += 4;
-                                    curRecord.DirectionTimes.Add(curData);
-
-                                } // for
 
                                 // далее идут пачки по 1 байту записей с изменившимся направлением движения энкодера
                                 for (int k = 0; k < dataLen; k++)
@@ -3998,15 +3990,19 @@ namespace UROVConfig
             List<int> XValuesInterrupt = new List<int>();
             List<double> YValuesInterrupt = new List<double>();
 
+            //int interruptAddedPoints = 1;
+
             if(record.CurrentTimes.Count > 0)
             {
                 for(int z=0;z<record.CurrentTimes.Count;z++)
                 {
+
                     if (record.CurrentTimes[z] >= pulsesOffset)
                         break;
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
+                 //   interruptAddedPoints++;
                 }
             }
 
@@ -4327,7 +4323,29 @@ namespace UROVConfig
             if(record.InterruptData.Count > 0)
             {
                 // тут раскрашиваем график направлениями движения
+                    RodPosition lastPos = RodPosition.Broken;
 
+                for (int i = 0; i < record.Directions.Count; i++)
+                {
+                    RodPosition pos = (RodPosition)record.Directions[i];
+                    Color curSerieColor = pos == RodPosition.Up ? cwColor : ccwColor;
+
+                    int curIdx = (i + offsetLabelIndex + 1);
+
+                    if (interruptSerie.Points.Count > curIdx)
+                    {
+                        interruptSerie.Points[curIdx].Color = curSerieColor;
+                        if (lastPos != pos && curIdx > 0)
+                        {
+                            lastPos = pos;
+                            interruptSerie.Points[curIdx-1].MarkerColor = Color.Red;
+                            interruptSerie.Points[curIdx-1].MarkerStyle = MarkerStyle.Circle;
+                            interruptSerie.Points[curIdx-1].MarkerSize = 6;
+                        }
+                    }
+
+                } // for
+                /*
                 if (record.DirectionTimes.Count > 0)
                 {
 
@@ -4354,30 +4372,7 @@ namespace UROVConfig
                             if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
                             {
                                 
-                                /*
-                                // проверяем, нет ли слева скорости меньше? Это будет наиболее вероятная точка смены направления
-                                if (k > 0)
-                                {
-                                    if (interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k - 1].YValues[0])
-                                    {
-                                        // точка слева имеет меньшую скорость
-                                        changeDirectionIdx = k - 1; // делаем маркер левее
-                                        interruptSerie.Points[k].Color = curSerieColor == cwColor ? ccwColor : cwColor; // меняем цвет точки
-                                    }
-                                }                                
-
-                                // проверяем, нет ли справа скорости меньше?
-                                if(k < interruptSerie.Points.Count - 1)
-                                {
-                                    if(interruptSerie.Points[k].YValues[0] > interruptSerie.Points[k + 1].YValues[0])
-                                    {
-                                        // точка справа имеет меньшую скорость
-                                        changeDirectionIdx = k + 1; // делаем маркер правее
-                                        interruptSerie.Points[k+1].Color = curSerieColor;
-                                        pointsIterator++;
-                                    }
-                                }
-                                */
+                                // тут была проверка скорости !!!
 
                                 interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
                                 interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
@@ -4420,7 +4415,9 @@ namespace UROVConfig
                         interruptSerie.Points[k].Color = curSerieColor;
                     }
                 } // else 
+                */
             } // if
+            
 
 
             // теперь рисуем свои метки на Y осях токов

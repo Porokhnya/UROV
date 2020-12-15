@@ -183,7 +183,7 @@ namespace UROVConfig
         public List<int> CurrentData2 = new List<int>();
         public List<int> CurrentData3 = new List<int>();
 
-        public List<int> DirectionTimes = new List<int>();
+        //public List<int> DirectionTimes = new List<int>();
         public List<int> Directions = new List<int>();
 
         public int PreviewCount = 0;

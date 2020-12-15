@@ -317,6 +317,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
       
       uint8_t curDirection = bState ? rpUp : rpDown; // текущее направление движения
+      DirectionInfo.push_back(curDirection);
       
       if(canCatchInitialRotationDirection) // нас попросили запомнить первоначальное движение штанги
       {
@@ -328,6 +329,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
           interrupts();
       } // if(canCatchInitialRotationDirection)
 
+/*
       // тут проверяем - сменилось ли направление движения?
       if(lastKnownDirection != curDirection)
       {
@@ -335,7 +337,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
         lastKnownDirection = curDirection;
         DirectionInfo.add(curDirection, now);
       }
-      
+      */
 
     #endif // #ifndef DISABLE_CATCH_ENCODER_DIRECTION
     
@@ -368,7 +370,7 @@ void InterruptHandlerClass::begin()
 
 // резервируем память
   InterruptData.reserve(MAX_PULSES_TO_CATCH);
-  DirectionInfo.begin();
+  DirectionInfo.reserve(MAX_PULSES_TO_CATCH); // begin()
 
   #ifdef PREDICT_ENABLED
     predictList.reserve(PREDICT_PULSES*2);
@@ -414,6 +416,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirOffset)
 {
   size_t sz = list.size();
@@ -430,6 +433,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirO
     list[i] = (list[i] - dirOffset);
   }
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData, uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
@@ -768,14 +772,17 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
 
 
   // пишем данные по изменения направления вращения энкодера
-  if (directionData.times.size() > 0)
+  //if (directionData.times.size() > 0)
+  if (directionData.size() > 0)
   {
     workBuff[0] = recordDirectionData;
-    uint16_t dataLen = directionData.times.size();
+//    uint16_t dataLen = directionData.times.size();
+    uint16_t dataLen = directionData.size();
     memcpy(&(workBuff[1]), &dataLen, 2);
 
     if(toEEPROM)
     {
+    /*
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
@@ -787,14 +794,27 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
     eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.directions.pData(), directionData.directions.size()*sizeof(uint8_t));
     written += directionData.directions.size()*sizeof(uint8_t);
     curEEPROMWriteAddress += directionData.directions.size()*sizeof(uint8_t);
+    */
+    eeprom->write(curEEPROMWriteAddress,workBuff,3);
+    written += 3;
+    curEEPROMWriteAddress += 3;
+ 
+    eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.pData(), directionData.size()*sizeof(uint8_t));
+    written += directionData.size()*sizeof(uint8_t);
+    curEEPROMWriteAddress += directionData.size()*sizeof(uint8_t);
 
     }
     else
     {
       #ifndef _SD_OFF
+      /*
       Logger.write(workBuff, 3);
       Logger.write((uint8_t*)directionData.times.pData(), directionData.times.size() * sizeof(uint32_t));
       Logger.write((uint8_t*)directionData.directions.pData(), directionData.directions.size() * sizeof(uint8_t));
+      */
+      Logger.write(workBuff, 3);
+      Logger.write((uint8_t*)directionData.pData(), directionData.size() * sizeof(uint8_t));
+      
      #endif
     }
   }
@@ -1044,7 +1064,7 @@ void InterruptHandlerClass::resume()
 
   paused = false;
   InterruptData.empty();
-  DirectionInfo.clear(); // очищаем список направлений движений
+  DirectionInfo.empty();//clear(); // очищаем список направлений движений
   machineState = msIdle; // состояние конечного автомата
   canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
   downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты  
@@ -1425,6 +1445,7 @@ void InterruptHandlerClass::update()
         // нормализуем список времен записей по току
         normalizeList(OscillData.times);
 
+/*
         // нормализуем список времён для направлений движения штанги
         uint32_t dirOffset = 0;
         if(InterruptData.size() > 0)
@@ -1432,7 +1453,7 @@ void InterruptHandlerClass::update()
           dirOffset = InterruptData[0];
         }
         normalizeList(DirectionInfo.times, dirOffset);
-
+*/
          // нормализуем список прерываний
          normalizeList(InterruptData);
 
