@@ -35,14 +35,8 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool canCatchInitialRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
-//volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
-//volatile uint8_t aFlag = 0;
-//volatile uint8_t bFlag = 0;
-//volatile uint8_t rotationDirection = 0xFF;
-//volatile bool canSaveDirectionChange = false;
-//volatile uint8_t directionToSave = 0xFF;
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -65,6 +59,7 @@ bool hasRelayTriggered()
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
 InterruptTimeList predictList; // список для предсказаний
+DirectionInfoData predictDirections; // список для направления вращения предсказаний
 volatile bool predictTriggeredFlag = false; // флаг срабатывания предсказания
 //--------------------------------------------------------------------------------------------------------------------------------------
 void predictOff() // выключаем предсказание
@@ -73,6 +68,7 @@ void predictOff() // выключаем предсказание
   {
     predictEnabledFlag = false; // отключаем сбор предсказаний
     predictList.empty(); // очищаем список предсказаний
+    predictDirections.empty();
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -82,6 +78,7 @@ void predictOn() // включаем предсказание
   {
     predictEnabledFlag = true; // включаем сбор предсказаний
     predictList.empty(); // очищаем список предсказаний
+    predictDirections.empty();
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -90,16 +87,6 @@ bool predictTriggered() // возвращает флаг срабатывани�
   bool f = predictTriggeredFlag;
   predictTriggeredFlag = false;
   return f;
-  /*
-  bool f = predictTriggeredFlag;
-  if(f)
-  {
-    noInterrupts();
-    predictTriggeredFlag = false;  
-    interrupts();
-  }
-  return f;
-  */
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 #endif // PREDICT_ENABLED
@@ -109,6 +96,7 @@ void copyPredictToList() // копируем предсказания в спи�
   noInterrupts();
 
     InterruptData.empty(); // очищаем список прерываний
+    DirectionInfo.empty();
 
     #ifdef PREDICT_ENABLED
     // тут копируем полученные в предсказании импульсы в список
@@ -116,6 +104,11 @@ void copyPredictToList() // копируем предсказания в спи�
     {
       InterruptData.push_back(predictList[k]);
     }  
+
+    for(size_t k=0;k<predictDirections.size();k++)
+    {
+      DirectionInfo.push_back(predictDirections[k]);
+    }
     #endif // PREDICT_ENABLED
             
   interrupts();
@@ -123,78 +116,8 @@ void copyPredictToList() // копируем предсказания в спи�
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL; // подписчик для обработки результатов пачки прерываний
 //--------------------------------------------------------------------------------------------------------------------------------------
-/*
-void resetTransitionState()
-{
-  noInterrupts();
-  aFlag = 0;
-  bFlag = 0;
-  rotationDirection = 0xFF;
-  initialDirection = 0xFF;
-  lastKnownDirection = 0xFF;
-//  transitionState = 0;
-  canSaveDirectionChange = false;
-  directionToSave = 0xFF;
-  interrupts();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-uint8_t GetRotationDirection() // возвращает направление движения энкодера
-{
-  return rotationDirection;
-}
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
-{
-  noInterrupts();
-
-  //uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
-  uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
-
- if(//aState && 
-  bState && aFlag) 
- { 
-    //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
-    rotationDirection = rpDown; //decrement the encoder's position count
-    bFlag = 0; //reset flags for the next turn
-    aFlag = 0; //reset flags for the next turn
-  }
-  else// if (aState) 
-  {
-    bFlag = 1; //signal that we're expecting pinB to signal the transition to detent from free rotation
-  }
-
-  interrupts();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void CheckRotationDirectionB() // прерывание на пине В энкодера
-{
-  noInterrupts();
-
-  uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
- // uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
-
-  if (aState //&& bState 
-  && bFlag) 
-  {     
-    //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
-    rotationDirection = rpUp; //increment the encoder's position count
-    bFlag = 0; //reset flags for the next turn
-    aFlag = 0; //reset flags for the next turn
-  }
-  else// if (bState) 
-  {
-    aFlag = 1; //signal that we're expecting pinA to signal the transition to detent from free rotation  
-  }
-
-  interrupts();
-}
-*/
-//--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
- // CheckRotationDirectionA(); // определяем направление движения энкодера
   
   if(paused) // на паузе
   {
@@ -222,52 +145,6 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     interruptSkipCounter = 0;
   }
 
-    #ifndef DISABLE_CATCH_ENCODER_DIRECTION
-
-      /*
-      if(canCatchInitialRotationDirection)
-      {
-        uint8_t dir = GetRotationDirection();
-        if(dir != 0xFF)
-        {
-          noInterrupts();
-          canCatchInitialRotationDirection = false;
-  
-          // сохраняем направление вращения энкодера
-          initialDirection = dir;
-          lastKnownDirection = initialDirection;      
-          Settings.setRodDirection((RodDirection)initialDirection);
-          interrupts();
-        }
-        
-      } // canCatchInitialRotationDirection
-      */
-      
-      /*
-      else
-      {
-         // тут проверяем, не изменилось ли направление вращения энкодера?       
-         
-         noInterrupts();
-         uint8_t curDirection = GetRotationDirection();
-         uint8_t lk = lastKnownDirection;
-         interrupts();
-         
-         if(curDirection != 0xFF && (curDirection != lk) )
-         {
-         
-           // направление вращения энкодера изменилось, надо сохранить информацию об этом при следующем поступлении импульсов в список
-           noInterrupts();
-           lastKnownDirection = curDirection;
-           directionToSave = curDirection;
-           canSaveDirectionChange = true;          
-           interrupts();
-         }
-         
-         
-      } // else
-      */
-    #endif   // DISABLE_CATCH_ENCODER_DIRECTION 
   
   #ifdef PREDICT_ENABLED // включены предсказания?
   
@@ -278,6 +155,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     if(predictList.size() < PREDICT_PULSES)
     {
       predictList.push_back(micros()); // сохраняем время импульса в нашем списке
+      predictDirections.push_back( HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B) ? rpUp : rpDown ); // сохраняем направление вращения списка предсказаний
     }
 
     if(predictList.size() >= PREDICT_PULSES) // накопили достаточное количество импульсов
@@ -294,7 +172,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       else
       {
         // предсказание не сработало, просто чистим список
-        predictList.empty();        
+        predictList.empty();
+        predictDirections.empty();        
       }
     }
   } // predictEnabledFlag
@@ -329,31 +208,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
           interrupts();
       } // if(canCatchInitialRotationDirection)
 
-/*
-      // тут проверяем - сменилось ли направление движения?
-      if(lastKnownDirection != curDirection)
-      {
-        // направление движения изменилось, сохраняем время смены направления вращения
-        lastKnownDirection = curDirection;
-        DirectionInfo.add(curDirection, now);
-      }
-      */
 
     #endif // #ifndef DISABLE_CATCH_ENCODER_DIRECTION
-    
-    /*    
-    if(canSaveDirectionChange) // нас попросили синхронизировать смену направления вращения энкодера с очередной записью в списке прерываний
-    {
-      noInterrupts();
-      canSaveDirectionChange = false;
-      if(directionToSave != 0xFF)
-      {
-        DirectionInfo.add(directionToSave, now);
-        directionToSave = 0xFF;
-      }
-      interrupts();
-    }
-    */
     
     encoderTimer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
@@ -370,10 +226,11 @@ void InterruptHandlerClass::begin()
 
 // резервируем память
   InterruptData.reserve(MAX_PULSES_TO_CATCH);
-  DirectionInfo.reserve(MAX_PULSES_TO_CATCH); // begin()
+  DirectionInfo.reserve(MAX_PULSES_TO_CATCH);
 
   #ifdef PREDICT_ENABLED
     predictList.reserve(PREDICT_PULSES*2);
+    predictDirections.reserve(PREDICT_PULSES*2);
   #endif
 
 
@@ -1059,6 +916,7 @@ void InterruptHandlerClass::resume()
   #ifdef PREDICT_ENABLED
     predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
     predictList.empty(); // список для предсказаний
+    predictDirections.empty();
     predictTriggeredFlag = false; // флаг срабатывания предсказания
   #endif
 
