@@ -180,19 +180,19 @@ void  CheckRotationDirectionA() // определяет направление �
 {
   noInterrupts();
 
-  uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
+  //uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
   uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
   //uint8_t aState = digitalRead(ENCODER_PIN1);
   //uint8_t bState = digitalRead(ENCODER_PIN2);
 
- if(aState && bState && aFlag) 
+ if(/*aState && */bState && aFlag) 
  { 
     //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
     rotationDirection = rpDown; //decrement the encoder's position count
     bFlag = 0; //reset flags for the next turn
     aFlag = 0; //reset flags for the next turn
   }
-  else if (aState) 
+  else// if (aState) 
   {
     bFlag = 1; //signal that we're expecting pinB to signal the transition to detent from free rotation
   }
@@ -228,18 +228,18 @@ void CheckRotationDirectionB() // прерывание на пине В энко
   noInterrupts();
 
   uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
-  uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
+ // uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
   //uint8_t aState = digitalRead(ENCODER_PIN1);
   //uint8_t bState = digitalRead(ENCODER_PIN2);
 
-  if (aState && bState && bFlag) 
+  if (aState /*&& bState*/ && bFlag) 
   {     
     //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
     rotationDirection = rpUp; //increment the encoder's position count
     bFlag = 0; //reset flags for the next turn
     aFlag = 0; //reset flags for the next turn
   }
-  else if (bState) 
+  else// if (bState) 
   {
     aFlag = 1; //signal that we're expecting pinA to signal the transition to detent from free rotation  
   }
