@@ -4312,6 +4312,7 @@ namespace UROVConfig
             Color cwColor = Color.SteelBlue;
             Color ccwColor = Color.LimeGreen;
 
+            /*
             if(record.RodPosition == RodPosition.Up) // штанга двигалась вверх
             {
                 interruptSerie.Color = cwColor;
@@ -4321,15 +4322,11 @@ namespace UROVConfig
             {
                 interruptSerie.Color = ccwColor;
             } // else
+            */
 
-
-            /*
             if(record.InterruptData.Count > 0)
             {
                 // тут раскрашиваем график направлениями движения
-                Color cwColor = Color.SteelBlue;
-                Color ccwColor = Color.OrangeRed;
-
 
                 if (record.DirectionTimes.Count > 0)
                 {
@@ -4422,7 +4419,6 @@ namespace UROVConfig
                     }
                 } // else 
             } // if
-            */
 
 
             // теперь рисуем свои метки на Y осях токов

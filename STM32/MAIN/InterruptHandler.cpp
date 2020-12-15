@@ -35,15 +35,14 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool canCatchInitialRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
-volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
+//volatile uint8_t initialDirection = 0xFF;       // первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
-volatile uint8_t aFlag = 0;
-volatile uint8_t bFlag = 0;
-volatile uint8_t rotationDirection = 0xFF;
-//volatile uint8_t transitionState = 0; // таблица переходов энкодера
-volatile bool canSaveDirectionChange = false;
-volatile uint8_t directionToSave = 0xFF;
+//volatile uint8_t aFlag = 0;
+//volatile uint8_t bFlag = 0;
+//volatile uint8_t rotationDirection = 0xFF;
+//volatile bool canSaveDirectionChange = false;
+//volatile uint8_t directionToSave = 0xFF;
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered()
 {
@@ -124,6 +123,7 @@ void copyPredictToList() // копируем предсказания в спи�
 //--------------------------------------------------------------------------------------------------------------------------------------
 InterruptEventSubscriber* subscriber = NULL; // подписчик для обработки результатов пачки прерываний
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void resetTransitionState()
 {
   noInterrupts();
@@ -142,50 +142,18 @@ uint8_t GetRotationDirection() // возвращает направление д
 {
   return rotationDirection;
 }
-//--------------------------------------------------------------------------------------------------------------------------------------
-/*
-void saveTransitionState()
-{
-  uint8_t aState = digitalRead(ENCODER_PIN1);
-  uint8_t bState = digitalRead(ENCODER_PIN2);
-
-  transitionState <<= 1;
-  transitionState |= aState;
-  transitionState <<= 1;
-  transitionState |= bState;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------
-void handleDirection() // смотрим, в какую сторону крутится энкодер, по таблице переходов
-{
-    if(transitionState == 11 || transitionState == 14)
-    {
-      //CW!
-      rotationDirection = rpUp; // clockwise
-    }
-    else if(transitionState == 7 || transitionState == 13)
-    {
-      //CCW!
-      rotationDirection = rpDown; // counter-clockwise
-    }
-    else
-    {
-      //CHANGE!
-      rotationDirection = rotationDirection == rpUp ? rpDown : rpUp; // 0xFF;
-    }
-
-}
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
 void  CheckRotationDirectionA() // определяет направление движения энкодера, вызывается для пина А энкодера
 {
   noInterrupts();
 
   //uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
   uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
-  //uint8_t aState = digitalRead(ENCODER_PIN1);
-  //uint8_t bState = digitalRead(ENCODER_PIN2);
 
- if(/*aState && */bState && aFlag) 
+ if(//aState && 
+  bState && aFlag) 
  { 
     //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
     rotationDirection = rpDown; //decrement the encoder's position count
@@ -197,29 +165,6 @@ void  CheckRotationDirectionA() // определяет направление �
     bFlag = 1; //signal that we're expecting pinB to signal the transition to detent from free rotation
   }
 
-/*
-  if(aFlag) // ситуация, когда повторно приходит импульс A. Это может случиться, когда пришёл импульс A, мы установили aFlag, но импульс B был пропущен, и aFlag не обнулился.
-  {
-    // эта ситуация также может случиться при смене направления вращения, поэтому сохранять состояние - надо !
-    transitionState = 0;
-    saveTransitionState();
-    bFlag = 0;
-    interrupts();
-    return;
-  }
-  
-
-  aFlag = 1;
-  saveTransitionState();
-
-  if(bFlag) // также недавно был высокий на пине В, поэтому - надо посмотреть, что в таблице переходов, и сохранить направление движения энкодера
-  {
-    aFlag = 0;
-    bFlag = 0;
-    handleDirection();
-    transitionState = 0;
-  }
-*/  
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -229,10 +174,9 @@ void CheckRotationDirectionB() // прерывание на пине В энко
 
   uint8_t aState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_A);
  // uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
-  //uint8_t aState = digitalRead(ENCODER_PIN1);
-  //uint8_t bState = digitalRead(ENCODER_PIN2);
 
-  if (aState /*&& bState*/ && bFlag) 
+  if (aState //&& bState 
+  && bFlag) 
   {     
     //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
     rotationDirection = rpUp; //increment the encoder's position count
@@ -244,35 +188,13 @@ void CheckRotationDirectionB() // прерывание на пине В энко
     aFlag = 1; //signal that we're expecting pinA to signal the transition to detent from free rotation  
   }
 
-/*
-  if(bFlag) // ситуация, когда повторно приходит импульс В. Это может случиться, когда пришёл импульс В, мы установили bFlag, но импульс А был пропущен, и bFlag не обнулился.
-  {
-    // эта ситуация также может случиться при смене направления вращения, поэтому сохранять состояние - надо !
-    transitionState = 0;
-    saveTransitionState();
-    aFlag = 0;
-    interrupts();
-    return;
-  }
-
-
-  bFlag = 1;
-  saveTransitionState();
-
-  if(aFlag) // также недавно был высокий на пине А, поэтому - надо посмотреть, что в таблице переходов, и сохранить направление движения энкодера
-  {
-    aFlag = 0;
-    bFlag = 0;
-    handleDirection();
-    transitionState = 0;
-  }  
-  */
   interrupts();
 }
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 void EncoderPulsesHandler() // обработчик импульсов энкодера на пине А
 {
-  CheckRotationDirectionA(); // определяем направление движения энкодера
+ // CheckRotationDirectionA(); // определяем направление движения энкодера
   
   if(paused) // на паузе
   {
@@ -302,6 +224,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
     #ifndef DISABLE_CATCH_ENCODER_DIRECTION
 
+      /*
       if(canCatchInitialRotationDirection)
       {
         uint8_t dir = GetRotationDirection();
@@ -318,6 +241,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
         }
         
       } // canCatchInitialRotationDirection
+      */
+      
       /*
       else
       {
@@ -385,6 +310,35 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
 
     InterruptData.push_back(now);
+
+    #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+
+      // читаем состояние пина В, Сашин метод
+      uint8_t bState = HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B);
+      
+      uint8_t curDirection = bState ? rpUp : rpDown; // текущее направление движения
+      
+      if(canCatchInitialRotationDirection) // нас попросили запомнить первоначальное движение штанги
+      {
+          noInterrupts();
+          canCatchInitialRotationDirection = false;
+          // сохраняем первоначальное направление вращения энкодера
+          lastKnownDirection = curDirection;
+          Settings.setRodDirection((RodDirection)lastKnownDirection);
+          interrupts();
+      } // if(canCatchInitialRotationDirection)
+
+      // тут проверяем - сменилось ли направление движения?
+      if(lastKnownDirection != curDirection)
+      {
+        // направление движения изменилось, сохраняем время смены направления вращения
+        lastKnownDirection = curDirection;
+        DirectionInfo.add(curDirection, now);
+      }
+      
+
+    #endif // #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+    
     /*    
     if(canSaveDirectionChange) // нас попросили синхронизировать смену направления вращения энкодера с очередной записью в списке прерываний
     {
@@ -437,7 +391,7 @@ void InterruptHandlerClass::begin()
 
   // считаем импульсы на штанге по прерыванию
   attachInterrupt((ENCODER_PIN1),EncoderPulsesHandler, ENCODER_INTERRUPT_LEVEL);
-  attachInterrupt((ENCODER_PIN2),CheckRotationDirectionB, ENCODER_INTERRUPT_LEVEL);
+//  attachInterrupt((ENCODER_PIN2),CheckRotationDirectionB, ENCODER_INTERRUPT_LEVEL);
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -1178,7 +1132,8 @@ void InterruptHandlerClass::update()
                 trigReasonTimer = micros(); // запоминаем время срабатывания причины
                 
                 encoderTimer = micros();
-                resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+                //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+                lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
                 canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
                 canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
@@ -1214,7 +1169,8 @@ void InterruptHandlerClass::update()
         trigReasonTimer = micros(); // запоминаем время срабатывания причины
         
         encoderTimer = micros();
-        resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
         canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
@@ -1254,7 +1210,8 @@ void InterruptHandlerClass::update()
         trigReasonTimer = micros(); // запоминаем время срабатывания причины
         
         encoderTimer = micros();
-        resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
         canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
         canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
 
