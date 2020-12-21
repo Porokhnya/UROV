@@ -38,7 +38,7 @@ volatile bool canCatchInitialRotationDirection = false; // флаг, что мы
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool hasRelayTriggered()
+bool hasRelayTriggered() // проверка срабатывания внешней защиты
 {
 
   if(RelayGuard.isTriggered())
@@ -221,7 +221,7 @@ InterruptHandlerClass::InterruptHandlerClass()
   hasAlarm = false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::begin()
+void InterruptHandlerClass::begin() // начинаем работу
 {
 
 // резервируем память
@@ -254,7 +254,7 @@ void InterruptHandlerClass::begin()
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::normalizeList(InterruptTimeList& list)
+void InterruptHandlerClass::normalizeList(InterruptTimeList& list) // нормализует список относительно первой записи
 {
   size_t sz = list.size();
   
@@ -292,6 +292,7 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirO
 }
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
+// запись информации по прерыванию в лог
 uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData, uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
 {
@@ -697,18 +698,19 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
 return written;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
+// запись переданных данных в лог
 void InterruptHandlerClass::writeToLog(
-  DirectionInfoData& directionData,
-  uint16_t previewCount,
-  int32_t dataArrivedTime, 
-  DS3231Time& tm,
-	CurrentOscillData* oscData,
-	InterruptTimeList& lst1, 
-	EthalonCompareResult res1, 
-	EthalonCompareNumber num1,
+  DirectionInfoData& directionData, // информация по направлению движения энкодера
+  uint16_t previewCount, // кол-во записей превью тока
+  int32_t dataArrivedTime,  // время прихода данных по прерыванию
+  DS3231Time& tm, // время фиксации данных прерывания
+	CurrentOscillData* oscData, // данные по току
+	InterruptTimeList& lst1,  // данные по импульсам прерывания
+	EthalonCompareResult res1,  // результат сравнения с эталоном
+	EthalonCompareNumber num1, // номер сравнения с эталоном
 	//InterruptTimeList& ethalonData1,
-  const String& ethalonFileName,
-  bool toEEPROM
+  const String& ethalonFileName, // имя файла эталона
+  bool toEEPROM // флаг, куда пишем - в EEPROM или на SD
 )
 {
   EEPROM_CLASS* eeprom = Settings.getEEPROM();
@@ -891,7 +893,7 @@ void InterruptHandlerClass::writeToLog(
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::pause()
+void InterruptHandlerClass::pause() // приостановка работы
 {
   if(paused) // уже на паузе
   {
@@ -903,7 +905,7 @@ void InterruptHandlerClass::pause()
   interrupts();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::resume()
+void InterruptHandlerClass::resume() // возобновление работы
 {
   if(!paused) // не на паузе
   {
@@ -930,7 +932,7 @@ void InterruptHandlerClass::resume()
   interrupts();  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void InterruptHandlerClass::update()
+void InterruptHandlerClass::update() // обновление внутреннего состояния
 {
 
   if(paused) // на паузе
@@ -1394,37 +1396,6 @@ void InterruptHandlerClass::update()
 
             if(needToLog)
             { 
-              /*
-              //TODO: ПОКА ТЕСТОВЫЕ ДАННЫЕ ПО ИЗМЕНЕНИЮ НАПРАВЛЕНИЯ ДВИЖЕНИЯ ШТАНГИ, ЗАКОММЕНТИРОВАТЬ!!!
-               if(InterruptData.size() > 10)
-               {
-                  DirectionInfo.clear();
-                  
-                  uint8_t countOfFakeRecords = 4;
-                  size_t offset = InterruptData.size() / countOfFakeRecords; // N записей
-                  RodDirection dir = Settings.getRodDirection(); // получили первоначальное направление вращения штанги
-
-                  // последовательно меняем направления на противоположные
-                  for(uint8_t i=1;i<=countOfFakeRecords;i++)
-                  {
-                    if(dir == rpUp)
-                    {
-                      dir = rpDown;
-                    }
-                    else
-                    {
-                      dir = rpUp;
-                    }
-
-                    size_t recIdx = i*offset - 1;
-                    uint32_t timeVal = InterruptData[recIdx];
-
-                    DirectionInfo.add(dir,timeVal);
-                  } // for
-                
-               }
-              // КОНЕЦ ТЕСТОВЫХ ДАННЫХ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-              */
               
            //   Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
@@ -1443,7 +1414,7 @@ void InterruptHandlerClass::update()
 
         bool wantToInformSubscriber = subscriber != NULL; //(catchedPulses > 1);
 
-        if(wantToInformSubscriber)
+        if(wantToInformSubscriber) // надо уведомить подписчика прерываний
         { 
           //  DBGLN(F("Надо уведомить подписчика прерываний!"));
           if(subscriber)

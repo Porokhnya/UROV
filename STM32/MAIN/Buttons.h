@@ -3,22 +3,23 @@
 #include <Arduino.h>
 #include "CoreButton.h"
 //--------------------------------------------------------------------------------------------------
-class ButtonsList
+class ButtonsList // список кнопок
 {
   public:
-    ButtonsList();
-    void begin();
-    void update();
+  
+    ButtonsList(); // конструктор
+    void begin(); // начало работы
+    void update(); // обновление внутреннего состояния
 
   private:
   
-    Button redButton;
-    Button blueButton;
-    Button yellowButton;
+    Button redButton; // красная кнопка
+    Button blueButton; // синяя кнопка
+    Button yellowButton; // жёлтая кнопка
 
-    bool inited;
+    bool inited; // флаг инициализации
     
 };
 //--------------------------------------------------------------------------------------------------
-extern ButtonsList Buttons;
+extern ButtonsList Buttons; // экземпляр класса
 //--------------------------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ ListFilesScreen* listLogFilesScreen = NULL;
 ListFilesScreen* listEthalonsFilesScreen = NULL;
 EthalonChartScreen* ethalonChartScreen = NULL;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Screen2::Screen2() : AbstractTFTScreen("Settings")
+Screen2::Screen2() : AbstractTFTScreen("Settings") // экран настроек
 {
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

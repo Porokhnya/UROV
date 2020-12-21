@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------------------
 #include "CoreButton.h"
 //--------------------------------------------------------------------------------------------------
-Button::Button()
+Button::Button() // конструктор
 {
   buttonPin = 0;
   pullUp = true;
@@ -9,7 +9,7 @@ Button::Button()
   reset();
 }
 //--------------------------------------------------------------------------------------------------
-void Button::begin(uint8_t _pin, bool _pullup)
+void Button::begin(uint8_t _pin, bool _pullup) // начинаем работу
 {
    buttonPin = _pin;
    pullUp = _pullup;
@@ -20,7 +20,7 @@ void Button::begin(uint8_t _pin, bool _pullup)
   reset();
 }
 //--------------------------------------------------------------------------------------------------
-void Button::reset()
+void Button::reset() // сбрасываем состояние на исходное
 {
 
   state.atLeastOneStateChangesFound = false;
@@ -43,10 +43,9 @@ void Button::reset()
   state.lastButtonState  = readButtonState(buttonPin);
 }
 //--------------------------------------------------------------------------------------------------
-void Button::update()
+void Button::update() // обновляем состояние кнопки
 {
 
-  // обновляем внутреннее состояние
   bool curBounce  = false;
   bool curDoubleClick = false;
   bool curTimer  = false;

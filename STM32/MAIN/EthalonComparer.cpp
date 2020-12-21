@@ -5,7 +5,8 @@
 #include "Settings.h"
 #include "FileUtils.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t channelNumber, EthalonCompareNumber& compareNumber, String& fileName)//InterruptTimeList& ethalonData)
+// сравнивает эталон со списком прерывания
+EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t channelNumber, EthalonCompareNumber& compareNumber, String& fileName)
 {
     DBGLN("");
     DBG(F("Сравниваем список импульсов #"));
@@ -17,7 +18,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     InterruptTimeList ethalonData;
     ethalonData.clear();
     
-    if(list.size() < 2)
+    if(list.size() < 2) // если записей мало - нечего сравнивать
     {
       DBGLN(F("пустой исходный список, нет ничего к сравнению"));
       return COMPARE_RESULT_NoSourcePulses; // нет исходных данных в списке
@@ -42,7 +43,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   RodDirection rodPos = Settings.getRodDirection();// (channelNumber);
   
  #ifndef IGNORE_ROD_POSITION
-    if(rpBroken == rodPos)
+    if(rpBroken == rodPos) // штанга поломана
     {
       DBGLN(F("детектирована поломка штанги!"));
       return COMPARE_RESULT_RodBroken;      // штанга поломана
@@ -110,7 +111,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
   
   fileName += ETHALON_FILE_EXT;
   
-  if(!SD_CARD.exists(fileName.c_str()))
+  if(!SD_CARD.exists(fileName.c_str())) // не найден файл эталона
   {
     DBGLN(F("не найден файл эталона!"));
 
@@ -151,7 +152,7 @@ EthalonCompareResult EthalonComparer::Compare(InterruptTimeList& list, uint8_t c
     
     file.close();
   }
-  else
+  else // не удалось открыть файл
   {
     DBGLN(F("не удалось открыть файл эталона!"));
 

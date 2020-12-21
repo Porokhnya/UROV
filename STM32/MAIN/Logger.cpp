@@ -10,7 +10,7 @@ LoggerClass::LoggerClass()
   bPaused = false;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void LoggerClass::doOpenFile(DS3231Time& tm)
+void LoggerClass::doOpenFile(DS3231Time& tm) // открываем файл
 {
   lastWriteTime = tm;
   SD_CARD.mkdir(LOGS_DIRECTORY);
@@ -44,7 +44,7 @@ void LoggerClass::doOpenFile(DS3231Time& tm)
    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool LoggerClass::openWorkFile()
+bool LoggerClass::openWorkFile() // открываем рабочий файл
 {
    static uint32_t lastMillis = 0;
    
@@ -74,42 +74,9 @@ bool LoggerClass::openWorkFile()
 
   return workFile.isOpen();
   
-  /*  
-  
-  closeWorkFile();
-
- // пишем в лог-файл дату/время срабатывания системы
-  SD_CARD.mkdir(LOGS_DIRECTORY);
-
-  DS3231Time tm = RealtimeClock.getTime();
-
-  // формируем имя файла ггггммдд.log. (год,месяц,день)
-  String logFileName;
-  
-  logFileName = LOGS_DIRECTORY;
-  if(!logFileName.endsWith("/"))
-    logFileName += "/";
-  
-  logFileName += tm.year;
-  if(tm.month < 10)
-    logFileName += '0';
-  logFileName += tm.month;
-
- if(tm.dayOfMonth < 10)
-  logFileName += '0';
- logFileName += tm.dayOfMonth;
-
-  logFileName += F(".LOG");
-
-  DBG(F("ТЕКУЩИЙ ЛОГ-ФАЙЛ: "));
-  DBGLN(logFileName);
-
-  workFile.open(logFileName.c_str(),FILE_WRITE);  
-  return workFile.isOpen();
-  */
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void LoggerClass::closeWorkFile()
+void LoggerClass::closeWorkFile() // закрываем рабочий файл
 {
   if(workFile.isOpen())
   {
@@ -117,19 +84,19 @@ void LoggerClass::closeWorkFile()
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void LoggerClass::pause()
+void LoggerClass::pause() // ставим на паузу
 {
   bPaused = true;
   closeWorkFile();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void LoggerClass::resume()
+void LoggerClass::resume() // возобновляем работу
 {
   bPaused = false;
   openWorkFile();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void LoggerClass::write(uint8_t* data,size_t dataLength)
+void LoggerClass::write(uint8_t* data,size_t dataLength) // пишем данные в рабочий файл
 {
   if(bPaused) // на паузе, ничего не пишем
   {
@@ -157,6 +124,5 @@ void LoggerClass::write(uint8_t* data,size_t dataLength)
   workFile.write(data,dataLength);
   workFile.sync();
 
-//  closeWorkFile();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

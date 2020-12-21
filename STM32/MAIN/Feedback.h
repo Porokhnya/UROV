@@ -2,17 +2,20 @@
 //--------------------------------------------------------------------------------------------------
 #include <Arduino.h>
 //--------------------------------------------------------------------------------------------------
+// Визуальная обрабтая связь
+//--------------------------------------------------------------------------------------------------
 class FeedbackList
 {
   public:
     FeedbackList();
-    void begin();
+    
+    void begin(); // начало работы
 
-    void readyDiode(bool on=true);
-    void failureDiode(bool on=true);
-    void testDiode(bool on=true);
+    void readyDiode(bool on=true); // установка уровня светодиода ГОТОВ
+    void failureDiode(bool on=true); // установка уровня светодиода АВАРИЯ
+    void testDiode(bool on=true); // установка уровня светодиода ТЕСТ
 
-    void setFailureLineLevel(bool on=true);
+    void setFailureLineLevel(bool on=true); // установка уровня линии АВАРИЯ
 
   private:
 };

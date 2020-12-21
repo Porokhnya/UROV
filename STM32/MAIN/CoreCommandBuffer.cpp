@@ -48,13 +48,13 @@ extern "C" char* sbrk(int i);
 //--------------------------------------------------------------------------------------------------------------------------------------
 CoreCommandBuffer Commands(&Serial);
 //--------------------------------------------------------------------------------------------------------------------------------------
-CoreCommandBuffer::CoreCommandBuffer(Stream* s) : pStream(s)
+CoreCommandBuffer::CoreCommandBuffer(Stream* s) : pStream(s) // конструктор
 {
-    strBuff = new String();
+  strBuff = new String();
 	strBuff->reserve(201);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CoreCommandBuffer::hasCommand()
+bool CoreCommandBuffer::hasCommand() // проверяет на наличие входящей команды
 {
   if(!(pStream && pStream->available()))
   {
@@ -63,7 +63,7 @@ bool CoreCommandBuffer::hasCommand()
 
     char ch;
     
-    while(pStream->available())
+    while(pStream->available()) // читаем данные во внутренний буфер
     {
       ch = (char) pStream->read();
 
@@ -87,17 +87,17 @@ bool CoreCommandBuffer::hasCommand()
     return false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-CommandParser::CommandParser()
+CommandParser::CommandParser() // констуктор
 {
   
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-CommandParser::~CommandParser()
+CommandParser::~CommandParser() // деструктор
 {
   clear();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void CommandParser::clear()
+void CommandParser::clear() // очищает внутренние данные
 {
   for(size_t i=0;i<arguments.size();i++)
   {
@@ -109,7 +109,7 @@ void CommandParser::clear()
   //  arguments.pop();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-const char* CommandParser::getArg(size_t idx) const
+const char* CommandParser::getArg(size_t idx) const // возвращает аргумент команды по индексу
 {
   if(arguments.size() && idx < arguments.size())
     return arguments[idx];
@@ -117,7 +117,7 @@ const char* CommandParser::getArg(size_t idx) const
   return NULL;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandParser::parse(const String& command, bool isSetCommand)
+bool CommandParser::parse(const String& command, bool isSetCommand) // разбирает входящую строку на параметры
 {
   clear();
     // разбиваем на аргументы
@@ -159,12 +159,12 @@ bool CommandParser::parse(const String& command, bool isSetCommand)
 //--------------------------------------------------------------------------------------------------------------------------------------
 CommandHandlerClass CommandHandler;
 //--------------------------------------------------------------------------------------------------------------------------------------
-CommandHandlerClass::CommandHandlerClass()
+CommandHandlerClass::CommandHandlerClass() // конструктор
 {
   
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void CommandHandlerClass::handleCommands()
+void CommandHandlerClass::handleCommands() // обработчик входящих команд
 {
   if(Commands.hasCommand())
   {    
@@ -183,20 +183,18 @@ void CommandHandlerClass::handleCommands()
   } // if(Commands.hasCommand())  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
+void CommandHandlerClass::processCommand(const String& command,Stream* pStream) // выполнение входящей команды
 {
     bool commandHandled = false;
 
-    if(command.startsWith(CORE_COMMAND_SET))
+    if(command.startsWith(CORE_COMMAND_SET)) // команда установки свойств
     {
-      // команда на установку свойств
-
-      CommandParser cParser;
-	  if (cParser.parse(command, true))
+     CommandParser cParser;
+	  if (cParser.parse(command, true)) // если разобрали команду
 	  {
 		  const char* commandName = cParser.getArg(0);
 
-		  if (!strcmp_P(commandName, PIN_COMMAND))
+		  if (!strcmp_P(commandName, PIN_COMMAND)) // установка состояния выхода
 		  {
 			  // запросили установить уровень на пине SET=PIN|13|ON, SET=PIN|13|1, SET=PIN|13|OFF, SET=PIN|13|0, SET=PIN|13|ON|2000 
 			  if (cParser.argsCount() > 2)
@@ -211,7 +209,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 		  } // PIN_COMMAND        
 
 		  else
-			  if (!strcmp_P(commandName, DATETIME_COMMAND)) // DATETIME
+			  if (!strcmp_P(commandName, DATETIME_COMMAND)) // DATETIME, установка даты/времени
 			  {
 				  if (cParser.argsCount() > 1)
 				  {
@@ -228,7 +226,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 			  } // DATETIME
         
         else
-        if(!strcmp_P(commandName, DELFILE_COMMAND))
+        if(!strcmp_P(commandName, DELFILE_COMMAND)) // удаление файла
         {
             if(cParser.argsCount() > 1)
             {
@@ -243,7 +241,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // DELFILE_COMMAND
         else
-        if(!strcmp_P(commandName,UPLOADFILE_COMMAND))
+        if(!strcmp_P(commandName,UPLOADFILE_COMMAND)) // загрузка файла
         {
             if(cParser.argsCount() > 2)
             {
@@ -258,7 +256,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // UPLOADFILE_COMMAND                  
         else
-        if(!strcmp_P(commandName, ASUTP_COMMAND))
+        if(!strcmp_P(commandName, ASUTP_COMMAND)) // установка флагов АСУ ТП
         {
             if(cParser.argsCount() > 1)
             {
@@ -271,7 +269,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // ASUTP_COMMAND               
         else
-        if(!strcmp_P(commandName, PULSES_COMMAND))
+        if(!strcmp_P(commandName, PULSES_COMMAND)) // установка кол-ва импульсов
         {
             if(cParser.argsCount() > 1)
             {
@@ -284,7 +282,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // PULSES_COMMAND               
         else
-        if(!strcmp_P(commandName, RDELAY_COMMAND))
+        if(!strcmp_P(commandName, RDELAY_COMMAND)) // установка задержки реле
         {
             if(cParser.argsCount() > 3)
             {
@@ -297,7 +295,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // RDELAY_COMMAND               
         else
-        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND))
+        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND)) // установка коэффициента тока
         {
             if(cParser.argsCount() > 1)
             {
@@ -310,7 +308,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // CURRENT_COEFF_COMMAND
         else
-        if(!strcmp_P(commandName, ECDELTA_COMMAND))
+        if(!strcmp_P(commandName, ECDELTA_COMMAND)) // установка дельты импульсов
         {
             if(cParser.argsCount() > 1)
             {
@@ -323,7 +321,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // ECDELTA_COMMAND
         else
-        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
+        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND)) // установка пропуска импульсов
         {
             if(cParser.argsCount() > 1)
             {
@@ -336,7 +334,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // SKIPCOUNTER_COMMAND               
         else
-        if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
+        if(!strcmp_P(commandName, TBORDERMAX_COMMAND)) // установка верхней границы трансформатора
         {
             if(cParser.argsCount() > 1)
             {
@@ -349,7 +347,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // TBORDERMAX_COMMAND               
         else
-        if(!strcmp_P(commandName, TBORDERMIN_COMMAND))
+        if(!strcmp_P(commandName, TBORDERMIN_COMMAND)) // установка нижней границы трансформатора
         {
             if(cParser.argsCount() > 1)
             {
@@ -362,7 +360,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // TBORDERMIN_COMMAND           
         else
-        if(!strcmp_P(commandName, TBORDERS_COMMAND))
+        if(!strcmp_P(commandName, TBORDERS_COMMAND)) // установка границ трансформатора
         {
             if(cParser.argsCount() > 2)
             {
@@ -375,7 +373,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // TBORDERS_COMMAND           
         else
-        if(!strcmp_P(commandName, DELTA_COMMAND))
+        if(!strcmp_P(commandName, DELTA_COMMAND)) // установка дельт длительности импульсов
         {
             if(cParser.argsCount() > 1)
             {
@@ -388,7 +386,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // DELTA_COMMAND
         else
-        if(!strcmp_P(commandName, RLENGTH_COMMAND))
+        if(!strcmp_P(commandName, RLENGTH_COMMAND)) // установка длины перемещения привода
         {
             // запросили установить текущий моторесурс SET=RLENGTH|100
             if(cParser.argsCount() > 1)
@@ -402,7 +400,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // RLENGTH_COMMAND                 
         else
-        if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
+        if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND)) // установка текущего моторесурса
         {
             // запросили установить текущий моторесурс SET=RES_CUR|0
             if(cParser.argsCount() > 1)
@@ -416,9 +414,9 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             }
         } // MOTORESOURCE_CURRENT_COMMAND               
         else
-        if(!strcmp_P(commandName, MOTORESOURCE_MAX_COMMAND))
+        if(!strcmp_P(commandName, MOTORESOURCE_MAX_COMMAND)) // установка максимального моторесурса
         {
-            // запросили установить текущий моторесурс SET=RES_CUR|0
+            // запросили установить текущий моторесурс SET=RES_MAX|1000
             if(cParser.argsCount() > 1)
             {
               commandHandled = setMOTORESOURCE_MAX(cParser, pStream);
@@ -436,87 +434,86 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
       
     } // SET COMMAND
     else
-    if(command.startsWith(CORE_COMMAND_GET))
-    {
-      // команда на получение свойств
+    if(command.startsWith(CORE_COMMAND_GET)) // команда на получение свойств
+    {      
       CommandParser cParser;
       
-      if(cParser.parse(command,false))
+      if(cParser.parse(command,false)) // если команда разобрана, то
       {
         const char* commandName = cParser.getArg(0);
 
-        if(!strcmp_P(commandName, DATETIME_COMMAND))
+        if(!strcmp_P(commandName, DATETIME_COMMAND)) // получение даты/времени
         {
           commandHandled = getDATETIME(commandName,pStream);
                     
         } // DATETIME_COMMAND
 		else
-		if (!strcmp_P(commandName, ETHALON_REC_COMMAND)) // EREC, GET=EREC|UP, GET=EREC|DOWN
+		if (!strcmp_P(commandName, ETHALON_REC_COMMAND)) // EREC, GET=EREC|UP, GET=EREC|DOWN, запись эталона вверх или вниз
 		{
 			commandHandled = getEREC(cParser, pStream);
 
 		} // EREC
    else 
-    if (!strcmp_P(commandName, VERSION_COMMAND))
+    if (!strcmp_P(commandName, VERSION_COMMAND)) // получение версии ПО
     {
       commandHandled = getVER(pStream);
     }
 		else
-        if(!strcmp_P(commandName, PIN_COMMAND))
+        if(!strcmp_P(commandName, PIN_COMMAND)) // получение состояния входа
         {
             commandHandled = getPIN(commandName,cParser,pStream);                    
           
         } // PIN_COMMAND
         else
-        if(!strcmp_P(commandName, ASUTP_COMMAND))
+        if(!strcmp_P(commandName, ASUTP_COMMAND)) // получение флагов АСУ ТП
         {
             commandHandled = getASUTPFLAGS(commandName,cParser,pStream);                    
           
         } // ASUTP_COMMAND       
         else
-        if(!strcmp_P(commandName, PULSES_COMMAND))
+        if(!strcmp_P(commandName, PULSES_COMMAND)) // получение кол-ва импульсов
         {
             commandHandled = getPULSES(commandName,cParser,pStream);                    
           
         } // PULSES_COMMAND       
         else
-        if(!strcmp_P(commandName, RDELAY_COMMAND))
+        if(!strcmp_P(commandName, RDELAY_COMMAND)) // получение задержки реле
         {
             commandHandled = getRDELAY(commandName,cParser,pStream);                    
           
         } // RDELAY_COMMAND       
         else
-        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND))
+        if(!strcmp_P(commandName, CURRENT_COEFF_COMMAND)) // получение коэффициента тока
         {
             commandHandled = getCCOEFF(commandName,cParser,pStream);                    
           
         } // CURRENT_COEFF_COMMAND
         else
-        if(!strcmp_P(commandName, ECDELTA_COMMAND))
+        if(!strcmp_P(commandName, ECDELTA_COMMAND)) // получение дельты импульсов
         {
             commandHandled = getECDELTA(commandName,cParser,pStream);                    
           
         } // ECDELTA_COMMAND     
         else
-        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND))
+        if(!strcmp_P(commandName, SKIPCOUNTER_COMMAND)) // получение пропуска импульсов
         {
             commandHandled = getSKIPCOUNTER(commandName,cParser,pStream);                    
           
         } // SKIPCOUNTER_COMMAND       
         else
-        if(!strcmp_P(commandName, TBORDERMAX_COMMAND))
+        if(!strcmp_P(commandName, TBORDERMAX_COMMAND)) // получение верхней границы трансформатора
         {
             commandHandled = getTBORDERMAX(commandName,cParser,pStream);                    
           
         } // TBORDERMAX_COMMAND       
         else
-        if(!strcmp_P(commandName, TBORDERMIN_COMMAND))
+        if(!strcmp_P(commandName, TBORDERMIN_COMMAND)) // получение нижней границы трансформатора
         {
             commandHandled = getTBORDERMIN(commandName,cParser,pStream);                    
           
         } // TBORDERMIN_COMMAND       
         else
-        if(!strcmp_P(commandName, TBORDERS_COMMAND))
+        if(!strcmp_P(commandName, TBORDERS_COMMAND)) // получение границ трансформатора
         {
             commandHandled = getTBORDERS(commandName,cParser,pStream);                    
           
@@ -531,54 +528,54 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
         } // INDUCTIVE_COMMAND       
 		*/
         else
-        if(!strcmp_P(commandName, VOLTAGE_COMMAND))
+        if(!strcmp_P(commandName, VOLTAGE_COMMAND)) // получение напряжения на входе
         {
             commandHandled = getVOLTAGE(commandName,cParser,pStream);                    
           
         } // VOLTAGE_COMMAND       
         else
-        if(!strcmp_P(commandName, DELTA_COMMAND))
+        if(!strcmp_P(commandName, DELTA_COMMAND)) // получение дельты времени импульсов
         {
             commandHandled = getDELTA(commandName,cParser,pStream);                    
           
         } // DELTA_COMMAND       
         else
-        if(!strcmp_P(commandName, UUID_COMMAND))
+        if(!strcmp_P(commandName, UUID_COMMAND)) // получение уникального ID контроллера
         {
             commandHandled = getUUID(commandName,cParser,pStream);                    
           
         } // UUID_COMMAND       
         else
-        if(!strcmp_P(commandName, SDTEST_COMMAND))
+        if(!strcmp_P(commandName, SDTEST_COMMAND)) // тестирование SD
         {
             commandHandled = getSDTEST(commandName,cParser,pStream);                    
           
         } // SDTEST_COMMAND       
         else
-        if(!strcmp_P(commandName, RLENGTH_COMMAND))
+        if(!strcmp_P(commandName, RLENGTH_COMMAND)) // получение велечины перемещения привода
         {
             commandHandled = getRLENGTH(commandName,cParser,pStream);                    
           
         } // RLENGTH_COMMAND       
         else
-        if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND))
+        if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND)) // получение текущего моторесурса
         {
             commandHandled = getMOTORESOURCE_CURRENT(commandName,cParser,pStream);                    
           
         } // MOTORESOURCE_CURRENT_COMMAND       
         else
-        if(!strcmp_P(commandName, MOTORESOURCE_MAX_COMMAND))
+        if(!strcmp_P(commandName, MOTORESOURCE_MAX_COMMAND)) // получение максимального моторесурса
         {
             commandHandled = getMOTORESOURCE_MAX(commandName,cParser,pStream);                    
           
         } // MOTORESOURCE_MAX_COMMAND       
         else      
-        if(!strcmp_P(commandName, FREERAM_COMMAND))
+        if(!strcmp_P(commandName, FREERAM_COMMAND)) // получение кол-ва свободной оперативной памяти
         {
           commandHandled = getFREERAM(commandName,pStream);
         } // FREERAM_COMMAND
         else
-        if(!strcmp_P(commandName, LS_COMMAND)) // LS
+        if(!strcmp_P(commandName, LS_COMMAND)) // LS, получение списка файлов и папок
         {
             // запросили получить список файлов в папке, GET=LS|FolderName
 			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
@@ -586,7 +583,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 			SwitchRS485MainHandler(true); // включаем обработчик RS-485 по умолчанию
         } // LS        
         else
-        if(!strcmp_P(commandName, LAST_TRIG_COMMAND)) // LASTTRIG
+        if(!strcmp_P(commandName, LAST_TRIG_COMMAND)) // LASTTRIG, получение информации по последнему срабатыванию защиты
         {
             // запросили получить содержимое последнего срабатывания, GET=LASTTRIG
             SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
@@ -594,7 +591,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
             SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
         } // LS        
         else
-        if(!strcmp_P(commandName, FILE_COMMAND)) // FILE
+        if(!strcmp_P(commandName, FILE_COMMAND)) // FILE, получение файла
         {
             // запросили получить файл, GET=FILE|FilePath
 			      SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
@@ -602,7 +599,7 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
 			      SwitchRS485MainHandler(true); // выключаем обработчик RS-485 по умолчанию
         } // LS        
         else
-        if(!strcmp_P(commandName, FILESIZE_COMMAND)) // FILESIZE
+        if(!strcmp_P(commandName, FILESIZE_COMMAND)) // FILESIZE, получение размера файла
         {
             // запросили размер файла, GET=FILESIZE|FilePath
 			SwitchRS485MainHandler(false); // выключаем обработчик RS-485 по умолчанию
@@ -617,16 +614,18 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream)
     } // GET COMMAND
     
     if(!commandHandled)
+    {
       onUnknownCommand(command, pStream);  
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void CommandHandlerClass::onUnknownCommand(const String& command, Stream* outStream)
+void CommandHandlerClass::onUnknownCommand(const String& command, Stream* outStream) // обработчик неизвестной команды
 {
     outStream->print(CORE_COMMAND_ANSWER_ERROR);
     outStream->println(F("UNKNOWN_COMMAND"));  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream) // загрузка файла
 {
 /*
   for(size_t i=0;i<parser.argsCount();i++)
@@ -748,7 +747,7 @@ bool CommandHandlerClass::setUPLOADFILE(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream) // удаление файла
 {
   if(parser.argsCount() > 1)
   {
@@ -779,7 +778,7 @@ bool CommandHandlerClass::setDELFILE(CommandParser& parser, Stream* pStream)
   return false;    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение размера файла
 {
   if(parser.argsCount() > 1)
   {
@@ -826,7 +825,7 @@ bool CommandHandlerClass::getFILESIZE(const char* commandPassed, const CommandPa
   return false;  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение информации по последнему срабатыванию
 {
 
 
@@ -882,7 +881,7 @@ bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandPa
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение файла
 {
   String endOfFile = CORE_END_OF_DATA;
   if(parser.argsCount() > 1)
@@ -930,7 +929,7 @@ bool CommandHandlerClass::getFILE(const char* commandPassed, const CommandParser
   return true;  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getLS(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getLS(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение списка файлов и папок
 {
   String folderName = F("/");
   
@@ -956,7 +955,7 @@ bool CommandHandlerClass::getLS(const char* commandPassed, const CommandParser& 
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getVOLTAGE(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getVOLTAGE(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение напряжения на входе
 {
   if(parser.argsCount() < 1)
     return false;  
@@ -1003,7 +1002,7 @@ bool CommandHandlerClass::getINDUCTIVE(const char* commandPassed, const CommandP
 }
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getVER(Stream* pStream)
+bool CommandHandlerClass::getVER(Stream* pStream) // получение версии ПО
 {  
   pStream->print(F("UROV "));
   pStream->println(SOFTWARE_VERSION);
@@ -1011,7 +1010,7 @@ bool CommandHandlerClass::getVER(Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream) // запись эталона
 {
 	if (parser.argsCount() < 2)
 		return false;
@@ -1055,7 +1054,7 @@ bool CommandHandlerClass::getEREC(const CommandParser& parser, Stream* pStream)
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandParser& parser, Stream* pStream) // тестирование SD
 {
   if(parser.argsCount() < 1)
   {
@@ -1084,7 +1083,7 @@ bool CommandHandlerClass::getSDTEST(const char* commandPassed, const CommandPars
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение уникального ID контроллера
 {
   if(parser.argsCount() < 2)
   {
@@ -1104,7 +1103,7 @@ bool CommandHandlerClass::getUUID(const char* commandPassed, const CommandParser
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getECDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getECDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение дельты импульсов
 {
   if(parser.argsCount() < 1)
   {
@@ -1123,7 +1122,7 @@ bool CommandHandlerClass::getECDELTA(const char* commandPassed, const CommandPar
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setECDELTA(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setECDELTA(CommandParser& parser, Stream* pStream) // установка дельты импульсов
 {
   if(parser.argsCount() < 2)
   {
@@ -1143,7 +1142,7 @@ bool CommandHandlerClass::setECDELTA(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение коэффициента тока
 {
   if(parser.argsCount() < 1)
   {
@@ -1162,7 +1161,7 @@ bool CommandHandlerClass::getCCOEFF(const char* commandPassed, const CommandPars
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream) // установка коэффициента тока
 {
   if(parser.argsCount() < 2)
   {
@@ -1182,7 +1181,7 @@ bool CommandHandlerClass::setCCOEFF(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение задержки реле
 {
   if(parser.argsCount() < 1)
   {
@@ -1205,7 +1204,7 @@ bool CommandHandlerClass::getRDELAY(const char* commandPassed, const CommandPars
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream) // установка задержки реле
 {
   if(parser.argsCount() < 4)
     return false;
@@ -1227,7 +1226,7 @@ bool CommandHandlerClass::setRDELAY(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getSKIPCOUNTER(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getSKIPCOUNTER(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение пропуска импульсов
 {
   if(parser.argsCount() < 1)
     return false;  
@@ -1243,7 +1242,7 @@ bool CommandHandlerClass::getSKIPCOUNTER(const char* commandPassed, const Comman
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setSKIPCOUNTER(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setSKIPCOUNTER(CommandParser& parser, Stream* pStream) // установка пропуска импульсов
 {
   if(parser.argsCount() < 2)
     return false;
@@ -1261,7 +1260,7 @@ bool CommandHandlerClass::setSKIPCOUNTER(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getTBORDERMAX(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getTBORDERMAX(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение верхней границы трансформатора
 {
   if(parser.argsCount() < 1)
     return false;  
@@ -1277,7 +1276,7 @@ bool CommandHandlerClass::getTBORDERMAX(const char* commandPassed, const Command
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setTBORDERMAX(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setTBORDERMAX(CommandParser& parser, Stream* pStream) // установка верхней границы трансформатора
 {
   if(parser.argsCount() < 2)
     return false;
@@ -1295,7 +1294,7 @@ bool CommandHandlerClass::setTBORDERMAX(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getTBORDERMIN(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getTBORDERMIN(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение нижней границы трансформатора
 {
   if(parser.argsCount() < 1)
     return false;  
@@ -1311,7 +1310,7 @@ bool CommandHandlerClass::getTBORDERMIN(const char* commandPassed, const Command
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setTBORDERMIN(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setTBORDERMIN(CommandParser& parser, Stream* pStream) // установка нижней границы трансформатора
 {
   if(parser.argsCount() < 2)
     return false;
@@ -1329,10 +1328,12 @@ bool CommandHandlerClass::setTBORDERMIN(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getTBORDERS(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getTBORDERS(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение границ трансформатора
 {
   if(parser.argsCount() < 1)
+  {
     return false;  
+  }
 
 
   pStream->print(CORE_COMMAND_ANSWER_OK);
@@ -1348,7 +1349,7 @@ bool CommandHandlerClass::getTBORDERS(const char* commandPassed, const CommandPa
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setTBORDERS(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setTBORDERS(CommandParser& parser, Stream* pStream) // установка границ трансформатора
 {
   if(parser.argsCount() < 3)
   {
@@ -1371,7 +1372,7 @@ bool CommandHandlerClass::setTBORDERS(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение дельты импульсов
 {
   if(parser.argsCount() < 1)
   {
@@ -1389,7 +1390,7 @@ bool CommandHandlerClass::getDELTA(const char* commandPassed, const CommandParse
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream) // установка дельты импульсов
 {
   if(parser.argsCount() < 2)
   {
@@ -1410,7 +1411,7 @@ bool CommandHandlerClass::setDELTA(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getASUTPFLAGS(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getASUTPFLAGS(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение флагов АСУ ТП
 {
   if(parser.argsCount() < 1)
   {
@@ -1428,7 +1429,7 @@ bool CommandHandlerClass::getASUTPFLAGS(const char* commandPassed, const Command
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setASUTPFLAGS(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setASUTPFLAGS(CommandParser& parser, Stream* pStream) // установка флагов АСУ ТП
 {
 
   if(parser.argsCount() < 2)
@@ -1450,7 +1451,7 @@ bool CommandHandlerClass::setASUTPFLAGS(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение кол-ва импульсов
 {
   if(parser.argsCount() < 1)
   {
@@ -1468,7 +1469,7 @@ bool CommandHandlerClass::getPULSES(const char* commandPassed, const CommandPars
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream) // установка кол-ва импульсов
 {
 
   if(parser.argsCount() < 2)
@@ -1490,7 +1491,7 @@ bool CommandHandlerClass::setPULSES(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение максимального моторесурса
 {
   if(parser.argsCount() < 1)
   {
@@ -1508,7 +1509,7 @@ bool CommandHandlerClass::getMOTORESOURCE_MAX(const char* commandPassed, const C
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pStream) // установка максимального моторесурса
 {
 
   if(parser.argsCount() < 2)
@@ -1530,7 +1531,7 @@ bool CommandHandlerClass::setMOTORESOURCE_MAX(CommandParser& parser, Stream* pSt
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getRLENGTH(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getRLENGTH(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение величины перемещения привода
 {
   if(parser.argsCount() < 1)
   {
@@ -1548,7 +1549,7 @@ bool CommandHandlerClass::getRLENGTH(const char* commandPassed, const CommandPar
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setRLENGTH(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setRLENGTH(CommandParser& parser, Stream* pStream) // установка величины перемещения привода
 {
   if(parser.argsCount() < 2)
   {
@@ -1569,7 +1570,7 @@ bool CommandHandlerClass::setRLENGTH(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение текущего моторесурса
 {
   if(parser.argsCount() < 1)
   {
@@ -1587,7 +1588,7 @@ bool CommandHandlerClass::getMOTORESOURCE_CURRENT(const char* commandPassed, con
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream* pStream) // установка текущего моторесурса
 {
   if(parser.argsCount() < 2)
   {
@@ -1608,7 +1609,7 @@ bool CommandHandlerClass::setMOTORESOURCE_CURRENT(CommandParser& parser, Stream*
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getPIN(const char* commandPassed, const CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::getPIN(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение состояния входа
 {
   if(parser.argsCount() < 2)
   {
@@ -1629,7 +1630,7 @@ bool CommandHandlerClass::getPIN(const char* commandPassed, const CommandParser&
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setPIN(CommandParser& parser, Stream* pStream)
+bool CommandHandlerClass::setPIN(CommandParser& parser, Stream* pStream) // установка состояния выхода
 {
 
   if(parser.argsCount() < 3)
@@ -1655,19 +1656,19 @@ bool CommandHandlerClass::setPIN(CommandParser& parser, Stream* pStream)
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int16_t CommandHandlerClass::getPinState(uint8_t pin)
+int16_t CommandHandlerClass::getPinState(uint8_t pin) // получение состояния входа
 {
   return digitalRead(pin);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int CommandHandlerClass::getFreeMemory()
+int CommandHandlerClass::getFreeMemory() // получение свободной оперативной памяти
 {
     char top = 't';
     return &top - reinterpret_cast<char*>(sbrk(0));
 
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getFREERAM(const char* commandPassed, Stream* pStream)
+bool CommandHandlerClass::getFREERAM(const char* commandPassed, Stream* pStream) // получение свободной оперативной памяти
 {
   if(commandPassed)
   {
@@ -1682,7 +1683,7 @@ bool CommandHandlerClass::getFREERAM(const char* commandPassed, Stream* pStream)
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::setDATETIME(const char* param)
+bool CommandHandlerClass::setDATETIME(const char* param) // установка даты/времени
 {
     // разбираем параметр на составные части
     int8_t day = 0;
@@ -1770,7 +1771,7 @@ bool CommandHandlerClass::setDATETIME(const char* param)
  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void CommandHandlerClass::setCurrentDateTime(uint8_t day, uint8_t month, uint16_t year, uint8_t hour, uint8_t minute, uint8_t second)
+void CommandHandlerClass::setCurrentDateTime(uint8_t day, uint8_t month, uint16_t year, uint8_t hour, uint8_t minute, uint8_t second) // установка даты/времени
 {
    // вычисляем день недели
     int16_t dow;
@@ -1791,7 +1792,7 @@ void CommandHandlerClass::setCurrentDateTime(uint8_t day, uint8_t month, uint16_
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::getDATETIME(const char* commandPassed, Stream* pStream)
+bool CommandHandlerClass::getDATETIME(const char* commandPassed, Stream* pStream) // получение даты/времени
 {
   // запросили получение времени/даты
 
@@ -1809,7 +1810,7 @@ bool CommandHandlerClass::getDATETIME(const char* commandPassed, Stream* pStream
   return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool CommandHandlerClass::printBackSETResult(bool isOK, const char* command, Stream* pStream)
+bool CommandHandlerClass::printBackSETResult(bool isOK, const char* command, Stream* pStream) // печать ответа на команду
 {
   if(isOK)
     pStream->print(CORE_COMMAND_ANSWER_OK);

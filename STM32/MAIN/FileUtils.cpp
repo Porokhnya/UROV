@@ -18,7 +18,7 @@ bool SDInit::sdInitResult = false;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FileUtils
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void setFileDateTime(uint16_t* date, uint16_t* time) 
+void setFileDateTime(uint16_t* date, uint16_t* time) // установка даты и времени файла
 {
   DS3231Time tm = RealtimeClock.getTime();
 
@@ -29,7 +29,7 @@ void setFileDateTime(uint16_t* date, uint16_t* time)
   *time = FAT_TIME(tm.hour, tm. minute, tm. second);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool FileUtils::isEthalonExists(uint8_t channel, bool isUpMove)
+bool FileUtils::isEthalonExists(uint8_t channel, bool isUpMove) // проверка, существует ли файл эталона
 {
   if(!SDInit::sdInitResult)
   {
@@ -54,7 +54,7 @@ bool FileUtils::isEthalonExists(uint8_t channel, bool isUpMove)
    return SD_CARD.exists(fileName.c_str());
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void FileUtils::saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list)
+void FileUtils::saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list) // сохранение эталона в файл
 {
   if(!SDInit::sdInitResult)
   {
@@ -101,7 +101,7 @@ void FileUtils::saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& li
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void FileUtils::deleteFile(const String& fileName)
+void FileUtils::deleteFile(const String& fileName) // удаление файла
 {
   if(!SDInit::sdInitResult)
   {
@@ -111,7 +111,7 @@ void FileUtils::deleteFile(const String& fileName)
   SD_CARD.remove(fileName.c_str());
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-uint32_t FileUtils::getFileSize(const String& fileName)
+uint32_t FileUtils::getFileSize(const String& fileName) // получение размера файла
 {
   if(!SDInit::sdInitResult)
   {
@@ -131,7 +131,7 @@ uint32_t FileUtils::getFileSize(const String& fileName)
   return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int FileUtils::CountFiles(const String& dirName)
+int FileUtils::CountFiles(const String& dirName) // кол-во файлов в папке
 {
   if(!SDInit::sdInitResult)
   {
@@ -161,12 +161,12 @@ int FileUtils::CountFiles(const String& dirName)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void FileUtils::SendToStream(Stream& s, const String& fileName)
+void FileUtils::SendToStream(Stream& s, const String& fileName) // вывод содержимого файла в поток
 {
   FileUtils::SendToStream(&s,fileName);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void FileUtils::SendToStream(Stream* s, const String& fileName)
+void FileUtils::SendToStream(Stream* s, const String& fileName) // вывод содержимого файла в поток
 {
   if(!SDInit::sdInitResult)
   {
@@ -201,7 +201,7 @@ void FileUtils::SendToStream(Stream* s, const String& fileName)
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-String FileUtils::getFileName(SdFile &f)
+String FileUtils::getFileName(SdFile &f) // получение имени файла
 {
     PAUSE_ADC; // останавливаем АЦП
   
@@ -210,7 +210,7 @@ String FileUtils::getFileName(SdFile &f)
     return nameBuff;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void FileUtils::printFilesNames(const String& dirName, bool recursive, Stream* outStream)
+void FileUtils::printFilesNames(const String& dirName, bool recursive, Stream* outStream) // вывод имён файлов в поток
 {  
   if(!SDInit::sdInitResult)
   {
@@ -259,7 +259,7 @@ void FileUtils::printFilesNames(const String& dirName, bool recursive, Stream* o
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // SDInit
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SDInit::InitSD()
+bool SDInit::InitSD() // инициализация SD
 {
 #ifndef _SD_OFF
 
@@ -305,7 +305,7 @@ bool SDInit::InitSD()
 #endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void showSDStats(const SDSpeedResults& info, Stream* showIn)
+void showSDStats(const SDSpeedResults& info, Stream* showIn) // вывод в поток статистики по SD
 {
   if(showIn == NULL)
   {

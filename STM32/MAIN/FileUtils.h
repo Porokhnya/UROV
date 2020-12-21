@@ -44,15 +44,15 @@ class FileUtils
 {
   public:
 
-    static int CountFiles(const String& dirName);
-    static void SendToStream(Stream* s, const String& fileName);
-    static void SendToStream(Stream& s, const String& fileName);
-    static void printFilesNames(const String& dirName, bool recursive, Stream* outStream);
-    static String getFileName(SdFile &f);
-    static void deleteFile(const String& fileName);
-    static uint32_t getFileSize(const String& fileName);
-    static void saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list);
-    static bool isEthalonExists(uint8_t channel, bool isUpMove);
+    static int CountFiles(const String& dirName); // кол-во файлов в папке
+    static void SendToStream(Stream* s, const String& fileName); // вывод файла в поток
+    static void SendToStream(Stream& s, const String& fileName); // вывод файла в поток
+    static void printFilesNames(const String& dirName, bool recursive, Stream* outStream); // вывод имён файлов в поток
+    static String getFileName(SdFile &f); // получение имени файла
+    static void deleteFile(const String& fileName); // удаление файла
+    static uint32_t getFileSize(const String& fileName); // получение размера файла
+    static void saveEthalon(uint8_t channel, bool isUpMove, Vector<uint32_t>& list); // сохранение эталона в файл
+    static bool isEthalonExists(uint8_t channel, bool isUpMove); // проверка на существование эталона
   
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

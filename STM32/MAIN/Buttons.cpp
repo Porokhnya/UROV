@@ -4,32 +4,36 @@
 #include "CONFIG.h"
 #include "ADCSampler.h"
 //--------------------------------------------------------------------------------------------------
-ButtonsList Buttons;
+ButtonsList Buttons; // список кнопок
 //--------------------------------------------------------------------------------------------------
 ButtonsList::ButtonsList()
 {
-  inited = false;
+  inited = false; // флаг инициализации
 }
 //--------------------------------------------------------------------------------------------------
-void ButtonsList::begin()
+void ButtonsList::begin() // начинаем работу
 {
+  // инициализируем кнопки
   redButton.begin(BUTTON_RED);
   blueButton.begin(BUTTON_BLUE);
   yellowButton.begin(BUTTON_YELLOW);
 
-  inited = true;
+  inited = true; // устанавливаем флаг инициализации
 }
 //--------------------------------------------------------------------------------------------------
-void ButtonsList::update()
+void ButtonsList::update() // обновляем внутреннее состояние
 {
-  if(!inited)
+  if(!inited) // возврат, если не инициализированы
+  {
     return;
-    
+  }
+
+  // обновляем кнопки
   redButton.update();
   blueButton.update();
   yellowButton.update();
 
-  if(yellowButton.isClicked())
+  if(yellowButton.isClicked()) // если кликнута жёлтая кнопка
   {
     DBGLN(F("YELLOW BUTTON CLICKED!"));
     Feedback.testDiode(false); // гасим светодиод ТЕСТ
@@ -46,12 +50,12 @@ void ButtonsList::update()
     
   }
 
-  if(redButton.isClicked())
+  if(redButton.isClicked()) // если кликнута красная кнопка
   {
     DBGLN(F("RED BUTTON CLICKED!"));
   }
 
-  if(blueButton.isClicked())
+  if(blueButton.isClicked()) // если кликнута синяя кнопка
   {
     DBGLN(F("BLUE BUTTON CLICKED!"));
   }

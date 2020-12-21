@@ -4,17 +4,19 @@
 #include "Feedback.h"
 #include "Settings.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ADCStopper::ADCStopper()
+ADCStopper::ADCStopper() // конструктор
 {
   adcSampler.pause(); // останавливаем АЦП
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ADCStopper::~ADCStopper()
+ADCStopper::~ADCStopper() // деструктор
 {
   adcSampler.resume(); // запускаем АЦП
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ADCSampler adcSampler;
+ADCSampler adcSampler; // обработчик АЦП
+
+// переменные настроек АЦП
 static ADC_HandleTypeDef hadc1;
 static DMA_HandleTypeDef hdma_adc1;
 static TIM_HandleTypeDef htim3 = {0};
@@ -149,7 +151,7 @@ DBGLN("MX_ADC1_Init START.");
 DBGLN("MX_ADC1_Init END.");
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MX_TIM3_Init(void)
+void MX_TIM3_Init(void) // настраиваем таймер 3
 {
   DBGLN("MX_TIM3_Init START.");
   
@@ -204,21 +206,23 @@ extern "C"  void TIM3_IRQHandler(void) // обработчик тика тайм
 	adcSampler.handleInterrupt();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#ifndef _CURRENT_COLLECT_OFF
+#ifndef _CURRENT_COLLECT_OFF // работаем со сбором информации по току
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// списки превью тока
 volatile uint16_t avgPreviewSamplesDone = 0; // кол-во собранных семплов для усреднения
 // списки для усреднения
 volatile uint16_t avgPreviewChannel1[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgPreviewChannel2[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgPreviewChannel3[CURRENT_AVG_SAMPLES] = {0};
 
+// списки тока
 volatile uint16_t avgCurrentSamplesDone = 0; // кол-во собранных семплов для усреднения
 // списки для усреднения
 volatile uint16_t avgCurrentChannel1[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgCurrentChannel2[CURRENT_AVG_SAMPLES] = {0};
 volatile uint16_t avgCurrentChannel3[CURRENT_AVG_SAMPLES] = {0};
 
-
+// списки пиков тока
 volatile uint16_t currentPeakTimer = 0;
 volatile uint16_t avgCurrentPeakSamplesDone = 0; // кол-во собранных семплов для усреднения
 // списки для усреднения
@@ -229,31 +233,33 @@ volatile uint16_t avgCurrentPeakChannel3[CURRENT_AVG_SAMPLES] = {0};
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // _CURRENT_COLLECT_OFF
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ADCSampler::ADCSampler()
+ADCSampler::ADCSampler() // констуктор
 {
-  dataReady = false;
-  filledBufferIndex = 0;
-  workingBufferIndex = 0;
-  countOfSamples = 0;
-  currentPreviewOscillTimer = 0;
-  canCollectCurrentPreviewData = true;
-  _stopped = false;
+  dataReady = false; // данные не готовы
+  filledBufferIndex = 0; // индекс заполненного буфера
+  workingBufferIndex = 0; // индекс рабочего буфера
+  countOfSamples = 0; // кол-во семплов
+  currentPreviewOscillTimer = 0; // таймер превью тока
+  canCollectCurrentPreviewData = true; // флаг, что можем собирать превью тока
+  _stopped = false; // флаг остановки
 
-  currentPeakDataReady = false;
+  currentPeakDataReady = false; // флаг готовности списка по пикам тока
+  
   #ifndef _CURRENT_COLLECT_OFF
-  currentPeakTimer = 0;
+  currentPeakTimer = 0; // таймер пиков тока
   #endif // _CURRENT_COLLECT_OFF
 
-  canCollectCurrent = false;
-  currentTimer = 0;
+  canCollectCurrent = false; // флаг сбора информации по токам
+  currentTimer = 0; // таймер сбора информации по токам
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::startCollectCurrent()
+void ADCSampler::startCollectCurrent() // начинает сбор информации по току
 {
 #ifndef _ADC_OFF
   
-  noInterrupts();
-  
+  noInterrupts(); // выключаем прерывания
+
+  // очищаем списки
   currentTimes.clear();
   currentChannel1.clear();
   currentChannel2.clear();
@@ -269,25 +275,25 @@ void ADCSampler::startCollectCurrent()
     avgCurrentSamplesDone = avgPreviewSamplesDone;
   #endif
 
-  canCollectCurrent = true;
+  canCollectCurrent = true; // говорим, что можем собирать информацию по току
   
-  interrupts();
+  interrupts(); // включаем прерывания
 #endif  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::stopCollectCurrent()
+void ADCSampler::stopCollectCurrent() // выключаем сбор информации по току
 {
   noInterrupts();
     canCollectCurrent = false;
   interrupts();  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool ADCSampler::currentPeakDataAvailable()
+bool ADCSampler::currentPeakDataAvailable() // проверяет, готовы ли данные по пикам тока
 {
   return currentPeakDataReady;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
+void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& avg3) // возвращает данные по пикам тока
 {
   
   avg1 = avg2 = avg3 = 0;
@@ -296,37 +302,40 @@ void ADCSampler::getCurrentPeakData(uint16_t& avg1, uint16_t& avg2, uint16_t& av
   
   PAUSE_ADC; // останавливаем АЦП на время
   
-  if(!currentPeakDataReady)
+  if(!currentPeakDataReady) // если данные не готовы, то
   {
-    return;
+    return; // возврат
   }
 
+  // получаем средние по каналам
   avg1 = currentPeakBuffers[currentPeakBufferIndex][0];
   avg2 = currentPeakBuffers[currentPeakBufferIndex][1];
   avg3 = currentPeakBuffers[currentPeakBufferIndex][2];
 #endif // _ADC_OFF
 
-  currentPeakDataReady = false;
+  currentPeakDataReady = false; // сбрасываем флаг готовности данных
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::setLowBorder(uint32_t val) 
+void ADCSampler::setLowBorder(uint32_t val) // установка нижней границы токовых трансформаторов
 {
   _compare_Low = val; 
 } 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::setHighBorder(uint32_t val) 
+void ADCSampler::setHighBorder(uint32_t val) // установка верхней границы токовых трансформаторов
 {
   _compare_High = val; 
 } 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::begin()
+void ADCSampler::begin() // начало работы
 {  
 DBGLN("ADCSampler::begin START.");  
 
+  // устанавливаем флаги
   _stopped = false;
   dataReady = false;
 
 
+  // инициализируем списки по токам
   currentPreviewData.init();
   currentPreviewOscillTimer = 0;//micros();
   canCollectCurrentPreviewData = true;
@@ -341,7 +350,8 @@ DBGLN("ADCSampler::begin START.");
   
   countOfSamples = 0;  
   memset(adcBuffer,0,sizeof(adcBuffer));
-  
+
+ // настраиваем АЦП и таймер
  MX_DMA_Init();
  MX_ADC1_Init();
  MX_TIM3_Init();  
@@ -360,44 +370,47 @@ DBGLN("ADCSampler::begin START.");
 DBGLN("ADCSampler::begin END.");   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::end()
+void ADCSampler::end() // окончание работы
 {
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// помещение данных в списки усреднения
 bool ADCSampler::putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3,  uint16_t raw1, uint16_t raw2, uint16_t raw3)
 {
 #ifndef _ADC_OFF
   
   #ifndef _CURRENT_COLLECT_OFF
-  
+
+      // размещаем данные в списки по каналам
       arr1[samplesCounter] = raw1;
       arr2[samplesCounter] = raw2;
       arr3[samplesCounter] = raw3;
 
-      samplesCounter++;
+      samplesCounter++; // увеличиваем количество сэмплов
       
-      if(samplesCounter >= CURRENT_AVG_SAMPLES)
+      if(samplesCounter >= CURRENT_AVG_SAMPLES) // если набрали нужное количество сэмплов, то
       {
-          samplesCounter = 0;
-         // HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_5);
-          return true;
+          samplesCounter = 0; // сбрасываем счётчик
+          return true; // возврат, говорим, что список собран
       }
   #endif // #ifndef _CURRENT_COLLECT_OFF      
 
 #endif // #ifndef _ADC_OFF
 
- return false;     
+ return false; // возврат, говорим, что список ещё не собран
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// получаем средние значения из списков
 void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t& avg1, uint16_t& avg2, uint16_t& avg3)
 {
-  avg1 = avg2 = avg3 = 0;
+  avg1 = avg2 = avg3 = 0; // обнуляем результат
 
 #ifndef _ADC_OFF  
 
   #ifndef _CURRENT_COLLECT_OFF  
 
+  // промежуточные переменные
   uint32_t chMin1 = 0xFFFFFFFF;
   uint32_t chMin2 = 0xFFFFFFFF;
   uint32_t chMin3 = 0xFFFFFFFF;
@@ -406,7 +419,7 @@ void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volati
   uint32_t chMax2 = 0;
   uint32_t chMax3 = 0;
   
-  for(uint16_t i=0;i<CURRENT_AVG_SAMPLES;i++)
+  for(uint16_t i=0;i<CURRENT_AVG_SAMPLES;i++) // получаем размах по каналам
   {
     chMin1 = min(chMin1,arr1[i]);
     chMin2 = min(chMin2,arr2[i]);
@@ -432,6 +445,7 @@ void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volati
     chMin3 = chMax3;
   }
 
+  // вычисляем среднее по размаху
   avg1 = chMax1/CURRENT_AVG_SAMPLES - chMin1/CURRENT_AVG_SAMPLES;
   avg2 = chMax2/CURRENT_AVG_SAMPLES - chMin2/CURRENT_AVG_SAMPLES;
   avg3 = chMax3/CURRENT_AVG_SAMPLES - chMin3/CURRENT_AVG_SAMPLES;
@@ -440,14 +454,14 @@ void ADCSampler::getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volati
 #endif // #ifndef _ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::stopCollectPreview()
+void ADCSampler::stopCollectPreview() // останавливаем запись превью токов
 {
   noInterrupts();
       canCollectCurrentPreviewData = false;  
   interrupts();     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::startCollectPreview()
+void ADCSampler::startCollectPreview() // начинаем запись превью токов
 {
 #ifndef _ADC_OFF
   
@@ -463,7 +477,7 @@ void ADCSampler::startCollectPreview()
 #endif // #ifndef _ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withNoInterrupts)
+CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withNoInterrupts) // возвращаем список токов
 {
     pause(withNoInterrupts);
 
@@ -509,7 +523,7 @@ CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withN
   return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CurrentCircularBuffer CurrentCircularBuffer::normalize()
+CurrentCircularBuffer CurrentCircularBuffer::normalize() // нормализуем кольцевой буфер
 {
   // вот тут надо скопировать буфер так, чтобы учитывать индекс первой записи
   CurrentCircularBuffer result;
@@ -549,10 +563,8 @@ CurrentCircularBuffer CurrentCircularBuffer::normalize()
   return result;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::handleInterrupt()
-{
-  // код обработки данных, поступающих с АЦП
-  
+void ADCSampler::handleInterrupt() // обработчик данных, поступивших с АЦП
+{  
   if(_stopped) // остановлены
   {
     return;
@@ -636,7 +648,7 @@ void ADCSampler::handleInterrupt()
         // можем ли мы собирать превью в кольцевой буфер?
         if(canCollectCurrentPreviewData)
         {
-          if(/*micros() - */++currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
+          if(++currentPreviewOscillTimer >= CURRENT_TIMER_PERIOD)
           {
             if(putAVG(avgPreviewSamplesDone, avgPreviewChannel1, avgPreviewChannel2, avgPreviewChannel3, raw1,raw2,raw3))
             {
@@ -675,7 +687,7 @@ void ADCSampler::handleInterrupt()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::pause(bool withNoInterrupts)
+void ADCSampler::pause(bool withNoInterrupts) // пауза работы с АЦП
 {
   if(withNoInterrupts)
   {
@@ -709,7 +721,7 @@ void ADCSampler::pause(bool withNoInterrupts)
   HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::resume(bool withNoInterrupts)
+void ADCSampler::resume(bool withNoInterrupts) // возобновление работы с АЦП
 {
  if(withNoInterrupts)
   {
@@ -743,7 +755,7 @@ void ADCSampler::resume(bool withNoInterrupts)
  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool ADCSampler::available()
+bool ADCSampler::available() // возвращает флаг готовности данных
 {
   return dataReady;
 }
@@ -754,7 +766,7 @@ uint16_t* ADCSampler::getADCBuffer(int *bufferLength)
   return adcBuffer[filledBufferIndex];
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ADCSampler::reset()
+void ADCSampler::reset() // сброс флага готовности данных
 {
   dataReady = false;
 }

@@ -1,4 +1,5 @@
 /**
+// класс работы с EEPROM-памятью
 
 AT24CX.cpp
 Library for using the EEPROM AT24C32/64

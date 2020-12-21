@@ -25,7 +25,7 @@ struct CurrentOscillData // данные по току
   }  
 
 
-  void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
+  void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3) // добавляет данные в списки
   {
     times.push_back(tm);
     data1.push_back(channel1);
@@ -42,7 +42,7 @@ struct CurrentOscillData // данные по току
   UInt16Vector data2;
   UInt16Vector data3;
 
-  CurrentOscillData& operator=(const CurrentOscillData& rhs)
+  CurrentOscillData& operator=(const CurrentOscillData& rhs) // оператор присваивания
   {
     if(this == &rhs)
     {
@@ -57,7 +57,7 @@ struct CurrentOscillData // данные по току
       return *this;
   } 
 
-  uint32_t earlierRecordTime()
+  uint32_t earlierRecordTime() // время самой ранней записи
   {
     if(times.size() > 0)
     {
@@ -102,7 +102,7 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
 
   CurrentCircularBuffer normalize();
 
-  void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3)
+  void add(uint32_t tm, uint16_t channel1, uint16_t channel2, uint16_t channel3) // добавляет данные в списки
   {
       // теперь пишем по нужному адресу
     if(recordsCount >= CURRENT_LIST_SIZE)
@@ -160,7 +160,7 @@ struct CurrentCircularBuffer // кольцевой буфер данных по 
     volatile uint16_t data2[CURRENT_LIST_SIZE];
     volatile uint16_t data3[CURRENT_LIST_SIZE];
 
-  CurrentCircularBuffer& operator=(const CurrentCircularBuffer& rhs)
+  CurrentCircularBuffer& operator=(const CurrentCircularBuffer& rhs) // оператор присваивания
   {
     
     if(this == &rhs)
@@ -184,18 +184,19 @@ interrupts();
 
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class ADCSampler 
+class ADCSampler // класс обработки данных с АЦП
 {
   private:
 
-    volatile bool _stopped;
+    volatile bool _stopped; // флаг остановки
   
   public:
-    ADCSampler();
-    void begin();
-    void end();
-    void handleInterrupt();
-    bool available();
+  
+    ADCSampler(); // конструктор
+    void begin(); // начинаем работу
+    void end(); // заканчиваем работу
+    void handleInterrupt(); // обрабатываем данные с АЦП
+    bool available(); // признак готовности данных
 
     // установка порогов компаратора
     void setLowBorder(uint32_t val);
@@ -208,8 +209,8 @@ class ADCSampler
 
     void reset(); // сбрасывает признак готовности данных
 
-    void pause(bool withNoInterrupts=true);
-    void resume(bool withNoInterrupts=true);
+    void pause(bool withNoInterrupts=true); // пауза
+    void resume(bool withNoInterrupts=true); // возобновление работы
 
     // разрешает или запрещает собирать данные превью по току
     void stopCollectPreview();
@@ -233,11 +234,13 @@ class ADCSampler
   private:
 
 
+    // помещение данных в списки усреднения
     bool putAVG(volatile uint16_t& samplesCounter, volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t raw1, uint16_t raw2, uint16_t raw3);
+    // получение среднего из списков усреднения
     void getAVG(volatile uint16_t* arr1, volatile uint16_t* arr2, volatile uint16_t* arr3, uint16_t& avg1, uint16_t& avg2, uint16_t& avg3);
     
-    volatile bool dataReady;
-    uint16_t adcBuffer[NUMBER_OF_BUFFERS][ADC_BUFFER_SIZE];
+    volatile bool dataReady; // флаг готовности данных
+    uint16_t adcBuffer[NUMBER_OF_BUFFERS][ADC_BUFFER_SIZE]; // служебные буфера с данными АЦП
 
     volatile uint32_t _compare_High = TRANSFORMER_HIGH_DEFAULT_BORDER;                                  // Верхний порог компаратора АЦП
     volatile uint32_t _compare_Low = TRANSFORMER_LOW_DEFAULT_BORDER;                                   // Нижний порог компаратора АЦП
@@ -248,9 +251,9 @@ class ADCSampler
     volatile uint16_t countOfSamples; // кол-во проделанных измерений
 
 
-    volatile bool canCollectCurrentPreviewData;
-    CurrentCircularBuffer currentPreviewData;
-    volatile uint32_t currentPreviewOscillTimer;
+    volatile bool canCollectCurrentPreviewData; // флаг сбора превью по току
+    CurrentCircularBuffer currentPreviewData; // данные превью по току
+    volatile uint32_t currentPreviewOscillTimer; // таймер превью по току
 
 
     // усреднённые данные по току на каналах
@@ -259,20 +262,20 @@ class ADCSampler
     volatile bool currentPeakDataReady;
 
 
-    volatile bool canCollectCurrent;
-    volatile uint32_t currentTimer;
-    UInt32Vector currentTimes;
-    UInt16Vector currentChannel1;
-    UInt16Vector currentChannel2;
-    UInt16Vector currentChannel3;
+    volatile bool canCollectCurrent; // флаг сбора информации по току
+    volatile uint32_t currentTimer; // таймер по току
+    UInt32Vector currentTimes; // список времён получения данных по току
+    UInt16Vector currentChannel1; // данные по току, канал №1
+    UInt16Vector currentChannel2; // данные по току, канал №2
+    UInt16Vector currentChannel3; // данные по току, канал №3
     
 
 
 };
 
-extern ADCSampler adcSampler;
+extern ADCSampler adcSampler; // экземпляр класса работы с АЦП
 
-class ADCStopper
+class ADCStopper // класс-хэлпер для удобной приостановки/возобновления работы с АЦП
 {
   public:
     ADCStopper();
@@ -280,4 +283,5 @@ class ADCStopper
   
 };
 
+// определения для автоматической остановки АЦП в зоне видимости, и возобновление работы с АЦП при выходе из зоны видимости
 #define PAUSE_ADC ADCStopper _stopper

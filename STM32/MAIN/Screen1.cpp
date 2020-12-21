@@ -28,7 +28,7 @@ uint16_t channel1Current = 0; // ток канала 1
 uint16_t channel2Current = 0; // ток канала 2
 uint16_t channel3Current = 0; // ток канала 3
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void loopADC()
+void loopADC() // обработчик данных с АЦП
 {
 #ifndef _ADC_OFF
 
@@ -213,7 +213,7 @@ void loopADC()
 #endif // !_ADC_OFF
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Screen1::Screen1() : AbstractTFTScreen("Main")
+Screen1::Screen1() : AbstractTFTScreen("Main") // главный экран
 {
   oldsecond = 0;
   mainScreen = this;
@@ -228,7 +228,7 @@ Screen1::Screen1() : AbstractTFTScreen("Main")
   oldChannel1Current = oldChannel2Current = oldChannel3Current = 0xFFFF;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawSDSpeedInfo(TFTMenu* menu)
+void Screen1::drawSDSpeedInfo(TFTMenu* menu) // рисует информацию по SD
 {
     if(!isActive())
     {
@@ -293,7 +293,7 @@ void Screen1::drawSDSpeedInfo(TFTMenu* menu)
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawRS485State(TFTMenu* menu)
+void Screen1::drawRS485State(TFTMenu* menu) // рисует состояние RS-485
 {
     if(!isActive())
     {
@@ -460,7 +460,7 @@ void Screen1::onDeactivate()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::onActivate()
+void Screen1::onActivate() // активизируемся
 {
 #ifndef _ADC_OFF
   canLoopADC = true;
@@ -478,7 +478,7 @@ void Screen1::onActivate()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::doSetup(TFTMenu* menu)
+void Screen1::doSetup(TFTMenu* menu) // настройка экрана
 {
 #ifndef _DISABLE_MAIN_SCREEN_BUTTONS
 	screenButtons->setSymbolFont(VARIOUS_SYMBOLS_32x32);
@@ -502,7 +502,7 @@ void Screen1::doSetup(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawTime(TFTMenu* menu)
+void Screen1::drawTime(TFTMenu* menu) // рисует время
 {
 
 #ifndef _DISABLE_DRAW_TIME
@@ -535,7 +535,7 @@ void Screen1::drawTime(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawCurrent(TFTMenu* menu)
+void Screen1::drawCurrent(TFTMenu* menu) // рисует ток
 {
 
   if(!isActive())
@@ -604,7 +604,7 @@ void Screen1::drawCurrent(TFTMenu* menu)
   }    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::doUpdate(TFTMenu* menu)
+void Screen1::doUpdate(TFTMenu* menu) // обновляемся
 {
 
 
@@ -630,7 +630,7 @@ void Screen1::doUpdate(TFTMenu* menu)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
+uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount) // ищем точку синхронизации графиков
 {
  //Тут синхронизируем график, ища нужную нам точку, с которой мы его выводим
   const uint16_t lowBorder = 100; // нижняя граница, по которой ищем начало
@@ -699,7 +699,7 @@ uint16_t Screen1::getSynchroPoint(uint16_t* points, uint16_t pointsCount)
  return ( (&(points[iterator]) - points) ); 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint16_t* _points3, uint16_t pointsCount)
+void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint16_t* _points3, uint16_t pointsCount) // запрос на отрисовку графика
 {
   if(inDrawingChart)
   {
@@ -722,7 +722,7 @@ void Screen1::requestToDrawChart(uint16_t* _points1,   uint16_t* _points2,  uint
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::drawChart()
+void Screen1::drawChart() // отрисовка графика
 {
 
   if(!isActive() || !canDrawChart || inDrawingChart)
@@ -757,7 +757,7 @@ void Screen1::drawChart()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::doDraw(TFTMenu* menu)
+void Screen1::doDraw(TFTMenu* menu) // рисуемся
 {
 //  DBGLN(F("MainScreen::doDraw()"));
   
@@ -788,7 +788,7 @@ void Screen1::doDraw(TFTMenu* menu)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Screen1::onButtonPressed(TFTMenu* menu, int pressedButton)
+void Screen1::onButtonPressed(TFTMenu* menu, int pressedButton) // обработчик нажатия на экранную кнопку
 {
 #ifndef _DISABLE_MAIN_SCREEN_BUTTONS
   // обработчик нажатия на кнопку. Номера кнопок начинаются с 0 и идут в том порядке, в котором мы их добавляли
@@ -803,7 +803,7 @@ void Screen1::onButtonPressed(TFTMenu* menu, int pressedButton)
 #endif // !_DISABLE_MAIN_SCREEN_BUTTONS
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int Screen1::getFreeMemory()
+int Screen1::getFreeMemory() // получаем свободную память
 {
     char top = 't';
     return &top - reinterpret_cast<char*>(sbrk(0));
