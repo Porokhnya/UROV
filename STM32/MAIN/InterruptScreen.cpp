@@ -7,41 +7,43 @@ InterruptScreen* ScreenInterrupt = NULL;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 AbstractTFTScreen* InterruptScreen::create()
 {
-  if(ScreenInterrupt)
-    return ScreenInterrupt;
+  if(ScreenInterrupt) // если уже созданы, то
+  {
+    return ScreenInterrupt; // вернуть экземпляр
+  }
     
-  ScreenInterrupt = new InterruptScreen();
+  ScreenInterrupt = new InterruptScreen(); // создаём
 
   // назначаем обработчика прерываний по умолчанию - наш экран
   InterruptHandler.setSubscriber(ScreenInterrupt);
   
-  return ScreenInterrupt;
+  return ScreenInterrupt; // вернуть экземпляр
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT")
+InterruptScreen::InterruptScreen() : AbstractTFTScreen("INTERRUPT") // конструктор
 {
   startSeenTime = 0;
   timerDelta = 0;
   canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::onDeactivate()
+void InterruptScreen::onDeactivate() // деактивируемся
 {
     // после деактивирования нашего экрана мы опять можем принимать данные прерываний, чтобы показать новые графики
     canAcceptInterruptData = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult compareResult)
+void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult compareResult) // событие "Было срабатывание защиты"
 {
 
-  if(!canAcceptInterruptData)
+  if(!canAcceptInterruptData) // если не можем принимать данные, то
   {
     DBGLN("InterruptScreen::OnInterruptRaised - CAN'T ACCEPT INTERRUPT DATA!");
     
     // возобновляем обработчик прерываний
     InterruptHandler.resume();
     
-    return;
+    return; // возврат
   }
 
   // говорим, что до нового цикла мы не можем больше ничего принимать.
@@ -56,11 +58,12 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompa
   box.foreCompareColor = LGRAY;
   box.compareCaption = "-";
 
+  // смотрим результат сравнения с эталоном
   switch(compareResult)
   {
-    case COMPARE_RESULT_NoSourcePulses:
-    case COMPARE_RESULT_NoEthalonFound:
-    case COMPARE_RESULT_RodBroken:
+    case COMPARE_RESULT_NoSourcePulses: // нет импульсов
+    case COMPARE_RESULT_NoEthalonFound: // не найден эталон
+    case COMPARE_RESULT_RodBroken: // штанга поломана
 	{
 		box.compareColor = LGRAY;
 		box.foreCompareColor = BLACK;
@@ -68,7 +71,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompa
 	}
     break;
 
-    case COMPARE_RESULT_MatchEthalon:
+    case COMPARE_RESULT_MatchEthalon: // совпадение с эталоном
 	{
 		box.compareColor = GREEN;
 		box.foreCompareColor = BLACK;
@@ -76,7 +79,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompa
 	}
     break;
 
-  case COMPARE_RESULT_MismatchEthalon:
+  case COMPARE_RESULT_MismatchEthalon: // несовпадение с эталоном
 	{
 		box.compareColor = RED;
 		box.foreCompareColor = WHITE;
@@ -105,7 +108,7 @@ void InterruptScreen::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompa
  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::drawTime(TFTMenu* menu)
+void InterruptScreen::drawTime(TFTMenu* menu) // рисуем текущее время
 {
     DS3231Time tm = RealtimeClock.getTime();
 
@@ -123,12 +126,12 @@ void InterruptScreen::drawTime(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::doSetup(TFTMenu* menu)
+void InterruptScreen::doSetup(TFTMenu* menu) // настройка
 {
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::doUpdate(TFTMenu* menu)
+void InterruptScreen::doUpdate(TFTMenu* menu) // обновление состояния
 {
     uint32_t now = millis();
     uint32_t dT = now - timerDelta;
@@ -144,6 +147,7 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
       return;
     }
 
+    // работаем с моторесурсом
     bool canRedrawMotoresource = false;
     
     if(channelMotoresourcePercents >= (100 - MOTORESOURCE_BLINK_PERCENTS) )
@@ -151,11 +155,11 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
       // ресурс по системе на канале 1 исчерпан, надо мигать надписью
       motoresourceBlinkTimer += dT;
       
-      if(motoresourceBlinkTimer > MOTORESOURCE_BLINK_DURATION)
+      if(motoresourceBlinkTimer > MOTORESOURCE_BLINK_DURATION) // таймер мигания вышел
       { 
         motoresourceBlinkTimer -= MOTORESOURCE_BLINK_DURATION;
                
-        if(motoresourceLastFontColor == RED)
+        if(motoresourceLastFontColor == RED) // меняем цвет на другой
         {
           motoresourceLastFontColor = BLACK;
         }
@@ -168,15 +172,15 @@ void InterruptScreen::doUpdate(TFTMenu* menu)
       }
     }
 
-    if(canRedrawMotoresource)
+    if(canRedrawMotoresource) // если надо перерисовать моторесурс, то
     {
-      drawMotoresource(menu);
+      drawMotoresource(menu); // перерисовываем
     }
       
       
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::drawMotoresource(TFTMenu* menu)
+void InterruptScreen::drawMotoresource(TFTMenu* menu) // рисуем моторесурс
 {
 	DBGLN("Рисуем моторесурс...");
 
@@ -209,7 +213,7 @@ void InterruptScreen::drawMotoresource(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::computeMotoresource()
+void InterruptScreen::computeMotoresource() // вычисляем процент моторесурса от максимального
 {
   
   uint32_t channelResourceCurrent = Settings.getMotoresource();
@@ -221,7 +225,7 @@ void InterruptScreen::computeMotoresource()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::drawCompareResult(TFTMenu* menu)
+void InterruptScreen::drawCompareResult(TFTMenu* menu) // рисуем результат сравнения с эталоном
 {
   TFT_Class* dc = menu->getDC();
   dc->setFreeFont(TFT_SMALL_FONT);
@@ -247,7 +251,7 @@ void InterruptScreen::drawCompareResult(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::doDraw(TFTMenu* menu)
+void InterruptScreen::doDraw(TFTMenu* menu) // отрисовка на экране
 {
 	//Drawing::DrawChart(this, serie);
   Drawing::DrawChartFromList(this,InterruptData);
@@ -260,7 +264,7 @@ void InterruptScreen::doDraw(TFTMenu* menu)
   InterruptHandler.resume();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+void InterruptScreen::onButtonPressed(TFTMenu* menu, int pressedButton) // обработчик нажатия на экранную кнопку
 {
   // обработчик нажатия на кнопку. Номера кнопок начинаются с 0 и идут в том порядке, в котором мы их добавляли
  /*
