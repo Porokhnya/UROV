@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------------------
 #include "Debounce.h"
 //--------------------------------------------------------------------------------------------------
-Debounce::Debounce()
+Debounce::Debounce() // конструктор
 {
   pin = 0;
   debounceTimer = 0;
@@ -10,18 +10,20 @@ Debounce::Debounce()
   bounceInterval = 5;
 }
 //--------------------------------------------------------------------------------------------------
-void Debounce::begin(uint8_t _pin, uint16_t _bounceInterval, bool _pullup)
+void Debounce::begin(uint8_t _pin, uint16_t _bounceInterval, bool _pullup) // начинаем работу
 {
+  // сохраняем переданные насторйки
   pin = _pin;
   bounceInterval = _bounceInterval;
 
-  pinMode(pin, _pullup ? INPUT_PULLUP : INPUT);
-  pinState = lastPinState = digitalRead(pin);
+  pinMode(pin, _pullup ? INPUT_PULLUP : INPUT); // пин - на вход
+  
+  pinState = lastPinState = digitalRead(pin); // читаем состояние пина
 }
 //--------------------------------------------------------------------------------------------------
-void Debounce::update()
+void Debounce::update() // обновляем внутреннее состояние
 {
-  uint8_t nowState = digitalRead(pin);
+  uint8_t nowState = digitalRead(pin); // читаем состояние пина
 
   // если состояние кнопки изменилось - взводим таймер
   if (nowState != lastPinState) 
@@ -40,7 +42,7 @@ void Debounce::update()
     }
   }
 
-  lastPinState = nowState;     
+  lastPinState = nowState; // сохраняем последнее известное состояние пина
 }
 //--------------------------------------------------------------------------------------------------
 

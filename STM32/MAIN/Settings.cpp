@@ -6,8 +6,9 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SettingsClass Settings;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SettingsClass::SettingsClass()
+SettingsClass::SettingsClass() // конструктор
 {
+  // инициализируем все настройки по умолчанию
   eeprom = NULL;
   timer = DATA_MEASURE_THRESHOLD;
   
@@ -35,7 +36,7 @@ SettingsClass::SettingsClass()
 #endif
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-String SettingsClass::getUUID(const char* passedUUID)
+String SettingsClass::getUUID(const char* passedUUID) // возвращаем уникальный ID контроллера
 {
     String savedUUID;
 
@@ -43,13 +44,14 @@ String SettingsClass::getUUID(const char* passedUUID)
     {
       return savedUUID;
     }
-    
+
+    // читаем заголовки
     uint32_t addr = UUID_STORE_ADDRESS;
     uint8_t header1 = eeprom->read(addr); addr++;
     uint8_t header2 = eeprom->read(addr); addr++;
     uint8_t header3 = eeprom->read(addr); addr++;
 
-    if(!(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3))
+    if(!(header1 == RECORD_HEADER1 && header2 == RECORD_HEADER2 && header3 == RECORD_HEADER3)) // если заголовки плохие - то сохраняем переданный ID как уникальный
     {
       savedUUID = passedUUID;
 
@@ -89,7 +91,7 @@ String SettingsClass::getUUID(const char* passedUUID)
     return savedUUID;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write8(uint32_t addr, uint8_t val)
+void SettingsClass::write8(uint32_t addr, uint8_t val) // пишем один байт в память, с заголовками
 {
   if(!eeprom)
   {
@@ -105,7 +107,7 @@ void SettingsClass::write8(uint32_t addr, uint8_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write16(uint32_t addr, uint16_t val)
+void SettingsClass::write16(uint32_t addr, uint16_t val) // пишем два байта в память, с заголовками
 {
   if(!eeprom)
   {
@@ -121,7 +123,7 @@ void SettingsClass::write16(uint32_t addr, uint16_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::write32(uint32_t addr, uint32_t val)
+void SettingsClass::write32(uint32_t addr, uint32_t val) // пишем 4 байта в память, с заголовками
 {
   if(!eeprom)
   {
@@ -137,7 +139,7 @@ void SettingsClass::write32(uint32_t addr, uint32_t val)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read8(uint32_t addr, uint8_t& val)
+bool SettingsClass::read8(uint32_t addr, uint8_t& val) // читаем 1 байт из памяти
 {
   val = 0xFF;
   
@@ -146,16 +148,17 @@ bool SettingsClass::read8(uint32_t addr, uint8_t& val)
     return false;
   }
 
+  // читаем заголовки
   uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
 
-  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2) // если заголовки хорошие, то читаем сохранённое значение
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
-     return true;//(val != 0xFF);
+     return true;
   }
   #ifdef _SETTINGS_LOAD_DEBUG
   else
@@ -168,7 +171,7 @@ bool SettingsClass::read8(uint32_t addr, uint8_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read16(uint32_t addr, uint16_t& val)
+bool SettingsClass::read16(uint32_t addr, uint16_t& val) // читаем два байта из памяти
 {
   val = 0xFFFF;
   
@@ -177,12 +180,13 @@ bool SettingsClass::read16(uint32_t addr, uint16_t& val)
     return false;
   }
 
+  // читаем заголовки
   uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
 
-  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2) // если заголовки хорошие - читаем сохранённое значение
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
@@ -199,7 +203,7 @@ bool SettingsClass::read16(uint32_t addr, uint16_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool SettingsClass::read32(uint32_t addr, uint32_t& val)
+bool SettingsClass::read32(uint32_t addr, uint32_t& val) // читаем 4 байта из памяти
 {
   val = 0xFFFFFFFF;
   
@@ -208,12 +212,13 @@ bool SettingsClass::read32(uint32_t addr, uint32_t& val)
     return false;
   }
 
+  // читаем заголовки
   uint32_t readAddr = addr;
   uint8_t header1, header2;
   header1 = eeprom->read(readAddr);readAddr++;
   header2 = eeprom->read(readAddr);readAddr++;
 
-  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2)
+  if(RECORD_HEADER1 == header1 && RECORD_HEADER2 == header2) // если заголовки хорошие - читаем сохранённое значение
   {
      uint8_t* writePtr = (uint8_t*)&val;
      eeprom->read(readAddr,writePtr,sizeof(val));
@@ -230,7 +235,7 @@ bool SettingsClass::read32(uint32_t addr, uint32_t& val)
   return false;      
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::reloadSettings()
+void SettingsClass::reloadSettings() // перезагружаем настройки
 {
 
   if(eeprom)
@@ -324,7 +329,7 @@ void SettingsClass::reloadSettings()
   } // if(eeprom)  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::begin()
+void SettingsClass::begin() // начинаем работу
 {
   eeprom = new EEPROM_CLASS(Wire1);
   reloadSettings();
@@ -349,7 +354,7 @@ void SettingsClass::set200VRawVoltage(uint16_t raw)
   voltage200V.voltage = voltage200V.raw*(2.4 / 4096 * 100);    
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void SettingsClass::update()
+void SettingsClass::update() // обновляемся
 {
 #ifndef _CORE_TEMP_OFF
 
