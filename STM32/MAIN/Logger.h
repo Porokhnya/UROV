@@ -41,17 +41,17 @@ typedef enum
     
 } LogRecordTypes;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class LoggerClass
+class LoggerClass // класс записи логов на SD
 {
   public:
 
-    LoggerClass();
+    LoggerClass(); // конструктор
 
-    void write(uint8_t* data,size_t dataLength);
-    void pause();
-    void resume();
+    void write(uint8_t* data,size_t dataLength); // записывает данные в файл
+    void pause(); // пауза
+    void resume(); // возобновление рабты
 
-    String getCurrentLogFileName() { return logFileName; }
+    String getCurrentLogFileName() { return logFileName; } // возвращает имя текущего лог-файла
 
   private:
 
@@ -60,11 +60,11 @@ class LoggerClass
     bool bPaused;
     String logFileName;
     
-    void doOpenFile(DS3231Time& tm);
-    bool openWorkFile();
-    void closeWorkFile();
+    void doOpenFile(DS3231Time& tm); // открывает лог-файл, делает его имя соответственно с текущей датой
+    bool openWorkFile(); // открывает лог-файл
+    void closeWorkFile(); // закрывает лог-файл
 
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-extern LoggerClass Logger;
+extern LoggerClass Logger; // экземпляр класса
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
