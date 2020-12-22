@@ -13,7 +13,7 @@ AbstractTFTScreen::~AbstractTFTScreen()
   delete screenButtons;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AbstractTFTScreen::setup(TFTMenu* menu)
+void AbstractTFTScreen::setup(TFTMenu* menu) // настраиваемся
 {
   screenButtons = new TFT_Buttons_Rus(menu->getDC(), menu->getTouch(),menu->getRusPrinter());
   screenButtons->setTextFont(TFT_FONT);
@@ -23,31 +23,35 @@ void AbstractTFTScreen::setup(TFTMenu* menu)
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AbstractTFTScreen::update(TFTMenu* menu)
+void AbstractTFTScreen::update(TFTMenu* menu) // обновляемся
 {
   if(isActive())
   {
-  int pressedButton = screenButtons->checkButtons();
+  int pressedButton = screenButtons->checkButtons(); // проверяем нажатие на экранную кнопку
   
-  if(pressedButton != -1)
+  if(pressedButton != -1) // если кнопка нажата, то
   {
-    menu->notifyAction(this);
-    onButtonPressed(menu, pressedButton);
+    menu->notifyAction(this); // вызываем событие, что есть действия с экраном
+    onButtonPressed(menu, pressedButton); // вызываем событие "кнопка нажата"
   }
 
-    if(isActive())
+    if(isActive()) // если активны - обновляемся
+    {
       doUpdate(menu);
+    }
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AbstractTFTScreen::draw(TFTMenu* menu)
+void AbstractTFTScreen::draw(TFTMenu* menu) // отрисовка
 {
-  if(isActive())
+  if(isActive()) // если активны
   {
-    doDraw(menu);
+    doDraw(menu); // рисуемся
     
-    if(isActive())
-      screenButtons->drawButtons(); 
+    if(isActive()) // если ещё активны, то
+    {
+      screenButtons->drawButtons();  //рисуем экранные кнопки
+    }
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,40 +67,46 @@ TFTMenu::TFTMenu()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void TFTMenu::notifyAction(AbstractTFTScreen* screen)
 {
-  if(on_action)
+  if(on_action) // если есть обработчик события работы с экраном - вызываем его
+  {
     on_action(screen);
+  }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::addScreen(AbstractTFTScreen* screen)
+void TFTMenu::addScreen(AbstractTFTScreen* screen) // добавляем экран
 {
   screen->setup(this);
   screens.push_back(screen);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::setup()
+void TFTMenu::setup() // настраиваемся
 {
   tftMenuManager = this;
 
+  // создаём контроллер экрана
   controller = new GxCTRL_Class(io);   
 
+  // создаём контекст устройства экрана
   tftDC = new TFT_Class(io, *controller, 221, 176);   // landscape 220x176
+  // создаём класс работы с тач-скрином
   tftTouch = new TOUCH_Class(TFT_TOUCH_CS_PIN,-1,TOUCH_SCALE_X,TOUCH_SCALE_Y,TOUCH_MIN_RAW_X,TOUCH_MAX_RAW_X,TOUCH_MIN_RAW_Y,TOUCH_MAX_RAW_Y);
 
+  // ждём окончания инициализации
   #if TFT_INIT_DELAY > 0
   delay(TFT_INIT_DELAY);
   #endif
   
-  tftDC->init();
-  tftDC->setRotation(3);
-  tftDC->fillScreen(TFT_BACK_COLOR);
-  tftDC->setFreeFont(TFT_FONT);
+  tftDC->init(); // поднимаем экран
+  tftDC->setRotation(3); // устанавливаем ему ориентацию
+  tftDC->fillScreen(TFT_BACK_COLOR); // закрашиваем его фоновым цветом
+  tftDC->setFreeFont(TFT_FONT); // устанавливаем шрифт
 
   //tftTouch->InitTouch(TFT_ORIENTATION);
   //tftTouch->setPrecision(TOUCH_PRECISION);
-  tftTouch->begin();
+  tftTouch->begin(); // поднимаем тач-скрин
   
   
-  rusPrint.init(tftDC);
+  rusPrint.init(tftDC); // инициализируем поддержку русских шрифтов
 
   // добавляем экран мессадж-бокса
   addScreen(MessageBoxScreen::create());
@@ -108,15 +118,15 @@ void TFTMenu::setup()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int TFTMenu::print(const char* str,int x, int y)
+int TFTMenu::print(const char* str,int x, int y) // печатает строку на экране
 {
   return rusPrint.print(str,x,y);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::update()
+void TFTMenu::update() // обновляем внутреннее состояние
 {
 
-  if(requestedToActiveScreen != NULL)
+  if(requestedToActiveScreen != NULL) // если есть экран, который попросили сделать активным, то делаем его таким
   {
     // попросили сделать экран активным
     AbstractTFTScreen* screen = requestedToActiveScreen;
@@ -152,9 +162,9 @@ void TFTMenu::update()
     }
   }
 
-  if(currentScreenIndex == -1)
+  if(currentScreenIndex == -1) // если не выбрано активного экрана, то
   {
-    return;
+    return; // возврат
   }
 
   // обновляем текущий экран
@@ -164,7 +174,7 @@ void TFTMenu::update()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractTFTScreen* TFTMenu::getActiveScreen()
+AbstractTFTScreen* TFTMenu::getActiveScreen() // возвращаем активный экран
 {
   if(currentScreenIndex < 0 || !screens.size())
     return NULL;
@@ -172,7 +182,7 @@ AbstractTFTScreen* TFTMenu::getActiveScreen()
   return screens[currentScreenIndex];
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
+void TFTMenu::switchToScreen(AbstractTFTScreen* screen) // переключаемся на экран
 {
 
 	if (requestedToActiveScreen != NULL) // ждём переключения на новый экран
@@ -207,7 +217,7 @@ void TFTMenu::switchToScreen(AbstractTFTScreen* screen)
   }  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::switchToScreen(unsigned int screenIndex)
+void TFTMenu::switchToScreen(unsigned int screenIndex) // переключаемся на экран
 {
   if(screenIndex < screens.size())
   {
@@ -215,7 +225,7 @@ void TFTMenu::switchToScreen(unsigned int screenIndex)
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void TFTMenu::switchToScreen(const char* screenName)
+void TFTMenu::switchToScreen(const char* screenName) // переключаемся на экран
 {
   
   // переключаемся на запрошенный экран
@@ -236,18 +246,18 @@ void TFTMenu::switchToScreen(const char* screenName)
 TFTMenu Screen;
 MessageBoxScreen* MessageBox;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-MessageBoxScreen::MessageBoxScreen() : AbstractTFTScreen("MessageBox")
+MessageBoxScreen::MessageBoxScreen() : AbstractTFTScreen("MessageBox") // экран сообщения
 {
   targetOkScreen = NULL;
   targetCancelScreen = NULL; 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MessageBoxScreen::doSetup(TFTMenu* menu)
+void MessageBoxScreen::doSetup(TFTMenu* menu) // настраиваемся
 {
 
+  // создаём экранные кнопки
   yesButton = screenButtons->addButton(5, 107, 210, 30, "ДА");
   noButton = screenButtons->addButton(5, 142, 210, 30, "НЕТ");
-
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -256,7 +266,7 @@ void MessageBoxScreen::doUpdate(TFTMenu* menu)
     // тут обновляем внутреннее состояние
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MessageBoxScreen::doDraw(TFTMenu* menu)
+void MessageBoxScreen::doDraw(TFTMenu* menu) // отрисовка экрана
 {
   TFT_Class* dc = menu->getDC();
 //  uint8_t* oldFont = dc->getFont();
@@ -270,6 +280,7 @@ void MessageBoxScreen::doDraw(TFTMenu* menu)
    int curX = 0;
    int curY = 10;
 
+    // отрисовываем сообщение
     for(size_t i=0;i<lines.size();i++)
     {
       int lineLength = menu->getRusPrinter()->textWidth(lines[i]);
@@ -283,20 +294,20 @@ void MessageBoxScreen::doDraw(TFTMenu* menu)
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MessageBoxScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+void MessageBoxScreen::onButtonPressed(TFTMenu* menu, int pressedButton) // обработчик нажатия на экранную кнопку
 {
-  if(pressedButton == noButton && targetCancelScreen)
+  if(pressedButton == noButton && targetCancelScreen) // нажата кнопка "НЕТ"
   {
     menu->switchToScreen(targetCancelScreen);
   }
   else  
-  if(pressedButton == yesButton && targetOkScreen)
+  if(pressedButton == yesButton && targetOkScreen) // нажата кнопка "ДА"
   {
     menu->switchToScreen(targetOkScreen);
   }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget)
+void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget) // показываем экран
 {
   lines = _lines;
   screenButtons->relabelButton(yesButton,"ОК");
@@ -317,7 +328,7 @@ void MessageBoxScreen::show(Vector<const char*>& _lines, const char* okTarget)
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void MessageBoxScreen::confirm(Vector<const char*>& _lines, const char* okTarget, const char* cancelTarget)
+void MessageBoxScreen::confirm(Vector<const char*>& _lines, const char* okTarget, const char* cancelTarget) // показываем экран подтверждения
 {
   lines = _lines;
 
@@ -333,7 +344,7 @@ void MessageBoxScreen::confirm(Vector<const char*>& _lines, const char* okTarget
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractTFTScreen* MessageBoxScreen::create()
+AbstractTFTScreen* MessageBoxScreen::create() // создаём экран
 {
     MessageBox = new MessageBoxScreen();
     return MessageBox;  
@@ -341,15 +352,15 @@ AbstractTFTScreen* MessageBoxScreen::create()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // KeyboardScreen
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-KeyboardScreen* ScreenKeyboard;
+KeyboardScreen* ScreenKeyboard; // экранная клавиатура
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractTFTScreen* KeyboardScreen::create()
+AbstractTFTScreen* KeyboardScreen::create() // создаём экран
 {
   ScreenKeyboard = new KeyboardScreen();
   return ScreenKeyboard;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-KeyboardScreen::KeyboardScreen() : AbstractTFTScreen("KBD")
+KeyboardScreen::KeyboardScreen() : AbstractTFTScreen("KBD") // конструктор
 {
   targetInput = NULL;
   targetScreen = NULL;
@@ -358,7 +369,7 @@ KeyboardScreen::KeyboardScreen() : AbstractTFTScreen("KBD")
   input_maxlength = 8;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void KeyboardScreen::doSetup(TFTMenu* menu)
+void KeyboardScreen::doSetup(TFTMenu* menu) // инициализация экрана
 {
   const char* capts[] = 
   {
@@ -376,6 +387,7 @@ void KeyboardScreen::doSetup(TFTMenu* menu)
 
   int curLeft;
 
+  // добавляем экранные кнопки
   for(uint8_t i=0;i<total_rows;i++)
   {
     curLeft = 4;
@@ -410,7 +422,7 @@ void KeyboardScreen::doUpdate(TFTMenu* menu)
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void KeyboardScreen::doDraw(TFTMenu* menu)
+void KeyboardScreen::doDraw(TFTMenu* menu) // отрисовка
 {
   // сначала рисуем бокс для поля ввода
   
@@ -426,7 +438,7 @@ void KeyboardScreen::doDraw(TFTMenu* menu)
   drawValue(menu);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void KeyboardScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
+void KeyboardScreen::onButtonPressed(TFTMenu* menu, int pressedButton) // обработчик нажатия на кнопку
 {
   if(pressedButton < 16)
   {
@@ -466,7 +478,7 @@ void KeyboardScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   } // else
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void KeyboardScreen::show(KeyboardType type, const String& initialValue, AbstractTFTScreen* _targetScreen, KeyboardInputTarget* _targetInput, int maxLength)
+void KeyboardScreen::show(KeyboardType type, const String& initialValue, AbstractTFTScreen* _targetScreen, KeyboardInputTarget* _targetInput, int maxLength) // показ экрана
 {
   targetScreen = _targetScreen;
   targetInput = _targetInput;
@@ -505,7 +517,7 @@ void KeyboardScreen::show(KeyboardType type, const String& initialValue, Abstrac
   Screen.switchToScreen(this);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void KeyboardScreen::drawValue(TFTMenu* menu)
+void KeyboardScreen::drawValue(TFTMenu* menu) // рисуем введённое значение
 {
   //тут рисуем то, что введено
  int textX = 6;
@@ -526,17 +538,6 @@ void KeyboardScreen::drawValue(TFTMenu* menu)
   dc->fillRect(boxX,boxY,boxX2,boxY2,BLACK);
 
  menu->print(input.c_str(),textX,textY);
-
-/*
- textX += strLen;
-
- // забиваем пробелами оставшуюся часть
- for(size_t i=strLen;i<input_maxlength;i++)
- {
-   menu->print(" ",textX,textY);
-   textX +=  menu->getRusPrinter()->textWidth(" ");
- }
-*/
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
