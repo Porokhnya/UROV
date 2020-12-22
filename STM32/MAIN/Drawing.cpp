@@ -303,7 +303,7 @@ namespace Drawing
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // ChartSerie
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ChartSerie::ChartSerie(Chart* parent, RGBColor color)
+ChartSerie::ChartSerie(Chart* parent, RGBColor color) // конструктор серии
 {
   parentChart = parent;
   serieColor = TO_RGB565(color.R,color.G,color.B);
@@ -311,23 +311,23 @@ ChartSerie::ChartSerie(Chart* parent, RGBColor color)
   pointsCount = 0;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ChartSerie::~ChartSerie()
+ChartSerie::~ChartSerie() // деструктор
 {
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ChartSerie::setColor(RGBColor color)
+void ChartSerie::setColor(RGBColor color) // установка цвета серии
 {
   serieColor = TO_RGB565(color.R,color.G,color.B);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ChartSerie::setPoints(uint16_t* pointsArray, uint16_t countOfPoints)
+void ChartSerie::setPoints(uint16_t* pointsArray, uint16_t countOfPoints) // установка экранных точек
 {
   points = pointsArray;
   pointsCount = countOfPoints;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ChartSerie::drawLine(TFT_Class* dc,uint16_t x, uint16_t y, uint16_t x2, uint16_t y2, uint16_t color)
+void ChartSerie::drawLine(TFT_Class* dc,uint16_t x, uint16_t y, uint16_t x2, uint16_t y2, uint16_t color) // рисуетм линию
 {
 	if (x == x2 && y == y2)
 	{
@@ -336,18 +336,18 @@ void ChartSerie::drawLine(TFT_Class* dc,uint16_t x, uint16_t y, uint16_t x2, uin
    dc->drawLine(x,y,x2,y2,color);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ChartSerie::drawLine(TFT_Class* dc, uint16_t xPoint)
+void ChartSerie::drawLine(TFT_Class* dc, uint16_t xPoint) // рисуем линию
 {
   if(!points || !pointsCount)
     return;
 
-  if(xPoint < 1 || xPoint >= pointsCount)
+  if(xPoint < 1 || xPoint >= pointsCount) // проверяем на валидность диапазона
     return;
 
   uint16_t startIdx = xPoint -1;
   uint16_t endIdx = xPoint;
 
-  uint16_t maxPointY = 4095;//parentChart->getMaxYValue(); 
+  uint16_t maxPointY = 4095; // максимальное кол-во точек по Y
   uint16_t maxY = parentChart->getYMax();
 
 //  DBG("maxPointY="); DBGLN(maxPointY);
@@ -357,6 +357,7 @@ void ChartSerie::drawLine(TFT_Class* dc, uint16_t xPoint)
   //word initialColor = dc->getColor();
   //dc->setColor(serieColor.R,serieColor.G,serieColor.B);
 
+  // стартовые координаты
   uint16_t startX = parentChart->getXCoord();
   uint16_t startY = parentChart->getYCoord();
   
@@ -385,7 +386,7 @@ void ChartSerie::drawLine(TFT_Class* dc, uint16_t xPoint)
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ChartSerie::clearLine(TFT_Class* dc, uint16_t xPoint, uint16_t color)
+void ChartSerie::clearLine(TFT_Class* dc, uint16_t xPoint, uint16_t color) // очищаем линию
 {
   if(xPoint >= pointsCount || !savedPixels.size())
     return;
@@ -403,7 +404,7 @@ void ChartSerie::clearLine(TFT_Class* dc, uint16_t xPoint, uint16_t color)
     
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-uint16_t ChartSerie::getMaxYValue()
+uint16_t ChartSerie::getMaxYValue() // возвращает максимальное значение по Y
 {
   uint16_t result = 0;
   
@@ -422,7 +423,7 @@ uint16_t ChartSerie::getMaxYValue()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Chart
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Chart::Chart()
+Chart::Chart() // конструктор графика
 {
   xCoord = 0;
   yCoord = 0;
@@ -432,11 +433,11 @@ Chart::Chart()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Chart::~Chart()
+Chart::~Chart() // деструктор
 {
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Chart::draw()
+void Chart::draw() // отрисовка графика
 {
 	if (stopped)
 	{
@@ -444,14 +445,14 @@ void Chart::draw()
 		return;
 	}
 
-  if(inDraw)
+  if(inDraw) // если уже рисуем, то остановка отрисовки
   {
     stopDraw();
     
-	while (inDraw)
-	{
-		yield();
-	}
+  	while (inDraw)
+  	{
+  		yield();
+  	}
   }
   
   stopped = false;
@@ -467,43 +468,40 @@ void Chart::draw()
   }
   
   TFT_Class* dc = Screen.getDC();
-  //word oldColor = dc->getColor();
-  //dc->setColor(dc->getBackColor());
-     
+
   for(int i=0;i<xPoints;i++)
   {
           
+    // очищаем старые линии   
     for(size_t k=0;k<seriesSize;k++)
     {
       series[k]->clearLine(dc, i,TFT_BACK_COLOR);
       
       if(stopped)
       {
-        //dc->setColor(oldColor);
 		    inDraw = false;
         return;
       }
     }
-      
+
+    // рисуем актуальные линии
     for(size_t k=0;k<seriesSize;k++)
     {
       series[k]->drawLine(dc, i);
       
       if(stopped)
       {
-        //dc->setColor(oldColor);
 		    inDraw = false;
         return;
       }
     }
     
   }
-  //dc->setColor(oldColor);
   inDraw = false;
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Chart::clearSeries()
+void Chart::clearSeries() // очищаем серии
 {
   for(size_t i=0;i<series.size();i++)
   {
@@ -514,20 +512,20 @@ void Chart::clearSeries()
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-uint16_t Chart::getMaxYValue()
+uint16_t Chart::getMaxYValue() // возвращает максимальное значение по Y
 {
   return computedMaxYValue;
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ChartSerie* Chart::addSerie(RGBColor color)
+ChartSerie* Chart::addSerie(RGBColor color) // добавляет серию
 {
   ChartSerie* serie = new ChartSerie(this, color);
   series.push_back(serie);
   return serie;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Chart::setPoints(uint16_t pX, uint16_t pY)
+void Chart::setPoints(uint16_t pX, uint16_t pY) // устанавливает кол-во точек по X и Y
 {
     xPoints = pX;
     yPoints = pY;  

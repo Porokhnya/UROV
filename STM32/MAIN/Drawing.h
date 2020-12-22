@@ -145,14 +145,14 @@ class Chart
     protected:
     
       friend class ChartSerie;
-      uint16_t getMaxYValue();
+      uint16_t getMaxYValue(); // возвращает максимальное значение по Y
       
-      uint16_t getYMax()
+      uint16_t getYMax() // возвращает максимальную Y-координату
       {
         return yPoints;
       }
 
-      uint16_t getXMax()
+      uint16_t getXMax() // вохвращает максимальную X-координату
       {
         return xPoints;
       }
