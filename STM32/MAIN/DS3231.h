@@ -14,14 +14,14 @@ struct DS3231Time // данные по текущему времени
   uint8_t month; // месяц(1-12)
   uint16_t year; // формат - ХХХХ
 
-  static bool isLeapYear(uint16_t year);
-  uint32_t unixtime(void);
-  static DS3231Time fromUnixtime(uint32_t timeInput);
+  static bool isLeapYear(uint16_t year); // тест на високосный год
+  uint32_t unixtime(void);  // перевод времени в unixtime
+  static DS3231Time fromUnixtime(uint32_t timeInput); // возвращает время из unixtime
   
-  uint16_t date2days(uint16_t _year, uint8_t _month, uint8_t _day);
-  long time2long(uint16_t days, uint8_t hours, uint8_t minutes, uint8_t seconds);
+  uint16_t date2days(uint16_t _year, uint8_t _month, uint8_t _day); // преобразует дату в кол-во дней
+  long time2long(uint16_t days, uint8_t hours, uint8_t minutes, uint8_t seconds); // преобразует время в секунды
 
-  DS3231Time addDays(long days);
+  DS3231Time addDays(long days); // добавляет дни ко времени
   
 }; 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -31,23 +31,25 @@ struct DS3231Temperature // структура показаний с модул�
   uint8_t Fract; // сотые доли градуса (значение после запятой)
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
-class _RealtimeClock
+class _RealtimeClock // класс работы с часами реального времени DS3231
 {
   public:
     _RealtimeClock();
+
+    // установка времени
     void setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8_t dayOfWeek, uint8_t dayOfMonth, uint8_t month, uint16_t year);
     void setTime(const DS3231Time& time);
 
 
-    const char* getDayOfWeekStr(const DS3231Time& t);
-    const char* getTimeStr(const DS3231Time& t);
-    const char* getDateStr(const DS3231Time& t);
+    const char* getDayOfWeekStr(const DS3231Time& t); // возвращает день недели переданного времени
+    const char* getTimeStr(const DS3231Time& t); // возвращает строку времени
+    const char* getDateStr(const DS3231Time& t); // возвращает строку даты
 
-    DS3231Time getTime(); 
+    DS3231Time getTime(); // возвращает текущее время
 
-    DS3231Temperature getTemperature();
+    DS3231Temperature getTemperature(); // возвращает температуру DS3231
     
-    void begin();
+    void begin(); // начинает работу
         
   private:
     static char workBuff[12]; // буфер под дату/время

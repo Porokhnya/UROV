@@ -12,9 +12,9 @@ class TFTRus
     TFTRus();
     void init(TFT_Class* uTft);
 
-    int print(const char* str,int x, int y, word bgColor=TFT_BACK_COLOR, word fgColor=TFT_FONT_COLOR, bool computeTextWidthOnly=false);
-    int getStringLength(const char* str);
-    int textWidth(const char* str);
+    int print(const char* str,int x, int y, word bgColor=TFT_BACK_COLOR, word fgColor=TFT_FONT_COLOR, bool computeTextWidthOnly=false); // печатает строку на экране
+    int getStringLength(const char* str); // возвращает длину текста UTF-8 в символах
+    int textWidth(const char* str); // возвращает ширину строки в пикселях
     
   private:
     TFT_Class* pDisplay;

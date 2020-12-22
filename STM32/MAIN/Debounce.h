@@ -12,16 +12,16 @@ class Debounce
 
     void begin(uint8_t pin, uint16_t bounceInterval=5, bool pullup=true); // _pullup == false - подтяжка к земле, иначе - подтяжка к питанию
     void update(); // обновляем внутреннее состояние
-    uint8_t getState() { return pinState; };      
+    uint8_t getState() { return pinState; }; // возвращаем состояние входа
 
 
  private:
 
-    uint8_t pinState;
-    uint8_t pin;
-    uint32_t debounceTimer;
-    uint8_t lastPinState;
-    uint16_t bounceInterval;
+    uint8_t pinState; // состояние входа
+    uint8_t pin; // номер входа
+    uint32_t debounceTimer; // таймер подавления дребезга
+    uint8_t lastPinState; // последнее известное состояние входа
+    uint16_t bounceInterval; // интервал подавления дребезга
     
  };
 //--------------------------------------------------------------------------------------------------

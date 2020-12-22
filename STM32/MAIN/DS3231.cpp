@@ -5,7 +5,7 @@ _RealtimeClock RealtimeClock;
 char _RealtimeClock::workBuff[12] = {0};
 const uint8_t daysArray [] PROGMEM = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 //--------------------------------------------------------------------------------------------------------------------------------------
-uint32_t DS3231Time::unixtime(void)
+uint32_t DS3231Time::unixtime(void) // перевод времени в unixtime
 {
   uint32_t u;
 
@@ -15,7 +15,7 @@ uint32_t DS3231Time::unixtime(void)
   return u;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-DS3231Time DS3231Time::addDays(long days)
+DS3231Time DS3231Time::addDays(long days) // добавляем дни ко времени
 {
   uint32_t ut = unixtime();
   long diff = days*86400;
@@ -23,7 +23,7 @@ DS3231Time DS3231Time::addDays(long days)
   return fromUnixtime(ut);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-DS3231Time DS3231Time::fromUnixtime(uint32_t time)
+DS3231Time DS3231Time::fromUnixtime(uint32_t time) // конвертируем время из unixtime
 {
   DS3231Time result;
 
@@ -40,7 +40,8 @@ DS3231Time DS3231Time::fromUnixtime(uint32_t time)
   
   year = 0;  
   days = 0;
-  while((unsigned)(days += (isLeapYear(year) ? 366 : 365)) <= time) {
+  while((unsigned)(days += (isLeapYear(year) ? 366 : 365)) <= time) 
+  {
     year++;
   }
   result.year = year + 1970; // year is offset from 1970 
@@ -54,7 +55,8 @@ DS3231Time DS3231Time::fromUnixtime(uint32_t time)
   for (month=0; month<12; month++) 
   {
     if (month==1) 
-    { // february
+    { 
+      // february
       if (isLeapYear(year)) 
       {
         monthLength=29;
@@ -66,7 +68,7 @@ DS3231Time DS3231Time::fromUnixtime(uint32_t time)
     } 
     else 
     {
-      monthLength = pgm_read_byte(daysArray + month); //monthDays[month];
+      monthLength = pgm_read_byte(daysArray + month);
     }
     
     if (time >= monthLength) 
@@ -99,9 +101,30 @@ DS3231Time DS3231Time::fromUnixtime(uint32_t time)
   return result;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-bool DS3231Time::isLeapYear(uint16_t year)
+bool DS3231Time::isLeapYear(uint16_t year) // тест на високосный год
 {
-  return (year % 4 == 0);
+  //return (year % 4 == 0);
+  if (year % 4 == 0) 
+  {
+        if (year % 100 == 0) 
+        {
+            if (year % 400 == 0)
+            {
+               return true; // is a leap year
+            }
+            else
+            {
+                return false; // is not a leap year
+            }
+        }
+        else
+        {
+            return true; // is a leap year
+        }
+  }
+
+  return false; // is not a leap year
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 uint16_t DS3231Time::date2days(uint16_t _year, uint8_t _month, uint8_t _day)
@@ -150,7 +173,7 @@ void _RealtimeClock::begin()
 #endif // #ifndef _RTC_OFF    
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-DS3231Time _RealtimeClock::getTime()
+DS3231Time _RealtimeClock::getTime() // возвращаем время
 {
   DS3231Time result;
   
@@ -168,12 +191,12 @@ DS3231Time _RealtimeClock::getTime()
   return result;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void _RealtimeClock::setTime(const DS3231Time& time)
+void _RealtimeClock::setTime(const DS3231Time& time) // устанавливаем время
 {
   setTime(time.second, time.minute, time.hour, time.dayOfWeek, time.dayOfMonth, time.month,time.year);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void _RealtimeClock::setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8_t dayOfWeek, uint8_t dayOfMonth, uint8_t month, uint16_t year)
+void _RealtimeClock::setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8_t dayOfWeek, uint8_t dayOfMonth, uint8_t month, uint16_t year) // устанавливаем время
 {
 #ifndef _RTC_OFF
   
@@ -191,13 +214,13 @@ void _RealtimeClock::setTime(uint8_t second, uint8_t minute, uint8_t hour, uint8
   
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-const char* _RealtimeClock::getDayOfWeekStr(const DS3231Time& t)
+const char* _RealtimeClock::getDayOfWeekStr(const DS3231Time& t) // возвращаем строку дня недели
 {
   static const char* dow[] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
   return dow[t.dayOfWeek-1];
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-const char* _RealtimeClock::getTimeStr(const DS3231Time& t)
+const char* _RealtimeClock::getTimeStr(const DS3231Time& t) // возвращаем строку времени
 {
   char* writePtr = workBuff;
   
@@ -231,7 +254,7 @@ const char* _RealtimeClock::getTimeStr(const DS3231Time& t)
  return workBuff;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-const char* _RealtimeClock::getDateStr(const DS3231Time& t)
+const char* _RealtimeClock::getDateStr(const DS3231Time& t) // возвращаем строку даты
 {
   char* writePtr = workBuff;
   if(t.dayOfMonth < 10)

@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 // Minimal class to replace std::vector
+
 template<typename Data>
 class Vector {
 

@@ -2,6 +2,8 @@
 #include "Arduino.h"
 #include <SPI.h>
 
+// классы поддержки тачскрина
+
 extern SPI_HandleTypeDef  hspi2;
 
 

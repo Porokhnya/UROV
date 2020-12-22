@@ -43,22 +43,25 @@ typedef uint8_t byte;
 class AT24CX 
 {
 public:
+
+  // конструкторы
 	AT24CX(TwoWire& w);
 	AT24CX(TwoWire& w,byte index, uint16_t pageSize);
-	void write(unsigned int address, byte data);
-	void write(unsigned int address, byte *data, int n);
-	void writeInt(unsigned int address, unsigned int data);
-	void writeLong(unsigned int address, unsigned long data);
-	void writeFloat(unsigned int address, float data);
-	void writeDouble(unsigned int address, double data);
-	void writeChars(unsigned int address, char *data, int length);
-	byte read(unsigned int address);
-	void read(unsigned int address, byte *data, int n);
-	unsigned int readInt(unsigned int address);
-	unsigned long readLong(unsigned int address);
-	float readFloat(unsigned int address);
-	double readDouble(unsigned int address);
-	void readChars(unsigned int address, char *data, int n);
+ 
+	void write(unsigned int address, byte data);  // запись байта
+	void write(unsigned int address, byte *data, int n); // запись массива байт
+	void writeInt(unsigned int address, unsigned int data); // запись двух байт
+	void writeLong(unsigned int address, unsigned long data); // запись четырёх байт
+	void writeFloat(unsigned int address, float data); // запись числа с плавающей точкой
+	void writeDouble(unsigned int address, double data); // запись числа с плавающей точкой двойной точности
+	void writeChars(unsigned int address, char *data, int length); // запись строки
+	byte read(unsigned int address); // чтение байта
+	void read(unsigned int address, byte *data, int n); // чтение массива байт
+	unsigned int readInt(unsigned int address); // чтение двух байт
+	unsigned long readLong(unsigned int address); // чтение четырёх байт
+	float readFloat(unsigned int address); // чтение числа с плавающей точкой
+	double readDouble(unsigned int address); // чтение числа с плавающей точкой двойной точности
+	void readChars(unsigned int address, char *data, int n); // чтение строки
 protected:
 	void init(byte index, uint16_t pageSize);
   TwoWire* wire;

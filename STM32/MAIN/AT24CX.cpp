@@ -28,117 +28,140 @@ THE SOFTWARE.
 #include "AT24CX.h"
 #include "ConfigPin.h"
 #include <Wire.h>
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24Cx EEPROM at index 0
+ * Конструктор базового класса
  */
-AT24CX::AT24CX(TwoWire& w) {
+AT24CX::AT24CX(TwoWire& w) 
+{
   wire = &w;
 	init(0, 32);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24Cx EEPROM at given index and size of page
+ * Конструктор базового класса, с указанным индексом микросхемы на шине и размером страницы
  */
-AT24CX::AT24CX(TwoWire& w,byte index, uint16_t pageSize) {
+AT24CX::AT24CX(TwoWire& w,byte index, uint16_t pageSize) 
+{
   wire = &w;
 	init(index, pageSize);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C32 EEPROM at index 0
+ * Конструктор AT24C32 EEPROM с индексом 0
  */
-AT24C32::AT24C32(TwoWire& w) : AT24CX(w) {
+AT24C32::AT24C32(TwoWire& w) : AT24CX(w) 
+{
 	init(0, 32);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24Cx EEPROM at given index
+ * Конструктор AT24C32 EEPROM с переданным индексом
  */
-AT24C32::AT24C32(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C32::AT24C32(TwoWire& w,byte index) : AT24CX(w)  
+{
 	init(index, 32);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C64 EEPROM at index 0
+ * Конструктор AT24C64 EEPROM с индексом 0
  */
-AT24C64::AT24C64(TwoWire& w) : AT24CX(w)  {
+AT24C64::AT24C64(TwoWire& w) : AT24CX(w)  
+{
 	init(0, 32);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C64 EEPROM at given index
+ * Конструктор AT24C64 EEPROM с переданным индексом
  */
-AT24C64::AT24C64(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C64::AT24C64(TwoWire& w,byte index) : AT24CX(w)  
+{
 	init(index, 32);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C128 EEPROM at index 0
+ * Конструктор AT24C128 EEPROM с индексом 0
  */
-AT24C128::AT24C128(TwoWire& w) : AT24CX(w)  {
+AT24C128::AT24C128(TwoWire& w) : AT24CX(w)  
+{
 	init(0, 64);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C128 EEPROM at given index
+ * Конструктор AT24C128 EEPROM с переданным индексом
  */
-AT24C128::AT24C128(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C128::AT24C128(TwoWire& w,byte index) : AT24CX(w)  
+{
 	init(index, 64);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C256 EEPROM at index 0
+ * Конструктор AT24C256 EEPROM с индексом 0
  */
-AT24C256::AT24C256(TwoWire& w) : AT24CX(w)  {
+AT24C256::AT24C256(TwoWire& w) : AT24CX(w)  
+{
 	init(0, 64);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C128 EEPROM at given index
+ * Конструктор AT24C256 EEPROM с переданным индексом
  */
-AT24C256::AT24C256(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C256::AT24C256(TwoWire& w,byte index) : AT24CX(w)  
+{
 	init(index, 64);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C512 EEPROM at index 0
+ * Конструктор AT24C512 EEPROM с индексом 0
  */
-AT24C512::AT24C512(TwoWire& w) : AT24CX(w)  {
+AT24C512::AT24C512(TwoWire& w) : AT24CX(w)  
+{
 	init(0, 128);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C512 EEPROM at given index
+ * Конструктор AT24C512 EEPROM с переданным индексом
  */
-AT24C512::AT24C512(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C512::AT24C512(TwoWire& w,byte index) : AT24CX(w)  
+{
 	init(index, 128);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C1024 EEPROM at index 0
+ * Конструктор AT24C1024 EEPROM с индексом 0
  */
-AT24C1024::AT24C1024(TwoWire& w) : AT24CX(w)  {
+AT24C1024::AT24C1024(TwoWire& w) : AT24CX(w)  
+{
   init(0, 256);
 }
+//--------------------------------------------------------------------------------------------------
 /**
- * Constructor with AT24C1024 EEPROM at given index
+ * Конструктор AT24C1024 EEPROM с переданным индексом
  */
-AT24C1024::AT24C1024(TwoWire& w,byte index) : AT24CX(w)  {
+AT24C1024::AT24C1024(TwoWire& w,byte index) : AT24CX(w)  
+{
   init(index, 256);
 }
-
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Init
+ * Инициализация
  */
-void AT24CX::init(byte index, uint16_t pageSize) {
+void AT24CX::init(byte index, uint16_t pageSize) 
+{
 	_id = AT24CX_ID | (index & 0x7);
 	_pageSize = pageSize;
 //	Wire.begin(); 
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write byte
+ * Запись байта
  */
-void AT24CX::write(unsigned int address, byte data) {
+void AT24CX::write(unsigned int address, byte data) 
+{
     wire->beginTransmission(_id);
-    if(wire->endTransmission()==0) {
+    
+    if(wire->endTransmission()==0) 
+    {
     	wire->beginTransmission(_id);
     	wire->write(address >> 8);
     	wire->write(address & 0xFF);
@@ -147,85 +170,96 @@ void AT24CX::write(unsigned int address, byte data) {
     	delay(10);
     }
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write integer
+ * Запись двух байт
  */
-void AT24CX::writeInt(unsigned int address, unsigned int data) {
+void AT24CX::writeInt(unsigned int address, unsigned int data) 
+{
 	write(address, (byte*)&data, 2);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write long
+ * Запись четырёх байт
  */
-void AT24CX::writeLong(unsigned int address, unsigned long data) {
+void AT24CX::writeLong(unsigned int address, unsigned long data) 
+{
 	write(address, (byte*)&data, 4);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write float
+ * Запись числа с плавающей точкой
  */
-void AT24CX::writeFloat(unsigned int address, float data) {
+void AT24CX::writeFloat(unsigned int address, float data) 
+{
 	write(address, (byte*)&data, 4);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write double
+ * Запись числа с плавающей точкой двойной точности
  */
-void AT24CX::writeDouble(unsigned int address, double data) {
+void AT24CX::writeDouble(unsigned int address, double data) 
+{
 	write(address, (byte*)&data, 8);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write chars
+ * Запись строки
  */
-void AT24CX::writeChars(unsigned int address, char *data, int length) {
+void AT24CX::writeChars(unsigned int address, char *data, int length) 
+{
 	write(address, (byte*)data, length);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read integer
+ * Чтение двух байт
  */
-unsigned int AT24CX::readInt(unsigned int address) {
+unsigned int AT24CX::readInt(unsigned int address) 
+{
 	read(address, _b, 2);
 	return *(unsigned int*)&_b[0];
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read long
+ * Чтение четырёх байт
  */
-unsigned long AT24CX::readLong(unsigned int address) {
+unsigned long AT24CX::readLong(unsigned int address) 
+{
 	read(address, _b, 4);
 	return *(unsigned long*)&_b[0];
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read float
+ * Чтение числа с плавающей точкой
  */
-float AT24CX::readFloat(unsigned int address) {
+float AT24CX::readFloat(unsigned int address) 
+{
 	read(address, _b, 4);
 	return *(float*)&_b[0];
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read double
+ * Чтение числа с плавающей точкой повышенной точности
  */
-double AT24CX::readDouble(unsigned int address) {
+double AT24CX::readDouble(unsigned int address) 
+{
 	read(address, _b, 8);
 	return *(double*)&_b[0];
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read chars
+ * Чтение строки
  */
-void AT24CX::readChars(unsigned int address, char *data, int n) {
+void AT24CX::readChars(unsigned int address, char *data, int n) 
+{
 	read(address, (byte*)data, n);
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write sequence of n bytes
+ * Запись последовательности из n байт
  */
-void AT24CX::write(unsigned int address, byte *data, int n) {
+void AT24CX::write(unsigned int address, byte *data, int n) 
+{
 	// status quo
 	int c = n;						// bytes left to write
 	int offD = 0;					// current offset in data pointer
@@ -233,7 +267,8 @@ void AT24CX::write(unsigned int address, byte *data, int n) {
 	int nc = 0;						// next n bytes to write
 
 	// write alle bytes in multiple steps
-	while (c > 0) {
+	while (c > 0) 
+	{
 		// calc offset in page
 		offP = address % _pageSize;
 		// maximal 30 bytes to write
@@ -244,13 +279,16 @@ void AT24CX::write(unsigned int address, byte *data, int n) {
 		address+=nc;
 	}
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Write sequence of n bytes from offset
+ * Запись последовательности из n байт со смещением
  */
-void AT24CX::write(unsigned int address, byte *data, int offset, int n) {
+void AT24CX::write(unsigned int address, byte *data, int offset, int n) 
+{
     wire->beginTransmission(_id);
-    if (wire->endTransmission()==0) {
+    
+    if (wire->endTransmission()==0) 
+    {
      	wire->beginTransmission(_id);
     	wire->write(address >> 8);
     	wire->write(address & 0xFF);
@@ -260,37 +298,44 @@ void AT24CX::write(unsigned int address, byte *data, int offset, int n) {
     	delay(20);
     }
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read byte
+ * чтение байта
  */
-byte AT24CX::read(unsigned int address) {
+byte AT24CX::read(unsigned int address) 
+{
 	byte b = 0;
 	int r = 0;
 	wire->beginTransmission(_id);
-    if (wire->endTransmission()==0) {
+ 
+    if (wire->endTransmission()==0) 
+    {
      	wire->beginTransmission(_id);
     	wire->write(address >> 8);
     	wire->write(address & 0xFF);
-    	if (wire->endTransmission()==0) {
-			wire->requestFrom(_id, 1);
-			while (wire->available() > 0 && r<1) {
-				b = (byte)wire->read();
-				r++;
-			}
+    	if (wire->endTransmission()==0) 
+    	{
+  			wire->requestFrom(_id, 1);
+  			while (wire->available() > 0 && r<1) 
+  			{
+  				b = (byte)wire->read();
+  				r++;
+  			}
     	}
     }
     return b;
 }
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read sequence of n bytes
+ * чтение последовательности из n байт
  */
-void AT24CX::read(unsigned int address, byte *data, int n) {
+void AT24CX::read(unsigned int address, byte *data, int n) 
+{
 	int c = n;
 	int offD = 0;
 	// read until are n bytes read
-	while (c > 0) {
+	while (c > 0) 
+	{
 		// read maximal 32 bytes
 		int nc = c;
 		if (nc > 32)
@@ -301,24 +346,31 @@ void AT24CX::read(unsigned int address, byte *data, int n) {
 		c-=nc;
 	}
 }
-
-
+//--------------------------------------------------------------------------------------------------
 /**
- * Read sequence of n bytes to offset
+ * чтение последовательности из n байт по смещению
  */
-void AT24CX::read(unsigned int address, byte *data, int offset, int n) {
+void AT24CX::read(unsigned int address, byte *data, int offset, int n) 
+{
 	wire->beginTransmission(_id);
-    if (wire->endTransmission()==0) {
+ 
+    if (wire->endTransmission()==0) 
+    {
      	wire->beginTransmission(_id);
     	wire->write(address >> 8);
     	wire->write(address & 0xFF);
-    	if (wire->endTransmission()==0) {
-			int r = 0;
+      
+    	if (wire->endTransmission()==0) 
+    	{
+			  int r = 0;
     		wire->requestFrom(_id, n);
-			while (wire->available() > 0 && r<n) {
-				data[offset+r] = (byte)wire->read();
-				r++;
-			}
+        
+			  while (wire->available() > 0 && r<n) 
+			  {
+				  data[offset+r] = (byte)wire->read();
+				  r++;
+			  }
     	}
     }
 }
+//--------------------------------------------------------------------------------------------------
