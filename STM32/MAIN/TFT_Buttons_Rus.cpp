@@ -2,16 +2,21 @@
 #include "TFT_Buttons_Rus.h"
 #include "TFTMenu.h"
 //--------------------------------------------------------------------------------------------------------------------------------------
-TFT_Buttons_Rus::TFT_Buttons_Rus(TFT_Class *ptrUTFT, TOUCH_Class *ptrURTouch, TFTRus* pTFTRus, int count_btns)
+TFT_Buttons_Rus::TFT_Buttons_Rus(TFT_Class *ptrUTFT, TOUCH_Class *ptrURTouch, TFTRus* pTFTRus, int count_btns) // конструктор
 {
+  // сохраняем указатели на экран, тачскрин, и класс поддержки русских шрифтов
 	_UTFT = ptrUTFT;
 	_URTouch = ptrURTouch;
   pRusPrinter = pTFTRus;
 
+  // создаём массив под кнопки
   countButtons = count_btns;
   buttons = new button_type[count_btns];
-  
+
+  // инициализируем массив, как полностью неиспользуемый
 	deleteAllButtons();
+
+  // настройки цветов по умолчанию
 	_color_text				= WHITE;
 	_color_text_inactive	= DGRAY;
 	_color_background		= BLUE;
@@ -21,14 +26,14 @@ TFT_Buttons_Rus::TFT_Buttons_Rus(TFT_Class *ptrUTFT, TOUCH_Class *ptrURTouch, TF
 	_font_symbol			= NULL;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-TFT_Buttons_Rus::~TFT_Buttons_Rus()
+TFT_Buttons_Rus::~TFT_Buttons_Rus() // деструктор
 {
-  delete [] buttons;
+  delete [] buttons; // удаляем массив кнопок
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-word TFT_Buttons_Rus::getButtonBackColor(int buttonID)
+word TFT_Buttons_Rus::getButtonBackColor(int buttonID) // возвращаем фоновый цвет кнопки
 {
-   if(buttonID < 0)
+   if(buttonID < 0 || buttonID >= countButtons)
    {
     return 0;
    }
@@ -36,9 +41,9 @@ word TFT_Buttons_Rus::getButtonBackColor(int buttonID)
   return buttons[buttonID].backColor;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-word TFT_Buttons_Rus::getButtonFontColor(int buttonID)
+word TFT_Buttons_Rus::getButtonFontColor(int buttonID) // возвращаем цвет текста кнопки
 {
-   if(buttonID < 0)
+   if(buttonID < 0 || buttonID >= countButtons)
    {
     return 0;
    }
@@ -46,7 +51,7 @@ word TFT_Buttons_Rus::getButtonFontColor(int buttonID)
   return buttons[buttonID].fontColor;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setButtonBackColor(int buttonID, word color)
+void TFT_Buttons_Rus::setButtonBackColor(int buttonID, word color) // устанавливаем фоновый цвет кнопки
 {
    if(buttonID < 0 || buttonID >= countButtons)
    {
@@ -58,7 +63,7 @@ void TFT_Buttons_Rus::setButtonBackColor(int buttonID, word color)
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::selectButton(int buttonID, bool selected, boolean redraw)
+void TFT_Buttons_Rus::selectButton(int buttonID, bool selected, boolean redraw) // выделяем кнопку
 {
    if(buttonID < 0 || buttonID >= countButtons)
    {
@@ -80,7 +85,7 @@ void TFT_Buttons_Rus::selectButton(int buttonID, bool selected, boolean redraw)
     }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setButtonFontColor(int buttonID, word cl)
+void TFT_Buttons_Rus::setButtonFontColor(int buttonID, word cl) // устанавливаем цвет текста кнопки
 {
   if(buttonID < 0 || buttonID >= countButtons)
   {
@@ -92,7 +97,7 @@ void TFT_Buttons_Rus::setButtonFontColor(int buttonID, word cl)
     
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int TFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const char *label, uint16_t flags)
+int TFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const char *label, uint16_t flags) // добавляем кнопку
 {
 	int btcnt = 0;
   
@@ -118,7 +123,7 @@ int TFT_Buttons_Rus::addButton(uint16_t x, uint16_t y, uint16_t width, uint16_t 
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::hideButton(int buttonID, boolean redraw)
+void TFT_Buttons_Rus::hideButton(int buttonID, boolean redraw) // скрываем кнопку
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -135,7 +140,7 @@ void TFT_Buttons_Rus::hideButton(int buttonID, boolean redraw)
   }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::showButton(int buttonID, boolean redraw)
+void TFT_Buttons_Rus::showButton(int buttonID, boolean redraw) // показываем кнопку
 {
   if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -152,7 +157,7 @@ void TFT_Buttons_Rus::showButton(int buttonID, boolean redraw)
   }  
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::drawButtons(DrawButtonsUpdateFunc func)
+void TFT_Buttons_Rus::drawButtons(DrawButtonsUpdateFunc func) // рисуем все кнопки
 {
   
 	for (int i=0;i<countButtons;i++)
@@ -174,12 +179,12 @@ void TFT_Buttons_Rus::drawButtons(DrawButtonsUpdateFunc func)
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setIconFont(FONTTYPE font)
+void TFT_Buttons_Rus::setIconFont(FONTTYPE font) // устанавливаем шрифт для иконок
 {
   _font_icon = font;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setButtonHasIcon(int buttonID)
+void TFT_Buttons_Rus::setButtonHasIcon(int buttonID) // устанавливаем флаг, что первый символ текста кнопки - это иконка
 {
    if(buttonID < 0 || buttonID >= countButtons)
    {
@@ -190,7 +195,7 @@ void TFT_Buttons_Rus::setButtonHasIcon(int buttonID)
   
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::drawButton(int buttonID)
+void TFT_Buttons_Rus::drawButton(int buttonID) // рисуем кнопку
 {  
 
 	if (buttonID < 0 || buttonID >= countButtons)
@@ -202,7 +207,7 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
 //Serial.println("1"); Serial.flush();
 
 	int		text_x, text_y;
-  if (!(buttons[buttonID].flags & BUTTON_VISIBLE))
+  if (!(buttons[buttonID].flags & BUTTON_VISIBLE)) // если кнопка скрыта - заливаем её прямоугольник фоновым цветом
   {
     _UTFT->fillRect(buttons[buttonID].pos_x, buttons[buttonID].pos_y, buttons[buttonID].width, buttons[buttonID].height, TFT_BACK_COLOR);    
     return;
@@ -213,31 +218,33 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
     uint16_t bkColor = _color_background;
   
 
-    if(buttons[buttonID].flags & BUTTON_HAS_BACK_COLOR && !(buttons[buttonID].flags & BUTTON_DISABLED))
+    if(buttons[buttonID].flags & BUTTON_HAS_BACK_COLOR && !(buttons[buttonID].flags & BUTTON_DISABLED)) // если у кнопки есть свой фоновый цвет - используем его
     {
        bkColor = buttons[buttonID].backColor;
     }
     else
     {
-       bkColor = _color_background;
+       bkColor = _color_background; // иначе используем фоновый цвет по умолчанию
     }
      
 
+    // рисуем прямоугольник кнопки фоновым цветом
     _UTFT->fillRoundRect(buttons[buttonID].pos_x, buttons[buttonID].pos_y, buttons[buttonID].width, buttons[buttonID].height, 2, bkColor);
     yield();
 
 //Serial.println("3"); Serial.flush();
 
 
-    if(buttons[buttonID].flags & BUTTON_SELECTED)
+    if(buttons[buttonID].flags & BUTTON_SELECTED) // если кнопка выделена - применяем цвет выделения
     {
       bkColor = _color_hilite;
     }
     else
     {
-      bkColor = _color_border;
+      bkColor = _color_border; // иначе - применяем цвет рамки
     }
 
+    // рисуем рамку
     _UTFT->drawRoundRect(buttons[buttonID].pos_x, buttons[buttonID].pos_y, buttons[buttonID].width, buttons[buttonID].height, 2, bkColor);
 
     
@@ -249,27 +256,27 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
     FONTTYPE curFont = _font_text;
 
 
-    if (buttons[buttonID].flags & BUTTON_DISABLED)
+    if (buttons[buttonID].flags & BUTTON_DISABLED) // если кнопка неактивна - применяем цвет неактивного текста
     {
       textColor = _color_text_inactive;
     }
     else
     {
-      if (buttons[buttonID].flags & BUTTON_HAS_FONT_COLOR)
+      if (buttons[buttonID].flags & BUTTON_HAS_FONT_COLOR) // если у кнопки есть свой цвет текста - применяем его
       {
        textColor = buttons[buttonID].fontColor;
       }
       else
       {
-        textColor = _color_text;
+        textColor = _color_text; // иначе - применяем цвет текста по умолчанию
       }
     }
 
-    const char* label = buttons[buttonID].label;
+    const char* label = buttons[buttonID].label; // текст на кнопке
     int icon_x = 0;
     int icon_y = 0;    
  
-    if (buttons[buttonID].flags & BUTTON_SYMBOL)
+    if (buttons[buttonID].flags & BUTTON_SYMBOL) // если кнопка с текстом в виде символа, то вычисляем координаты символа
     {
       _UTFT->setFreeFont(_font_symbol);
       text_x = (buttons[buttonID].width/2) - (pRusPrinter->textWidth(buttons[buttonID].label)/2) + buttons[buttonID].pos_x;
@@ -286,19 +293,19 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
      
       
     }
-    else
+    else // кнопка с обычным текстом
     {
-        if (buttons[buttonID].flags & BUTTON_HAS_FONT)
+        if (buttons[buttonID].flags & BUTTON_HAS_FONT) // если у кнопки есть свой шрифт - применяем его
         {
           _UTFT->setFreeFont(buttons[buttonID].font);
           curFont = buttons[buttonID].font;
         }
         else
         {
-          _UTFT->setFreeFont(_font_text);
+          _UTFT->setFreeFont(_font_text); // иначе применяем шрифт по умолчанию
         }
 
-        if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon)
+        if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon) // если первый символ текста - иконка, то переходим на второй символ текста
         {
           label++;
         }        
@@ -308,12 +315,13 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
       text_y = (buttons[buttonID].height/2) - (_UTFT->fontHeight(1)/2) + buttons[buttonID].pos_y;
       */
 
+      // вычисляем позицию текста внутри прямоугольника кнопки
       int labelWidth = pRusPrinter->textWidth(label);
       int fontHeight = _UTFT->fontHeight(1);
       text_x = ((buttons[buttonID].width/2) - (labelWidth/2)) + buttons[buttonID].pos_x;
       text_y = (buttons[buttonID].height/2) - (fontHeight/2) + buttons[buttonID].pos_y;
 
-      if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon)
+      if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon) // если у кнопки есть иконка - смещаем координаты текста, учитывая ширину иконки
       {
         _UTFT->setFreeFont(_font_icon);
 
@@ -333,18 +341,19 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
 
 //Serial.println("5"); Serial.flush();
 
-    if(buttons[buttonID].flags & BUTTON_HAS_BACK_COLOR && !(buttons[buttonID].flags & BUTTON_DISABLED))
+    if(buttons[buttonID].flags & BUTTON_HAS_BACK_COLOR && !(buttons[buttonID].flags & BUTTON_DISABLED)) // если у кнопки есть фоновый цвет - применяем его
     {
       bkColor = buttons[buttonID].backColor;
     }
     else
     {
-      bkColor = _color_background;      
+      bkColor = _color_background; // иначе - применяем фоновый цвет по умолчанию
     }
-      
+
+     // перачаем текст на экране по рассчитанным координатам
      pRusPrinter->print(label, text_x, text_y, bkColor, textColor);
 
-    if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon)
+    if((buttons[buttonID].flags & BUTTON_HAS_ICON) && _font_icon) // если у кнопки есть иконка - рисуем её
     {
       _UTFT->setFreeFont(_font_icon);
 
@@ -358,7 +367,7 @@ void TFT_Buttons_Rus::drawButton(int buttonID)
 //Serial.println("DONE"); Serial.flush();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setButtonFont(int buttonID, FONTTYPE someFont)
+void TFT_Buttons_Rus::setButtonFont(int buttonID, FONTTYPE someFont) // устанавливаем шрифт для кнопки
 {
     if(buttonID < 0)
     {
@@ -374,7 +383,7 @@ void TFT_Buttons_Rus::setButtonFont(int buttonID, FONTTYPE someFont)
    // Serial.print("TFT_FONT ARE: "); Serial.println((uint32_t)TFT_FONT);Serial.flush();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::enableButton(int buttonID, boolean redraw)
+void TFT_Buttons_Rus::enableButton(int buttonID, boolean redraw) // включаем кнопку
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -391,7 +400,7 @@ void TFT_Buttons_Rus::enableButton(int buttonID, boolean redraw)
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::disableButton(int buttonID, boolean redraw)
+void TFT_Buttons_Rus::disableButton(int buttonID, boolean redraw) // выключаем кнопку
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -408,7 +417,7 @@ void TFT_Buttons_Rus::disableButton(int buttonID, boolean redraw)
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-const char* TFT_Buttons_Rus::getLabel(int buttonID)
+const char* TFT_Buttons_Rus::getLabel(int buttonID) // возвращаем текст кнопки
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -422,7 +431,7 @@ const char* TFT_Buttons_Rus::getLabel(int buttonID)
   return "";
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean redraw)
+void TFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean redraw) // меняем текст на кнопке
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -439,7 +448,7 @@ void TFT_Buttons_Rus::relabelButton(int buttonID, const char *label, boolean red
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-boolean TFT_Buttons_Rus::buttonEnabled(int buttonID)
+boolean TFT_Buttons_Rus::buttonEnabled(int buttonID) // проверяем, активна ли кнопка
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -449,7 +458,7 @@ boolean TFT_Buttons_Rus::buttonEnabled(int buttonID)
 	return !(buttons[buttonID].flags & BUTTON_DISABLED);
 }
 //-------------------------------------------------------------------------------------------------------------------------------------- 
-void TFT_Buttons_Rus::deleteButton(int buttonID)
+void TFT_Buttons_Rus::deleteButton(int buttonID) // удаляем кнопку
 {
 	if (buttonID < 0 || buttonID >= countButtons)
  {
@@ -462,7 +471,7 @@ void TFT_Buttons_Rus::deleteButton(int buttonID)
  }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::deleteAllButtons()
+void TFT_Buttons_Rus::deleteAllButtons() // удаляем все кнопки
 {
 	for (int i=0;i<countButtons;i++)
 	{
@@ -476,15 +485,15 @@ void TFT_Buttons_Rus::deleteAllButtons()
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc released)
+int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc released) // проверяем кнопки на нажатие
 {
   
-    if (_URTouch->TouchPressed())
+    if (_URTouch->TouchPressed()) // если есть нажатие на тачскрин, то
     //if (_URTouch->dataAvailable() == true)
     {
 
       //_URTouch->read();
-      TS_Point p = _URTouch->getPoint();
+      TS_Point p = _URTouch->getPoint(); // получаем координаты
 
 		int		result = -1;
 		int		touch_x = p.x;
@@ -495,7 +504,7 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
    // Serial.print("x: "); Serial.print(touch_x);
    // Serial.print(", y: "); Serial.println(touch_y);
       
-		for (int i=0;i<countButtons;i++)
+		for (int i=0;i<countButtons;i++) // проверяем, есть ли попадание координат тача в координаты любой из кнопок
 		{
 			if (((buttons[i].flags & BUTTON_UNUSED) == 0) and ((buttons[i].flags & BUTTON_DISABLED) == 0) and ((buttons[i].flags & BUTTON_VISIBLE) ) and (result == -1))
 			{
@@ -505,20 +514,20 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
        }
 			}
 		}
-		if (result != -1)
+		if (result != -1) // если кнопка найдена, то
 		{
-			if (!(buttons[result].flags & BUTTON_NO_BORDER))
+			if (!(buttons[result].flags & BUTTON_NO_BORDER)) // рисуем вокруг неё рамку
 			{       
 					_UTFT->drawRoundRect(buttons[result].pos_x, buttons[result].pos_y, buttons[result].width, buttons[result].height, 2, _color_hilite);
           yield();
 			}
-       if(pressed)
+       if(pressed) // если есть обработчик нажатия - вызываем его
        {
         pressed(result);
        }
 		}
    
-		if (result != -1)
+		if (result != -1) // если кнопка найдена - ждём, пока тач не отпустят
 		{
       while (_URTouch->TouchPressed()) 
       //while (_URTouch->dataAvailable() == true) 
@@ -527,12 +536,12 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
         yield(); 
       }
 
-      if(released)
+      if(released) // если есть обработчик отпускания кнопки - вызываем его
       {
         released(result);
       }
 
-			if (!(buttons[result].flags & BUTTON_NO_BORDER))
+			if (!(buttons[result].flags & BUTTON_NO_BORDER)) // если можно рисовать рамку на кнопке - снимаем рамку
 			{
 
         uint16_t cl;
@@ -553,20 +562,22 @@ int TFT_Buttons_Rus::checkButtons(OnCheckButtonsFunc pressed, OnCheckButtonsFunc
 		return result;
 	}
 	else
+  {
 		return -1;
+  }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setTextFont(FONTTYPE font)
+void TFT_Buttons_Rus::setTextFont(FONTTYPE font) // устанавливаем шрифт текста по умолчанию
 {
 	_font_text = font;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setSymbolFont(FONTTYPE font)
+void TFT_Buttons_Rus::setSymbolFont(FONTTYPE font) // устанавливаем шрифт символов по умолчанию
 {
 	_font_symbol = font;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
-void TFT_Buttons_Rus::setButtonColors(word atxt, word iatxt, word brd, word brdhi, word back)
+void TFT_Buttons_Rus::setButtonColors(word atxt, word iatxt, word brd, word brdhi, word back) // устанавливаем цвета по умолчанию
 {
 	_color_text				= atxt;
 	_color_text_inactive	= iatxt;
