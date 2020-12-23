@@ -393,7 +393,7 @@ namespace UROVConfig
             {
                 bool stopped = false;
 
-                while (readed < content.Count && !stopped)
+                while (readed < content.Count && !stopped) // читаем побайтово
                 {
                     if (frm != null)
                     {
@@ -409,15 +409,15 @@ namespace UROVConfig
 
                     LogRecordType recType = (LogRecordType)curByte;
 
-                    switch (recType)
+                    switch (recType) // смотрим тип записи
                     {
-                        case LogRecordType.InterruptInfoBegin:
+                        case LogRecordType.InterruptInfoBegin: // начало информации по прерыванию
                             {
                                 currentInterruptInfo = new InterruptInfo();
                             }
                             break;
 
-                        case LogRecordType.InterruptTime:
+                        case LogRecordType.InterruptTime: // время прерывания
                             {
                                 //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
                                 if (currentInterruptInfo == null)
@@ -441,7 +441,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.SystemTemperature:
+                        case LogRecordType.SystemTemperature: // температура системы
                             {
                                 //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
                                 if (currentInterruptInfo == null)
@@ -461,7 +461,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.InterruptRecordBegin:
+                        case LogRecordType.InterruptRecordBegin: // запись по прерыванию
                             {
                                 //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
                                 if (currentInterruptInfo == null)
@@ -475,7 +475,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.ChannelNumber:
+                        case LogRecordType.ChannelNumber: // номер канала
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -489,7 +489,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.PreviewCount:
+                        case LogRecordType.PreviewCount: // кол-во записей превью по току
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -503,7 +503,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.RodMoveLength:
+                        case LogRecordType.RodMoveLength: // величина перемещения привода
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -518,7 +518,7 @@ namespace UROVConfig
                             break;
 
 
-                        case LogRecordType.ChannelInductiveSensorState:
+                        case LogRecordType.ChannelInductiveSensorState: // состояние индуктивных датчиков
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -533,7 +533,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.RodPosition:
+                        case LogRecordType.RodPosition: // позиция штанги
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -547,7 +547,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.MoveTime:
+                        case LogRecordType.MoveTime: // время перемещения штанги
                             {
                                 // System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -576,7 +576,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.Motoresource:
+                        case LogRecordType.Motoresource: // информация по моторесурсу
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -591,7 +591,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.EthalonNumber:
+                        case LogRecordType.EthalonNumber: // номер эталона
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -606,7 +606,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.CompareResult:
+                        case LogRecordType.CompareResult: // результат сравнения с эталоном
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if (curRecord == null)
@@ -620,7 +620,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.EthalonDataFollow:
+                        case LogRecordType.EthalonDataFollow: // данные эталона
                             {
                                 // следом идут данные эталона, с которым сравнивали
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
@@ -643,15 +643,6 @@ namespace UROVConfig
 
                                 } // for
 
-                                /*
-                                // добавляем фейковую нулевую точку, дублированием первой.
-                                // между ними, таким образом, окажется нулевой промежуток времени.
-                                if (curRecord.EthalonData.Count > 0)
-                                {
-                                    int first = curRecord.EthalonData[0];
-                                    curRecord.EthalonData.Insert(0, first);
-                                }
-                                */
 
                             }
                             break;
@@ -748,7 +739,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.InterruptDataBegin:
+                        case LogRecordType.InterruptDataBegin: // данные импульсов прерывания
                             {
                                 //System.Diagnostics.Debug.Assert(curRecord != null);
                                 if(curRecord == null)
@@ -771,25 +762,16 @@ namespace UROVConfig
 
                                 } // for
 
-                                /*
-                                // добавляем фейковую нулевую точку, дублированием первой.
-                                // между ними, таким образом, окажется нулевой промежуток времени.
-                                if(curRecord.InterruptData.Count > 0)
-                                {
-                                    int first = curRecord.InterruptData[0];
-                                    curRecord.InterruptData.Insert(0, first);
-                                }
-                                */
                             }
                             break;
 
-                        case LogRecordType.InterruptDataEnd:
+                        case LogRecordType.InterruptDataEnd: // конец данных импульсов прерывания
                             {
                                 // конец данных
                             }
                             break;
 
-                        case LogRecordType.InterruptRecordEnd:
+                        case LogRecordType.InterruptRecordEnd: // конец записи по прерыванию
                             {
                                 if (targetGrid != null)
                                 {
@@ -818,7 +800,7 @@ namespace UROVConfig
                             }
                             break;
 
-                        case LogRecordType.InterruptInfoEnd:
+                        case LogRecordType.InterruptInfoEnd: // конец информации по одной записи
                             {
                                 currentInterruptInfo = null;
                             }
@@ -827,7 +809,7 @@ namespace UROVConfig
                 } // while                
             }
 
-            catch
+            catch // ошибка разбора лог-файла
             {
                 if (targetGrid != null)
                 {
@@ -837,6 +819,7 @@ namespace UROVConfig
                 return;
             }
 
+            // если попросили отобразить в таблице - отображаем
             if (targetGrid != null && gridToListCollection.ContainsKey(targetGrid) && gridToListCollection[targetGrid].list != null)
             {
                 if (gridToListCollection.ContainsKey(targetGrid))
@@ -848,6 +831,13 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// Добавляет запись по прерыванию в таблицу
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="targetGrid"></param>
+        /// <param name="addToColumnName"></param>
+        /// <param name="computeMotoresurcePercents"></param>
         private void AddInterruptRecordToList(InterruptRecord record, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents)
         {
             if (record == null)
@@ -867,6 +857,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// Очищает таблицу
+        /// </summary>
+        /// <param name="targetGrid"></param>
         private void ClearInterruptsList(DataGridView targetGrid)
         {
             // Тут очистка таблицы
@@ -881,6 +875,11 @@ namespace UROVConfig
             catch { }
         }
 
+        /// <summary>
+        /// Сохраняет эталон
+        /// </summary>
+        /// <param name="fname"></param>
+        /// <param name="content"></param>
         private void SaveEthalon(string fname, List<byte> content)
         {
 
@@ -928,6 +927,11 @@ namespace UROVConfig
 
         } 
 
+        /// <summary>
+        /// Устанавливает интервал для графика
+        /// </summary>
+        /// <param name="targetChart"></param>
+        /// <param name="interval"></param>
         private void setChartInterval(System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int interval)
         {
             for (int i = 0; i < targetChart.ChartAreas.Count; i++)
@@ -961,6 +965,12 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// Создаёт график эталона
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="targetChart"></param>
+        /// <param name="rodMoveLength"></param>
         private void CreateEthalonChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int rodMoveLength)
         {
 
@@ -1103,6 +1113,16 @@ namespace UROVConfig
           
         }
 
+        /// <summary>
+        /// Добавляет на график метки со скоростью перемещения
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="timeListCount"></param>
+        /// <param name="minPulseTime"></param>
+        /// <param name="avgPulseTime"></param>
+        /// <param name="fullMoveTime"></param>
+        /// <param name="maxInterruptYVal"></param>
+        /// <param name="rodMoveLength"></param>
         void AddCustomSpeedLabels(ChartArea area, int timeListCount, int minPulseTime, float avgPulseTime, int fullMoveTime, int maxInterruptYVal, int rodMoveLength)
         {
             if (timeListCount > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
@@ -1209,7 +1229,7 @@ namespace UROVConfig
                     }
                     break;
 
-                case AnswerBehaviour.SDCommandFILE:
+                case AnswerBehaviour.SDCommandFILE: // загрузка файла
                     {
                         
                             fileReadedBytes += dt.Length;
@@ -1257,7 +1277,7 @@ namespace UROVConfig
                     }
                     break;
 
-                case AnswerBehaviour.SDCommandLS:
+                case AnswerBehaviour.SDCommandLS: // получение списка файлов
                     {
                         // опрашиваем SD, команда LS
                         for (int i = 0; i < dt.Length; i++)
@@ -1312,7 +1332,11 @@ namespace UROVConfig
 
         }
 
-
+        /// <summary>
+        /// Добавляет запись в дерево файлов на SD
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="parent"></param>
         private void AddRecordToSDList(string line, TreeNode parent = null)
         {
             TreeNodeCollection nodes = this.treeViewSD.Nodes;
@@ -1640,6 +1664,9 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// Устанавливает надпись в строке статуса
+        /// </summary>
         private void setConnectionStatusMessage()
         {
             string cguid = Config.Instance.ControllerGUID;
@@ -1664,6 +1691,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// Разбор результатов команды получения уникального ID контроллера
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskUUID(Answer a)
         {
             uuidRequested = true;
@@ -1684,11 +1715,18 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// Создание уникального ID контроллера
+        /// </summary>
+        /// <returns></returns>
         private string GenerateUUID()
         {
             return Guid.NewGuid().ToString("N");
         }
 
+        /// <summary>
+        /// Запрос эталонов с контроллера
+        /// </summary>
         private void RequestEthalons()
         {
             PushCommandToQueue(GET_PREFIX + "FILE|ETL|ET0UP.ETL", DummyAnswerReceiver, SetSDFileReadingFlagEthalon);
@@ -1702,45 +1740,74 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// Обработчик перед запросом величины перемещения штанги
+        /// </summary>
         private void BeforeAskRodMoveLength()
         {
             this.inSetRodSettingsToController = true;
         }
 
-
+        /// <summary>
+        /// Обработчик перед запросом флагов АСУ ТП
+        /// </summary>
         private void BeforeAskAsuTpFlags()
         {
             this.inSetAsuTPFlagsInController = true;
         }
 
+        /// <summary>
+        /// Обработчик перед запросом дельты импульсов
+        /// </summary>
         private void BeforeAskDelta()
         {
             this.inSetDeltaToController = true;
         }
 
+        /// <summary>
+        /// Обработчик перед запросом кол-ва импульсов
+        /// </summary>
         private void BeforeAskPulses()
         {
             this.inSetPulsesToController = true;
         }
+
+        /// <summary>
+        /// Обработчик перед запросом коэффициента по току
+        /// </summary>
         private void BeforeAskCurrentCoeff()
         {
             this.inSetCurrentCoeffToController = true;
         }
+
+        /// <summary>
+        /// Обработчик перед запросом порогов трансформатора
+        /// </summary>
         private void BeforeAskBorders()
         {
             this.inSetBordersToController = true;
         }
+
+        /// <summary>
+        /// Обработчик перед запросом задержки реле
+        /// </summary>
         private void BeforeAskRelayDelay()
         {
             this.inSetRelayDelayToController = true;
         }
 
+        /// <summary>
+        /// Обработчик перед запросом моторесурса
+        /// </summary>
         private void BeforeAskMotoresource()
         {
             this.inSetMotoresourceToController = true;
         }
 
 
+        /// <summary>
+        /// Очищает все данные, связанные с подсоединённым контроллером
+        /// </summary>
         private void ClearAllData()
         {
             this.treeView.Nodes[0].Nodes.Clear();
@@ -1751,6 +1818,10 @@ namespace UROVConfig
             tbFREERAM.Text = "";
         }
 
+        /// <summary>
+        /// Разбор ответа с дельтой импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskDelta(Answer a)
         {
             this.inSetPulsesToController = false;
@@ -1779,6 +1850,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с коэффициентом по току
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskCurrentCoeff(Answer a)
         {
             this.inSetCurrentCoeffToController = false;
@@ -1804,6 +1879,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с количеством импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskPulses(Answer a)
         {
             if (a.IsOkAnswer)
@@ -1833,6 +1912,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с порогами трансформатора
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskBorders(Answer a)
         {
             this.inSetBordersToController = false;
@@ -1871,6 +1954,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с задержкой реле
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskRelayDelay(Answer a)
         {
             this.inSetRelayDelayToController = false;
@@ -1919,6 +2006,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с флагами АСУ ТП
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskAsuTpFlags(Answer a)
         {
             this.inSetAsuTPFlagsInController = false;
@@ -1956,6 +2047,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор ответа с дельтой времени при сравнении с эталоном
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskECDelta(Answer a)
         {
             if (a.IsOkAnswer)
@@ -1980,6 +2075,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор ответа пропуска импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskSkipCounter(Answer a)
         {
             this.inSetDeltaToController = false;
@@ -2005,6 +2104,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор ответа с величиной перемещения привода
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskRodMoveLength(Answer a)
         {
             this.inSetRodSettingsToController = false;
@@ -2031,6 +2134,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор ответа с текущим моторесурсом
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskMotoresurceCurrent(Answer a)
         {
             if (a.IsOkAnswer)
@@ -2056,6 +2163,9 @@ namespace UROVConfig
             UpdateMotoresourcePercents();
         }
 
+        /// <summary>
+        /// обновляет моторесурс, выводимый на экране
+        /// </summary>
         private void UpdateMotoresourcePercents()
         {
             if (this.inSetMotoresourceToController)
@@ -2079,6 +2189,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор ответа с максимальным моторесурсом
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskMotoresurceMax(Answer a)
         {
             this.inSetMotoresourceToController = false;
@@ -2108,6 +2222,10 @@ namespace UROVConfig
         private bool dateTimeFromControllerReceived = false;
         private DateTime controllerDateTime = DateTime.MinValue;
 
+        /// <summary>
+        /// разбор ответа с временем контроллера
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskDatetime(Answer a)
         {
             this.inSetDateTimeToController = false;
@@ -2128,6 +2246,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор ответа с величиной свободной памяти контроллера
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskFreeram(Answer a)
         {
             if (a.IsOkAnswer)
@@ -2145,6 +2267,9 @@ namespace UROVConfig
 
         private FeaturesSettings featuresSettings = new FeaturesSettings();
 
+        /// <summary>
+        /// пересоздание дерева настроек
+        /// </summary>
         private void RecreateTreeView()
         {
 
@@ -2173,21 +2298,29 @@ namespace UROVConfig
         }
 
 
-
-
+        /// <summary>
+        /// представление байта в виде строки в шестнадцатеричном формате
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private string ByteAsHexString(byte b)
         {
             return "0x" + b.ToString("X2");
         }
 
  
-
+        /// <summary>
+        /// перераспределение ширины столбцов в таблице логов
+        /// </summary>
         private void ResizeLogColumns()
         {
             this.logColumn1.Width = this.lvLog.ClientRectangle.Width / 2 - SystemInformation.VerticalScrollBarWidth / 2 - 2;
             this.logColumn2.Width = this.logColumn1.Width;
         }
 
+        /// <summary>
+        /// инициализация архивных записей
+        /// </summary>
         private void InitArchive()
         {
             // загружаем архив
@@ -2208,6 +2341,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// загрузка главной формы приложения
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
             InitSubstitutions();
@@ -2252,6 +2390,9 @@ namespace UROVConfig
             
         }
 
+        /// <summary>
+        /// инициализация дерева настроек
+        /// </summary>
         private void InitTreeView()
         {
             RecreateTreeView();
@@ -2354,6 +2495,11 @@ namespace UROVConfig
         }
 
 
+        /// <summary>
+        /// клик на пункте меню с выбранным для соединения портом
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConnectToSelectedComPort(object sender, EventArgs e)
         {
 
@@ -2377,6 +2523,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// возвращает выбранную скорость соединения с портом
+        /// </summary>
+        /// <returns></returns>
         private int GetConnectionSpeed()
         {
             foreach(ToolStripMenuItem tmi in this.portSpeedToolStripMenuItem.DropDownItems)
@@ -2509,6 +2659,10 @@ namespace UROVConfig
 
         private const int everyNTimerTicksRequestLastTrig = 5;
         private int timerTicksCounter = 0;
+
+        /// <summary>
+        /// обработчик перед чтением последнего срабатывания
+        /// </summary>
         private void SetLastTrigReadingFlag()
         {
             this.answerBehaviour = AnswerBehaviour.SDCommandFILE;
@@ -2516,6 +2670,10 @@ namespace UROVConfig
             this.SDQueryAnswer.Clear();
         }
 
+        /// <summary>
+        /// обратный вызов при чтении последнего срабатывания
+        /// </summary>
+        /// <param name="rec"></param>
         private void LastTrigCallback(InterruptRecord rec)
         {
             // тут показываем форму последнего срабатывания
@@ -2534,6 +2692,10 @@ namespace UROVConfig
             ShowChart(rec, stationID, stationName,false);
         }
 
+        /// <summary>
+        /// просмотр данных последнего срабатывания
+        /// </summary>
+        /// <param name="content"></param>
         private void ViewLastTrigData(List<byte> content)
         {
             if (InvokeRequired)
@@ -2548,6 +2710,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// таймер обработки команд
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmProcessCommandsTimer_Tick(object sender, EventArgs e)
         {
             ProcessNextCommand();
@@ -2555,6 +2722,9 @@ namespace UROVConfig
 
         private AnswerBehaviour answerBehaviour = AnswerBehaviour.Normal;
 
+        /// <summary>
+        /// обработка следующей команды
+        /// </summary>
         private void ProcessNextCommand()
         {
             if (!GrantToProcess())
@@ -2609,6 +2779,11 @@ namespace UROVConfig
             return true;
         }
 
+        /// <summary>
+        /// таймер получения информации по свободной памяти контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmGetSensorsData_Tick(object sender, EventArgs e)
         {
             if (!GrantToProcess())
@@ -2618,18 +2793,27 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// показывает стартовую панель
+        /// </summary>
         private void ShowStartPanel()
         {
             this.plStartPanel.Dock = DockStyle.Fill;
             this.plStartPanel.BringToFront();
         }
 
+        /// <summary>
+        /// показывает основные настройки
+        /// </summary>
         private void ShowMainSettings()
         {
             this.plMainSettings.BringToFront();
             treeView.SelectedNode = treeView.Nodes[0].Nodes[0];
         }
 
+        /// <summary>
+        /// показывает дополнительные настройки
+        /// </summary>
         private void ShowAdditionalSettings()
         {
             this.plAdditionalSettings.BringToFront();
@@ -2637,13 +2821,16 @@ namespace UROVConfig
 
         }
 
-
-
         private void propertyGridSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// таймер времени контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmDateTime_Tick(object sender, EventArgs e)
         {
             if (!dateTimeFromControllerReceived)
@@ -2663,6 +2850,11 @@ namespace UROVConfig
         private DateTime dateTimeToSet = DateTime.MinValue;
         private bool inSetDateTimeToController = false;
 
+        /// <summary>
+        /// установка времени контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetDateTime_Click(object sender, EventArgs e)
         {
             DialogResult dr = MessageBox.Show("Установить время контроллера в локальное время компьютера?", "Подтверждение", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
@@ -2679,6 +2871,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// обработчик результатов установки дельты времени при сравнении с эталоном
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetECDelta(Answer a)
         {
             if (a.IsOkAnswer)
@@ -2691,6 +2887,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик результатов установки величины перемещения привода
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetRodMoveLength(Answer a)
         {
             inSetRodSettingsToController = false;
@@ -2711,6 +2911,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// обработчик результатов установки пропуска импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetSkipCounter(Answer a)
         {
             inSetDeltaToController = false;
@@ -2731,6 +2935,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// обработчик результатов установки дельты импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetDelta(Answer a)
         {
 
