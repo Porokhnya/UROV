@@ -16,12 +16,12 @@ namespace UROVConfig
     public partial class MainForm : Form
     {
 
-        private ToolStripMenuItem lastSelectedPort = null;
-        private ITransport currentTransport = null;
-        private ConnectForm connForm = null;
-        private const char PARAM_DELIMITER = '|';
-        private const string GET_PREFIX = "GET=";
-        private const string SET_PREFIX = "SET=";
+        private ToolStripMenuItem lastSelectedPort = null; // последний выбранный порт
+        private ITransport currentTransport = null; // текущий транспорт
+        private ConnectForm connForm = null; // форма соединения
+        private const char PARAM_DELIMITER = '|'; // разделитель параметров
+        private const string GET_PREFIX = "GET="; // префикс команды получения свойств
+        private const string SET_PREFIX = "SET="; // префикс команды установки свойств
 
         public MainForm()
         {
@@ -30,6 +30,7 @@ namespace UROVConfig
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // по клику на меню "Выход" - завершаем приложение
             Application.Exit();
         }
 
@@ -44,7 +45,10 @@ namespace UROVConfig
             }
             connForm = null;
         }
-
+        /// <summary>
+        /// Пробуем коннектиться к порту
+        /// </summary>
+        /// <param name="portname">имя порта</param>
         void OnTryToConnectToPort(string portname)
         {
             if (InvokeRequired)
@@ -58,7 +62,10 @@ namespace UROVConfig
                 connForm.lblCurrentAction.Text = "Соединяемся с портом " + portname + "...";
             }
         }
-
+        /// <summary>
+        /// Событие отсоединения транспорта от связи
+        /// </summary>
+        /// <param name="transport">транспорт, с которым разорвана связь</param>
         void OnTransportDisconnect(ITransport transport)
         {
             
@@ -102,7 +109,7 @@ namespace UROVConfig
             }
             
 
-            int speed = GetConnectionSpeed();
+            int speed = GetConnectionSpeed(); // получаем скорость соединения
 
             // создаём новый транспорт
             currentTransport = new SerialPortTransport(port,speed);
@@ -118,9 +125,9 @@ namespace UROVConfig
         }
 
         /// <summary>
-        /// Обрабатываем строку, пришедшую из транспорта COM-порта
+        /// Обрабатываем данные, пришедшие из транспорта COM-порта
         /// </summary>
-        /// <param name="line"></param>
+        /// <param name="data">массив данных</param>
         private void OnDataFromCOMPort(byte[] data)
         {
             
@@ -140,15 +147,16 @@ namespace UROVConfig
         }
 
 
-        // Буфер под ответ с SD-карты
+        /// <summary>
+        /// Буфер под ответ с SD-карты
+        /// </summary>
         private List<byte> SDQueryAnswer = new List<byte>();
 
 
         /// <summary>
-        /// Буфер под ответ с COM-порта
+        /// Обрабатываем строку ответа контроллера
         /// </summary>
-        //string COMBuffer = "";
-
+        /// <param name="line">строка ответа</param>
         private void ProcessAnswerLine(string line)
         {
             System.Diagnostics.Debug.WriteLine("<= COM: " + line);
@@ -159,7 +167,7 @@ namespace UROVConfig
                 coreBootFound = true;
             }
 
-            bool isKnownAnswer = line.StartsWith("OK=") || line.StartsWith("ER=");
+            bool isKnownAnswer = line.StartsWith("OK=") || line.StartsWith("ER="); // проверяем на известные типы ответов
 
             this.AddToLog(line, isKnownAnswer); // добавляем данные в лог
 
@@ -178,9 +186,16 @@ namespace UROVConfig
 
         }
 
-        //        private FileDownloadFlags fileDownloadFlags = FileDownloadFlags.View;
 
+        /// <summary>
+        /// Данные для показа лог-файла
+        /// </summary>
         private List<byte> logContentToShow = null;
+
+        /// <summary>
+        /// Показывает лог-файл
+        /// </summary>
+        /// <param name="frm">форма загрузки</param>
         private void DoShowLogFile(ConnectForm frm)
         {
             System.Diagnostics.Debug.Assert(logContentToShow != null);
@@ -189,6 +204,10 @@ namespace UROVConfig
             frm.DialogResult = DialogResult.OK;
         }
 
+        /// <summary>
+        /// Просмотр файла
+        /// </summary>
+        /// <param name="content">содержимое файла</param>
         private void ViewFile(List<byte> content)
         {
             ShowWaitCursor(false);
@@ -202,7 +221,7 @@ namespace UROVConfig
 
             string upStr = this.requestedFileName.ToUpper();
 
-            if (upStr.EndsWith(".LOG"))
+            if (upStr.EndsWith(".LOG")) // это лог-файл
             {
                 ConnectForm cn = new ConnectForm(true);
                 cn.OnConnectFormShown = this.DoShowLogFile;
@@ -211,13 +230,17 @@ namespace UROVConfig
                 cn.ShowDialog();                
 
             }
-            else if (upStr.EndsWith(".ETL"))
+            else if (upStr.EndsWith(".ETL")) // это файл эталона
             {
                 CreateEthalonChart(content, this.ethalonChart, Config.Instance.RodMoveLength);
                 this.plEthalonChart.BringToFront();
             }
         }
 
+        /// <summary>
+        /// Сохраняет файл эталона
+        /// </summary>
+        /// <param name="content">содержимое файла</param>
         private void SaveEthalonFile(List<byte> content)
         {
             SaveEthalon(requestedFileName, content);
@@ -276,6 +299,9 @@ namespace UROVConfig
         private List<int> ethalon2UpData = new List<int>();
         private List<int> ethalon2DwnData = new List<int>();
 
+        /// <summary>
+        /// Очищает все эталоны
+        /// </summary>
         private void ClearEthalons()
         {
             ethalon0UpData.Clear();
@@ -289,6 +315,12 @@ namespace UROVConfig
             this.requestEthalonCounter = 0;
         }
 
+        /// <summary>
+        /// читает два байта
+        /// </summary>
+        /// <param name="content">байтовый массив</param>
+        /// <param name="idx">индекс чтения в массиве</param>
+        /// <returns>возвращает беззнаковое двухбайтовое целое</returns>
         private UInt16 Read16(List<byte> content, int idx)
         {
             UInt16 result = content[idx + 1];
@@ -298,28 +330,53 @@ namespace UROVConfig
             return result;
         }
 
+        /// <summary>
+        /// читает 4 байта
+        /// </summary>
+        /// <param name="content">байтовый массив</param>
+        /// <param name="idx">индекс чтения в массиве</param>
+        /// <returns>возвращает четырёхбайтовое целое</returns>
         private int Read32(List<byte> content, int idx)
         {
             int result = (content[idx + 3] << 24) | (content[idx + 2] << 16) | (content[idx + 1] << 8) | content[idx];
             return result;
         }
 
+        /// <summary>
+        /// Информация с лог-файла
+        /// </summary>
         public class LogInfo
         {
+            /// <summary>
+            /// Список записей в лог-файле
+            /// </summary>
             public List<InterruptRecord> list = new List<InterruptRecord>();
             public string addToColumnName;
             public bool computeMotoresurcePercents;
         }
 
+        /// <summary>
+        /// привязка DataGrid к лог-файлу
+        /// </summary>
         private Dictionary<DataGridView, LogInfo> gridToListCollection = new Dictionary<DataGridView, LogInfo>();
 
         
 
+        /// <summary>
+        /// Показывает лог-файл
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="targetGrid"></param>
+        /// <param name="addToColumnName"></param>
+        /// <param name="computeMotoresurcePercents"></param>
+        /// <param name="frm"></param>
+        /// <param name="callback"></param>
+        /// <param name="stopAfterFirstRecord"></param>
         private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ConnectForm frm, ShowInterruptInfo callback, bool stopAfterFirstRecord)
         {
 
-            string myString = System.Text.Encoding.UTF8.GetString(content.ToArray());
-            System.Diagnostics.Debug.Print(myString);
+//            string myString = System.Text.Encoding.UTF8.GetString(content.ToArray());
+//            System.Diagnostics.Debug.Print(myString);
 
 
             if (targetGrid != null)
