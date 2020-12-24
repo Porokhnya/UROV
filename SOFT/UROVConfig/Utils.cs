@@ -272,6 +272,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// конвертер для перечисления
+    /// </summary>
     public class MyEnumConverter : EnumConverter
     {
         private Type type;
@@ -320,6 +323,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// хэлпер для enum
+    /// </summary>
     public class EnumHelpers
     {
         public static string GetEnumDescription(Enum value)
@@ -559,10 +565,6 @@ namespace UROVConfig
     }
 
 
-
-
-
-
     public class CsvConverter : TypeConverter
     {
         // Overrides the ConvertTo method of TypeConverter.
@@ -633,9 +635,16 @@ namespace UROVConfig
 
     }
 */
+    /// <summary>
+    /// свойства настроек
+    /// </summary>
     public class FeaturesSettings
     {
         private bool sdAvailable = true;
+
+        /// <summary>
+        /// доступна ли SD
+        /// </summary>
         public bool SDAvailable { get { return sdAvailable; } }
 
 
@@ -646,6 +655,9 @@ namespace UROVConfig
 
     }
 
+    /// <summary>
+    /// имя контроллера в связке с уникальным ID
+    /// </summary>
     public class ControllerNameItem
     {
         [XmlAttribute]
@@ -654,6 +666,9 @@ namespace UROVConfig
         public string value;
     }
 
+    /// <summary>
+    /// список известных имён контроллеров
+    /// </summary>
     public class ControllerNames
     {
         private static object lockFlag = new object();
@@ -666,6 +681,9 @@ namespace UROVConfig
             set { cNames = value; }
         }
 
+        /// <summary>
+        /// синглтон
+        /// </summary>
         public static ControllerNames Instance
         {
             get
@@ -706,6 +724,9 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// сохраняем в файл
+        /// </summary>
         public void Save()
         {
             using (System.IO.FileStream fs =
@@ -719,6 +740,9 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// перезагружаем
+        /// </summary>
         public static void Reload()
         {
             instance = null;
@@ -730,6 +754,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// корневой узел дерева архива
+    /// </summary>
     public class ArchiveTreeRootItem
     {
         private string guid = "";
@@ -754,6 +781,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// узел дерева архива с логами
+    /// </summary>
     public class ArchiveTreeLogItem
     {
         private ArchiveTreeRootItem parent = null;
@@ -765,6 +795,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// запись дерева архива с логами
+    /// </summary>
     public class ArchiveTreeLogItemRecord
     {
         private ArchiveTreeLogItem parent = null;
@@ -781,6 +814,9 @@ namespace UROVConfig
         
     }
 
+    /// <summary>
+    /// запись архива с эталонами
+    /// </summary>
     public class ArchiveTreeEthalonItem
     {
         private ArchiveTreeRootItem parent = null;
@@ -792,6 +828,9 @@ namespace UROVConfig
         }
     }
 
+    /// <summary>
+    /// узел дерева архива с эталонами
+    /// </summary>
     public class ArchiveTreeEthalonItemRecord
     {
         private ArchiveTreeEthalonItem parent = null;
@@ -808,6 +847,9 @@ namespace UROVConfig
 
     }
 
+    /// <summary>
+    /// настройки архива
+    /// </summary>
     public class ArchiveSettings
     {
         public ArchiveSettings()
@@ -860,6 +902,9 @@ namespace UROVConfig
         [XmlElement("rodMoveTime")]
         public int RodMoveLength { get { return rodMoveLength; } set { rodMoveLength = value; } }
 
+        /// <summary>
+        /// копируем с конфига
+        /// </summary>
         public void ApplyFromConfig()
         {
             Config c = Config.Instance;
@@ -882,6 +927,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// загружаем архив из файла
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static ArchiveSettings Load(string filename)
         {
             ArchiveSettings toLoad = null;
@@ -906,6 +956,11 @@ namespace UROVConfig
             return toLoad;
         }
 
+        /// <summary>
+        /// сохраняем архив в файл
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public bool Save(string filename)
         {
             bool result = true;
@@ -929,6 +984,9 @@ namespace UROVConfig
 
     }
 
+    /// <summary>
+    /// конфиг приложения
+    /// </summary>
     public class Config
     {
 
@@ -936,6 +994,9 @@ namespace UROVConfig
         private static object lockFlag = new object();
         private static Config instance;
 
+        /// <summary>
+        /// синглтон
+        /// </summary>
         [XmlIgnore]
         public static Config Instance
         {
@@ -978,11 +1039,17 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// перезагружаем
+        /// </summary>
         public static void Reload()
         {
             instance = null;
         }
 
+        /// <summary>
+        /// сохраняем в файл
+        /// </summary>
         public void Save()
         {
             using (FileStream fs =
@@ -997,6 +1064,9 @@ namespace UROVConfig
         {
         }
 
+        /// <summary>
+        /// сброс настроек
+        /// </summary>
         public void Clear()
         {
             motoresourceCurrent1 = 0;
