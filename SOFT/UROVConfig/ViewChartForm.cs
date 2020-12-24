@@ -12,6 +12,12 @@ namespace UROVConfig
 {
     public partial class ViewChartForm : Form
     {
+        /// <summary>
+        /// конструктор
+        /// </summary>
+        /// <param name="rec"></param>
+        /// <param name="si"></param>
+        /// <param name="sn"></param>
         public ViewChartForm(InterruptRecord rec, string si, string sn)
         {
             InitializeComponent();
@@ -35,6 +41,10 @@ namespace UROVConfig
         private string stationID;
         private string stationName;
 
+        /// <summary>
+        /// установка имени файла по умолчанию
+        /// </summary>
+        /// <param name="fname"></param>
         public void setDefaultFileName(string fname)
         {
             saveFileDialog.FileName = fname;
@@ -42,6 +52,11 @@ namespace UROVConfig
             exportToCoMTRADEDialog.FileName = fname;
         }
 
+        /// <summary>
+        /// сохранение в CSV
+        /// </summary>
+        /// <param name="fname"></param>
+        /// <returns></returns>
         private bool SaveToCSV(string fname)
         {
             // серия эталона - у нас 0, прерывания - 1. При наличии прерывания - экспортируем прерывание, иначе - эталон
@@ -81,6 +96,11 @@ namespace UROVConfig
             return true;
         }
 
+        /// <summary>
+        /// экспорт в рисунок
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnExport_Click(object sender, EventArgs e)
         {
 
@@ -130,6 +150,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// экспорт в CSV
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnExportToCSV_Click(object sender, EventArgs e)
         {
             if (exportToCSVDialog.ShowDialog() == DialogResult.OK)
@@ -150,6 +175,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// экспорт в формат COMTRADE
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private bool SaveToCOMTRADE(string filename)
         {
             //TODO: ТУТ ЭКСПОРТ В COMTRADE !!!
@@ -518,6 +548,11 @@ namespace UROVConfig
             return true;
         }
 
+        /// <summary>
+        /// начало экспорта в формат COMTRADE
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnExportToCOMTRADE_Click(object sender, EventArgs e)
         {
             // экспорт в COMTRADE
@@ -540,6 +575,11 @@ namespace UROVConfig
         }
 
         private int interval = 1;
+
+        /// <summary>
+        /// установка интервала графика
+        /// </summary>
+        /// <param name="val"></param>
         public void setInterval(int val)
         {
             interval = val;
@@ -548,6 +588,10 @@ namespace UROVConfig
         private bool ethalonVisible = true;
         private bool interruptVisible = true;
 
+        /// <summary>
+        /// установка флага доступности графика эталона
+        /// </summary>
+        /// <param name="avail"></param>
         public void SetEthalonAvailable(bool avail)
         {
             ethalonVisible = avail;
@@ -562,6 +606,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// установка флага доступности графика тока
+        /// </summary>
+        /// <param name="avail"></param>
         public void SetChartOfCurrentAvailable(bool avail)
         {
             if (avail) // есть токи
@@ -637,6 +685,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// загрузка формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewChartForm_Load(object sender, EventArgs e)
         {
             // задаём настройки масштабирования графиков
@@ -725,6 +778,10 @@ namespace UROVConfig
             realignAreas();
         }
 
+        /// <summary>
+        /// обновление видимости графиков эталона и прерывания
+        /// </summary>
+        /// <param name="area"></param>
         private void dealWithEthalonAndInterrupt(string area)
         {
             if (!ethalonVisible && !interruptVisible)
@@ -755,6 +812,9 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// выравнивание высоты видимых областей графика
+        /// </summary>
         private void realignAreas()
         {
             // выравниваем видимые области по высоте
@@ -793,6 +853,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// клик по графику
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void chart_MouseDown(object sender, MouseEventArgs e)
         {
             HitTestResult result = chart.HitTest(e.X, e.Y);

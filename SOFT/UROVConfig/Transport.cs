@@ -22,7 +22,16 @@ namespace UROVConfig
     /// <param name="message"></param>
     public delegate void ConnectResult(bool success, string message);
 
+    /// <summary>
+    /// обработчик события отсоединения
+    /// </summary>
+    /// <param name="transport"></param>
     public delegate void TransportDisconnect(ITransport transport);
+
+    /// <summary>
+    /// обработчик попытки соединения
+    /// </summary>
+    /// <param name="portName"></param>
     public delegate void TryToConnectToPort(string portName);
      
     public abstract class ITransport
@@ -44,6 +53,12 @@ namespace UROVConfig
         /// <returns></returns>
         public abstract bool WriteLine(string line);
 
+        /// <summary>
+        /// передаёт массив байт
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public abstract bool Write(byte[] data, int length);
 
         /// <summary>
@@ -57,6 +72,9 @@ namespace UROVConfig
         public TryToConnectToPort OnTryToConnectToPort;
     }
 
+    /// <summary>
+    /// класс связи по COM-порту
+    /// </summary>
     public class SerialPortTransport : ITransport
     {
         private SerialPort port = null;
@@ -73,6 +91,11 @@ namespace UROVConfig
         private List<byte> COMAnswer = new List<byte>();
         private bool inFindDeviceMode = false;
 
+        /// <summary>
+        /// получили данные из порта в процессе поиска контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void findDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -117,7 +140,10 @@ namespace UROVConfig
             }
         }
 
-
+        /// <summary>
+        /// начинаем искать подсоединённый контроллер
+        /// </summary>
+        /// <param name="o"></param>
         private void TryFindDevice(object o)
         {
             SerialPort s = (SerialPort)o;
@@ -216,7 +242,11 @@ namespace UROVConfig
             }
         }
 
-       
+       /// <summary>
+       /// вызываем событие коннекта
+       /// </summary>
+       /// <param name="succ"></param>
+       /// <param name="message"></param>
         private void DoOnConnect(bool succ, string message)
         {
             System.Diagnostics.Debug.WriteLine("TRANSPORT: INVOKED CONNECT EVENT...");
@@ -227,6 +257,12 @@ namespace UROVConfig
                 this.OnConnect?.Invoke(succ, message);
             }
         }
+
+        /// <summary>
+        /// коннектимся
+        /// </summary>
+        /// <param name="handshakeEnabled"></param>
+        /// <param name="findDevice"></param>
         public override void  Connect(bool handshakeEnabled, bool findDevice)
         {
             this.withHandshake = handshakeEnabled;
@@ -250,7 +286,9 @@ namespace UROVConfig
  	        
         }
        
-        
+        /// <summary>
+        /// закрываем порт
+        /// </summary>
         private void doClosePort()
         {
             if (this.port != null && this.port.IsOpen)
@@ -276,12 +314,18 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// отсоединяемся
+        /// </summary>
         public override void Disconnect()
         {
             doClosePort();
             CallDisconnectEvent();
         }
 
+        /// <summary>
+        /// вызываем событие отсоединения
+        /// </summary>
         private void CallDisconnectEvent()
         {
             System.Diagnostics.Debug.WriteLine("TRANSPORT: CallDisconnectEvent BEGIN...");
@@ -298,6 +342,10 @@ namespace UROVConfig
             System.Diagnostics.Debug.WriteLine("TRANSPORT: CallDisconnectEvent END.");
         }
 
+        /// <summary>
+        /// проверяем, соединены или нет
+        /// </summary>
+        /// <returns></returns>
         public override bool Connected()
         {
             if (this.port == null)
@@ -309,6 +357,12 @@ namespace UROVConfig
             return this.port.IsOpen && !this.hasWriteError;
         }
 
+        /// <summary>
+        /// пишем данные в порт
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public override bool Write(byte[] data, int length)
         {
             try
@@ -330,6 +384,11 @@ namespace UROVConfig
             return true;
         }
 
+        /// <summary>
+        /// пишем строку в порт
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
         public override bool WriteLine(string line)
         {
             try
@@ -349,7 +408,11 @@ namespace UROVConfig
         }
 
 
-
+        /// <summary>
+        /// конструктор
+        /// </summary>
+        /// <param name="portname"></param>
+        /// <param name="speed"></param>
        public SerialPortTransport(string portname, int speed)
         {
             this.speed = speed;
@@ -363,7 +426,11 @@ namespace UROVConfig
             }
         }
        
-
+        /// <summary>
+        /// получение данных с порта
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try

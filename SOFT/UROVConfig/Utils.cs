@@ -17,25 +17,67 @@ namespace UROVConfig
 
     public delegate void ShowInterruptInfo(InterruptRecord info);
 
+    /// <summary>
+    /// тип узла дерева
+    /// </summary>
     public enum TreeNodeType
     {
+        /// <summary>
+        /// узел главных настроек
+        /// </summary>
         MainSettingsNode,
+        /// <summary>
+        /// узел SD
+        /// </summary>
         SDSettingsNode,
+        /// <summary>
+        /// узел дополнительных настроек
+        /// </summary>
         AdditionalSettingsNode
     }
 
+    /// <summary>
+    /// поведение при получении ответа контроллера
+    /// </summary>
     public enum AnswerBehaviour
     {
+        /// <summary>
+        /// нормальное
+        /// </summary>
         Normal,
+        /// <summary>
+        /// получен список файлов
+        /// </summary>
         SDCommandLS,
+        /// <summary>
+        /// запрошен файл
+        /// </summary>
         SDCommandFILE,
     }
 
+    /// <summary>
+    /// типы узлов дерева SD
+    /// </summary>
     public enum SDNodeTags
     {
+        /// <summary>
+        /// никакой
+        /// </summary>
         TagDummyNode = 100,
+
+        /// <summary>
+        /// неинициализированная папка (файлы ещё не загружены)
+        /// </summary>
         TagFolderUninitedNode,
+
+        /// <summary>
+        /// инициализированная папка (файлы уже загружены)
+        /// </summary>
         TagFolderNode,
+
+        /// <summary>
+        /// файл
+        /// </summary>
         TagFileNode
     }
 
@@ -47,6 +89,9 @@ namespace UROVConfig
     }
     */
 
+    /// <summary>
+    /// тип записи лога
+    /// </summary>
     public enum LogRecordType
     {
         InterruptInfoBegin,   // начало записи по прерыванию в логе
@@ -82,6 +127,9 @@ namespace UROVConfig
 
     }
 
+    /// <summary>
+    /// тип сравнения с эталоном
+    /// </summary>
     public enum EthalonCompareNumber
     {
         [Description("без сравнения")]
@@ -104,6 +152,9 @@ namespace UROVConfig
 
     }
 
+    /// <summary>
+    /// результат сравнения с эталоном
+    /// </summary>
     public enum EthalonCompareResult
     {
         [Description("нет данных")]
@@ -122,6 +173,9 @@ namespace UROVConfig
         MismatchEthalon, // результат не соответствует эталону
     }
 
+    /// <summary>
+    /// позиция штанги
+    /// </summary>
     public enum RodPosition
     {
         [Description("поломана")]
@@ -134,6 +188,9 @@ namespace UROVConfig
         Down // в нижней позиции
     }
 
+    /// <summary>
+    /// состояние индуктивного датчика
+    /// </summary>
     public enum InductiveSensorState
     {
         [Description("неисправен")]
@@ -142,12 +199,18 @@ namespace UROVConfig
         Good
     }
 
+    /// <summary>
+    /// информация по прерыванию
+    /// </summary>
     public class InterruptInfo
     {
-        public DateTime InterruptTime;
-        public float SystemTemperature;
+        public DateTime InterruptTime; // время прерывания
+        public float SystemTemperature; // температура системы
     }
 
+    /// <summary>
+    /// данные по одному каналу
+    /// </summary>
     public class ChannelData
     {
         public int RecordTime = 0;
@@ -155,6 +218,9 @@ namespace UROVConfig
 
     };
 
+    /// <summary>
+    /// данные одной записи по току
+    /// </summary>
     public class CurrentInfo
     {
         public int Time;
@@ -163,19 +229,22 @@ namespace UROVConfig
         public int Channel3;
     }
 
+    /// <summary>
+    /// запись по прерыванию
+    /// </summary>
     public class InterruptRecord
     {
-        public InterruptInfo InterruptInfo;
-        public byte ChannelNumber;
+        public InterruptInfo InterruptInfo; // основная информация
+        public byte ChannelNumber; // номер канала
         //DEPRECATED: public InductiveSensorState InductiveSensorState;
-        public RodPosition RodPosition;
-        public int MoveTime;
-        public int Motoresource;
-        public int DataArrivedTime;
-        public EthalonCompareNumber EthalonCompareNumber;
-        public EthalonCompareResult EthalonCompareResult;
-        public List<int> InterruptData = new List<int>();
-        public List<int> EthalonData = new List<int>();
+        public RodPosition RodPosition; // позиция штанги
+        public int MoveTime; // время перемещения
+        public int Motoresource; // моторесурс
+        public int DataArrivedTime; // время поступления прерывания относительно начала графика по току
+        public EthalonCompareNumber EthalonCompareNumber; // номер сравнения с эталоном
+        public EthalonCompareResult EthalonCompareResult; // результат сравнения с эталоном
+        public List<int> InterruptData = new List<int>(); // данные прерывания
+        public List<int> EthalonData = new List<int>(); // данные эталона
 
         // данные по току каналов
         public List<int> CurrentTimes = new List<int>();
@@ -184,10 +253,10 @@ namespace UROVConfig
         public List<int> CurrentData3 = new List<int>();
 
         //public List<int> DirectionTimes = new List<int>();
-        public List<int> Directions = new List<int>();
+        public List<int> Directions = new List<int>(); // список направлений движения привода
 
-        public int PreviewCount = 0;
-        public int RodMoveLength = 50;
+        public int PreviewCount = 0; // кол-во превью по току
+        public int RodMoveLength = 50; // величина перемещения штанги
     }
 
     public class SDNodeTagHelper

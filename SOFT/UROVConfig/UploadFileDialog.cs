@@ -13,18 +13,30 @@ namespace UROVConfig
     {
         private MainForm mainForm = null;
 
+        /// <summary>
+        /// конструктор
+        /// </summary>
+        /// <param name="f"></param>
         public UploadFileDialog(MainForm f)
         {
             InitializeComponent();
             mainForm = f;
         }
 
+        /// <summary>
+        /// загрузка формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UploadFileDialog_Load(object sender, EventArgs e)
         {
             this.cbRodMove.SelectedIndex = 0;
             FillTreeView();
         }
 
+        /// <summary>
+        /// заполнение дерева
+        /// </summary>
         private void FillTreeView()
         {
             TreeNode srcNode = mainForm.treeView.Nodes[1];
@@ -38,6 +50,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработка записи в архиве
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="archiveItem"></param>
         private void ProcessArchiveItem(TreeNode node, ArchiveTreeRootItem archiveItem)
         {
             for(int i=0;i<node.Nodes.Count;i++)
@@ -50,6 +67,12 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработка эталонов
+        /// </summary>
+        /// <param name="archiveNode"></param>
+        /// <param name="archiveItem"></param>
+        /// <param name="ethalonsNode"></param>
         private void ProcessEthalons(TreeNode archiveNode, ArchiveTreeRootItem archiveItem, TreeNode ethalonsNode)
         {
             for(int i=0;i< ethalonsNode.Nodes.Count;i++)
@@ -62,6 +85,12 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// добавление эталона в дерево
+        /// </summary>
+        /// <param name="archiveNode"></param>
+        /// <param name="archiveItem"></param>
+        /// <param name="ethalonNode"></param>
         private void AddEthalonToTreeView(TreeNode archiveNode, ArchiveTreeRootItem archiveItem, TreeNode ethalonNode)
         {
             TreeNode existingNode = null;
@@ -89,6 +118,10 @@ namespace UROVConfig
             child.Tag = ethalonNode.Tag;
         }
 
+        /// <summary>
+        /// получение имени файла выбранного элемента дерева
+        /// </summary>
+        /// <returns></returns>
         public string GetSelectedFileName()
         {
             if (treeView.SelectedNode == null)
@@ -103,6 +136,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// получение результирующего имени файла
+        /// </summary>
+        /// <returns></returns>
         public string GetTargetFileName()
         {
             int channelNum = Convert.ToInt32(nudChannelNumber.Value);
@@ -114,6 +151,11 @@ namespace UROVConfig
             return result;
         }
 
+        /// <summary>
+        /// закрытие диалога
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnOK_Click(object sender, EventArgs e)
         {
             if (this.GetSelectedFileName().Length < 1)

@@ -16,6 +16,11 @@ namespace UROVConfig
             InitializeComponent();
         }
 
+        /// <summary>
+        /// загрузка формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ControllerNameForm_Load(object sender, EventArgs e)
         {
             if(ControllerNames.Instance.Names.ContainsKey(Config.Instance.ControllerGUID))
@@ -24,6 +29,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// закрытие диалога
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnOK_Click(object sender, EventArgs e)
         {
             if (tbControllerName.Text.Trim().Length < 1)

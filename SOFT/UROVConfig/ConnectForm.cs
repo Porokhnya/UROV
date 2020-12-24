@@ -29,6 +29,11 @@ namespace UROVConfig
 
         public ConnectFormShown OnConnectFormShown = null;
 
+        /// <summary>
+        /// активания формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConnectForm_Activated(object sender, EventArgs e)
         {
             if (!firstTimeActivate)
@@ -47,6 +52,13 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// установка ссылки на главную форму и на настройки соединения
+        /// </summary>
+        /// <param name="fm"></param>
+        /// <param name="port"></param>
+        /// <param name="withHandshake"></param>
+        /// <param name="findDevice"></param>
         public void SetMainFormAndPort(MainForm fm, string port, bool withHandshake, bool findDevice)
         {
             mainForm = fm;
