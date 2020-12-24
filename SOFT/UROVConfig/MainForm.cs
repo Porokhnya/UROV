@@ -2954,7 +2954,10 @@ namespace UROVConfig
                 
         }
 
-
+        /// <summary>
+        /// обработчик результатов установки кол-ва импульсов
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetPulses(Answer a)
         {
             inSetPulsesToController = false;
@@ -2974,6 +2977,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик результатов установки порогов трансформатора
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetBorders(Answer a)
         {
             inSetBordersToController = false;
@@ -2995,6 +3002,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик результатов установки задержки реле
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetRelayDelay(Answer a)
         {
             inSetRelayDelayToController = false;
@@ -3016,6 +3027,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик результатов установки текущего моторесурса
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetMotoresourceCurrent(Answer a)
         {
             if (a.IsOkAnswer)
@@ -3031,6 +3046,10 @@ namespace UROVConfig
             UpdateMotoresourcePercents();
         }
 
+        /// <summary>
+        /// обработчик результатов установки максимального моторесурса
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetMotoresourceMax(Answer a)
         {
             inSetMotoresourceToController = false;
@@ -3052,6 +3071,10 @@ namespace UROVConfig
             UpdateMotoresourcePercents();
         }
 
+        /// <summary>
+        /// обработчик результатов установки времени
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetDatetime(Answer a)
         {
             inSetDateTimeToController = false;
@@ -3070,6 +3093,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// изменение размеров формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Resize(object sender, EventArgs e)
         {
             ResizeLogColumns();
@@ -3081,7 +3109,10 @@ namespace UROVConfig
         }
 
 
-
+        /// <summary>
+        /// показывает или скрывает курсор ожидания
+        /// </summary>
+        /// <param name="show"></param>
         private void ShowWaitCursor(bool show)
         {
             System.Windows.Forms.Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
@@ -3090,7 +3121,11 @@ namespace UROVConfig
 
         }
 
-
+        /// <summary>
+        /// показ окна "О программе"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAbout_Click(object sender, EventArgs e)
         {
             AboutForm ab = new AboutForm();
@@ -3099,17 +3134,30 @@ namespace UROVConfig
 
         private TreeNode currentSDParentNode = null;
 
+        /// <summary>
+        /// сканирование SD
+        /// </summary>
         private void RescanSD()
         {
             btnListSDFiles.Enabled = false;
             PushCommandToQueue(GET_PREFIX + "LS", DummyAnswerReceiver, SetSDReadingFlag);
 
         }
+
+        /// <summary>
+        /// получение списка файлов SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnListSDFiles_Click(object sender, EventArgs e)
         {
             RescanSD();
         }
 
+        /// <summary>
+        /// пустой обработчик ответа
+        /// </summary>
+        /// <param name="a"></param>
         public void DummyAnswerReceiver(Answer a)
         {
 
@@ -3120,6 +3168,10 @@ namespace UROVConfig
         private FileDownloadProgressFunction fileDownloadProgressFunction = null;
         private FileDataParseFunction fileDataParseFunction = null;
 
+        /// <summary>
+        /// разбор одной записи файловой системы на SD
+        /// </summary>
+        /// <param name="line"></param>
         private void ParseSDLSRecord(string line)
         {
             AddToLog(line, false);
@@ -3127,6 +3179,9 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// окончание разбора списка файлов на SD
+        /// </summary>
         private void ParseSDLSDone()
         {
             this.btnListSDFiles.Enabled = true;
@@ -3146,6 +3201,10 @@ namespace UROVConfig
                 }
             } // if
         }
+
+        /// <summary>
+        /// начало получения списка файлов на SD
+        /// </summary>
         private void SetSDReadingFlag()
         {
             lsParseFunction = ParseSDLSDone;
@@ -3156,6 +3215,9 @@ namespace UROVConfig
             this.treeViewSD.Nodes.Clear();
         }
 
+        /// <summary>
+        /// начало получения списка файлов в папке
+        /// </summary>
         private void SetSDFolderReadingFlag()
         {
             lsParseFunction = ParseSDLSDone;
@@ -3167,6 +3229,10 @@ namespace UROVConfig
         }
 
         private Dictionary<string, string> fileNamesSubstitutions = new Dictionary<string, string>();
+
+        /// <summary>
+        /// инициализация замен имён файлов их расшифровкой
+        /// </summary>
         private void InitSubstitutions()
         {
             fileNamesSubstitutions.Clear();
@@ -3185,6 +3251,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// получение имени файла из его расшифровки
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         string getFileNameFromText(string text)
         {
             if(fileNamesSubstitutions.ContainsValue(text))
@@ -3196,6 +3267,11 @@ namespace UROVConfig
             return text;
         }
 
+        /// <summary>
+        /// получение расшифровки из имени файла
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
         string getTextFromFileName(string fName)
         {
             string fileName = fName.ToUpper();
@@ -3209,6 +3285,12 @@ namespace UROVConfig
         }
 
         TreeNode tempSDParentNode = null;
+
+        /// <summary>
+        /// обработчик ракрытия узла дерева на SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void treeViewSD_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             TreeNode wantedExpand = e.Node;
@@ -3231,6 +3313,9 @@ namespace UROVConfig
             PushCommandToQueue(GET_PREFIX + "LS" + PARAM_DELIMITER + folderName, DummyAnswerReceiver, SetSDFolderReadingFlag);
         }
 
+        /// <summary>
+        /// начало чтения файла на SD
+        /// </summary>
         private void SetSDFileReadingFlag()
         {
             this.answerBehaviour = AnswerBehaviour.SDCommandFILE;
@@ -3241,6 +3326,10 @@ namespace UROVConfig
         }
 
         private int requestEthalonCounter = 0;
+
+        /// <summary>
+        /// начало чтения эталона на SD
+        /// </summary>
         private void SetSDFileReadingFlagEthalon()
         {
             this.answerBehaviour = AnswerBehaviour.SDCommandFILE;
@@ -3286,11 +3375,20 @@ namespace UROVConfig
         private int requestedFileSize = 0;
         private int fileReadedBytes = 0;
 
+        /// <summary>
+        /// показ прогресса загрузки файла
+        /// </summary>
+        /// <param name="percents"></param>
+        /// <param name="bytesReceived"></param>
         private void ShowDownloadPercents(int percents, int bytesReceived)
         {
             this.statusProgressBar.Value = percents;
         }
 
+        /// <summary>
+        /// запрос файла
+        /// </summary>
+        /// <param name="node"></param>
         private void RequestFile(TreeNode node)
         {
             if (node == null)
@@ -3329,6 +3427,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор результата получения размера файла
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseAskFileSize(Answer a)
         {
             if(!a.IsOkAnswer)
@@ -3367,6 +3469,10 @@ namespace UROVConfig
         private int archiveWaitForListDone = 0;
         private int archiveListDoneCount = 0;
 
+        /// <summary>
+        /// начало архивирования
+        /// </summary>
+        /// <param name="fm"></param>
         public void StartArchive(ArchiveImportForm fm)
         {
             archiveImportForm = fm;
@@ -3376,6 +3482,9 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// начало получения логов
+        /// </summary>
         private void StartListLogs()
         {
             lsParseFunction = ParseLogsDone;
@@ -3384,6 +3493,9 @@ namespace UROVConfig
             this.SDQueryAnswer.Clear();
         }
 
+        /// <summary>
+        /// окончание получения логов
+        /// </summary>
         private void ParseLogsDone()
         {
             archiveListDoneCount++;
@@ -3395,12 +3507,18 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор одной записи лога
+        /// </summary>
+        /// <param name="rec"></param>
         private void ParseLogsRecord(string rec)
         {
             archiveLogsList.Add(rec);
         }
 
-
+        /// <summary>
+        /// начало получения эталонов
+        /// </summary>
         private void StartListEthalons()
         {
             lsParseFunction = ParseEthalonsDone;
@@ -3409,6 +3527,9 @@ namespace UROVConfig
             this.SDQueryAnswer.Clear();
         }
 
+        /// <summary>
+        /// окончание получения эталонов
+        /// </summary>
         private void ParseEthalonsDone()
         {
             archiveListDoneCount++;
@@ -3420,11 +3541,18 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор одной записи эталона
+        /// </summary>
+        /// <param name="rec"></param>
         private void ParseEthalonsRecord(string rec)
         {
             archiveEthalonsList.Add(rec);
         }
 
+        /// <summary>
+        /// получение размера файлов для архивирования
+        /// </summary>
         private void ArchiveRequestFileSizes()
         {
             archiveImportForm.lblMessage.Text = "Получаем размер файлов для архивирования...";
@@ -3462,6 +3590,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// разбор размера файла эталона для архивирования
+        /// </summary>
+        /// <param name="a"></param>
         private void ArchiveParseEthalonFileSize(Answer a)
         {
             archiveEthalonsIterator++;
@@ -3488,6 +3620,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// разбор размера файла лога для архивирования
+        /// </summary>
+        /// <param name="a"></param>
         private void ArchiveParseLogsFileSize(Answer a)
         {
             archiveLogsIterator++;
@@ -3516,6 +3652,9 @@ namespace UROVConfig
         private int waitForArchiveDownloadListCount = 0;
         private int waitForArchiveDownloadListDone = 0;
 
+        /// <summary>
+        /// скачивание файлов для архивирования
+        /// </summary>
         private void ArchiveDownloadFiles()
         {
             archiveImportForm.lblMessage.Text = "Начинаем скачивать файлы...";
@@ -3539,6 +3678,9 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// начало скачивания эталона
+        /// </summary>
         private void ArchiveStartEthalonFileReading()
         {
             archiveImportForm.lblMessage.Text = "Скачиваем файл \"" + archiveEthalonsList[archiveEthalonsIterator] + "\"...";
@@ -3551,6 +3693,9 @@ namespace UROVConfig
             archiveEthalonsIterator++;
         }
 
+        /// <summary>
+        /// начало скачивания лог-файла
+        /// </summary>
         private void ArchiveStartLogFileReading()
         {
             archiveImportForm.lblMessage.Text = "Скачиваем файл \"" + archiveLogsList[archiveLogsIterator] + "\"...";
@@ -3563,6 +3708,9 @@ namespace UROVConfig
             archiveLogsIterator++;
         }
 
+        /// <summary>
+        /// импорт настроек при архивировании
+        /// </summary>
         private void ArchiveImportSettings()
         {
             if (archiveImportForm.cbSettings.Checked)
@@ -3596,6 +3744,10 @@ namespace UROVConfig
             archiveImportForm = null;
         }
 
+        /// <summary>
+        /// добавление записи в архив
+        /// </summary>
+        /// <param name="guid"></param>
         private void AddItemToArchive(string guid)
         {
             // ищем, есть ли такая запись. Если есть - обновляем, если нет - добавляем
@@ -3649,6 +3801,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// заполнение узла дерева архива информацией с диска
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="eti"></param>
         private void FillArchiveEthalonsList(TreeNode n, ArchiveTreeEthalonItem eti)
         {
             n.Nodes.Clear();
@@ -3673,6 +3830,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// заполнение узла дерева логов архива информацией с диска
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="eti"></param>
         private void FillArchiveLogsList(TreeNode n, ArchiveTreeLogItem eti)
         {
             n.Nodes.Clear();
@@ -3697,6 +3859,12 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// сохранение файла в архив
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="dirName"></param>
+        /// <param name="content"></param>
         private void SaveArchiveFile(string fileName, string dirName, List<byte> content)
         {
             String path = Application.StartupPath + "\\Archive\\" + Config.Instance.ControllerGUID + "\\" + dirName + "\\";
@@ -3726,6 +3894,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик получения файла эталона при архивировании
+        /// </summary>
+        /// <param name="content"></param>
         private void ArchiveEthalonFileReceived(List<byte> content)
         {
             // тут получены данные файла эталона
@@ -3742,6 +3914,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик получения файла лога при архивировании
+        /// </summary>
+        /// <param name="content"></param>
         private void ArchiveLogFileReceived(List<byte> content)
         {
             // тут получены данные файла лога
@@ -3758,6 +3934,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик прогресса скачивания при архивировании
+        /// </summary>
+        /// <param name="percents"></param>
+        /// <param name="bytesReceived"></param>
         private void ArchiveFileDownloadProgress(int percents, int bytesReceived)
         {
             try
@@ -3770,6 +3951,9 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// начало архивирования
+        /// </summary>
         private void DoArchive()
         {
             archiveLogsList.Clear();
@@ -3817,6 +4001,11 @@ namespace UROVConfig
             
         }
 
+        /// <summary>
+        /// таймер перечисления портов в системе
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmEnumComPorts_Tick(object sender, EventArgs e)
         {
 
@@ -3882,7 +4071,11 @@ namespace UROVConfig
             }
         }
 
-
+        /// <summary>
+        /// смена выбранной скорости соединения
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangePortSpeed(object sender, EventArgs e)
         {
             ToolStripMenuItem selItem = sender as ToolStripMenuItem;
@@ -3895,6 +4088,12 @@ namespace UROVConfig
         }
 
         private bool inSetMotoresourceToController = true;
+
+        /// <summary>
+        /// установка текущего моторесурса
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetMotoresourceCurrent_Click(object sender, EventArgs e)
         {
             inSetMotoresourceToController = true;
@@ -3916,6 +4115,12 @@ namespace UROVConfig
         }
 
         private bool inSetPulsesToController = true;
+
+        /// <summary>
+        /// установка кол-ва импульсов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetPulses_Click(object sender, EventArgs e)
         {
             inSetPulsesToController = true;
@@ -3936,6 +4141,12 @@ namespace UROVConfig
 
 
         private bool inSetDeltaToController = true;
+
+        /// <summary>
+        /// установка дельты импульсов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetDelta_Click(object sender, EventArgs e)
         {
             inSetDeltaToController = true;
@@ -3959,19 +4170,29 @@ namespace UROVConfig
         }
         */
 
+        /// <summary>
+        /// получения напряжения на входах
+        /// </summary>
         private void GetVoltage()
         {
             PushCommandToQueue(GET_PREFIX + "VDATA", ParseVoltage);
 
         }
 
-
+        /// <summary>
+        /// таймер получения напряжения на входах
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmInductiveTimer_Tick(object sender, EventArgs e)
         {
             //DEPRECATED: GetInductiveSensors();
             GetVoltage();
         }
 
+        /// <summary>
+        /// сброс отображения напряжения на входах на значения по умолчанию
+        /// </summary>
         private void ResetVoltage()
         {
             lblVoltage1.BackColor = Color.LightGray;
@@ -3986,6 +4207,10 @@ namespace UROVConfig
             */
         }
 
+        /// <summary>
+        /// разбор полученного напряжения на входах
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseVoltage(Answer a)
         {
             if (a.IsOkAnswer)
@@ -4080,6 +4305,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик смены значения текущего моторесурса
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MotoresourceCurrentValueChanged(object sender, EventArgs e)
         {
             UpdateMotoresourcePercents();
@@ -4092,8 +4322,13 @@ namespace UROVConfig
             if (h == null || h.IsDirectory)
                 e.Cancel = true;
                 */
-            }
+       }
 
+        /// <summary>
+        /// обработчик выбора узла дерева SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void treeViewSD_AfterSelect(object sender, TreeViewEventArgs e)
         {
             btnDeleteSDFile.Enabled = false;
@@ -4113,6 +4348,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// удаление файла с SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnDeleteSDFile_Click(object sender, EventArgs e)
         {
             if (treeViewSD.SelectedNode == null)
@@ -4149,11 +4389,21 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// просмотр файла на SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnViewSDFile_Click(object sender, EventArgs e)
         {
             RequestFile(treeViewSD.SelectedNode);
         }
 
+        /// <summary>
+        /// запрос файла с SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void treeViewSD_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             RequestFile(treeViewSD.SelectedNode);
@@ -4161,6 +4411,13 @@ namespace UROVConfig
 
         const int customLabelsCount = 15; // сколько всего наших меток будет на оси X
 
+        /// <summary>
+        /// отображение графика прерывания
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="stationID"></param>
+        /// <param name="stationName"></param>
+        /// <param name="modal"></param>
         private void ShowChart(InterruptRecord record, string stationID, string stationName, bool modal)
         {
             //  System.Diagnostics.Debug.Assert(record != null);
@@ -4711,6 +4968,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// добавление пользовательских меток значения тока на график
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="maxCurrentValue"></param>
         private void AddCustomLabelsOfCurrent(ChartArea area, int maxCurrentValue)
         {
             int currentLabelsCount = 6;
@@ -4736,6 +4998,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// получение значения тока из значения АЦП
+        /// </summary>
+        /// <param name="adcVAL"></param>
+        /// <returns></returns>
         private float GetCurrentFromADC(float adcVAL)
         {
             float result = 0;
@@ -4774,6 +5041,11 @@ namespace UROVConfig
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
 
+        /// <summary>
+        /// клик на ячейке таблицы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void logDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             var senderGrid = (DataGridView)sender;
@@ -4861,12 +5133,21 @@ namespace UROVConfig
 
         byte[] dataToSend = null;
         bool inUploadFileToController = false;
+
+        /// <summary>
+        /// отсыл эталона в контроллер
+        /// </summary>
         private void SendEthalonData()
         {
             this.currentTransport.Write(dataToSend, dataToSend.Length);
             inUploadFileToController = false;
         }
 
+        /// <summary>
+        /// заполнение эталона данными
+        /// </summary>
+        /// <param name="etl"></param>
+        /// <param name="data"></param>
         private void FillEthalonWithData(List<int> etl, byte[] data)
         {
             etl.Clear();
@@ -4894,6 +5175,11 @@ namespace UROVConfig
         private int uploadedEthalonChannel = 0;
         private int uploadedEthalonRod = 0;
 
+        /// <summary>
+        /// загрузка эталона в контроллер
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnUploadEthalon_Click(object sender, EventArgs e)
         {
             UploadFileDialog ufd = new UploadFileDialog(this);
@@ -4923,6 +5209,10 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// окончание загрузки эталона в контроллер
+        /// </summary>
+        /// <param name="a"></param>
         private void UploadEthalonCompleted(Answer a)
         {
             ShowWaitCursor(false);
@@ -4970,12 +5260,22 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// закрытие главной формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             ControllerNames.Instance.Save();
             Config.Instance.Save();
         }
 
+        /// <summary>
+        /// установка имени контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnControllerName_Click(object sender, EventArgs e)
         {
             ControllerNameForm cnf = new ControllerNameForm();
@@ -5006,6 +5306,11 @@ namespace UROVConfig
             setConnectionStatusMessage();
         }
 
+        /// <summary>
+        /// импорт настроек контроллера в архив
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnImportSettings_Click(object sender, EventArgs e)
         {
             ArchiveImportForm af = new ArchiveImportForm(this);
@@ -5014,6 +5319,10 @@ namespace UROVConfig
 
         private string archiveEthalonChartExportFileName;
 
+        /// <summary>
+        /// просмотр эталона в архиве
+        /// </summary>
+        /// <param name="atei"></param>
         private void ShowArchiveEthalon(ArchiveTreeEthalonItemRecord atei)
         {
             string fname = atei.FileName;
@@ -5038,6 +5347,11 @@ namespace UROVConfig
             
         }
 
+        /// <summary>
+        /// чтение лог-файла архива
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <param name="fname"></param>
         private async void DoReadArchiveLog(ConnectForm frm, string fname)
         {
 
@@ -5057,6 +5371,11 @@ namespace UROVConfig
         }
 
         private ArchiveTreeLogItemRecord archiveWorkRecord = null;
+
+        /// <summary>
+        /// показ лог-файла архива
+        /// </summary>
+        /// <param name="frm"></param>
         private void DoShowArchiveLog(ConnectForm frm)
         {
             System.Diagnostics.Debug.Assert(archiveWorkRecord != null);
@@ -5074,6 +5393,10 @@ namespace UROVConfig
             
         }
 
+        /// <summary>
+        /// просмотр лог-файла архива
+        /// </summary>
+        /// <param name="atlir"></param>
         private void ShowArchiveLog(ArchiveTreeLogItemRecord atlir)
         {
             ConnectForm cn = new ConnectForm(true);
@@ -5084,6 +5407,11 @@ namespace UROVConfig
             
         }
 
+        /// <summary>
+        /// выбор узла дерева
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void treeView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             TreeNode selNode = treeView.SelectedNode;
@@ -5104,6 +5432,12 @@ namespace UROVConfig
         }
 
         private bool inSetBordersToController = true;
+
+        /// <summary>
+        /// установка порогов трансформатора
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetBorders_Click(object sender, EventArgs e)
         {
             inSetBordersToController = true;
@@ -5118,6 +5452,12 @@ namespace UROVConfig
 
 
         private bool inSetRelayDelayToController = true;
+
+        /// <summary>
+        /// установка задержки реле
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetRelayDelay_Click(object sender, EventArgs e)
         {
             inSetRelayDelayToController = true;
@@ -5231,6 +5571,11 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// экспорт графика эталона в рисунок
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnExportEthalonToImage_Click(object sender, EventArgs e)
         {            
             saveFileDialog.FileName = archiveEthalonChartExportFileName;
@@ -5280,6 +5625,11 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// обработчик выбора узла дерева настроек
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode selectedNode = e.Node;
@@ -5314,16 +5664,31 @@ namespace UROVConfig
             }
         }
         private bool inSetEthalonRecordToController = false;
+
+        /// <summary>
+        /// запись эталона вверх
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnRecordEthalonUp_Click(object sender, EventArgs e)
         {
             recordEthalon("UP");
         }
 
+        /// <summary>
+        /// запись эталона вниз
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnRecordEthalonDown_Click(object sender, EventArgs e)
         {
             recordEthalon("DOWN");
         }
 
+        /// <summary>
+        /// начало записи эталона
+        /// </summary>
+        /// <param name="dir"></param>
         private void recordEthalon(string dir)
         {
             if(MessageBox.Show("При записи эталона вам необходимо привести штангу в движение.\n\nПри нажатии кнопки \"Отмена\" - запись эталона производиться не будет.\n\nПосле нажатия кнопки \"ОК\" этого диалогового окна - приведите штангу в движение, и дождитесь диалогового окна с сообщением о результатах записи!", "Сообщение", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
@@ -5336,6 +5701,10 @@ namespace UROVConfig
             PushCommandToQueue(GET_PREFIX + "EREC" + PARAM_DELIMITER + dir, ParseRecordEthalon);
         }
 
+        /// <summary>
+        /// завершение записи эталона
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseRecordEthalon(Answer a)
         {
             inSetEthalonRecordToController = false;
@@ -5351,17 +5720,31 @@ namespace UROVConfig
             }
         }
 
+        /// <summary>
+        /// отсоединение
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
             currentTransport.Disconnect();
             this.treeView.Nodes[0].Nodes.Clear();
         }
 
+        /// <summary>
+        /// соединение
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnConnect_Click(object sender, EventArgs e)
         {
             DoConnect("", false, true);
         }
 
+        /// <summary>
+        /// результат тестирования SD
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSDTest(Answer a)
         {
             sdTestForm.DialogResult = DialogResult.OK;
@@ -5391,6 +5774,11 @@ namespace UROVConfig
         }
 
         ConnectForm sdTestForm = null;
+
+        /// <summary>
+        /// начало теста SD
+        /// </summary>
+        /// <param name="frm"></param>
         private void StartSDTest(ConnectForm frm)
         {
             PushCommandToQueue(GET_PREFIX + "SDTEST", ParseSDTest);
@@ -5398,6 +5786,11 @@ namespace UROVConfig
             //frm.DialogResult = DialogResult.OK;
         }
 
+        /// <summary>
+        /// тест SD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSDTest_Click(object sender, EventArgs e)
         {
             DialogResult dr = MessageBox.Show("Начать тест SD-карты?", "Подтверждение", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
@@ -5412,6 +5805,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// установка флагов АСУ ТП
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetCurrentAsuTPFlags(Answer a)
         {
             inSetAsuTPFlagsInController = false;
@@ -5452,6 +5849,10 @@ namespace UROVConfig
 
         }
 
+        /// <summary>
+        /// установка коэффициента тока
+        /// </summary>
+        /// <param name="a"></param>
         private void ParseSetCurrentCoeff(Answer a)
         {
             inSetCurrentCoeffToController = false;
@@ -5472,6 +5873,12 @@ namespace UROVConfig
         }
 
         private bool inSetCurrentCoeffToController = true;
+
+        /// <summary>
+        /// начало установки коэффициента тока
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCurrentCoeff_Click(object sender, EventArgs e)
         {
             inSetCurrentCoeffToController = true;
@@ -5485,6 +5892,12 @@ namespace UROVConfig
 
         private bool inSetAsuTPFlagsInController = true;
         private uint tempAsuTPFlags = 0;
+
+        /// <summary>
+        /// начало установки флагов АСУ ТП
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetAsuTpLags_Click(object sender, EventArgs e)
         {
             inSetAsuTPFlagsInController = true;
@@ -5516,6 +5929,12 @@ namespace UROVConfig
         }
 
         private bool inSetRodSettingsToController = true;
+
+        /// <summary>
+        /// установка величины перемещения привода
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSetRodSettings_Click(object sender, EventArgs e)
         {
             inSetRodSettingsToController = true;
