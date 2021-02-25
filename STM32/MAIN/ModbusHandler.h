@@ -1,11 +1,11 @@
 #pragma once
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
+
 #include <modbus.h>
 #include <modbusDevice.h>
 #include <modbusRegBank.h>
 #include <modbusSlave.h>
-*/
+
 #include "CONFIG.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // работа с MODBUS
@@ -22,8 +22,8 @@ class ModbusHandler
 
 private:
 
-  //modbusDevice mbusRegBank;
-  //modbusSlave mbusSlave;
+  modbusDevice mbusRegBank;
+  modbusSlave mbusSlave;
     
   
 };
