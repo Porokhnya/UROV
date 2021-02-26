@@ -20,10 +20,15 @@ class ModbusHandler
     void update();
 
 
+    modbusDevice* Bank() { return &mbusRegBank; }
+
 private:
 
   modbusDevice mbusRegBank;
   modbusSlave mbusSlave;
+
+
+  void checkForChanges();
     
   
 };

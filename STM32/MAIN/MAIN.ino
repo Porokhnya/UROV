@@ -380,6 +380,11 @@ void setup() // настройка системы в работу
   // настраиваем вывода
   ConfigPin::setup();
 
+  DBGLN(F("Init MODBUS..."));
+  // поднимаем MODBUS
+  Modbus.begin();
+  DBGLN(F("MODBUS inited."));  
+
   DBGLN(F("Init settings..."));
   // загружаем сохранённые в EEPROM настройки
   Settings.begin();
@@ -464,11 +469,6 @@ void setup() // настройка системы в работу
 #endif // !_SD_OFF   
 
  
-
-  DBGLN(F("Init MODBUS..."));
-  // поднимаем MODBUS
-  Modbus.begin();
-  DBGLN(F("MODBUS inited."));
 
 
 
