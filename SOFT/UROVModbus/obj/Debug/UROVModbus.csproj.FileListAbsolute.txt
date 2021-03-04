@@ -1,8 +1,9 @@
+D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\Debug\UROVModbus.exe.config
 D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\Debug\UROVModbus.exe
 D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\Debug\UROVModbus.pdb
-D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.csprojResolveAssemblyReference.cache
+D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\Debug\mbusmaster.net.dll
+D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.MainForm.resources
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.Properties.Resources.resources
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.csproj.GenerateResource.Cache
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.exe
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.pdb
-D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\Debug\UROVModbus.Form1.resources
