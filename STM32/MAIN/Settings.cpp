@@ -35,6 +35,8 @@ SettingsClass::SettingsClass() // конструктор
 #else
   rodDirection = rpUp;
 #endif
+
+  modbus_slave_id = 1;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String SettingsClass::getUUID(const char* passedUUID) // возвращаем уникальный ID контроллера
@@ -241,6 +243,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
 
   if(eeprom)
   {
+    Modbus.setup(); // настраиваем регистры MODBUS
+    
      // читаем задержку реле
      if(!read32(RELAY_DELAY_STORE_ADDRESS,relayDelay))
      {
@@ -363,6 +367,15 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       
       Modbus.Bank()->set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
       Modbus.Bank()->set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
+
+
+       // читаем дельту импульсов
+     if(!read8(MODBUS_SLAVE_ADDRESS,modbus_slave_id))
+     {
+      modbus_slave_id = 1;
+     }
+
+      Modbus.setID(modbus_slave_id);
       
   } // if(eeprom)  
 }
@@ -420,6 +433,14 @@ void SettingsClass::setRodMoveLength(uint32_t val)
 uint8_t SettingsClass::getAsuTpFlags()
 {
   return asuTpFlags;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void SettingsClass::setModbusSlaveID(uint8_t val)
+{
+  modbus_slave_id = val;
+  write8(MODBUS_SLAVE_ADDRESS,modbus_slave_id);
+
+  Modbus.setID(modbus_slave_id);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setAsuTpFlags(uint8_t val)
@@ -580,7 +601,7 @@ uint16_t SettingsClass::getPulses()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setPulses(uint16_t val)
-{
+{  
   channelPulses = val;
   write16(COUNT_PULSES_STORE_ADDRESS,channelPulses);
 

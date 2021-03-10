@@ -1197,6 +1197,9 @@ namespace UROVConfig
         [XmlIgnore]
         public int RodMoveLength { get { return rodMoveLength; } set { rodMoveLength = value; } }
 
+        private int modbusSlaveID = 1;
+        [XmlIgnore]
+        public int ModbusSlaveID { get { return modbusSlaveID; } set { modbusSlaveID = value; } }
 
         private string controllerGUID = "";
         [XmlIgnore]

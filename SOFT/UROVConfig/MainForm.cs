@@ -1642,6 +1642,7 @@ namespace UROVConfig
                 PushCommandToQueue(GET_PREFIX + "SKIPC", ParseAskSkipCounter, BeforeAskDelta);
                 PushCommandToQueue(GET_PREFIX + "ASUTPFLAGS", ParseAskAsuTpFlags, BeforeAskAsuTpFlags);
                 PushCommandToQueue(GET_PREFIX + "RLENGTH", ParseAskRodMoveLength, BeforeAskRodMoveLength);
+                PushCommandToQueue(GET_PREFIX + "MBUSID", ParseAskMBUSID, BeforeAskMBUSID);
 
                 //DEPRECATED: GetInductiveSensors();
                 GetVoltage();
@@ -1746,6 +1747,15 @@ namespace UROVConfig
         private void BeforeAskRodMoveLength()
         {
             this.inSetRodSettingsToController = true;
+        }
+
+
+        /// <summary>
+        /// Обработчик перед запросом ID слейва modbus
+        /// </summary>
+        private void BeforeAskMBUSID()
+        {
+            this.inSetMBUSIDToController = true;
         }
 
         /// <summary>
@@ -2114,12 +2124,12 @@ namespace UROVConfig
 
             if (a.IsOkAnswer)
             {
-                try { Config.Instance.RodMoveLength = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.RodMoveLength = 0; }
+                try { Config.Instance.RodMoveLength = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.RodMoveLength = 1; }
 
             }
             else
             {
-                Config.Instance.RodMoveLength = 0;
+                Config.Instance.RodMoveLength = 1;
             }
 
             try
@@ -2128,10 +2138,39 @@ namespace UROVConfig
             }
             catch
             {
-                nudRodMoveLength.Value = 0;
-                Config.Instance.RodMoveLength = 0;
+                nudRodMoveLength.Value = 1;
+                Config.Instance.RodMoveLength = 1;
             }
 
+        }
+
+        /// <summary>
+        /// разбор ответа с ID слейва модбас
+        /// </summary>
+        /// <param name="a"></param>
+        private void ParseAskMBUSID(Answer a)
+        {
+            this.inSetMBUSIDToController = false;
+
+            if (a.IsOkAnswer)
+            {
+                try { Config.Instance.ModbusSlaveID = Convert.ToInt32(a.Params[1]); } catch { Config.Instance.ModbusSlaveID = 1; }
+
+            }
+            else
+            {
+                Config.Instance.ModbusSlaveID = 1;
+            }
+
+            try
+            {
+                nudModbusSlaveID.Value = Config.Instance.ModbusSlaveID;
+            }
+            catch
+            {
+                nudModbusSlaveID.Value = 1;
+                Config.Instance.ModbusSlaveID = 1;
+            }
         }
 
         /// <summary>
@@ -2438,6 +2477,7 @@ namespace UROVConfig
             this.btnSetBorders.Enabled = bConnected && !inSetBordersToController;
             this.btnSetRelayDelay.Enabled = bConnected && !inSetRelayDelayToController;
             this.btnSetRodSettings.Enabled = bConnected && !inSetRodSettingsToController;
+            this.btnSetModbusSlaveID.Enabled = bConnected && !inSetMBUSIDToController;
 
             this.btnRecordEthalonUp.Enabled = bConnected && !inSetEthalonRecordToController;
             this.btnRecordEthalonDown.Enabled = bConnected && !inSetEthalonRecordToController;
@@ -2905,6 +2945,30 @@ namespace UROVConfig
             else
             {
                 nudRodMoveLength.Value = Config.Instance.RodMoveLength;
+
+                MessageBox.Show("Ошибка обновления параметров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        /// <summary>
+        /// обработчик результатов установки ID слейва modbus
+        /// </summary>
+        /// <param name="a"></param>
+        private void ParseSetMBUSID(Answer a)
+        {
+            inSetMBUSIDToController = false;
+            ShowWaitCursor(false);
+
+            if (a.IsOkAnswer)
+            {
+                Config.Instance.ModbusSlaveID = Convert.ToInt32(nudModbusSlaveID.Value);
+
+                MessageBox.Show("Параметры обновлёны.", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                nudModbusSlaveID.Value = Config.Instance.ModbusSlaveID;
 
                 MessageBox.Show("Ошибка обновления параметров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -5942,6 +6006,17 @@ namespace UROVConfig
 
             string s = Convert.ToString(nudRodMoveLength.Value);
             PushCommandToQueue(SET_PREFIX + "RLENGTH" + PARAM_DELIMITER + s, ParseSetRodMoveLength);
+        }
+
+        private bool inSetMBUSIDToController = true;
+
+        private void btnSetModbusSlaveID_Click(object sender, EventArgs e)
+        {
+            inSetMBUSIDToController = true;
+            ShowWaitCursor(true);
+
+            string s = Convert.ToString(nudModbusSlaveID.Value);
+            PushCommandToQueue(SET_PREFIX + "MBUSID" + PARAM_DELIMITER + s, ParseSetMBUSID);
         }
     }
 

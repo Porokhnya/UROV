@@ -41,6 +41,7 @@ const char CURRENT_COEFF_COMMAND[] PROGMEM = "CCOEFF"; // коэффициент
 const char ECDELTA_COMMAND[] PROGMEM = "ECDELTA"; // дельта времени сравнения импульсов эталона
 const char ASUTP_COMMAND[] PROGMEM = "ASUTPFLAGS"; // флаги выдачи сигналов на линию АСУ ТП
 const char RLENGTH_COMMAND[] PROGMEM = "RLENGTH"; // длина перемещения штанги
+const char MBUSID_COMMAND[] PROGMEM = "MBUSID"; // ID слейва modbus
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -398,7 +399,21 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream) 
               // недостаточно параметров
               commandHandled = printBackSETResult(false,commandName,pStream);
             }
-        } // RLENGTH_COMMAND                 
+        } // RLENGTH_COMMAND   
+         else
+        if(!strcmp_P(commandName, MBUSID_COMMAND)) // установка ID слейва modbus
+        {
+            // запросили установить текущий моторесурс SET=MBUSID|100
+            if(cParser.argsCount() > 1)
+            {
+              commandHandled = setMBUSID(cParser, pStream);
+            }
+            else
+            {
+              // недостаточно параметров
+              commandHandled = printBackSETResult(false,commandName,pStream);
+            }
+        } // MBUSID_COMMAND                    
         else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND)) // установка текущего моторесурса
         {
@@ -552,11 +567,17 @@ void CommandHandlerClass::processCommand(const String& command,Stream* pStream) 
           
         } // SDTEST_COMMAND       
         else
-        if(!strcmp_P(commandName, RLENGTH_COMMAND)) // получение велечины перемещения привода
+        if(!strcmp_P(commandName, RLENGTH_COMMAND)) // получение величины перемещения привода
         {
             commandHandled = getRLENGTH(commandName,cParser,pStream);                    
           
-        } // RLENGTH_COMMAND       
+        } // RLENGTH_COMMAND 
+        else
+        if(!strcmp_P(commandName, MBUSID_COMMAND)) // получение ID слейва modbus
+        {
+            commandHandled = getMBUSID(commandName,cParser,pStream);                    
+          
+        } // MBUSID_COMMAND            
         else
         if(!strcmp_P(commandName, MOTORESOURCE_CURRENT_COMMAND)) // получение текущего моторесурса
         {
@@ -846,7 +867,7 @@ bool CommandHandlerClass::getLASTTRIG(const char* commandPassed, const CommandPa
   */
   if(LastTriggeredInterruptRecordIndex > -1)
   {
-    EEPROM_CLASS* eeprom = Settings.getEEPROM();
+    AT24CX* eeprom = Settings.getEEPROM();
     // вычисляем начало очередной записи в EEPROM
     uint32_t eepromAddress = EEPROM_LAST_3_DATA_ADDRESS + 4 + LastTriggeredInterruptRecordIndex*EEPROM_LAST_3_RECORD_SIZE;
 
@@ -1559,6 +1580,45 @@ bool CommandHandlerClass::setRLENGTH(CommandParser& parser, Stream* pStream) // 
   uint32_t moveLength = atol(parser.getArg(1));
 
   Settings.setRodMoveLength(moveLength);
+  
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(parser.getArg(0));
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  pStream->println(CORE_COMMAND_DONE);
+
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::getMBUSID(const char* commandPassed, const CommandParser& parser, Stream* pStream) // получение ID слейва modbus
+{
+  if(parser.argsCount() < 1)
+  {
+    return false;  
+  }
+
+
+  pStream->print(CORE_COMMAND_ANSWER_OK);
+
+  pStream->print(commandPassed);
+  pStream->print(CORE_COMMAND_PARAM_DELIMITER);
+  
+  pStream->println(Settings.getModbusSlaveID());
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+bool CommandHandlerClass::setMBUSID(CommandParser& parser, Stream* pStream) // установка ID слейва modbus
+{
+  if(parser.argsCount() < 2)
+  {
+    return false;
+  }
+  
+  uint8_t slaveid = atol(parser.getArg(1));
+
+  Settings.setModbusSlaveID(slaveid);
   
   pStream->print(CORE_COMMAND_ANSWER_OK);
 

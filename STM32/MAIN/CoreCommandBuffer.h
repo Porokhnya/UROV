@@ -75,6 +75,9 @@ class CommandHandlerClass // класс-обработчик команд из �
 
   bool setRLENGTH(CommandParser& parser, Stream* pStream); // установка величины перемещения привода
   bool getRLENGTH(const char* commandPassed, const CommandParser& parser, Stream* pStream); // получение величины перемещения привода
+
+  bool setMBUSID(CommandParser& parser, Stream* pStream); // установка ID слейва modbus
+  bool getMBUSID(const char* commandPassed, const CommandParser& parser, Stream* pStream); // получение ID слейва modbus
   
   bool setMOTORESOURCE_MAX(CommandParser& parser, Stream* pStream); // установка максимального моторесурса
   bool getMOTORESOURCE_MAX(const char* commandPassed, const CommandParser& parser, Stream* pStream); // получение максимального моторесурса

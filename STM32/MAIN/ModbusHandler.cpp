@@ -11,11 +11,13 @@ ModbusHandler::ModbusHandler()
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ModbusHandler::begin()
+void ModbusHandler::setID(uint8_t id)
 {
-  
-  mbusRegBank.setId(MODBUS_SLAVE_ID); // устанавливаем ID для слейва MODBUS
-  //mbusRegBank.add(MODBUS_REG_NUM);  // добавляем наш тестовый регистр
+  mbusRegBank.setId(id); // устанавливаем ID для слейва MODBUS  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::setup()
+{
   
   mbusRegBank.add(MODBUS_REG_PULSES);
   mbusRegBank.add(MODBUS_REG_PULSES_DELTA);
@@ -40,15 +42,23 @@ void ModbusHandler::begin()
   mbusRegBank.add(MODBUS_REG_MAXIDLETIME1);
   mbusRegBank.add(MODBUS_REG_MAXIDLETIME2);
   mbusRegBank.add(MODBUS_REG_RODMOVELEN1);
-  mbusRegBank.add(MODBUS_REG_RODMOVELEN2);
+  mbusRegBank.add(MODBUS_REG_RODMOVELEN2);  
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::begin()
+{
+
+  setID(1);
 
   mbusSlave._device = &mbusRegBank; // говорим устройству, где наш банк с регистрами
-  mbusSlave.setSerial(MODBUS_SERIAL_NUMBER,MODBUS_BAUD);                       // Подключение к протоколу MODBUS
+  mbusSlave.setSerial(&(MODBUS_SERIAL),MODBUS_BAUD);                       // Подключение к протоколу MODBUS
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::checkForChanges()
 {
+  return;
+  
   uint8_t pulses =  mbusRegBank.get(MODBUS_REG_PULSES);
   if(pulses != Settings.getPulses())
   {
@@ -127,7 +137,7 @@ void ModbusHandler::checkForChanges()
     Settings.setMaxIdleTime(mres);
   }
 
-  mres = MBUS_32_BIT(MODBUS_REG_RODMOVELEN1,MODBUS_REG_RODMOVELEN1);
+  mres = MBUS_32_BIT(MODBUS_REG_RODMOVELEN1,MODBUS_REG_RODMOVELEN2);  
   if(mres != Settings.getRodMoveLength())
   {
     Settings.setRodMoveLength(mres);

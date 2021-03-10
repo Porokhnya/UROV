@@ -37,7 +37,7 @@ public:
 
   void reloadSettings(); // перезагружаем настройки
 
-  EEPROM_CLASS* getEEPROM() {return eeprom;} // возвращаем указатель на класс работы с памятью
+  AT24CX* getEEPROM() {return eeprom;} // возвращаем указатель на класс работы с памятью
 
 	// возвращает настройку кол-ва импульсов
 	uint16_t getPulses();
@@ -112,6 +112,10 @@ public:
   // работа с величиной перемещения привода
   uint32_t getRodMoveLength() { return rodMoveLength; }
   void setRodMoveLength(uint32_t val);
+
+  // работа со slave ID modbus
+  uint8_t getModbusSlaveID() { return modbus_slave_id; }
+  void setModbusSlaveID(uint8_t val);
     
   private:
 
@@ -130,7 +134,9 @@ public:
 
 	  RodDirection rodDirection;
 
-    EEPROM_CLASS* eeprom;
+    uint8_t modbus_slave_id;
+
+    AT24CX* eeprom;
     DS3231Temperature coreTemp;
     uint32_t timer;
 

@@ -307,7 +307,7 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
 */
 
  const uint8_t CHANNEL_NUM = 0;
- EEPROM_CLASS* eeprom = Settings.getEEPROM();
+ AT24CX* eeprom = Settings.getEEPROM();
 
  uint8_t workBuff[5] = {0};
 
@@ -713,7 +713,7 @@ void InterruptHandlerClass::writeToLog(
   bool toEEPROM // флаг, куда пишем - в EEPROM или на SD
 )
 {
-  EEPROM_CLASS* eeprom = Settings.getEEPROM();
+  AT24CX* eeprom = Settings.getEEPROM();
 
   if(toEEPROM && !eeprom)
   {

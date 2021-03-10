@@ -3,7 +3,7 @@
  Плата:                 BLACK F407VG/VE/ZE/XG boards
  Specific board:        UROV board (LACK F407VG, vector table=0xC000)
  USB:                   Serial [Virtual COM port, PA11/PA12 pins]
- Serial commanication:  Automatically selected based on upload method
+ Serial commanication:  SerialUART1
  Upload method:         STLink [Automatic serial=SerialUSB, address=0x800C000]
  */
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -380,15 +380,11 @@ void setup() // настройка системы в работу
   // настраиваем вывода
   ConfigPin::setup();
 
-  DBGLN(F("Init MODBUS..."));
-  // поднимаем MODBUS
-  Modbus.begin();
-  DBGLN(F("MODBUS inited."));  
-
   DBGLN(F("Init settings..."));
   // загружаем сохранённые в EEPROM настройки
   Settings.begin();
   DBGLN(F("Settings inited."));
+
 
 
   DBGLN(F("Init screen..."));
@@ -492,6 +488,11 @@ void setup() // настройка системы в работу
 #endif // #ifndef _RS485_OFF  
   
 
+
+  DBGLN(F("Init MODBUS..."));
+  // поднимаем MODBUS
+  Modbus.begin();
+  DBGLN(F("MODBUS inited."));  
 
  
 

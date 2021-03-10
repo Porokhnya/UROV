@@ -15,12 +15,15 @@ class ModbusHandler
   public:
 
     ModbusHandler();
-    
+
+    void setup();
     void begin();
     void update();
 
 
     modbusDevice* Bank() { return &mbusRegBank; }
+
+    void setID(uint8_t id);
 
 private:
 
