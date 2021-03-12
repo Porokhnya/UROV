@@ -27,12 +27,6 @@ THE SOFTWARE.
 #ifndef AT24CX_h
 #define AT24CX_h
 
-// AT24Cx I2C adress
-// 80
-// 0x50
-#define AT24CX_ID B1010000
-
-
 // includes
 #include <Arduino.h>
 #include <Wire.h>
@@ -40,6 +34,10 @@ THE SOFTWARE.
 // byte
 typedef uint8_t byte;
 
+// AT24Cx I2C adress
+// 80
+// 0x50
+#define AT24CX_ID B1010000
 
 // general class definition
 class AT24CX 

@@ -251,8 +251,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
        relayDelay = RELAY_WANT_DATA_AFTER;
      }  
 
-      Modbus.Bank()->set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
-      Modbus.Bank()->set(MODBUS_REG_RDELAY2,(word)(relayDelay & 0xffff));
+      Modbus.set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
+      Modbus.set(MODBUS_REG_RDELAY2,(word)(relayDelay & 0xffff));
 
       // читаем задержку АСУ
       if(!read16(ACS_DELAY_STORE_ADDRESS,acsDelay))
@@ -260,7 +260,7 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         acsDelay = ACS_SIGNAL_DELAY;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_ACSDELAY,acsDelay);
+      Modbus.set(MODBUS_REG_ACSDELAY,acsDelay);
 
       // читаем коэффициент тока
       if(!read32(CURRENT_COEFF_STORE_ADDRESS,currentCoeff))
@@ -268,8 +268,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         currentCoeff = CURRENT_COEFF_DEFAULT;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
-      Modbus.Bank()->set(MODBUS_REG_CCOEFF2,(word)(currentCoeff & 0xffff));
+      Modbus.set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
+      Modbus.set(MODBUS_REG_CCOEFF2,(word)(currentCoeff & 0xffff));
       
       // читаем пропуск
       if(!read32(SKIP_COUNTER_STORE_ADDRESS,skipCounter))
@@ -277,8 +277,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         skipCounter = INTERRUPT_SKIP_COUNTER;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
-      Modbus.Bank()->set(MODBUS_REG_SKIPC2,(word)(skipCounter & 0xffff));
+      Modbus.set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
+      Modbus.set(MODBUS_REG_SKIPC2,(word)(skipCounter & 0xffff));
       
 
       // читаем сохранённые импульсы
@@ -287,7 +287,7 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         channelPulses = 0;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_PULSES,channelPulses);
+      Modbus.set(MODBUS_REG_PULSES,channelPulses);
 
       // читаем моторесурс
       if(!read32(MOTORESOURCE_STORE_ADDRESS,motoresource))
@@ -295,8 +295,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         motoresource = 0;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
-      Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE2,(word)(motoresource & 0xffff));
+      Modbus.set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
+      Modbus.set(MODBUS_REG_MOTORESOURCE2,(word)(motoresource & 0xffff));
 
       // читаем максимальный моторесурс
       if(!read32(MOTORESOURCE_MAX_STORE_ADDRESS,motoresourceMax))
@@ -304,8 +304,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         motoresourceMax = 0;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
-      Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE_MAX2,(word)(motoresourceMax & 0xffff));
+      Modbus.set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
+      Modbus.set(MODBUS_REG_MOTORESOURCE_MAX2,(word)(motoresourceMax & 0xffff));
 
       // читаем дельту импульсов
      if(!read8(CHANNEL_PULSES_DELTA_ADDRESS,channelDelta))
@@ -313,7 +313,7 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       channelDelta = 0;
      }
 
-      Modbus.Bank()->set(MODBUS_REG_PULSES_DELTA,channelDelta);
+      Modbus.set(MODBUS_REG_PULSES_DELTA,channelDelta);
      
       // читаем верхнюю границу трансформатора
       if(!read32(TRANSFORMER_HIGH_BORDER_STORE_ADDRESS,transformerHighBorder))
@@ -321,8 +321,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         transformerHighBorder = TRANSFORMER_HIGH_DEFAULT_BORDER;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_THIGH_BORDER1,(word)(transformerHighBorder >> 16));
-      Modbus.Bank()->set(MODBUS_REG_THIGH_BORDER2,(word)(transformerHighBorder & 0xffff));
+      Modbus.set(MODBUS_REG_THIGH_BORDER1,(word)(transformerHighBorder >> 16));
+      Modbus.set(MODBUS_REG_THIGH_BORDER2,(word)(transformerHighBorder & 0xffff));
 
       // читаем нижнюю границу трансформатора
       if(!read32(TRANSFORMER_LOW_BORDER_STORE_ADDRESS,transformerLowBorder))
@@ -330,8 +330,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_TLOW_BORDER1,(word)(transformerLowBorder >> 16));
-      Modbus.Bank()->set(MODBUS_REG_TLOW_BORDER2,(word)(transformerLowBorder & 0xffff));
+      Modbus.set(MODBUS_REG_TLOW_BORDER1,(word)(transformerLowBorder >> 16));
+      Modbus.set(MODBUS_REG_TLOW_BORDER2,(word)(transformerLowBorder & 0xffff));
 
        // читаем дельту времени импульса для эталона
       if(!read32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta))
@@ -339,8 +339,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         ethalonPulseDelta = 50;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
-      Modbus.Bank()->set(MODBUS_REG_ETHALON_PULSES_DELTA2,(word)(ethalonPulseDelta & 0xffff));
+      Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
+      Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA2,(word)(ethalonPulseDelta & 0xffff));
 
       // читаем флаги выдачи сигналов на АСУ ТП
       if(!read8(ASU_TP_SIGNALS_ADDRESS,asuTpFlags))
@@ -348,7 +348,7 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         asuTpFlags = 0xFF; // выдаём сигналы на все линии
       }
 
-      Modbus.Bank()->set(MODBUS_REG_ASUTPFLAGS,asuTpFlags);
+      Modbus.set(MODBUS_REG_ASUTPFLAGS,asuTpFlags);
       
        // читаем время ожидания
       if(!read32(MAX_IDLE_TIME_STORE_ADDRESS,maxIdleTime))
@@ -356,8 +356,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         maxIdleTime = INTERRUPT_MAX_IDLE_TIME;
       }
 
-      Modbus.Bank()->set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
-      Modbus.Bank()->set(MODBUS_REG_MAXIDLETIME2,(word)(maxIdleTime & 0xffff));
+      Modbus.set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
+      Modbus.set(MODBUS_REG_MAXIDLETIME2,(word)(maxIdleTime & 0xffff));
 
        // читаем длину перемещения штанги
       if(!read32(ROD_MOVE_LENGTH_STORE_ADDRESS,rodMoveLength))
@@ -365,8 +365,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         rodMoveLength = DEFAULT_ROD_MOVE_LENGTH;
       }
       
-      Modbus.Bank()->set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
-      Modbus.Bank()->set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
+      Modbus.set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
+      Modbus.set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
 
 
        // читаем дельту импульсов
@@ -425,8 +425,8 @@ void SettingsClass::setRodMoveLength(uint32_t val)
   rodMoveLength = val;
   write32(ROD_MOVE_LENGTH_STORE_ADDRESS,rodMoveLength);
 
-  Modbus.Bank()->set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
-  Modbus.Bank()->set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
+  Modbus.set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
+  Modbus.set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -448,7 +448,7 @@ void SettingsClass::setAsuTpFlags(uint8_t val)
   asuTpFlags = val;
   write8(ASU_TP_SIGNALS_ADDRESS,asuTpFlags);
 
-  Modbus.Bank()->set(MODBUS_REG_ASUTPFLAGS,asuTpFlags);
+  Modbus.set(MODBUS_REG_ASUTPFLAGS,asuTpFlags);
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -462,8 +462,8 @@ void SettingsClass::setEthalonPulseDelta(uint32_t val)
   ethalonPulseDelta = val;
   write32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta);
 
-  Modbus.Bank()->set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
-  Modbus.Bank()->set(MODBUS_REG_ETHALON_PULSES_DELTA2,(word)(ethalonPulseDelta & 0xffff));
+  Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
+  Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA2,(word)(ethalonPulseDelta & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -472,8 +472,8 @@ void SettingsClass::setMaxIdleTime(uint32_t val)
   maxIdleTime = val;
   write32(MAX_IDLE_TIME_STORE_ADDRESS,maxIdleTime);  
 
-  Modbus.Bank()->set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
-  Modbus.Bank()->set(MODBUS_REG_MAXIDLETIME2,(word)(maxIdleTime & 0xffff));
+  Modbus.set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
+  Modbus.set(MODBUS_REG_MAXIDLETIME2,(word)(maxIdleTime & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -487,8 +487,8 @@ void SettingsClass::setCurrentCoeff(uint32_t val)
   currentCoeff = val;
   write32(CURRENT_COEFF_STORE_ADDRESS,currentCoeff);
 
-  Modbus.Bank()->set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
-  Modbus.Bank()->set(MODBUS_REG_CCOEFF2,(word)(currentCoeff & 0xffff));
+  Modbus.set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
+  Modbus.set(MODBUS_REG_CCOEFF2,(word)(currentCoeff & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -502,8 +502,8 @@ void SettingsClass::setRelayDelay(uint32_t val)
   relayDelay = val;
   write32(RELAY_DELAY_STORE_ADDRESS,relayDelay);
 
-  Modbus.Bank()->set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
-  Modbus.Bank()->set(MODBUS_REG_RDELAY2,(word)(relayDelay & 0xffff));
+  Modbus.set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
+  Modbus.set(MODBUS_REG_RDELAY2,(word)(relayDelay & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -517,7 +517,7 @@ void SettingsClass::setACSDelay(uint16_t val)
   acsDelay = val;
   write16(ACS_DELAY_STORE_ADDRESS,acsDelay);
 
-  Modbus.Bank()->set(MODBUS_REG_ACSDELAY,acsDelay);
+  Modbus.set(MODBUS_REG_ACSDELAY,acsDelay);
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -526,8 +526,8 @@ void SettingsClass::setSkipCounter(uint32_t val)
   skipCounter = val;
   write32(SKIP_COUNTER_STORE_ADDRESS,skipCounter);
 
-  Modbus.Bank()->set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
-  Modbus.Bank()->set(MODBUS_REG_SKIPC2,(word)(skipCounter & 0xffff));
+  Modbus.set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
+  Modbus.set(MODBUS_REG_SKIPC2,(word)(skipCounter & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -548,8 +548,8 @@ void SettingsClass::setTransformerLowBorder(uint32_t val)
   
   write32(TRANSFORMER_LOW_BORDER_STORE_ADDRESS,transformerLowBorder);
 
-  Modbus.Bank()->set(MODBUS_REG_TLOW_BORDER1,(word)(transformerLowBorder >> 16));
-  Modbus.Bank()->set(MODBUS_REG_TLOW_BORDER2,(word)(transformerLowBorder & 0xffff));
+  Modbus.set(MODBUS_REG_TLOW_BORDER1,(word)(transformerLowBorder >> 16));
+  Modbus.set(MODBUS_REG_TLOW_BORDER2,(word)(transformerLowBorder & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -560,8 +560,8 @@ void SettingsClass::setTransformerHighBorder(uint32_t val)
 
   write32(TRANSFORMER_HIGH_BORDER_STORE_ADDRESS,transformerHighBorder);
 
-  Modbus.Bank()->set(MODBUS_REG_THIGH_BORDER1,(word)(transformerHighBorder >> 16));
-  Modbus.Bank()->set(MODBUS_REG_THIGH_BORDER2,(word)(transformerHighBorder & 0xffff));
+  Modbus.set(MODBUS_REG_THIGH_BORDER1,(word)(transformerHighBorder >> 16));
+  Modbus.set(MODBUS_REG_THIGH_BORDER2,(word)(transformerHighBorder & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -575,8 +575,8 @@ void SettingsClass::setMotoresource(uint32_t val)
   motoresource = val;
   write32(MOTORESOURCE_STORE_ADDRESS,motoresource);  
 
-  Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
-  Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE2,(word)(motoresource & 0xffff));
+  Modbus.set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
+  Modbus.set(MODBUS_REG_MOTORESOURCE2,(word)(motoresource & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -590,8 +590,8 @@ void SettingsClass::setMotoresourceMax(uint32_t val)
   motoresourceMax = val;
   write32(MOTORESOURCE_MAX_STORE_ADDRESS,motoresourceMax);
 
-  Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
-  Modbus.Bank()->set(MODBUS_REG_MOTORESOURCE_MAX2,(word)(motoresourceMax & 0xffff));
+  Modbus.set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
+  Modbus.set(MODBUS_REG_MOTORESOURCE_MAX2,(word)(motoresourceMax & 0xffff));
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -605,7 +605,7 @@ void SettingsClass::setPulses(uint16_t val)
   channelPulses = val;
   write16(COUNT_PULSES_STORE_ADDRESS,channelPulses);
 
-  Modbus.Bank()->set(MODBUS_REG_PULSES,channelPulses);
+  Modbus.set(MODBUS_REG_PULSES,channelPulses);
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -619,7 +619,7 @@ void SettingsClass::setPulsesDelta(uint8_t val)
   channelDelta = val;
   write8(CHANNEL_PULSES_DELTA_ADDRESS,channelDelta);
 
-  Modbus.Bank()->set(MODBUS_REG_PULSES_DELTA,channelDelta);
+  Modbus.set(MODBUS_REG_PULSES_DELTA,channelDelta);
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

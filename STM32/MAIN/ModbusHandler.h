@@ -21,11 +21,17 @@ class ModbusHandler
     void update();
 
 
-    modbusDevice* Bank() { return &mbusRegBank; }
+    // установка значения регистра
+    void set(uint16_t reg, uint16_t val);
 
+    // получение значения регистра
+    uint16_t get(uint16_t reg);
+
+    // установка ID слейва
     void setID(uint8_t id);
 
 private:
+
 
   modbusDevice mbusRegBank;
   modbusSlave mbusSlave;
