@@ -32,6 +32,7 @@
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.tabPages = new System.Windows.Forms.TabControl();
             this.tpModbusSettings = new System.Windows.Forms.TabPage();
+            this.lblInfoText = new System.Windows.Forms.Label();
             this.GroupBox3 = new System.Windows.Forms.GroupBox();
             this.btnCloseTCP = new System.Windows.Forms.Button();
             this.btnOpenTCP = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@
             this.Label10 = new System.Windows.Forms.Label();
             this.txtTCPPort = new System.Windows.Forms.TextBox();
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnReloadPorts = new System.Windows.Forms.Button();
             this.FindSerial = new System.Windows.Forms.Button();
             this.btnCloseSerial = new System.Windows.Forms.Button();
             this.cmbDataBits = new System.Windows.Forms.ComboBox();
@@ -65,16 +67,12 @@
             this.txtPollDelay = new System.Windows.Forms.TextBox();
             this.Label9 = new System.Windows.Forms.Label();
             this.tpUROVSettings = new System.Windows.Forms.TabPage();
-            this.btnReloadPorts = new System.Windows.Forms.Button();
-            this.lblInfoText = new System.Windows.Forms.Label();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.btnREGTest = new System.Windows.Forms.Button();
             this.tabPages.SuspendLayout();
             this.tpModbusSettings.SuspendLayout();
             this.GroupBox3.SuspendLayout();
             this.GroupBox2.SuspendLayout();
             this.GroupBox1.SuspendLayout();
-            this.tpUROVSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusBar
@@ -109,6 +107,17 @@
             this.tpModbusSettings.TabIndex = 0;
             this.tpModbusSettings.Text = "Соединение";
             this.tpModbusSettings.UseVisualStyleBackColor = true;
+            // 
+            // lblInfoText
+            // 
+            this.lblInfoText.BackColor = System.Drawing.SystemColors.Info;
+            this.lblInfoText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblInfoText.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblInfoText.Location = new System.Drawing.Point(28, 434);
+            this.lblInfoText.Name = "lblInfoText";
+            this.lblInfoText.Padding = new System.Windows.Forms.Padding(6);
+            this.lblInfoText.Size = new System.Drawing.Size(825, 54);
+            this.lblInfoText.TabIndex = 17;
             // 
             // GroupBox3
             // 
@@ -224,6 +233,16 @@
             this.GroupBox2.TabStop = false;
             this.GroupBox2.Text = "Serial Modbus";
             // 
+            // btnReloadPorts
+            // 
+            this.btnReloadPorts.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnReloadPorts.Location = new System.Drawing.Point(13, 344);
+            this.btnReloadPorts.Name = "btnReloadPorts";
+            this.btnReloadPorts.Size = new System.Drawing.Size(265, 40);
+            this.btnReloadPorts.TabIndex = 16;
+            this.btnReloadPorts.Text = "Перечитать порты";
+            this.btnReloadPorts.Click += new System.EventHandler(this.btnReloadPorts_Click);
+            // 
             // FindSerial
             // 
             this.FindSerial.Enabled = false;
@@ -233,6 +252,7 @@
             this.FindSerial.Size = new System.Drawing.Size(265, 40);
             this.FindSerial.TabIndex = 15;
             this.FindSerial.Text = "Поиск Serial";
+            this.FindSerial.Visible = false;
             // 
             // btnCloseSerial
             // 
@@ -446,7 +466,6 @@
             // 
             // tpUROVSettings
             // 
-            this.tpUROVSettings.Controls.Add(this.btnREGTest);
             this.tpUROVSettings.Location = new System.Drawing.Point(4, 22);
             this.tpUROVSettings.Name = "tpUROVSettings";
             this.tpUROVSettings.Padding = new System.Windows.Forms.Padding(3);
@@ -455,42 +474,10 @@
             this.tpUROVSettings.Text = "Настройки UROV";
             this.tpUROVSettings.UseVisualStyleBackColor = true;
             // 
-            // btnReloadPorts
-            // 
-            this.btnReloadPorts.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnReloadPorts.Location = new System.Drawing.Point(13, 344);
-            this.btnReloadPorts.Name = "btnReloadPorts";
-            this.btnReloadPorts.Size = new System.Drawing.Size(265, 40);
-            this.btnReloadPorts.TabIndex = 16;
-            this.btnReloadPorts.Text = "Перечитать порты";
-            this.btnReloadPorts.Click += new System.EventHandler(this.btnReloadPorts_Click);
-            // 
-            // lblInfoText
-            // 
-            this.lblInfoText.BackColor = System.Drawing.SystemColors.Info;
-            this.lblInfoText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblInfoText.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblInfoText.Location = new System.Drawing.Point(28, 434);
-            this.lblInfoText.Name = "lblInfoText";
-            this.lblInfoText.Padding = new System.Windows.Forms.Padding(6);
-            this.lblInfoText.Size = new System.Drawing.Size(825, 54);
-            this.lblInfoText.TabIndex = 17;
-            // 
             // tmCheckConnectTimer
             // 
             this.tmCheckConnectTimer.Interval = 800;
             this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
-            // 
-            // btnREGTest
-            // 
-            this.btnREGTest.Enabled = false;
-            this.btnREGTest.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnREGTest.Location = new System.Drawing.Point(337, 234);
-            this.btnREGTest.Name = "btnREGTest";
-            this.btnREGTest.Size = new System.Drawing.Size(207, 40);
-            this.btnREGTest.TabIndex = 17;
-            this.btnREGTest.Text = "ТЕСТ РЕГИСТРОВ";
-            this.btnREGTest.Click += new System.EventHandler(this.btnREGTest_Click);
             // 
             // MainForm
             // 
@@ -514,7 +501,6 @@
             this.GroupBox2.ResumeLayout(false);
             this.GroupBox1.ResumeLayout(false);
             this.GroupBox1.PerformLayout();
-            this.tpUROVSettings.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -561,7 +547,6 @@
         private System.Windows.Forms.Button btnReloadPorts;
         private System.Windows.Forms.Label lblInfoText;
         private System.Windows.Forms.Timer tmCheckConnectTimer;
-        private System.Windows.Forms.Button btnREGTest;
     }
 }
 

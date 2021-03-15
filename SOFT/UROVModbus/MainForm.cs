@@ -462,18 +462,6 @@ namespace UROVModbus
             }
         }
 
-        private void btnREGTest_Click(object sender, EventArgs e)
-        {
-            if (myProtocol == null || !myProtocol.isOpen())
-                return;
-
-            short[] readVals = new short[64];
-            int startRdReg = 0; // стартовый регистр для чтения
-            int numRdRegs = 24; // кол-во регистров для чтения
-            int slave = 100; // номер слейва
-
-            int res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, numRdRegs);    // 03  Считать число из регистров по адресу  40000 -49999
-            ShowInfo("Результат: " + (BusProtocolErrors.getBusProtocolErrorText(res) + "\r\n"));
-        }
+       
     }
 }
