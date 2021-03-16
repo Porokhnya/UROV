@@ -462,6 +462,99 @@ namespace UROVModbus
             }
         }
 
-       
+        private void btnReadRegisters_Click(object sender, EventArgs e)
+        {
+            ReadRegisters();
+        }
+
+        private void UpdateMotoresourcePercents(int currentPercents, int maxPercents)
+        {
+            NumberFormatInfo nfi = new NumberFormatInfo();
+            nfi.NumberDecimalSeparator = ".";
+
+            float percents = 0;
+            if (maxPercents > 0)
+                percents = (100.0f * currentPercents) / maxPercents;
+
+            Color foreColor = Color.Green;
+            if (percents >= 90.0f)
+                foreColor = Color.Red;
+
+            lblMotoresourcePercents1.ForeColor = foreColor;
+            lblMotoresourcePercents1.Text = percents.ToString("n1", nfi) + "%";
+
+
+
+        }
+
+        private UInt32 MakeUInt32(UInt16 reg1, UInt16 reg2)
+        {
+            UInt32 res = (UInt32) reg1;
+            res <<= 16;
+            res |= reg2;
+
+            return res;
+        }
+
+        private void ReadRegisters()
+        {
+            if(myProtocol != null && myProtocol.isOpen())
+            {
+                // читаем регистры прибора
+                const int regs_to_read = 30;  //TODO: КОЛИЧЕСТВО РЕГИСТРОВ К ЧТЕНИЮ
+                UInt16[] readVals = new UInt16[regs_to_read];
+                int slave;
+                int startRdReg;
+                int numRdRegs;
+                int res;
+
+                slave = Convert.ToInt32(nudModbusSlaveID.Value);
+                startRdReg = 0; // 40000 регистр для количества импульсов
+                numRdRegs = regs_to_read;
+
+                res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, numRdRegs);
+                if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                {
+                    // регистры прочитаны, надо заполнять данные формы!!!
+
+                    // MODBUS_REG_PULSES                         40000 // регистр для количества импульсов
+                    int pulses = readVals[0];
+                    nudPulses1.Value = pulses;
+
+                    // MODBUS_REG_PULSES_DELTA                   40001 // регистр для дельты импульсов
+                    int pulsesDelta = readVals[1];
+                    nudDelta1.Value = pulsesDelta;
+
+                    // 40002 // регистр 1 для дельты времени сравнения импульсов с  эталоном
+                    // 40003 // регистр 2 для дельты времени сравнения импульсов с  эталоном
+                    nudEthalonCompareDelta.Value = MakeUInt32(readVals[2], readVals[3]);
+
+                    // MODBUS_REG_MOTORESOURCE1                  40004 // регистр 1 для моторесурса
+                    // MODBUS_REG_MOTORESOURCE2                  40005 // регистр 2 для моторесурса
+                    nudMotoresourceCurrent1.Value = MakeUInt32(readVals[4], readVals[5]);
+
+                    // MODBUS_REG_MOTORESOURCE_MAX1              40006 // регистр 1 для максимального моторесурса
+                    // MODBUS_REG_MOTORESOURCE_MAX2              40007 // регистр 2 для максимального моторесурса
+                    nudMotoresourceMax1.Value = MakeUInt32(readVals[6], readVals[7]);
+
+                    // обновляем метку процентов моторесурса
+                    UpdateMotoresourcePercents(Convert.ToInt32(nudMotoresourceCurrent1.Value), Convert.ToInt32(nudMotoresourceMax1.Value));
+
+                    // MODBUS_REG_TLOW_BORDER1                   40008 // регистр 1 для нижнего порога трансформатора
+                    // MODBUS_REG_TLOW_BORDER2                   40009 // регистр 2 для нижнего порога трансформатора
+                    nudLowBorder.Value = MakeUInt32(readVals[8], readVals[9]);
+
+                    // MODBUS_REG_THIGH_BORDER1                  40010 // регистр 1 для верхнего порога трансформатора
+                    // MODBUS_REG_THIGH_BORDER2                  40011 // регистр 2 для верхнего порога трансформатора
+                    nudHighBorder.Value = MakeUInt32(readVals[10], readVals[11]);
+
+                }
+                else
+                {
+                    // ошибка чтения регистров !!!
+                    MessageBox.Show("Ошибка чтения регистров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
     }
 }
