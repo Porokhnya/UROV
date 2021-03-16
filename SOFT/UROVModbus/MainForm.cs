@@ -548,6 +548,53 @@ namespace UROVModbus
                     // MODBUS_REG_THIGH_BORDER2                  40011 // регистр 2 для верхнего порога трансформатора
                     nudHighBorder.Value = MakeUInt32(readVals[10], readVals[11]);
 
+                    // MODBUS_REG_RDELAY1                        40012 // регистр 1 для задержки реле
+                    // MODBUS_REG_RDELAY2                        40013 // регистр 2 для задержки реле
+                    nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13]);
+
+                    // MODBUS_REG_ACSDELAY                       40014 // регистр 1 для задержки ACS
+                    // не используется
+
+                    // MODBUS_REG_SKIPC1                         40015 // регистр 1 для пропуска импульсов
+                    // MODBUS_REG_SKIPC2                         40016 // регистр 2 для пропуска импульсов
+                    nudSkipCounter.Value = MakeUInt32(readVals[15], readVals[16]);
+
+                    // MODBUS_REG_CCOEFF1                        40017 // регистр 1 для коэффициента тока
+                    // MODBUS_REG_CCOEFF2                        40018 // регистр 2 для коэффициента тока
+                    nudCurrentCoeff.Value = MakeUInt32(readVals[17], readVals[18]);
+
+                    // MODBUS_REG_ASUTPFLAGS                     40019 // регистр для флагов АСУ ТП
+                    int asutpFlags = readVals[19];
+                    cbAsuTpLine1.Checked = false;
+                    cbAsuTpLine2.Checked = false;
+                    cbAsuTpLine3.Checked = false;
+                    cbAsuTpLine4.Checked = false;
+
+                    if ((asutpFlags & 1) != 0)
+                    {
+                        cbAsuTpLine1.Checked = true;
+                    }
+                    if ((asutpFlags & 2) != 0)
+                    {
+                        cbAsuTpLine2.Checked = true;
+                    }
+                    if ((asutpFlags & 4) != 0)
+                    {
+                        cbAsuTpLine3.Checked = true;
+                    }
+                    if ((asutpFlags & 8) != 0)
+                    {
+                        cbAsuTpLine4.Checked = true;
+                    }
+
+                    // MODBUS_REG_MAXIDLETIME1                   40020 // регистр 1 для времени ожидания окончания импульсов
+                    // MODBUS_REG_MAXIDLETIME2                   40021 // регистр 2 для времени ожидания окончания импульсов
+                    nudMaxIdleTime.Value = MakeUInt32(readVals[20], readVals[21]);
+
+                    // MODBUS_REG_RODMOVELEN1                    40022 // регистр 1 для величины перемещения штанги
+                    // MODBUS_REG_RODMOVELEN2                    40023 // регистр 2 для величины перемещения штанги
+                    nudRodMoveLength.Value = MakeUInt32(readVals[22], readVals[23]);
+
                 }
                 else
                 {
