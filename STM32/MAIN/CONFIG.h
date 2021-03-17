@@ -246,34 +246,34 @@
 
 // регистры MODBUS
 
-#define MODBUS_REG_PULSES                         40000 // регистр для количества импульсов
-#define MODBUS_REG_PULSES_DELTA                   40001 // регистр для дельты импульсов
-#define MODBUS_REG_ETHALON_PULSES_DELTA1          40002 // регистр 1 для дельты времени сравнения импульсов с  эталоном
-#define MODBUS_REG_ETHALON_PULSES_DELTA2          40003 // регистр 2 для дельты времени сравнения импульсов с  эталоном
-#define MODBUS_REG_MOTORESOURCE1                  40004 // регистр 1 для моторесурса
-#define MODBUS_REG_MOTORESOURCE2                  40005 // регистр 2 для моторесурса
-#define MODBUS_REG_MOTORESOURCE_MAX1              40006 // регистр 1 для максимального моторесурса
-#define MODBUS_REG_MOTORESOURCE_MAX2              40007 // регистр 2 для максимального моторесурса
-#define MODBUS_REG_TLOW_BORDER1                   40008 // регистр 1 для нижнего порога трансформатора
-#define MODBUS_REG_TLOW_BORDER2                   40009 // регистр 2 для нижнего порога трансформатора
-#define MODBUS_REG_THIGH_BORDER1                  40010 // регистр 1 для верхнего порога трансформатора
-#define MODBUS_REG_THIGH_BORDER2                  40011 // регистр 2 для верхнего порога трансформатора
-#define MODBUS_REG_RDELAY1                        40012 // регистр 1 для задержки реле
-#define MODBUS_REG_RDELAY2                        40013 // регистр 2 для задержки реле
-#define MODBUS_REG_ACSDELAY                       40014 // регистр 1 для задержки ACS
-#define MODBUS_REG_SKIPC1                         40015 // регистр 1 для пропуска импульсов
-#define MODBUS_REG_SKIPC2                         40016 // регистр 2 для пропуска импульсов
-#define MODBUS_REG_CCOEFF1                        40017 // регистр 1 для коэффициента тока
-#define MODBUS_REG_CCOEFF2                        40018 // регистр 2 для коэффициента тока
-#define MODBUS_REG_ASUTPFLAGS                     40019 // регистр для флагов АСУ ТП
-#define MODBUS_REG_MAXIDLETIME1                   40020 // регистр 1 для времени ожидания окончания импульсов
-#define MODBUS_REG_MAXIDLETIME2                   40021 // регистр 2 для времени ожидания окончания импульсов
-#define MODBUS_REG_RODMOVELEN1                    40022 // регистр 1 для величины перемещения штанги
-#define MODBUS_REG_RODMOVELEN2                    40023 // регистр 2 для величины перемещения штанги
+#define MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
+#define MODBUS_REG_PULSES_DELTA                   40002 // регистр для дельты импульсов
+#define MODBUS_REG_ETHALON_PULSES_DELTA1          40003 // регистр 1 для дельты времени сравнения импульсов с  эталоном
+#define MODBUS_REG_ETHALON_PULSES_DELTA2          40004 // регистр 2 для дельты времени сравнения импульсов с  эталоном
+#define MODBUS_REG_MOTORESOURCE1                  40005 // регистр 1 для моторесурса
+#define MODBUS_REG_MOTORESOURCE2                  40006 // регистр 2 для моторесурса
+#define MODBUS_REG_MOTORESOURCE_MAX1              40007 // регистр 1 для максимального моторесурса
+#define MODBUS_REG_MOTORESOURCE_MAX2              40008 // регистр 2 для максимального моторесурса
+#define MODBUS_REG_TLOW_BORDER1                   40009 // регистр 1 для нижнего порога трансформатора
+#define MODBUS_REG_TLOW_BORDER2                   40010 // регистр 2 для нижнего порога трансформатора
+#define MODBUS_REG_THIGH_BORDER1                  40011 // регистр 1 для верхнего порога трансформатора
+#define MODBUS_REG_THIGH_BORDER2                  40012 // регистр 2 для верхнего порога трансформатора
+#define MODBUS_REG_RDELAY1                        40013 // регистр 1 для задержки реле
+#define MODBUS_REG_RDELAY2                        40014 // регистр 2 для задержки реле
+#define MODBUS_REG_ACSDELAY                       40015 // регистр 1 для задержки ACS
+#define MODBUS_REG_SKIPC1                         40016 // регистр 1 для пропуска импульсов
+#define MODBUS_REG_SKIPC2                         40017 // регистр 2 для пропуска импульсов
+#define MODBUS_REG_CCOEFF1                        40018 // регистр 1 для коэффициента тока
+#define MODBUS_REG_CCOEFF2                        40019 // регистр 2 для коэффициента тока
+#define MODBUS_REG_ASUTPFLAGS                     40020 // регистр для флагов АСУ ТП
+#define MODBUS_REG_MAXIDLETIME1                   40021 // регистр 1 для времени ожидания окончания импульсов
+#define MODBUS_REG_MAXIDLETIME2                   40022 // регистр 2 для времени ожидания окончания импульсов
+#define MODBUS_REG_RODMOVELEN1                    40023 // регистр 1 для величины перемещения штанги
+#define MODBUS_REG_RODMOVELEN2                    40024 // регистр 2 для величины перемещения штанги
 
 
 
-#define MODBUS_REG_SAVECHANGES                    40024 // регистр для флага сохранения настроек, ДОЛЖЕН БЫТЬ ПОСЛЕДНИМ ПО НОМЕРУ !!!
+#define MODBUS_REG_SAVECHANGES                    40025 // регистр для флага сохранения настроек, ДОЛЖЕН БЫТЬ ПОСЛЕДНИМ ПО НОМЕРУ !!!
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // НАСТРОЙКИ TFT

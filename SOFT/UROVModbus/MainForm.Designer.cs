@@ -615,7 +615,7 @@
             this.nudModbusSlaveID.Size = new System.Drawing.Size(98, 20);
             this.nudModbusSlaveID.TabIndex = 16;
             this.nudModbusSlaveID.Value = new decimal(new int[] {
-            1,
+            100,
             0,
             0,
             0});

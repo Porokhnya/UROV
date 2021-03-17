@@ -556,7 +556,7 @@ namespace UROVModbus
 
                     // MODBUS_REG_RDELAY1                        40012 // регистр 1 для задержки реле
                     // MODBUS_REG_RDELAY2                        40013 // регистр 2 для задержки реле
-                    nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13]);
+                    nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13])/1000;
 
                     // MODBUS_REG_ACSDELAY                       40014 // регистр 1 для задержки ACS
                     // не используется

@@ -13,8 +13,10 @@ ModbusHandler::ModbusHandler()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::setID(uint8_t id)
 {
-  //TODO: ИСПРАВИТЬ КАК БЫЛО !!!!
-  mbusRegBank.setId(1);//id); // устанавливаем ID для слейва MODBUS  
+  //CONFIG_SERIAL.print("setID=");
+  //CONFIG_SERIAL.println(id);
+  
+  mbusRegBank.setId(id); // устанавливаем ID для слейва MODBUS  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::set(uint16_t reg, uint16_t val)
@@ -29,6 +31,8 @@ uint16_t ModbusHandler::get(uint16_t reg)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::setup()
 {
+
+  setID(1);
   
   mbusRegBank.add(MODBUS_REG_PULSES);
   mbusRegBank.add(MODBUS_REG_PULSES_DELTA);
@@ -59,23 +63,22 @@ void ModbusHandler::setup()
 
 
   
-  mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек
+  mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек, ПОСЛЕДНИЙ ИЗ РЕГИСТРОВ !!!
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::begin()
 {
-
-  setID(1);
-
   mbusSlave._device = &mbusRegBank; // говорим устройству, где наш банк с регистрами
 
   mbusSlave.setRxTxSwitch(MODBUS_RX_TX_SWITCH); // установка вывода для переключения приема/передачи по RS-485
 
   MODBUS_SERIAL.begin(MODBUS_BAUD);
   MODBUS_SERIAL.flush();
-  
-  mbusSlave.setSerial(&MODBUS_SERIAL,MODBUS_BAUD);                       // Подключение к протоколу MODBUS
+  while(MODBUS_SERIAL.available()) MODBUS_SERIAL.read();
+
+  mbusSlave.setBaud(MODBUS_BAUD);
+  mbusSlave.setSerial(&MODBUS_SERIAL);                       // Подключение к протоколу MODBUS
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -178,8 +181,7 @@ void ModbusHandler::update()
 {
   
   mbusSlave.run(); // обновляем состояние MODBUS
-//TODO: ИСПРАВИТЬ, КАК БЫЛО !!!
-//  checkForChanges(); // проверяем на изменения, пришедшие извне
+  checkForChanges(); // проверяем на изменения, пришедшие извне
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
