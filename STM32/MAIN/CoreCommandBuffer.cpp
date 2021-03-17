@@ -47,7 +47,7 @@ const char MBUSID_COMMAND[] PROGMEM = "MBUSID"; // ID слейва modbus
 //--------------------------------------------------------------------------------------------------------------------------------------
 extern "C" char* sbrk(int i);
 //--------------------------------------------------------------------------------------------------------------------------------------
-CoreCommandBuffer Commands(&Serial);
+CoreCommandBuffer Commands(&CONFIG_SERIAL);
 //--------------------------------------------------------------------------------------------------------------------------------------
 CoreCommandBuffer::CoreCommandBuffer(Stream* s) : pStream(s) // конструктор
 {
@@ -1963,9 +1963,6 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 			break;
 		}
 	}
-
- //Serial.print("SIZE = ");
- //Serial.println(InterruptData.size());
   
 	bool result =  done && InterruptData.size();
 
@@ -1977,7 +1974,6 @@ bool ExternalEthalonCommandHandler::beginRecord(uint32_t timeout)
 //--------------------------------------------------------------------------------------------------------------------------------------
 void ExternalEthalonCommandHandler::OnInterruptRaised(CurrentOscillData* oscData, EthalonCompareResult result)
 {
-  //Serial.println("INTERRUPT RAISED");
   done = true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------

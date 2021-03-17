@@ -2469,8 +2469,8 @@ void ListFilesScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
   {
     if(lastSelectedFileIndex != -1)
     {
-        DBG(F("VIEW FILE: "));
-        DBGLN(filesNames[lastSelectedFileIndex]);
+//        DBG(F("VIEW FILE: "));
+//        DBGLN(filesNames[lastSelectedFileIndex]);
         
       // ПРОСМОТР ВЫБРАННОГО ФАЙЛА
       String fileName = getDirName();
@@ -2484,7 +2484,7 @@ void ListFilesScreen::onButtonPressed(TFTMenu* menu, int pressedButton)
         else if(viewType == vtLogsListing)
         {
           // отправляем содержимое файла в Serial
-          FileUtils::SendToStream(Serial,fileName);
+          FileUtils::SendToStream(CONFIG_SERIAL,fileName);
         }
       
     }
@@ -2519,17 +2519,12 @@ void SDInfoScreen::doUpdate(TFTMenu* menu)
 void SDInfoScreen::doDraw(TFTMenu* menu)
 {
   TFT_Class* dc = menu->getDC();
-  //uint8_t* oldFont = dc->getFont();
-    //Serial.println("DRAW");
-
   dc->setFreeFont(TFT_FONT);
   
   if(!hasSD)
   {
     // не удалось инициализировать!
     menu->print("Нет SD!", 10,10);
-    //Serial.println("111111");
-    //dc->setFont(oldFont);
     return;
   }
 

@@ -983,17 +983,10 @@ void InterruptHandlerClass::update() // обновление внутренне�
 
             // проверяем - есть ли превышение по току?
              bool hasCurrentPeakHighBorderAlarm = currentPeakChannel1 >= highBorder || currentPeakChannel2 >= highBorder || currentPeakChannel3 >= highBorder;
-/*
-              Serial.print("border = ");
-              Serial.print(highBorder);
-              Serial.print(", current = ");
-              Serial.println(currentPeakChannel1);
-*/
+
              if(hasCurrentPeakHighBorderAlarm)
              {
               // есть превышение по току
-            //  Serial.print(F("PEAK DETECTED, delay = "));
-           //   Serial.println(Settings.getRelayDelay());
 
                 #ifdef PREDICT_ENABLED
                   predictOff(); // отключаем сбор предсказаний
@@ -1035,7 +1028,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
         else
         if(hasRelayTriggered()) // сработало реле защиты?
         {
-        //  Serial.println(F("EXTERNAL SIGNAL DETECTED !!!"));
        
         #ifdef PREDICT_ENABLED
           predictOff(); // отключаем сбор предсказаний
@@ -1071,7 +1063,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
          else
          if(predictTriggered()) // сработало предсказание?
          {
-      //    Serial.println(F("PREDICT DETECTED !!!"));
 
           #ifdef PREDICT_ENABLED
             predictOff(); // отключаем сбор предсказаний
@@ -1188,7 +1179,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
       // проверяем - прошло ли время задержки для проверки срабатывания защиты?
       if(micros() - trigReasonTimer >= Settings.getRelayDelay())
       {
-    //    Serial.println("msHandlePeakReason DONE !!!");
         
           noInterrupts();
             size_t catchedPulses = InterruptData.size();
@@ -1227,8 +1217,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
       if(micros() - thisTimer >= Settings.getMaxIdleTime()) // прошло максимальное время для сбора импульсов, т.е. последний импульс с энкодера был очень давно
       {
 
-      //  Serial.println("START WORK WITH INTERRUPT, STAGE 1!"); Serial.flush();
-
         PAUSE_ADC; // останавливаем АЦП на время
 
         pause(); // ставим на паузу
@@ -1242,8 +1230,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
         interrupts(); 
         
 
- //      Serial.println("STAGE 2"); Serial.flush();
-
         uint8_t asuTpFlags = Settings.getAsuTpFlags();
 
         // обновляем моторесурс, т.к. было срабатывание защиты
@@ -1252,20 +1238,14 @@ void InterruptHandlerClass::update() // обновление внутренне�
         Settings.setMotoresource(motoresource);
         
 
-//        Serial.println("STAGE 3"); Serial.flush();
-
         // проверяем, авария ли?
         hasAlarm = !catchedPulses || asuTPAlarmFlag;
         
         // выставляем флаг аварии, в зависимости от наличия данных в списках
         if(hasAlarm)
         {
-  //        Serial.println("STAGE ALARM"); Serial.flush();
           Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
         }    
-
-
-//        Serial.println("STAGE 4"); Serial.flush();
 
 
         noInterrupts();
@@ -1286,10 +1266,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
         interrupts();
 
 
-
-  //      Serial.println("STAGE 5"); Serial.flush();
-        
-
         // вычисляем смещение от начала записи по току до начала поступления данных
         
         int32_t datArrivTm = 0;
@@ -1300,24 +1276,12 @@ void InterruptHandlerClass::update() // обновление внутренне�
         }
 
 
-//        Serial.println("STAGE 6"); Serial.flush();
-
         // нормализуем список времен записей по току
         normalizeList(OscillData.times);
 
-/*
-        // нормализуем список времён для направлений движения штанги
-        uint32_t dirOffset = 0;
-        if(InterruptData.size() > 0)
-        {
-          dirOffset = InterruptData[0];
-        }
-        normalizeList(DirectionInfo.times, dirOffset);
-*/
          // нормализуем список прерываний
          normalizeList(InterruptData);
 
-//         Serial.println("STAGE 7"); Serial.flush();
 
          // начинаем работать со списком прерываний
          EthalonCompareResult compareRes1 = COMPARE_RESULT_NoSourcePulses;
@@ -1332,12 +1296,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
         // теперь смотрим - надо ли нам самим чего-то обрабатывать?
         //if(catchedPulses > 1)
         {
-//          Serial.println("STAGE TEST DIODE ON"); Serial.flush();
-          
-//            DBG("Прерывание содержит данные: ");
-//            DBGLN(catchedPulses);
-    
-
 
           if(asuTpFlags & 1) // только если флаг выдачи сигнала в первую линию АСУ ТП - установлен
           {
@@ -1368,13 +1326,11 @@ void InterruptHandlerClass::update() // обновление внутренне�
            compareRes1 = EthalonComparer::Compare(InterruptData, 0,compareNumber1, ethalonFileName);//ethalonData1);
 
 
- //           Serial.println("STAGE 8"); Serial.flush();
     
            if(compareRes1 == COMPARE_RESULT_MatchEthalon)
             {}
            else if(compareRes1 == COMPARE_RESULT_MismatchEthalon || compareRes1 == COMPARE_RESULT_RodBroken)
            {
-//              Serial.println("STAGE ALARM & FAILURE"); Serial.flush();
               Feedback.failureDiode(); // зажигаем светодиод АВАРИЯ
               Feedback.setFailureLineLevel(); // говорим на выходящей линии, что это авария
               
@@ -1397,7 +1353,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
             if(needToLog)
             { 
               
-           //   Serial.println("STAGE WRITE TO LOG BEGIN"); Serial.flush();            
               // записываем последнее срабатывание в EEPROM
               writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
               
@@ -1406,8 +1361,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
                   // надо записать в лог дату срабатывания системы
                   writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);
               #endif // !_SD_OFF
-
-//              Serial.println("STAGE WRITE TO LOG END"); Serial.flush();
               
             } // needToLog
 
@@ -1418,29 +1371,20 @@ void InterruptHandlerClass::update() // обновление внутренне�
         { 
           //  DBGLN(F("Надо уведомить подписчика прерываний!"));
           if(subscriber)
-          {
-         //   Serial.println("STAGE INFORM SUBSCRIBER BEGIN"); Serial.flush();
-            //  DBGLN(F("Подписчик найден!"));  
-              
+          {              
             // уведомляем подписчика
             informSubscriber(&OscillData,compareRes1);
-
-      //      Serial.println("STAGE INFORM SUBSCRIBER END"); Serial.flush();
     
           } // if(subscriber)
           else
           {
-//            Serial.println("STAGE RESUME BEGIN 1"); Serial.flush();
             resume(); // подписчика нет, просто начинаем сначала            
-//            Serial.println("STAGE RESUME END 1"); Serial.flush();
           }
           
         }   // if(wantToInformSubscriber)
         else
         {
-//          Serial.println("STAGE RESUME BEGIN 2"); Serial.flush();
           resume(); // подписчика нет, просто начинаем сначала
-//          Serial.println("STAGE RESUME END 2"); Serial.flush();
         }
                 
 
@@ -1456,7 +1400,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
       // ждём отщёлкивания концевика защит
       if(!hasRelayTriggered())
       {
-     //   Serial.println("GUARD RELEASED!");
          // концевик разомкнут, переходим в режим ожидания срабатывания защиты
          relayTrigCatched = false; // сбрасываем флаг срабатывания реле
 
@@ -1493,7 +1436,6 @@ void InterruptHandlerClass::update() // обновление внутренне�
 
         if(micros() - lastPeakDetectedTimer >= 1000000ul) // ждём секунду после последнего детектированного пика по току, и если его нету - переключаемся на нормальный режим работы
         {
-  //        Serial.println("No peaks over 1 second, switch to normal work mode.");
           machineState = msIdle;
         }
     }

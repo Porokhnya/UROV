@@ -487,8 +487,6 @@ CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withN
   CurrentCircularBuffer normList = currentPreviewData.normalize();
   previewCount = normList.recordsCount;
 
-//  Serial.print("ADC SOURCE SIZE: "); Serial.println(currentPreviewData./*times.size()*/recordsCount);
-//  Serial.print("ADC PREVIEW SIZE: "); Serial.println(normList./*times.size()*/recordsCount);
   
   // очищаем локальный список осциллограмм тока
   currentPreviewData.clear();
@@ -497,7 +495,6 @@ CurrentOscillData ADCSampler::getListOfCurrent(uint16_t& previewCount,bool withN
   for(size_t i=0;i<normList.recordsCount/*.times.size()*/;i++)
   {
     result.add(normList.times[i], normList.data1[i], normList.data2[i], normList.data3[i]);
-//    Serial.print("ADC PREVIEW: "); Serial.println(normList.times[i]);
   }
 
   // помещаем данные по списку тока в список результатов

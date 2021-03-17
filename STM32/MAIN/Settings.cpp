@@ -166,8 +166,8 @@ bool SettingsClass::read8(uint32_t addr, uint8_t& val) // читаем 1 бай�
   #ifdef _SETTINGS_LOAD_DEBUG
   else
   {
-      Serial.print("Settings:read8 - BAD HEADER AT ADDRESS ");
-      Serial.println(addr);
+      CONFIG_SERIAL.print("Settings:read8 - BAD HEADER AT ADDRESS ");
+      CONFIG_SERIAL.println(addr);
   }
   #endif
 
@@ -198,8 +198,8 @@ bool SettingsClass::read16(uint32_t addr, uint16_t& val) // читаем два 
   #ifdef _SETTINGS_LOAD_DEBUG
   else
   {
-      Serial.print("Settings:read16 - BAD HEADER AT ADDRESS ");
-      Serial.println(addr);
+      CONFIG_SERIAL.print("Settings:read16 - BAD HEADER AT ADDRESS ");
+      CONFIG_SERIAL.println(addr);
   }
   #endif
 
@@ -230,8 +230,8 @@ bool SettingsClass::read32(uint32_t addr, uint32_t& val) // читаем 4 ба�
   #ifdef _SETTINGS_LOAD_DEBUG
   else
   {
-      Serial.print("Settings:read32 - BAD HEADER AT ADDRESS ");
-      Serial.println(addr);
+      CONFIG_SERIAL.print("Settings:read32 - BAD HEADER AT ADDRESS ");
+      CONFIG_SERIAL.println(addr);
   }
   #endif
 

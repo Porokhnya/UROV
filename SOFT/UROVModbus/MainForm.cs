@@ -10,7 +10,7 @@ using System.IO.Ports;
 using FieldTalk.Modbus.Master;
 using System.Globalization;
 using System.Threading;
-
+using System.Diagnostics;
 
 namespace UROVModbus
 {
@@ -75,7 +75,7 @@ namespace UROVModbus
 
             UpdateControlButtons(currentConnectionMode);
 
-            cmbBaudRate.SelectedIndex = 5;
+            cmbBaudRate.SelectedIndex = 0; // 9600
             cmbSerialProtocol.SelectedIndex = 0;
             cmbParity.SelectedIndex = 0;
             cmbStopBits.SelectedIndex = 0;
@@ -487,11 +487,11 @@ namespace UROVModbus
 
         }
 
-        private UInt32 MakeUInt32(UInt16 reg1, UInt16 reg2)
+        private UInt32 MakeUInt32(short reg1, short reg2)
         {
             UInt32 res = (UInt32) reg1;
             res <<= 16;
-            res |= reg2;
+            res |= (ushort) reg2;
 
             return res;
         }
@@ -502,17 +502,23 @@ namespace UROVModbus
             {
                 // читаем регистры прибора
                 const int regs_to_read = 30;  //TODO: КОЛИЧЕСТВО РЕГИСТРОВ К ЧТЕНИЮ
-                UInt16[] readVals = new UInt16[regs_to_read];
+                short[] readVals = new short[regs_to_read];
                 int slave;
                 int startRdReg;
-                int numRdRegs;
                 int res;
 
                 slave = Convert.ToInt32(nudModbusSlaveID.Value);
-                startRdReg = 0; // 40000 регистр для количества импульсов
-                numRdRegs = regs_to_read;
+                startRdReg = 1; // 40000 регистр для количества импульсов
 
-                res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, numRdRegs);
+
+
+                res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, regs_to_read);
+
+
+                Debug.Write("res="); Debug.WriteLine(res);
+                Debug.WriteLine(BusProtocolErrors.getBusProtocolErrorText(res));
+
+
                 if ((res == BusProtocolErrors.FTALK_SUCCESS))
                 {
                     // регистры прочитаны, надо заполнять данные формы!!!
@@ -599,7 +605,7 @@ namespace UROVModbus
                 else
                 {
                     // ошибка чтения регистров !!!
-                    MessageBox.Show("Ошибка чтения регистров!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка чтения регистров: " + BusProtocolErrors.getBusProtocolErrorText(res), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

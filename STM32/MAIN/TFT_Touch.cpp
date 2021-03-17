@@ -215,11 +215,11 @@ TS_Point MyTFTTouch::getPoint()
   
   digitalWrite(_pin_cs, HIGH);
   //spi2.endTransaction();
-  //Serial.printf("z=%d  ::  z1=%d,  z2=%d  ", z, z1, z2);
+  
   if (z < 0) { z = 0; }
   if (z < Z_THRESHOLD) 
   { //  if ( !touched ) {
-    // Serial.println();
+    
     zraw = 0;
     if (z < Z_THRESHOLD_INT) 
     { //  if ( !touched ) {
@@ -230,14 +230,8 @@ TS_Point MyTFTTouch::getPoint()
   zraw = z;
   
   // Average pair with least distance between each measured x then y
-  //Serial.printf("    z1=%d,z2=%d  ", z1, z2);
-  //Serial.printf("p=%d,  %d,%d  %d,%d  %d,%d", zraw,
-    //data[0], data[1], data[2], data[3], data[4], data[5]);
   int16_t x = besttwoavg( data[0], data[2], data[4] );
   int16_t y = besttwoavg( data[1], data[3], data[5] );
-  /*
-  Serial.printf("    %d,%d", x, y);
-  Serial.println();*/
   if (z >= Z_THRESHOLD) 
   {
     msraw = now;  // good read completed, set wait
@@ -270,9 +264,6 @@ TS_Point MyTFTTouch::getPoint()
       break;
     }
 
-   /* Serial.print("xraw: "); Serial.println(xraw);
-    Serial.print("yraw: "); Serial.println(yraw);*/
-
     // измерения есть, надо конвертировать их в реальные координаты экрана
 
     if (abs(xraw) < touchMinRawX) { xraw = touchMinRawX; }
@@ -287,8 +278,6 @@ TS_Point MyTFTTouch::getPoint()
 
     //_point.z = zraw;
 
-	//Serial.print("_point.x: "); Serial.println(_point.x);
-	//Serial.print("_point.y: "); Serial.println(_point.y);
 
   } // if(z)
   
