@@ -54,6 +54,11 @@ void ModbusHandler::setup()
   mbusRegBank.add(MODBUS_REG_MAXIDLETIME2);
   mbusRegBank.add(MODBUS_REG_RODMOVELEN1);
   mbusRegBank.add(MODBUS_REG_RODMOVELEN2);  
+
+
+
+
+  
   mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек
   
 }
