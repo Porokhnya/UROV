@@ -71,7 +71,11 @@ void ModbusHandler::begin()
   mbusSlave._device = &mbusRegBank; // говорим устройству, где наш банк с регистрами
 
   mbusSlave.setRxTxSwitch(MODBUS_RX_TX_SWITCH); // установка вывода для переключения приема/передачи по RS-485
-  mbusSlave.setSerial(&(MODBUS_SERIAL),MODBUS_BAUD);                       // Подключение к протоколу MODBUS
+
+  MODBUS_SERIAL.begin(MODBUS_BAUD);
+  MODBUS_SERIAL.flush();
+  
+  mbusSlave.setSerial(&MODBUS_SERIAL,MODBUS_BAUD);                       // Подключение к протоколу MODBUS
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
