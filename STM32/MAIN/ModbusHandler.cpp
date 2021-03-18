@@ -88,7 +88,7 @@ void ModbusHandler::checkForChanges()
   {
     set(MODBUS_REG_SAVECHANGES,0); // сбрасываем флаг
 
-    uint8_t pulses =  mbusRegBank.get(MODBUS_REG_PULSES);
+    uint16_t pulses =  mbusRegBank.get(MODBUS_REG_PULSES);
     if(pulses != Settings.getPulses())
     {
       Settings.setPulses(pulses);
@@ -157,7 +157,7 @@ void ModbusHandler::checkForChanges()
     uint8_t asuf =  mbusRegBank.get(MODBUS_REG_ASUTPFLAGS);
     if(asuf != Settings.getAsuTpFlags())
     {
-      Settings.setAsuTpFlags(acs);
+      Settings.setAsuTpFlags(asuf);
     }  
   
     mres = MBUS_32_BIT(MODBUS_REG_MAXIDLETIME1,MODBUS_REG_MAXIDLETIME2);

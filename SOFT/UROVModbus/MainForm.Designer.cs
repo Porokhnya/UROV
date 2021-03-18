@@ -142,6 +142,8 @@
             this.panel12 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusBar.SuspendLayout();
             this.tabPages.SuspendLayout();
             this.tpModbusSettings.SuspendLayout();
             this.GroupBox3.SuspendLayout();
@@ -189,6 +191,8 @@
             // 
             // statusBar
             // 
+            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
             this.statusBar.Location = new System.Drawing.Point(0, 613);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(861, 22);
@@ -760,6 +764,7 @@
             this.btnCurrentCoeff.TabIndex = 12;
             this.btnCurrentCoeff.Text = "Установить настройки";
             this.btnCurrentCoeff.UseVisualStyleBackColor = false;
+            this.btnCurrentCoeff.Click += new System.EventHandler(this.btnCurrentCoeff_Click);
             // 
             // panel43
             // 
@@ -1537,6 +1542,12 @@
             this.tmCheckConnectTimer.Interval = 800;
             this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
             // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(52, 17);
+            this.toolStripStatusLabel1.Text = "СТАТУС";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1553,6 +1564,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UROV через MODBUS";
             this.Load += new System.EventHandler(this.mainForm_Load);
+            this.statusBar.ResumeLayout(false);
+            this.statusBar.PerformLayout();
             this.tabPages.ResumeLayout(false);
             this.tpModbusSettings.ResumeLayout(false);
             this.GroupBox3.ResumeLayout(false);
@@ -1742,6 +1755,7 @@
         private System.Windows.Forms.Button btnReadRegisters;
         private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
         private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 

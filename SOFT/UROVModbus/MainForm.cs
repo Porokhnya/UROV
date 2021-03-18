@@ -25,6 +25,13 @@ namespace UROVModbus
             TCP
         }
 
+        private void ShowWaitCursor(bool show)
+        {
+            System.Windows.Forms.Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
+            Application.UseWaitCursor = show;
+            Application.DoEvents();
+        }
+
         ConnectionMode currentConnectionMode = ConnectionMode.None;
 
         public MainForm()
@@ -147,7 +154,7 @@ namespace UROVModbus
                 catch (OutOfMemoryException ex)
                 {
                     //lblResult.Text = (" Ошибка была" + ex.Message);
-                    ShowInfo("Не удалось создать экземпляр класса серийного протокола!" + ex.Message);
+                    ShowInfo("Не удалось создать экземпляр класса протокола! Ошибка: " + ex.Message);
                     return;
                 }
             }
@@ -168,7 +175,7 @@ namespace UROVModbus
                 catch (OutOfMemoryException ex)
                 {
                     //lblResult.Text = (" Ошибка была" + ex.Message);
-                    ShowInfo("Не удалось создать экземпляр класса серийного протокола!" + ex.Message);
+                    ShowInfo("Не удалось создать экземпляр класса протокола! Ошибка: " + ex.Message);
                     return;
                 }
             }
@@ -282,21 +289,10 @@ namespace UROVModbus
             else
             {
                 //lblResult.Text = (" ошибка была: " + BusProtocolErrors.getBusProtocolErrorText(res));
-                ShowInfo("Не удалось открыть протокол!  Ошибка была: " + BusProtocolErrors.getBusProtocolErrorText(res));
+                ShowInfo("Не удалось открыть протокол!  Ошибка: " + BusProtocolErrors.getBusProtocolErrorText(res));
             }
         }
 
-        private void GetUROVSettings()
-        {
-            //TODO: ТУТ ПОЛУЧЕНИЕ НАСТРОЕК УРОВ!!!
-            if (myProtocol == null)
-                return;
-
-            if (!myProtocol.isOpen())
-                return;
-
-
-        }
 
         private void btnCloseSerial_Click(object sender, EventArgs e)
         {
@@ -336,7 +332,7 @@ namespace UROVModbus
                 }
                 catch (OutOfMemoryException ex)
                 {
-                    ShowInfo("Не удалось создать экземпляр класса серийного протокола! Ошибка была " + ex.Message);
+                    ShowInfo("Не удалось создать экземпляр класса протокола! Ошибка: " + ex.Message);
                     return;
                 }
             }
@@ -354,7 +350,7 @@ namespace UROVModbus
                 }
                 catch (OutOfMemoryException ex)
                 {
-                    ShowInfo("Не удалось создать экземпляр класса серийного протокола! Ошибка была " + ex.Message);
+                    ShowInfo("Не удалось создать экземпляр класса протокола! Ошибка: " + ex.Message);
                     return;
                 }
             }
@@ -419,7 +415,7 @@ namespace UROVModbus
             }
             else
             {
-                ShowInfo("Could not open protocol, error was: " + BusProtocolErrors.getBusProtocolErrorText(res));
+                ShowInfo("Не удалось открыть протокол, ошибка: " + BusProtocolErrors.getBusProtocolErrorText(res));
 
                 
             }
@@ -430,6 +426,7 @@ namespace UROVModbus
             if(currentConnectionMode == ConnectionMode.None)
             {
                 tmCheckConnectTimer.Enabled = false;
+                ShowTabPage(tpUROVSettings, false);
                 return;
             }
             if(myProtocol != null)
@@ -439,6 +436,7 @@ namespace UROVModbus
                     tmCheckConnectTimer.Enabled = false;
                     currentConnectionMode = ConnectionMode.None;
                     UpdateControlButtons(currentConnectionMode);
+                    ShowTabPage(tpUROVSettings, false);
                 }
             }
         }
@@ -487,32 +485,39 @@ namespace UROVModbus
 
         }
 
-        private UInt32 MakeUInt32(short reg1, short reg2)
+        private UInt32 MakeUInt32(ushort reg1, ushort reg2)
         {
             UInt32 res = (UInt32) reg1;
             res <<= 16;
-            res |= (ushort) reg2;
+            res |= reg2;
 
             return res;
         }
+
+        const int REGS_COUNT = 25; //TODO: КОЛИЧЕСТВО РЕГИСТРОВ К ЧТЕНИЮ
 
         private void ReadRegisters()
         {
             if(myProtocol != null && myProtocol.isOpen())
             {
+                ShowWaitCursor(true);
+
+                toolStripStatusLabel1.Text = " ЧИТАЕМ... ";
+                toolStripStatusLabel1.BackColor = Color.Beige;
+                Application.DoEvents();
+
                 // читаем регистры прибора
-                const int regs_to_read = 30;  //TODO: КОЛИЧЕСТВО РЕГИСТРОВ К ЧТЕНИЮ
-                short[] readVals = new short[regs_to_read];
+                ushort[] readVals = new ushort[REGS_COUNT];
                 int slave;
                 int startRdReg;
                 int res;
 
                 slave = Convert.ToInt32(nudModbusSlaveID.Value);
-                startRdReg = 1; // 40000 регистр для количества импульсов
+                startRdReg = 1; // 40001 регистр для количества импульсов
 
 
 
-                res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, regs_to_read);
+                res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, REGS_COUNT);
 
 
                 Debug.Write("res="); Debug.WriteLine(res);
@@ -522,54 +527,57 @@ namespace UROVModbus
                 if ((res == BusProtocolErrors.FTALK_SUCCESS))
                 {
                     // регистры прочитаны, надо заполнять данные формы!!!
+                    toolStripStatusLabel1.Text = " ПРОЧИТАНО ";
+                    toolStripStatusLabel1.BackColor = Color.Lime;
+                    Application.DoEvents();
 
-                    // MODBUS_REG_PULSES                         40000 // регистр для количества импульсов
+                    // MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
                     int pulses = readVals[0];
                     nudPulses1.Value = pulses;
 
-                    // MODBUS_REG_PULSES_DELTA                   40001 // регистр для дельты импульсов
+                    // MODBUS_REG_PULSES_DELTA                   40002 // регистр для дельты импульсов
                     int pulsesDelta = readVals[1];
                     nudDelta1.Value = pulsesDelta;
 
-                    // 40002 // регистр 1 для дельты времени сравнения импульсов с  эталоном
-                    // 40003 // регистр 2 для дельты времени сравнения импульсов с  эталоном
+                    // MODBUS_REG_ETHALON_PULSES_DELTA1          40003 // регистр 1 для дельты времени сравнения импульсов с  эталоном
+                    // MODBUS_REG_ETHALON_PULSES_DELTA2          40004 // регистр 2 для дельты времени сравнения импульсов с  эталоном
                     nudEthalonCompareDelta.Value = MakeUInt32(readVals[2], readVals[3]);
 
-                    // MODBUS_REG_MOTORESOURCE1                  40004 // регистр 1 для моторесурса
-                    // MODBUS_REG_MOTORESOURCE2                  40005 // регистр 2 для моторесурса
+                    // MODBUS_REG_MOTORESOURCE1                  40005 // регистр 1 для моторесурса
+                    // MODBUS_REG_MOTORESOURCE2                  40006 // регистр 2 для моторесурса
                     nudMotoresourceCurrent1.Value = MakeUInt32(readVals[4], readVals[5]);
 
-                    // MODBUS_REG_MOTORESOURCE_MAX1              40006 // регистр 1 для максимального моторесурса
-                    // MODBUS_REG_MOTORESOURCE_MAX2              40007 // регистр 2 для максимального моторесурса
+                    // MODBUS_REG_MOTORESOURCE_MAX1              40007 // регистр 1 для максимального моторесурса
+                    // MODBUS_REG_MOTORESOURCE_MAX2              40008 // регистр 2 для максимального моторесурса
                     nudMotoresourceMax1.Value = MakeUInt32(readVals[6], readVals[7]);
 
                     // обновляем метку процентов моторесурса
                     UpdateMotoresourcePercents(Convert.ToInt32(nudMotoresourceCurrent1.Value), Convert.ToInt32(nudMotoresourceMax1.Value));
 
-                    // MODBUS_REG_TLOW_BORDER1                   40008 // регистр 1 для нижнего порога трансформатора
-                    // MODBUS_REG_TLOW_BORDER2                   40009 // регистр 2 для нижнего порога трансформатора
+                    // MODBUS_REG_TLOW_BORDER1                   40009 // регистр 1 для нижнего порога трансформатора
+                    // MODBUS_REG_TLOW_BORDER2                   40010 // регистр 2 для нижнего порога трансформатора
                     nudLowBorder.Value = MakeUInt32(readVals[8], readVals[9]);
 
-                    // MODBUS_REG_THIGH_BORDER1                  40010 // регистр 1 для верхнего порога трансформатора
-                    // MODBUS_REG_THIGH_BORDER2                  40011 // регистр 2 для верхнего порога трансформатора
+                    // MODBUS_REG_THIGH_BORDER1                  40011 // регистр 1 для верхнего порога трансформатора
+                    // MODBUS_REG_THIGH_BORDER2                  40012 // регистр 2 для верхнего порога трансформатора
                     nudHighBorder.Value = MakeUInt32(readVals[10], readVals[11]);
 
-                    // MODBUS_REG_RDELAY1                        40012 // регистр 1 для задержки реле
-                    // MODBUS_REG_RDELAY2                        40013 // регистр 2 для задержки реле
+                    // MODBUS_REG_RDELAY1                        40013 // регистр 1 для задержки реле
+                    // MODBUS_REG_RDELAY2                        40014 // регистр 2 для задержки реле
                     nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13])/1000;
 
-                    // MODBUS_REG_ACSDELAY                       40014 // регистр 1 для задержки ACS
+                    // MODBUS_REG_ACSDELAY                       40015 // регистр 1 для задержки ACS
                     // не используется
 
-                    // MODBUS_REG_SKIPC1                         40015 // регистр 1 для пропуска импульсов
-                    // MODBUS_REG_SKIPC2                         40016 // регистр 2 для пропуска импульсов
+                    // MODBUS_REG_SKIPC1                         40016 // регистр 1 для пропуска импульсов
+                    // MODBUS_REG_SKIPC2                         40017 // регистр 2 для пропуска импульсов
                     nudSkipCounter.Value = MakeUInt32(readVals[15], readVals[16]);
 
-                    // MODBUS_REG_CCOEFF1                        40017 // регистр 1 для коэффициента тока
-                    // MODBUS_REG_CCOEFF2                        40018 // регистр 2 для коэффициента тока
+                    // MODBUS_REG_CCOEFF1                        40018 // регистр 1 для коэффициента тока
+                    // MODBUS_REG_CCOEFF2                        40019 // регистр 2 для коэффициента тока
                     nudCurrentCoeff.Value = MakeUInt32(readVals[17], readVals[18]);
 
-                    // MODBUS_REG_ASUTPFLAGS                     40019 // регистр для флагов АСУ ТП
+                    // MODBUS_REG_ASUTPFLAGS                     40020 // регистр для флагов АСУ ТП
                     int asutpFlags = readVals[19];
                     cbAsuTpLine1.Checked = false;
                     cbAsuTpLine2.Checked = false;
@@ -593,21 +601,204 @@ namespace UROVModbus
                         cbAsuTpLine4.Checked = true;
                     }
 
-                    // MODBUS_REG_MAXIDLETIME1                   40020 // регистр 1 для времени ожидания окончания импульсов
-                    // MODBUS_REG_MAXIDLETIME2                   40021 // регистр 2 для времени ожидания окончания импульсов
+                    // MODBUS_REG_MAXIDLETIME1                   40021 // регистр 1 для времени ожидания окончания импульсов
+                    // MODBUS_REG_MAXIDLETIME2                   40022 // регистр 2 для времени ожидания окончания импульсов
                     nudMaxIdleTime.Value = MakeUInt32(readVals[20], readVals[21]);
 
-                    // MODBUS_REG_RODMOVELEN1                    40022 // регистр 1 для величины перемещения штанги
-                    // MODBUS_REG_RODMOVELEN2                    40023 // регистр 2 для величины перемещения штанги
+                    // MODBUS_REG_RODMOVELEN1                    40023 // регистр 1 для величины перемещения штанги
+                    // MODBUS_REG_RODMOVELEN2                    40024 // регистр 2 для величины перемещения штанги
                     nudRodMoveLength.Value = MakeUInt32(readVals[22], readVals[23]);
 
+                    ShowWaitCursor(false);
                 }
                 else
                 {
+                    toolStripStatusLabel1.Text = " ОШИБКА ";
+                    toolStripStatusLabel1.BackColor = Color.Red;
+                    Application.DoEvents();
+
+                    ShowWaitCursor(false);
+
                     // ошибка чтения регистров !!!
                     MessageBox.Show("Ошибка чтения регистров: " + BusProtocolErrors.getBusProtocolErrorText(res), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private struct Reg32
+        {
+            public ushort reg1;
+            public ushort reg2;
+        }
+
+        private Reg32 Make2Registers(Int32 val)
+        {
+            Reg32 result;
+
+            result.reg1 = (ushort)(val >> 16);
+            result.reg2 = (ushort)(val & 0xffff);
+
+            return result;
+        }
+
+        private void WriteRegisters()
+        {
+            if (myProtocol != null && myProtocol.isOpen())
+            {
+                ShowWaitCursor(true);
+
+                toolStripStatusLabel1.Text = " ПИШЕМ... ";
+                toolStripStatusLabel1.BackColor = Color.Beige;
+                Application.DoEvents();
+
+
+                // пишем регистры в прибор
+                ushort[] writeVals = new ushort[REGS_COUNT];
+                int slave;
+                int startWrReg;
+                int res;
+
+                slave = Convert.ToInt32(nudModbusSlaveID.Value);
+                startWrReg = 1; // 40001 регистр для количества импульсов
+
+                // тут заполняем регистры из формы
+
+                // MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
+                ushort pulses = Convert.ToUInt16(nudPulses1.Value);
+                writeVals[0] = pulses;
+
+                // MODBUS_REG_PULSES_DELTA                   40002 // регистр для дельты импульсов
+                ushort pulsesDelta = Convert.ToUInt16(nudDelta1.Value);
+                writeVals[1] = pulsesDelta;
+
+                // MODBUS_REG_ETHALON_PULSES_DELTA1          40003 // регистр 1 для дельты времени сравнения импульсов с  эталоном
+                // MODBUS_REG_ETHALON_PULSES_DELTA2          40004 // регистр 2 для дельты времени сравнения импульсов с  эталоном
+                Reg32 dReg = Make2Registers(Convert.ToInt32(nudEthalonCompareDelta.Value));
+                writeVals[2] = dReg.reg1;
+                writeVals[3] = dReg.reg2;
+
+
+                // MODBUS_REG_MOTORESOURCE1                  40005 // регистр 1 для моторесурса
+                // MODBUS_REG_MOTORESOURCE2                  40006 // регистр 2 для моторесурса
+                dReg = Make2Registers(Convert.ToInt32(nudMotoresourceCurrent1.Value));
+                writeVals[4] = dReg.reg1;
+                writeVals[5] = dReg.reg2;
+
+                // MODBUS_REG_MOTORESOURCE_MAX1              40007 // регистр 1 для максимального моторесурса
+                // MODBUS_REG_MOTORESOURCE_MAX2              40008 // регистр 2 для максимального моторесурса
+                dReg = Make2Registers(Convert.ToInt32(nudMotoresourceMax1.Value));
+                writeVals[6] = dReg.reg1;
+                writeVals[7] = dReg.reg2;
+
+
+                // MODBUS_REG_TLOW_BORDER1                   40009 // регистр 1 для нижнего порога трансформатора
+                // MODBUS_REG_TLOW_BORDER2                   40010 // регистр 2 для нижнего порога трансформатора
+                dReg = Make2Registers(Convert.ToInt32(nudLowBorder.Value));
+                writeVals[8] = dReg.reg1;
+                writeVals[9] = dReg.reg2;
+
+                // MODBUS_REG_THIGH_BORDER1                  40011 // регистр 1 для верхнего порога трансформатора
+                // MODBUS_REG_THIGH_BORDER2                  40012 // регистр 2 для верхнего порога трансформатора
+                dReg = Make2Registers(Convert.ToInt32(nudHighBorder.Value));
+                writeVals[10] = dReg.reg1;
+                writeVals[11] = dReg.reg2;
+
+                // MODBUS_REG_RDELAY1                        40013 // регистр 1 для задержки реле
+                // MODBUS_REG_RDELAY2                        40014 // регистр 2 для задержки реле
+                dReg = Make2Registers(Convert.ToInt32(nudRelayDelay.Value)*1000);
+                writeVals[12] = dReg.reg1;
+                writeVals[13] = dReg.reg2;
+
+                // MODBUS_REG_ACSDELAY                       40015 // регистр 1 для задержки ACS
+                // не используется
+
+                // MODBUS_REG_SKIPC1                         40016 // регистр 1 для пропуска импульсов
+                // MODBUS_REG_SKIPC2                         40017 // регистр 2 для пропуска импульсов
+                dReg = Make2Registers(Convert.ToInt32(nudSkipCounter.Value));
+                writeVals[15] = dReg.reg1;
+                writeVals[16] = dReg.reg2;
+
+                // MODBUS_REG_CCOEFF1                        40018 // регистр 1 для коэффициента тока
+                // MODBUS_REG_CCOEFF2                        40019 // регистр 2 для коэффициента тока
+                dReg = Make2Registers(Convert.ToInt32(nudCurrentCoeff.Value));
+                writeVals[17] = dReg.reg1;
+                writeVals[18] = dReg.reg2;
+
+                // MODBUS_REG_ASUTPFLAGS                     40020 // регистр для флагов АСУ ТП
+                ushort asutpFlags = 0;
+
+                if (cbAsuTpLine1.Checked)
+                {
+                    asutpFlags |= 1;
+                }
+                if (cbAsuTpLine2.Checked)
+                {
+                    asutpFlags |= 2;
+                }
+                if (cbAsuTpLine3.Checked)
+                {
+                    asutpFlags |= 4;
+                }
+                if (cbAsuTpLine4.Checked)
+                {
+                    asutpFlags |= 8;
+                }
+
+                writeVals[19] = asutpFlags;
+
+                // MODBUS_REG_MAXIDLETIME1                   40021 // регистр 1 для времени ожидания окончания импульсов
+                // MODBUS_REG_MAXIDLETIME2                   40022 // регистр 2 для времени ожидания окончания импульсов
+                dReg = Make2Registers(Convert.ToInt32(nudMaxIdleTime.Value));
+                writeVals[20] = dReg.reg1;
+                writeVals[21] = dReg.reg2;
+
+                // MODBUS_REG_RODMOVELEN1                    40023 // регистр 1 для величины перемещения штанги
+                // MODBUS_REG_RODMOVELEN2                    40024 // регистр 2 для величины перемещения штанги
+                dReg = Make2Registers(Convert.ToInt32(nudRodMoveLength.Value));
+                writeVals[22] = dReg.reg1;
+                writeVals[23] = dReg.reg2;
+
+
+                //MODBUS_REG_SAVECHANGES                    40025 // регистр для флага сохранения настроек, ДОЛЖЕН БЫТЬ ПОСЛЕДНИМ ПО НОМЕРУ !!!
+                //writeVals[24] = 1; // устанавливаем флаг, что надо сохранить настройки
+
+                res = myProtocol.writeMultipleRegisters(slave, startWrReg, writeVals, REGS_COUNT);
+
+
+                Debug.Write("res="); Debug.WriteLine(res);
+                Debug.WriteLine(BusProtocolErrors.getBusProtocolErrorText(res));
+
+
+                if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                {
+                    //MODBUS_REG_SAVECHANGES                    40025 // регистр для флага сохранения настроек, ДОЛЖЕН БЫТЬ ПОСЛЕДНИМ ПО НОМЕРУ !!!
+                    myProtocol.writeSingleRegister(slave, 25, 1);
+
+                    ShowWaitCursor(false);
+
+                    toolStripStatusLabel1.Text = " ЗАПИСАНО ";
+                    toolStripStatusLabel1.BackColor = Color.Lime;
+                    Application.DoEvents();
+
+
+                    MessageBox.Show("Регистры успешно записаны в прибор!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    ShowWaitCursor(false);
+
+                    toolStripStatusLabel1.Text = " ОШИБКА ";
+                    toolStripStatusLabel1.BackColor = Color.Red;
+                    Application.DoEvents();
+
+                    MessageBox.Show("Ошибка записи регистров: " + BusProtocolErrors.getBusProtocolErrorText(res), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnCurrentCoeff_Click(object sender, EventArgs e)
+        {
+            WriteRegisters();
         }
     }
 }
