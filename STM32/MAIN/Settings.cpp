@@ -9,6 +9,8 @@ SettingsClass Settings;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SettingsClass::SettingsClass() // конструктор
 {
+  modbusHasSetupDone = false;
+  
   // инициализируем все настройки по умолчанию
   eeprom = NULL;
   timer = DATA_MEASURE_THRESHOLD;
@@ -243,7 +245,11 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
 
   if(eeprom)
   {
-    Modbus.setup(); // настраиваем регистры MODBUS
+    if(!modbusHasSetupDone)
+    {
+      modbusHasSetupDone = true;
+      Modbus.setup(); // настраиваем регистры MODBUS
+    }
     
      // читаем задержку реле
      if(!read32(RELAY_DELAY_STORE_ADDRESS,relayDelay))

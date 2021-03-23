@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include "ModbusHandler.h"
 #include "Settings.h"
+#include "ADCSampler.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ModbusHandler Modbus;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,12 +59,21 @@ void ModbusHandler::setup()
   mbusRegBank.add(MODBUS_REG_MAXIDLETIME2);
   mbusRegBank.add(MODBUS_REG_RODMOVELEN1);
   mbusRegBank.add(MODBUS_REG_RODMOVELEN2);  
+  
+  mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек, ПОСЛЕДНИЙ ИЗ РЕГИСТРОВ НАСТРОЕК
 
-
-
+  // теперь идут служебные настройки
+  mbusRegBank.add(MODBUS_REG_FUNCTION_NUMBER);
+  mbusRegBank.add(MODBUS_REG_READY_FLAG);
+  mbusRegBank.add(MODBUS_REG_CONTINUE_FLAG);
+  mbusRegBank.add(MODBUS_REG_FILE_FLAGS);
+  mbusRegBank.add(MODBUS_REG_DATA_LENGTH);
 
   
-  mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек, ПОСЛЕДНИЙ ИЗ РЕГИСТРОВ !!!
+  for(uint16_t i=(MODBUS_REG_DATA); i< (MODBUS_REG_DATA)+(MODBUS_PACKET_LENGTH);i++)
+  {
+    mbusRegBank.add(i);
+  }
   
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,7 +98,7 @@ void ModbusHandler::checkForChanges()
   {
     set(MODBUS_REG_SAVECHANGES,0); // сбрасываем флаг
 
-    uint16_t pulses =  mbusRegBank.get(MODBUS_REG_PULSES);
+    uint16_t pulses =  get(MODBUS_REG_PULSES);
     if(pulses != Settings.getPulses())
     {
       Settings.setPulses(pulses);
@@ -100,7 +110,7 @@ void ModbusHandler::checkForChanges()
       Settings.setEthalonPulseDelta(ethDelta);
     }
   
-    uint8_t pDelta = mbusRegBank.get(MODBUS_REG_PULSES_DELTA);
+    uint8_t pDelta = get(MODBUS_REG_PULSES_DELTA);
     if(pDelta != Settings.getPulsesDelta())
     {
       Settings.setPulsesDelta(pDelta);
@@ -136,7 +146,7 @@ void ModbusHandler::checkForChanges()
       Settings.setRelayDelay(mres);
     }
   
-    uint16_t acs =  mbusRegBank.get(MODBUS_REG_ACSDELAY);
+    uint16_t acs =  get(MODBUS_REG_ACSDELAY);
     if(acs != Settings.getACSDelay())
     {
       Settings.setACSDelay(acs);
@@ -154,7 +164,7 @@ void ModbusHandler::checkForChanges()
       Settings.setCurrentCoeff(mres);
     }
   
-    uint8_t asuf =  mbusRegBank.get(MODBUS_REG_ASUTPFLAGS);
+    uint8_t asuf =  get(MODBUS_REG_ASUTPFLAGS);
     if(asuf != Settings.getAsuTpFlags())
     {
       Settings.setAsuTpFlags(asuf);
@@ -173,8 +183,202 @@ void ModbusHandler::checkForChanges()
     }
 
   } // если было запрошено сохранение настроек
+
+
+  // тут смотрим, запрошена ли мастером какая-либо функция?
+  request = (MBusFunction) get(MODBUS_REG_FUNCTION_NUMBER);
+  
+  set(MODBUS_REG_FUNCTION_NUMBER,0); // сбрасываем флаг запрошенной функции, чтобы повторно не проверять
+
+  switch(request)
+  {
+    case mbusNone: // никакой функции не запрошено
+    break;
+
+    case mbusListFiles: // запрошен список файлов в директории, это может быть как первичный вызов, так и перезапрос на следующий пункт списка
+    {
+      // получаем имя директории
+      uint16_t dataLen = get(MODBUS_REG_DATA_LENGTH);
+      String dirName; // имя директории
+      uint16_t numRegs = dataLen/2; // количество регистров к чтению
+      bool hasLastByte = false;
+      
+      if(dataLen%2)
+      {
+        numRegs++; // есть один байт в конце, нечётный
+        hasLastByte = true;
+      }
+
+      // читаем регистры, содержащие имя директории, из которой надо вывести список файлов
+      uint16_t readedBytes = 0;
+      
+      for(uint16_t i=MODBUS_REG_DATA;i<(MODBUS_REG_DATA+numRegs);i++)
+      {
+        uint16_t reg = get(i);
+        char highVal = (char)((reg & 0xFF00) >> 8);
+        char lowVal = (char)(reg & 0x00FF);
+
+        // это последний регистр к чтению?
+        bool lastReg = i == (MODBUS_REG_DATA+numRegs)-1;
+
+        if(lastReg) // последний регистр к чтению
+        {
+          // тут может быть один байт
+          if(hasLastByte)
+          {
+            // есть всего один байт в регистре, младший
+            dirName += lowVal;
+          }
+          else
+          {
+            // надо прочитать его целиком
+            dirName += highVal;
+            dirName += lowVal;
+          }
+        }
+        else // регистр полностью из двух байт
+        {
+            dirName += highVal;
+            dirName += lowVal;          
+        }
+        
+        
+      } // for
+
+      // прочитали имя директории, надо выводить список файлов в ней
+      do_mbusListFiles(dirName);
+    }
+    break; // mbusListFiles
+    
+  } // switch
   
 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::do_mbusListFiles(const String& dirName)
+{
+  set(MODBUS_REG_FILE_FLAGS,0); // нет данных по файлу
+  
+  if(!SDInit::sdInitResult)
+  {
+    // карта не инициализирована
+    
+        // устанавливаем флаг перезапроса мастером в 0
+        set(MODBUS_REG_CONTINUE_FLAG,0);
+
+        // устанавливаем длину данных в 0
+        set(MODBUS_REG_DATA_LENGTH,0);
+        
+        // устанавливаем флаг готовности данных
+        set(MODBUS_REG_READY_FLAG,1);
+
+        entry.close(); // закрываем текущий файл
+
+        // всё, дальше мастер сам разберётся, что делать
+
+    return;
+  }
+  
+  PAUSE_ADC; // останавливаем АЦП
+  
+  if(!root.isOpen())
+  {
+    // пытаемся открыть папку
+      if(root.open(dirName.c_str(),O_READ))
+      {
+        root.rewind(); // открыли папку, перематываем на начало
+      }
+      
+  } // if(!root.isOpen())
+
+  if(!root.isOpen())
+  {
+        // не удалось открыть папку, сообщаем об этом мастеру
+
+        // устанавливаем флаг перезапроса мастером в 0
+        set(MODBUS_REG_CONTINUE_FLAG,0);
+
+        // устанавливаем длину данных в 0
+        set(MODBUS_REG_DATA_LENGTH,0);
+        
+        // устанавливаем флаг готовности данных
+        set(MODBUS_REG_READY_FLAG,1);
+
+        entry.close(); // закрываем текущий файл
+
+        // всё, дальше мастер сам разберётся, что делать
+        
+        return; // возврат  
+  }
+
+  // тут получаем данные файла
+  bool entryOpened = entry.openNext(&root,O_READ);
+
+  if(entryOpened)
+  {
+  
+        String fileName = FileUtils::getFileName(entry);
+        set(MODBUS_REG_FILE_FLAGS, entry.isDir() ? 2 : 1); // установка признаков файла (2 - папка, 1 - файл)
+      
+        // теперь сохраняем в регистры нужные состояния, и рапортуем мастеру, что данные по имени файла - готовы
+      
+        // флаг перезапроса устанавливаем, пусть перезапросит, раз открыли текущий файл
+        set(MODBUS_REG_CONTINUE_FLAG,1);
+        
+        // длина данных
+        uint16_t dataLen = fileName.length();
+        set(MODBUS_REG_DATA_LENGTH,dataLen);
+        
+        // данные, заполняем ими регистры, упаковывая данные в слова
+        uint16_t startReg = MODBUS_REG_DATA;
+        uint16_t numRegs = dataLen/2;
+        if(dataLen%2)
+        {
+          numRegs++;
+        }
+      
+        const char* ptr = fileName.c_str();
+      
+        for(uint16_t i=startReg;i<startReg+numRegs;i++)
+        {
+          // в i - номер текущего регистра, куда надо записать данные
+          const char highVal = *ptr++;
+          const char lowVal = *ptr++;
+      
+          if(!lowVal)
+          {
+            // дошли до конца строки, всего один байт в регистр записать
+            set(i,highVal);
+          }
+          else
+          {
+            // два байта в регистр записать
+            uint16_t val = (uint8_t) highVal;
+            val <<= 8;
+            val |= (uint8_t) lowVal;
+      
+            set(i,val);
+          }
+        } // for
+
+  } // if(entryOpened)
+  else
+  {
+    // всё, кончились файлы в запрошенной папке
+    set(MODBUS_REG_CONTINUE_FLAG,0);
+    set(MODBUS_REG_DATA_LENGTH,0);
+  }
+  
+  // флаг готовности данных
+  set(MODBUS_REG_READY_FLAG,1);
+  
+  entry.close(); // закрываем файл
+
+  if(!entryOpened) // если нет больше файлов - закрываем дескриптор папки
+  {
+    root.close();
+  }
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::update()

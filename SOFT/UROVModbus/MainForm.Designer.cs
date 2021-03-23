@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusBar = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabPages = new System.Windows.Forms.TabControl();
             this.tpModbusSettings = new System.Windows.Forms.TabPage();
             this.lblInfoText = new System.Windows.Forms.Label();
@@ -142,7 +143,8 @@
             this.panel12 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.btnFileList = new System.Windows.Forms.Button();
+            this.tmFileList = new System.Windows.Forms.Timer(this.components);
             this.statusBar.SuspendLayout();
             this.tabPages.SuspendLayout();
             this.tpModbusSettings.SuspendLayout();
@@ -198,6 +200,12 @@
             this.statusBar.Size = new System.Drawing.Size(861, 22);
             this.statusBar.TabIndex = 0;
             this.statusBar.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(52, 17);
+            this.toolStripStatusLabel1.Text = "СТАТУС";
             // 
             // tabPages
             // 
@@ -582,6 +590,7 @@
             // 
             // tpUROVSettings
             // 
+            this.tpUROVSettings.Controls.Add(this.btnFileList);
             this.tpUROVSettings.Controls.Add(this.nudModbusSlaveID);
             this.tpUROVSettings.Controls.Add(this.label29);
             this.tpUROVSettings.Controls.Add(this.btnReadRegisters);
@@ -604,7 +613,7 @@
             // 
             // nudModbusSlaveID
             // 
-            this.nudModbusSlaveID.Location = new System.Drawing.Point(220, 540);
+            this.nudModbusSlaveID.Location = new System.Drawing.Point(12, 539);
             this.nudModbusSlaveID.Maximum = new decimal(new int[] {
             247,
             0,
@@ -628,7 +637,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.ForeColor = System.Drawing.Color.Black;
-            this.label29.Location = new System.Drawing.Point(108, 542);
+            this.label29.Location = new System.Drawing.Point(9, 524);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(83, 13);
             this.label29.TabIndex = 15;
@@ -1542,11 +1551,22 @@
             this.tmCheckConnectTimer.Interval = 800;
             this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
             // 
-            // toolStripStatusLabel1
+            // btnFileList
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(52, 17);
-            this.toolStripStatusLabel1.Text = "СТАТУС";
+            this.btnFileList.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnFileList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFileList.ForeColor = System.Drawing.Color.Black;
+            this.btnFileList.Location = new System.Drawing.Point(221, 524);
+            this.btnFileList.Name = "btnFileList";
+            this.btnFileList.Size = new System.Drawing.Size(200, 46);
+            this.btnFileList.TabIndex = 17;
+            this.btnFileList.Text = "Список файлов";
+            this.btnFileList.UseVisualStyleBackColor = false;
+            this.btnFileList.Click += new System.EventHandler(this.btnFileList_Click);
+            // 
+            // tmFileList
+            // 
+            this.tmFileList.Tick += new System.EventHandler(this.tmFileList_Tick);
             // 
             // MainForm
             // 
@@ -1756,6 +1776,8 @@
         private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Button btnFileList;
+        private System.Windows.Forms.Timer tmFileList;
     }
 }
 
