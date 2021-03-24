@@ -84,6 +84,8 @@ namespace UROVModbus
         {
             ShowTabPage(tpUROVSettings, false);
 
+            InitSubstitutions();
+
             LoadComPorts();
 
             UpdateControlButtons(currentConnectionMode);
@@ -507,10 +509,8 @@ namespace UROVModbus
             if(myProtocol != null && myProtocol.isOpen())
             {
                 ShowWaitCursor(true);
+                ShowStatusInBar(" ЧИТАЕМ РЕГИСТРЫ ", Color.Lime);
 
-                toolStripStatusLabel1.Text = " ЧИТАЕМ... ";
-                toolStripStatusLabel1.BackColor = Color.Beige;
-                Application.DoEvents();
 
                 // читаем регистры прибора
                 ushort[] readVals = new ushort[REGS_COUNT];
@@ -533,9 +533,7 @@ namespace UROVModbus
                 if ((res == BusProtocolErrors.FTALK_SUCCESS))
                 {
                     // регистры прочитаны, надо заполнять данные формы!!!
-                    toolStripStatusLabel1.Text = " ПРОЧИТАНО ";
-                    toolStripStatusLabel1.BackColor = Color.Lime;
-                    Application.DoEvents();
+                    ShowStatusInBar(" ПРОЧИТАНО ", Color.Lime);
 
                     // MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
                     int pulses = readVals[0];
@@ -619,9 +617,7 @@ namespace UROVModbus
                 }
                 else
                 {
-                    toolStripStatusLabel1.Text = " ОШИБКА ";
-                    toolStripStatusLabel1.BackColor = Color.Red;
-                    Application.DoEvents();
+                    ShowStatusInBar(" ОШИБКА! ", Color.Red);
 
                     ShowWaitCursor(false);
 
@@ -653,10 +649,7 @@ namespace UROVModbus
             {
                 ShowWaitCursor(true);
 
-                toolStripStatusLabel1.Text = " ПИШЕМ... ";
-                toolStripStatusLabel1.BackColor = Color.Beige;
-                Application.DoEvents();
-
+                ShowStatusInBar(" ПИШЕМ РЕГИСТРЫ ", Color.Beige);
 
                 // пишем регистры в прибор
                 ushort[] writeVals = new ushort[REGS_COUNT];
@@ -782,10 +775,7 @@ namespace UROVModbus
 
                     ShowWaitCursor(false);
 
-                    toolStripStatusLabel1.Text = " ЗАПИСАНО ";
-                    toolStripStatusLabel1.BackColor = Color.Lime;
-                    Application.DoEvents();
-
+                    ShowStatusInBar(" ЗАПИСАНО ", Color.Lime);
 
                     MessageBox.Show("Регистры успешно записаны в прибор!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -802,8 +792,18 @@ namespace UROVModbus
             WriteRegisters();
         }
 
+        private SDFilesForm sdFiles = null;
+
         private void btnFileList_Click(object sender, EventArgs e)
         {
+            if(sdFiles == null)
+            {
+                sdFiles = new SDFilesForm(this);
+            }
+
+            sdFiles.tempSDParentNode = null;
+            sdFiles.treeViewSD.Nodes.Clear();
+
             GetFilesList("/"); // получаем список файлов в корневой папке
         }
 
@@ -813,7 +813,7 @@ namespace UROVModbus
         /// Запрашиваем список файлов указанной папки через MODBUS
         /// </summary>
         /// <param name="dir"></param>
-        private void GetFilesList(string dir)
+        public void GetFilesList(string dir)
         {
             dirToList = dir;
 
@@ -881,9 +881,7 @@ namespace UROVModbus
                 if(errorsCount < 1)
                 {
                     // данные записаны, ждём готовности данных!
-                    toolStripStatusLabel1.Text = " ЖДЁМ СПИСКА ФАЙЛОВ... ";
-                    toolStripStatusLabel1.BackColor = Color.Lime;
-                    Application.DoEvents();
+                    ShowStatusInBar(" ЖДЁМ СПИСКА ФАЙЛОВ ", Color.Yellow);
 
                     tmFileList.Enabled = true;
 
@@ -898,6 +896,21 @@ namespace UROVModbus
             } // if (myProtocol != null && myProtocol.isOpen())
 
 
+
+        }
+
+        private void ShowStatusInBar(string message, Color cl)
+        {
+            toolStripStatusLabel1.Text = message;
+            toolStripStatusLabel1.BackColor = cl;
+
+            if(sdFiles != null)
+            {
+                sdFiles.toolStripStatusLabel1.Text = message;
+                sdFiles.toolStripStatusLabel1.BackColor = cl;
+            }
+
+            Application.DoEvents();
 
         }
 
@@ -921,6 +934,106 @@ namespace UROVModbus
             Debug.Write("File name: "); Debug.WriteLine(filename);
             Debug.Write("Flags: "); Debug.WriteLine(fileFlags);
             Debug.WriteLine("");
+
+            AddRecordToSDList(filename, fileFlags, sdFiles.tempSDParentNode);
+        }
+
+        private void AddRecordToSDList(string filename, int fileFlags, TreeNode parent = null)
+        {
+            TreeNodeCollection nodes = sdFiles.treeViewSD.Nodes;
+            if (parent != null)
+            {
+                nodes = parent.Nodes;
+                SDNodeTagHelper existingTag = (SDNodeTagHelper)parent.Tag;
+                parent.Tag = new SDNodeTagHelper(SDNodeTags.TagFolderNode, existingTag.FileName, existingTag.IsDirectory); // говорим, что мы вычитали это дело
+                // и удаляем заглушку...
+                for (int i = 0; i < parent.Nodes.Count; i++)
+                {
+                    TreeNode child = parent.Nodes[i];
+                    SDNodeTagHelper tg = (SDNodeTagHelper)child.Tag;
+                    if (tg.Tag == SDNodeTags.TagDummyNode)
+                    {
+                        child.Remove();
+                        break;
+                    }
+                }
+            }
+            bool isDir = fileFlags == 2;
+
+            TreeNode node = nodes.Add(getTextFromFileName(filename));
+
+            if (isDir)
+            {
+                node.ImageIndex = 0;
+                node.SelectedImageIndex = 0;
+                TreeNode dummy = node.Nodes.Add("вычитываем....");
+                dummy.Tag = new SDNodeTagHelper(SDNodeTags.TagDummyNode, "", false); // этот узел потом удалим, при перечитывании
+                dummy.ImageIndex = -1;
+
+                node.Tag = new SDNodeTagHelper(SDNodeTags.TagFolderUninitedNode, filename, isDir); // говорим, что мы не перечитали содержимое папки ещё
+            }
+            else
+            {
+                node.ImageIndex = 2;
+                node.SelectedImageIndex = node.ImageIndex;
+                node.Tag = new SDNodeTagHelper(SDNodeTags.TagFileNode, filename, isDir);
+            }
+        }
+
+        /// <summary>
+        /// получение расшифровки из имени файла
+        /// </summary>
+        /// <param name="fName"></param>
+        /// <returns></returns>
+        string getTextFromFileName(string fName)
+        {
+            string fileName = fName.ToUpper();
+
+            if (fileNamesSubstitutions.ContainsKey(fileName))
+            {
+                return fileNamesSubstitutions[fileName];
+            }
+
+            return fileName;
+        }
+
+        /// <summary>
+        /// получение имени файла из его расшифровки
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        string getFileNameFromText(string text)
+        {
+            if (fileNamesSubstitutions.ContainsValue(text))
+            {
+                string key = fileNamesSubstitutions.FirstOrDefault(x => x.Value == text).Key;
+                return key;
+            }
+
+            return text;
+        }
+
+        private Dictionary<string, string> fileNamesSubstitutions = new Dictionary<string, string>();
+
+        /// <summary>
+        /// инициализация замен имён файлов их расшифровкой
+        /// </summary>
+        private void InitSubstitutions()
+        {
+            fileNamesSubstitutions.Clear();
+
+            fileNamesSubstitutions.Add("LOG", "Лог-файлы");
+            fileNamesSubstitutions.Add("ETL", "Эталоны");
+
+            fileNamesSubstitutions.Add("ET0UP.ETL", "Канал №1, движение вверх");
+            fileNamesSubstitutions.Add("ET0DWN.ETL", "Канал №1, движение вниз");
+
+            fileNamesSubstitutions.Add("ET1UP.ETL", "Канал №2, движение вверх");
+            fileNamesSubstitutions.Add("ET1DWN.ETL", "Канал №2, движение вниз");
+
+            fileNamesSubstitutions.Add("ET2UP.ETL", "Канал №3, движение вверх");
+            fileNamesSubstitutions.Add("ET2DWN.ETL", "Канал №3, движение вниз");
+
         }
 
         private void tmFileList_Tick(object sender, EventArgs e)
@@ -1015,12 +1128,11 @@ namespace UROVModbus
                                     else
                                     {
                                         // закончили запрос
-                                        toolStripStatusLabel1.Text = " СПИСОК ФАЙЛОВ ПОЛУЧЕН ";
-                                        toolStripStatusLabel1.BackColor = Color.Lime;
-                                        Application.DoEvents();
+                                        ShowStatusInBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
-
-                                        MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        // MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        sdFiles.Show();
+                                        sdFiles.BringToFront();
 
                                     }
 
@@ -1040,12 +1152,11 @@ namespace UROVModbus
                                 else
                                 {
                                     // закончили запрос
-                                    toolStripStatusLabel1.Text = " СПИСОК ФАЙЛОВ ПОЛУЧЕН ";
-                                    toolStripStatusLabel1.BackColor = Color.Lime;
-                                    Application.DoEvents();
+                                    ShowStatusInBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
-
-                                    MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    sdFiles.Show();
+                                    sdFiles.BringToFront();
+                                    //MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 }
                             }
@@ -1074,9 +1185,7 @@ namespace UROVModbus
             else
             {
                 tmFileList.Enabled = false;
-                toolStripStatusLabel1.Text = " РАЗЪЕДИНЕНО ";
-                toolStripStatusLabel1.BackColor = Color.Red;
-                Application.DoEvents();
+                ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
         }
     }

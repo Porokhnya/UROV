@@ -69,6 +69,7 @@
             this.txtPollDelay = new System.Windows.Forms.TextBox();
             this.Label9 = new System.Windows.Forms.Label();
             this.tpUROVSettings = new System.Windows.Forms.TabPage();
+            this.btnFileList = new System.Windows.Forms.Button();
             this.nudModbusSlaveID = new System.Windows.Forms.NumericUpDown();
             this.label29 = new System.Windows.Forms.Label();
             this.btnReadRegisters = new System.Windows.Forms.Button();
@@ -143,7 +144,6 @@
             this.panel12 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.btnFileList = new System.Windows.Forms.Button();
             this.tmFileList = new System.Windows.Forms.Timer(this.components);
             this.statusBar.SuspendLayout();
             this.tabPages.SuspendLayout();
@@ -610,6 +610,19 @@
             this.tpUROVSettings.TabIndex = 1;
             this.tpUROVSettings.Text = "Настройки UROV";
             this.tpUROVSettings.UseVisualStyleBackColor = true;
+            // 
+            // btnFileList
+            // 
+            this.btnFileList.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnFileList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFileList.ForeColor = System.Drawing.Color.Black;
+            this.btnFileList.Location = new System.Drawing.Point(221, 524);
+            this.btnFileList.Name = "btnFileList";
+            this.btnFileList.Size = new System.Drawing.Size(200, 46);
+            this.btnFileList.TabIndex = 17;
+            this.btnFileList.Text = "Список файлов";
+            this.btnFileList.UseVisualStyleBackColor = false;
+            this.btnFileList.Click += new System.EventHandler(this.btnFileList_Click);
             // 
             // nudModbusSlaveID
             // 
@@ -1550,19 +1563,6 @@
             // 
             this.tmCheckConnectTimer.Interval = 800;
             this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
-            // 
-            // btnFileList
-            // 
-            this.btnFileList.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnFileList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFileList.ForeColor = System.Drawing.Color.Black;
-            this.btnFileList.Location = new System.Drawing.Point(221, 524);
-            this.btnFileList.Name = "btnFileList";
-            this.btnFileList.Size = new System.Drawing.Size(200, 46);
-            this.btnFileList.TabIndex = 17;
-            this.btnFileList.Text = "Список файлов";
-            this.btnFileList.UseVisualStyleBackColor = false;
-            this.btnFileList.Click += new System.EventHandler(this.btnFileList_Click);
             // 
             // tmFileList
             // 
