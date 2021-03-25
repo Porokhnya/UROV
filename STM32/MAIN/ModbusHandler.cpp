@@ -63,6 +63,8 @@ void ModbusHandler::setup()
   mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек, ПОСЛЕДНИЙ ИЗ РЕГИСТРОВ НАСТРОЕК
 
   // теперь идут служебные настройки
+  mbusRegBank.add(MODBUS_REG_FILE_SIZE1);
+  mbusRegBank.add(MODBUS_REG_FILE_SIZE2);
   mbusRegBank.add(MODBUS_REG_FUNCTION_NUMBER);
   mbusRegBank.add(MODBUS_REG_READY_FLAG);
   mbusRegBank.add(MODBUS_REG_CONTINUE_FLAG);
@@ -197,6 +199,7 @@ void ModbusHandler::checkForChanges()
 
     case mbusListFiles: // запрошен список файлов в директории, это может быть как первичный вызов, так и перезапрос на следующий пункт списка
     {
+      /*
       // получаем имя директории
       uint16_t dataLen = get(MODBUS_REG_DATA_LENGTH);
       String dirName; // имя директории
@@ -244,20 +247,207 @@ void ModbusHandler::checkForChanges()
         
         
       } // for
+      */
 
+      // получаем имя директории
+      String dirName = getPassedFileName();
+      
       // прочитали имя директории, надо выводить список файлов в ней
       do_mbusListFiles(dirName);
     }
     break; // mbusListFiles
+
+    case mbusFileContent:
+    {
+      String fileName = getPassedFileName();
+      do_mbusFileContent(fileName);
+    }
+    break; // mbusFileContent
     
   } // switch
   
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+String ModbusHandler::getPassedFileName()
+{
+      uint16_t dataLen = get(MODBUS_REG_DATA_LENGTH);
+      String passedName; // имя файла
+      uint16_t numRegs = dataLen/2; // количество регистров к чтению
+      bool hasLastByte = false;
+      
+      if(dataLen%2)
+      {
+        numRegs++; // есть один байт в конце, нечётный
+        hasLastByte = true;
+      }
+
+      // читаем регистры, содержащие имя файла
+      uint16_t readedBytes = 0;
+      
+      for(uint16_t i=MODBUS_REG_DATA;i<(MODBUS_REG_DATA+numRegs);i++)
+      {
+        uint16_t reg = get(i);
+        char highVal = (char)((reg & 0xFF00) >> 8);
+        char lowVal = (char)(reg & 0x00FF);
+
+        // это последний регистр к чтению?
+        bool lastReg = i == (MODBUS_REG_DATA+numRegs)-1;
+
+        if(lastReg) // последний регистр к чтению
+        {
+          // тут может быть один байт
+          if(hasLastByte)
+          {
+            // есть всего один байт в регистре, младший
+            passedName += lowVal;
+          }
+          else
+          {
+            // надо прочитать его целиком
+            passedName += highVal;
+            passedName += lowVal;
+          }
+        }
+        else // регистр полностью из двух байт
+        {
+            passedName += highVal;
+            passedName += lowVal;          
+        }
+        
+        
+      } // for  
+
+      return passedName;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::do_mbusFileContent(const String& fileName)
+{
+  set(MODBUS_REG_FILE_FLAGS,0); // длина файла - 0
+  set(MODBUS_REG_READY_FLAG,0);
+
+  if(!SDInit::sdInitResult)
+  {
+    // карта не инициализирована
+    
+        // устанавливаем флаг перезапроса мастером в 0
+        set(MODBUS_REG_CONTINUE_FLAG,0);
+
+        // устанавливаем длину данных в 0
+        set(MODBUS_REG_DATA_LENGTH,0);
+        
+        // устанавливаем флаг готовности данных
+        set(MODBUS_REG_READY_FLAG,1);
+
+        entry.close(); // закрываем текущий файл
+
+        // всё, дальше мастер сам разберётся, что делать
+
+    return;
+  }
+
+    PAUSE_ADC; // останавливаем АЦП
+
+    // открываем файл
+    if(!entry.isOpen())
+    {
+        entrySize = 0;
+        
+        if(entry.open(fileName.c_str(),O_READ))
+        {
+          entrySize = entry.fileSize();
+        }      
+    }
+
+  if(!entry.isOpen())
+  {
+        // не удалось открыть файл, сообщаем об этом мастеру
+
+        // устанавливаем флаг перезапроса мастером в 0
+        set(MODBUS_REG_CONTINUE_FLAG,0);
+
+        // устанавливаем длину данных в 0
+        set(MODBUS_REG_DATA_LENGTH,0);
+        
+        // устанавливаем флаг готовности данных
+        set(MODBUS_REG_READY_FLAG,1);
+
+        // всё, дальше мастер сам разберётся, что делать
+        
+        return; // возврат  
+  }
+
+   // устанавливаем длину всего файла в регистры
+  set(MODBUS_REG_FILE_SIZE1,(word)(entrySize >> 16));
+  set(MODBUS_REG_FILE_SIZE2,(word)(entrySize & 0xffff));
+
+   // теперь читаем данные файла в пакет, пока не забъём весь пакет данными
+   uint16_t regNum = MODBUS_REG_DATA; // номер регистра, куда пишем
+   uint8_t regCntr = 0; // счётчик байт, готовых к записи в текущий регистр
+   uint16_t regData = 0; // байты для записи в текущий регистр
+   uint16_t readedBytes = 0; // количество прочитанных байт данных
+   bool errorRead = false;
+
+   for(uint16_t i=0;i<(MODBUS_PACKET_LENGTH)*2;i++)
+   {
+      // читаем очередной байт из файла
+      int iCh = entry.read();
+      if(iCh == -1)
+      {
+        // в файле больше нет данных
+        errorRead = true;
+        
+        // закрываем файл
+        entry.close();
+        
+        break; // выходим из цикла
+      }
+      else
+      {
+        // в файле ещё есть данные
+        readedBytes++; // увеличиваем количество прочитанных байт
+
+        // получаем текущий байт данных
+        uint8_t curByte = (uint8_t) iCh;
+
+        // записываем его в промежуточные данные регистра
+        regData <<= 8;
+        regData |= curByte;
+        regCntr++;
+
+        // смотрим, не пора ли записать в регистр?
+        if(regCntr  > 1)
+        {
+          // два байта были сформированы как значение регистра, можно писать
+          set(regNum,regData);
+
+          // увеличиваем номер регистра
+          regNum++;
+
+          // сбрасываем промежуточные данные
+          regData = 0;
+          regCntr = 0;
+        }
+      } // else
+    
+   } // for
+
+    // устанавливаем флаг перезапроса мастером - если данные прочитаны полным пакетом - то, возможно, там они ещё остались
+    set(MODBUS_REG_CONTINUE_FLAG, (!errorRead && readedBytes >= (MODBUS_PACKET_LENGTH)*2 ) ? 1 : 0 );
+
+    // устанавливаем длину данных в количество прочитанных ранее байт
+    set(MODBUS_REG_DATA_LENGTH,readedBytes);
+    
+    // устанавливаем флаг готовности данных
+    set(MODBUS_REG_READY_FLAG,1);
+   
+   
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::do_mbusListFiles(const String& dirName)
 {
   set(MODBUS_REG_FILE_FLAGS,0); // нет данных по файлу
+  set(MODBUS_REG_READY_FLAG,0);
   
   if(!SDInit::sdInitResult)
   {

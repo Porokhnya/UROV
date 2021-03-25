@@ -145,6 +145,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
             this.tmFileList = new System.Windows.Forms.Timer(this.components);
+            this.tmFileContent = new System.Windows.Forms.Timer(this.components);
             this.statusBar.SuspendLayout();
             this.tabPages.SuspendLayout();
             this.tpModbusSettings.SuspendLayout();
@@ -1568,6 +1569,10 @@
             // 
             this.tmFileList.Tick += new System.EventHandler(this.tmFileList_Tick);
             // 
+            // tmFileContent
+            // 
+            this.tmFileContent.Tick += new System.EventHandler(this.tmFileContent_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1778,6 +1783,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Button btnFileList;
         private System.Windows.Forms.Timer tmFileList;
+        private System.Windows.Forms.Timer tmFileContent;
     }
 }
 

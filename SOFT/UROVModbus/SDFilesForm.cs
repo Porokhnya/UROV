@@ -60,7 +60,7 @@ namespace UROVModbus
         {
             //TODO: ТУТ ЗАПРАШИВАЕМ СОДЕРЖИМОЕ ФАЙЛА !!!
 
-            //mainForm.RequestFile(treeViewSD.SelectedNode);
+            mainForm.RequestFile(treeViewSD.SelectedNode);
         }
 
         private void SDFilesForm_FormClosing(object sender, FormClosingEventArgs e)

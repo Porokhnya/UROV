@@ -18,19 +18,6 @@ namespace UROVModbus
     {
         private MbusMasterFunctions myProtocol;
 
-        private enum ConnectionMode
-        {
-            None,
-            Serial,
-            TCP
-        }
-
-        private enum MBusFunction
-        {
-            None = 0,     // нет функции
-            ListFiles,    // запрошен список файлов в директории
-        }
-
         private void ShowWaitCursor(bool show)
         {
             System.Windows.Forms.Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
@@ -90,7 +77,7 @@ namespace UROVModbus
 
             UpdateControlButtons(currentConnectionMode);
 
-            cmbBaudRate.SelectedIndex = 0; // 9600
+            cmbBaudRate.SelectedIndex = 4; //57600 //0; // 9600
             cmbSerialProtocol.SelectedIndex = 0;
             cmbParity.SelectedIndex = 0;
             cmbStopBits.SelectedIndex = 0;
@@ -807,6 +794,92 @@ namespace UROVModbus
             GetFilesList("/"); // получаем список файлов в корневой папке
         }
 
+        private List<byte> fileContent = new List<byte>();
+        private string fileNameToRequest = "";
+
+        // запрашиваем содержимое файла
+        private void DoRequestFile(string fileName)
+        {
+            if (myProtocol != null && myProtocol.isOpen())
+            {
+                // протокол открыт, можно запрашивать содержимое файла
+                int res; // результат запроса
+
+                ushort func = Convert.ToUInt16(MBusFunction.FileContent);
+                ushort dataLen = Convert.ToUInt16(fileName.Length);
+                int slave = Convert.ToInt32(nudModbusSlaveID.Value);
+
+                int numRegs = fileName.Length / 2;
+                if (fileName.Length % 2 > 0)
+                {
+                    numRegs++;
+                }
+
+                // выделяем память под данные имени файла
+                ushort[] data = new ushort[numRegs];
+
+                // теперь записываем туда данные имени файла
+                int iterator = 0;
+                for (int i = 0; i < numRegs; i++)
+                {
+                    byte highVal = Convert.ToByte(fileName[iterator]); iterator++;
+                    byte lowVal = 0;
+                    if (iterator < fileName.Length)
+                    {
+                        lowVal = Convert.ToByte(fileName[iterator]); iterator++;
+                    }
+                    else
+                    {
+                        // только последний байт остался, младший
+                        lowVal = highVal;
+                        highVal = 0;
+
+                    }
+
+                    // формируем данные регистра
+                    ushort reg = highVal; reg <<= 8; reg |= lowVal;
+                    data[i] = reg;
+
+                } // for
+
+                // данные сформированы, записываем их в регистры устройства, и ждём ответа
+                int errorsCount = 0;
+
+                // MODBUS_REG_DATA_LENGTH                    41004 // регистр длины выданных или переданных от мастера данных (например, длины имени файла)
+                res = myProtocol.writeSingleRegister(slave, 1004, dataLen);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                // MODBUS_REG_DATA                           41005 // регистр, начиная с которого идут данные (например, имя файла)
+                res = myProtocol.writeMultipleRegisters(slave, 1005, data, numRegs);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+
+                // MODBUS_REG_FUNCTION_NUMBER                41000 // регистр для номера запрошенной мастером функции (например, выдать список файлов в директории)
+                res = myProtocol.writeSingleRegister(slave, 1000, func);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                if (errorsCount < 1)
+                {
+                    // данные записаны, ждём готовности данных!
+                    ShowStatusInBar(" ЖДЁМ ДАННЫЕ ФАЙЛА ", Color.Yellow);
+
+                    tmFileContent.Enabled = true;
+
+                }
+                else
+                {
+                    tmFileContent.Enabled = false;
+                    ShowProtocolError(res, "Ошибка записи регистров: ");
+
+                }
+            }
+
+        }
+
+
         private string dirToList = "/"; // папка, с которой запрашиваем список файлов
 
         /// <summary>
@@ -841,7 +914,7 @@ namespace UROVModbus
                 {
                     byte highVal = Convert.ToByte(dir[iterator]); iterator++;
                     byte lowVal = 0;
-                    if (iterator < dir.Length - 1)
+                    if (iterator < dir.Length)
                     {
                         lowVal = Convert.ToByte(dir[iterator]); iterator++;
                     }
@@ -978,6 +1051,48 @@ namespace UROVModbus
                 node.SelectedImageIndex = node.ImageIndex;
                 node.Tag = new SDNodeTagHelper(SDNodeTags.TagFileNode, filename, isDir);
             }
+        }
+
+        public void RequestFile(TreeNode node)
+        {
+            if (node == null)
+                return;
+
+            if (node.Tag == null)
+                return;
+
+            SDNodeTagHelper tg = (SDNodeTagHelper)node.Tag;
+            if (tg.Tag != SDNodeTags.TagFileNode)
+                return;
+
+            //ShowWaitCursor(true);
+
+            string fullPathName = tg.FileName;
+
+
+            TreeNode parent = node.Parent;
+            while (parent != null)
+            {
+                SDNodeTagHelper nt = (SDNodeTagHelper)parent.Tag;
+                fullPathName = nt.FileName + "/" + fullPathName;
+                parent = parent.Parent;
+            }
+
+            sdFiles.toolStripProgressBar1.Value = 0;
+            sdFiles.toolStripProgressBar1.Visible = true;
+
+            fileNameToRequest = fullPathName;
+            fileContent.Clear();
+
+            DoRequestFile(fullPathName);
+
+            /*
+            this.btnViewSDFile.Enabled = false;
+            this.btnDeleteSDFile.Enabled = false;
+            this.btnListSDFiles.Enabled = false;
+            PushCommandToQueue(GET_PREFIX + "FILESIZE" + PARAM_DELIMITER + fullPathName, ParseAskFileSize);
+            */
+
         }
 
         /// <summary>
@@ -1185,6 +1300,164 @@ namespace UROVModbus
             else
             {
                 tmFileList.Enabled = false;
+                ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
+            }
+        }
+
+        private void tmFileContent_Tick(object sender, EventArgs e)
+        {
+            tmFileContent.Enabled = false; // выключаем таймер, чтоб не тикал
+
+            if (myProtocol != null && myProtocol.isOpen())
+            {
+
+                // ждём готовности данных от устройства, при запросе списка файлов
+                int slave = Convert.ToInt32(nudModbusSlaveID.Value);
+
+                ushort[] regs = new ushort[1];
+
+                //MODBUS_REG_READY_FLAG                     41001 // регистр флага готовности запрошенной мастером информации (например, выдано имя одного файла). Мастер проверяет
+                int res = myProtocol.readMultipleRegisters(slave, 1001, regs, 1);
+
+                if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                {
+                    // прочитано успешно
+                    if (regs[0] == 1)
+                    {
+                        // данные готовы, можно из читать
+                        regs = new ushort[7]; // 7  сразу
+
+                        // MODBUS_REG_FILE_SIZE1                     40998 // регистр размера файла 1
+                        // MODBUS_REG_FILE_SIZE2                     40999 // регистр размера файла 2
+                        // MODBUS_REG_FUNCTION_NUMBER                41000 // регистр для номера запрошенной мастером функции (например, выдать список файлов в директории)
+                        // MODBUS_REG_READY_FLAG                     41001 // регистр флага готовности запрошенной мастером информации (например, выдано имя одного файла). Мастер проверяет
+                        // MODBUS_REG_CONTINUE_FLAG                  41002 // регистр флага необходимости продолжения запроса мастером (например, когда ещё есть имена файлов в списке). Если 0 - то передача от слейва завершена.
+                        // MODBUS_REG_FILE_FLAGS                     41003 // регистр флага признаков файла (0 - нет файла, 1 - обычный файл, 2 - папка)
+                        // MODBUS_REG_DATA_LENGTH                    41004 // регистр длины выданных или переданных от мастера данных (например, длины имени файла)
+                        res = myProtocol.readMultipleRegisters(slave, 998, regs, 7);
+
+                        if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                        {
+                            // регистры, кроме регистров данных - прочитаны.
+
+
+                            // признак файла, в нашем случае - его полный размер
+                            ushort sizeHVal = regs[0];
+                            ushort sizeLVal = regs[1];
+                            UInt32 fileSize = sizeHVal; fileSize <<= 16; fileSize |= sizeLVal;
+                            sdFiles.toolStripProgressBar1.Maximum = Convert.ToInt32(fileSize);
+
+
+                            // признак перезапроса
+                            ushort continueFlag = regs[4];
+
+                            // читаем сами данные
+                            int dataLen = regs[6];
+                            ushort[] data = new ushort[dataLen];
+
+                            if (dataLen > 0) // есть имя файла или папки
+                            {
+
+                                int regsToRead = dataLen / 2;
+                                if (dataLen % 2 > 0)
+                                {
+                                    regsToRead++;
+                                }
+                                // MODBUS_REG_DATA                           41005 // регистр, начиная с которого идут данные (например, имя файла)
+                                res = myProtocol.readMultipleRegisters(slave, 1005, data, regsToRead);
+
+                                if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                                {
+                                    // размер файла есть, размер полученных данных - есть, увеличиваем прогресс-бар
+                                    sdFiles.toolStripProgressBar1.Value += dataLen;
+
+
+                                    // данные прочитаны, можно разбирать содержимое файла
+
+
+                                    for (int k = 0; k < regsToRead; k++, dataLen -= 2)
+                                    {
+                                        ushort reg = data[k];
+                                        byte highVal = (byte)((reg & 0xFF00) >> 8);
+                                        byte lowVal = (byte)(reg & 0x00FF);
+
+                                        if (dataLen < 2)
+                                        {
+                                            // в регистре валиден только старший байт
+                                            fileContent.Add(highVal);
+                                        }
+                                        else
+                                        {
+                                            // оба байта в регистре валидны
+                                            fileContent.Add(highVal);
+                                            fileContent.Add(lowVal);
+                                        }
+
+                                    } // for
+
+
+                                    // теперь смотрим - если есть флаг перезапроса - то перезапрашиваем
+
+                                    if (continueFlag == 1) // перезапрашиваем
+                                    {
+                                        DoRequestFile(this.fileNameToRequest);
+                                    }
+                                    else
+                                    {
+                                        // закончили запрос
+                                        ShowStatusInBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
+
+                                        // MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    ShowProtocolError(res, "Ошибка чтения регистров: ");
+                                }
+                            } // if (dataLen > 0)
+                            else
+                            {
+                                // нет имени файла, проверяем, надо ли перезапрашивать?
+                                if (continueFlag == 1) // перезапрашиваем
+                                {
+                                    DoRequestFile(this.fileNameToRequest);
+                                }
+                                else
+                                {
+                                    // закончили запрос
+                                    ShowStatusInBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
+
+                                    //MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                }
+                            }
+
+                        } // if ((res == BusProtocolErrors.FTALK_SUCCESS))
+                        else
+                        {
+                            ShowProtocolError(res, "Ошибка чтения регистров: ");
+                        }
+
+                    }
+                    else
+                    {
+                        // надо перезапросить, ожидаем готовность данных
+                        tmFileContent.Enabled = true;
+                    }
+                }
+                else
+                {
+                    // не прочитано
+                    ShowProtocolError(res, "Ошибка чтения списка файлов: ");
+
+                }
+
+            }
+            else
+            {
+                tmFileContent.Enabled = false;
                 ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
         }

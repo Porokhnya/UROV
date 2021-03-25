@@ -5,6 +5,21 @@ using System.Text;
 
 namespace UROVModbus
 {
+
+    public enum ConnectionMode
+    {
+        None,
+        Serial,
+        TCP
+    }
+
+    public enum MBusFunction
+    {
+        None = 0,     // нет функции
+        ListFiles,    // запрошен список файлов в директории
+        FileContent,  // запрошено содержимое файла
+    }
+
     /// <summary>
     /// типы узлов дерева SD
     /// </summary>
