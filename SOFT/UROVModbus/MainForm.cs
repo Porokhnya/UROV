@@ -11,6 +11,7 @@ using FieldTalk.Modbus.Master;
 using System.Globalization;
 using System.Threading;
 using System.Diagnostics;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace UROVModbus
 {
@@ -1304,6 +1305,1453 @@ namespace UROVModbus
             }
         }
 
+
+        /// <summary>
+        /// Просмотр файла
+        /// </summary>
+        /// <param name="content">содержимое файла</param>
+        private void ViewFile(List<byte> content)
+        {
+            /*
+            ShowWaitCursor(false);
+            statusProgressBar.Visible = false;
+            statusProgressMessage.Visible = false;
+
+            this.btnViewSDFile.Enabled = treeViewSD.SelectedNode != null;
+            this.btnDeleteSDFile.Enabled = treeViewSD.SelectedNode != null;
+            this.btnListSDFiles.Enabled = true;
+            this.treeViewSD.Enabled = true;
+            */
+            string upStr = this.fileNameToRequest.ToUpper();
+
+            if (upStr.EndsWith(".LOG")) // это лог-файл
+            {
+                ShowLogFile(content, this.sdFiles.logDataGrid, "", true, null, false);
+                this.sdFiles.toolStripStatusLabel1.Text = "";
+            }
+            else if (upStr.EndsWith(".ETL")) // это файл эталона
+            {
+                CreateEthalonChart(content, this.sdFiles.ethalonChart, Convert.ToInt32(nudRodMoveLength.Value));
+                this.sdFiles.plEthalonChart.BringToFront();
+            }
+        }
+
+        const int customLabelsCount = 15; // сколько всего наших меток будет на оси X
+
+
+        /// <summary>
+        /// Устанавливает интервал для графика
+        /// </summary>
+        /// <param name="targetChart"></param>
+        /// <param name="interval"></param>
+        private void setChartInterval(System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int interval)
+        {
+            for (int i = 0; i < targetChart.ChartAreas.Count; i++)
+            {
+                ChartArea area = targetChart.ChartAreas[i];
+                area.AxisX.Interval = interval;
+                area.AxisX.IntervalType = DateTimeIntervalType.Number; // тип интервала
+                area.AxisX.ScaleView.Zoomable = true;
+                area.CursorX.AutoScroll = true;
+
+                area.CursorX.IsUserEnabled = true;
+                area.CursorX.IsUserSelectionEnabled = true;
+                area.CursorX.IntervalType = DateTimeIntervalType.Number;
+                area.CursorX.Interval = interval;
+
+                area.AxisX.ScaleView.SmallScrollSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollSize = interval;
+                area.AxisX.ScaleView.Zoomable = true;
+
+                area.AxisX.ScaleView.MinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.MinSize = interval;
+
+                area.AxisX.ScaleView.SmallScrollMinSizeType = DateTimeIntervalType.Number;
+                area.AxisX.ScaleView.SmallScrollMinSize = interval;
+
+                area.AxisY.IntervalType = DateTimeIntervalType.Number;
+                area.AxisY.ScaleView.Zoomable = true;
+                area.CursorY.IsUserSelectionEnabled = true;
+                area.CursorY.IsUserEnabled = true;
+                area.CursorY.AutoScroll = true;
+            }
+        }
+
+        /// <summary>
+        /// Создаёт график эталона
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="targetChart"></param>
+        /// <param name="rodMoveLength"></param>
+        private void CreateEthalonChart(List<byte> content, System.Windows.Forms.DataVisualization.Charting.Chart targetChart, int rodMoveLength)
+        {
+
+            System.Windows.Forms.DataVisualization.Charting.Series s = targetChart.Series[0];
+            s.Points.Clear();
+
+
+
+
+            // у нас размер одной записи - 4 байта
+            int pointsCount = content.Count / 4;
+            byte[] dt = new byte[4];
+
+            // int xStep = 1;
+
+
+            // подсчитываем максимальное значение по Y
+
+            List<int> timeList = new List<int>();
+            for (int i = 0; i < content.Count; i += 4)
+            {
+                try
+                {
+                    dt[0] = content[i];
+                    dt[1] = content[i + 1];
+                    dt[2] = content[i + 2];
+                    dt[3] = content[i + 3];
+
+                    int curVal = BitConverter.ToInt32(dt, 0);
+                    timeList.Add(curVal);
+                }
+                catch
+                {
+                    break;
+                }
+            }
+
+            // добавляем кол-во импульсов на график
+            targetChart.Legends[0].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", timeList.Count);// * Config.Instance.SkipCounter);
+
+            // тут добавляем кастомные метки на ось X - времена
+            int maxTime = 0;
+            if (timeList.Count > 0)
+            {
+                maxTime += timeList[timeList.Count - 1];
+            }
+
+
+            // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
+            //            int step = maxTime / customLabelsCount;
+            int neareastValue = 100000; // приближение к 100 мс
+            int maxTimeDivideLabels = maxTime / customLabelsCount;
+            while (maxTimeDivideLabels < neareastValue)
+            {
+                neareastValue /= 10;
+            }
+
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTimeDivideLabels) / neareastValue, 0)) * neareastValue;
+            if (step < 1)
+            {
+                step = 1;
+            }
+
+            int clCount = maxTime / step;
+
+            for (int kk = 0; kk < targetChart.ChartAreas.Count; kk++)
+            {
+                ChartArea area = targetChart.ChartAreas[kk];
+                area.AxisX.CustomLabels.Clear();
+
+                int startOffset = -step / 2;
+                int endOffset = step / 2;
+                int counter = 0;
+
+                for (int i = 0; i < clCount; i++)
+                {
+                    string labelText = String.Format("{0}ms", counter / 1000);
+                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisX.CustomLabels.Add(monthLabel);
+                    startOffset = startOffset + step;
+                    endOffset = endOffset + step;
+                    counter += step;
+                }
+            }
+            // устанавливаем интервал для меток на графике
+            setChartInterval(targetChart, step);
+
+
+            // получаем максимальное время импульса - это будет 100% по оси Y
+            int maxPulseTime = 0;
+            int minPulseTime = Int32.MaxValue;
+            int fullMoveTime = 0;
+
+            if (timeList.Count > 1)
+            {
+                fullMoveTime = timeList[timeList.Count - 1];
+            }
+
+            for (int i = 1; i < timeList.Count; i++)
+            {
+                int pulseTime = (timeList[i] - timeList[i - 1]);
+                maxPulseTime = Math.Max(maxPulseTime, pulseTime);
+                minPulseTime = Math.Min(minPulseTime, pulseTime);
+            }
+
+            int xCoord = 0;
+            List<int> XValuesEthalon = new List<int>();
+            List<double> YValuesEthalon = new List<double>();
+
+            // теперь считаем все остальные точки
+            int maxInterruptYVal = 0;
+            float avgPulseTime = 0;
+
+            for (int i = 1; i < timeList.Count; i++)
+            {
+                int pulseTime = timeList[i] - timeList[i - 1];
+
+                avgPulseTime += pulseTime;
+
+                int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
+                pulseTimePercents = 100 - pulseTimePercents;
+
+                xCoord += pulseTime;
+                XValuesEthalon.Add(xCoord);
+                YValuesEthalon.Add(pulseTimePercents);
+
+                maxInterruptYVal = Math.Max(maxInterruptYVal, pulseTimePercents);
+
+            } // for
+
+            if (timeList.Count > 1)
+            {
+                avgPulseTime = avgPulseTime / (timeList.Count - 1);
+            }
+
+            s.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
+
+            AddCustomSpeedLabels(targetChart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
+
+
+        }
+
+        /// <summary>
+        /// Добавляет на график метки со скоростью перемещения
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="timeListCount"></param>
+        /// <param name="minPulseTime"></param>
+        /// <param name="avgPulseTime"></param>
+        /// <param name="fullMoveTime"></param>
+        /// <param name="maxInterruptYVal"></param>
+        /// <param name="rodMoveLength"></param>
+        void AddCustomSpeedLabels(ChartArea area, int timeListCount, int minPulseTime, float avgPulseTime, int fullMoveTime, int maxInterruptYVal, int rodMoveLength)
+        {
+            if (timeListCount > 0 && minPulseTime != Int32.MaxValue && minPulseTime > 0 && fullMoveTime > 0 && avgPulseTime > 0 && maxInterruptYVal > 0)
+            {
+                // в maxInterruptYVal - у нас лежит максимальное значение по Y в условных единицах, т.е. 100% скорости перемещения
+
+
+                // у нас времена перемещений - в микросекундах, чтобы получить скорость мм/с - надо умножить на миллион.
+                float avgSpeed = (Convert.ToSingle(rodMoveLength) * 1000000) / fullMoveTime; // средняя скорость, мм/с
+
+                float coeff = avgPulseTime / minPulseTime; // отношение средневзвешенной длительности импульса к минимальной
+                float maxSpeed = (avgSpeed * coeff); // максимальная скорость, мм/с
+
+                // выяснили максимальную скорость, теперь добавляем метки
+                // округляем до ближайшей десятки вверх
+                int roundedUpSpeed = ((int)Math.Round(maxSpeed / 10.0)) * 10;
+
+                int divider = 10;
+                int totalLabelsCount = roundedUpSpeed / divider; // получили шкалу, кратную 10
+
+                int add = 2;
+                while (totalLabelsCount > 5)
+                {
+                    divider = 10 * add;
+                    add++;
+                    totalLabelsCount = roundedUpSpeed / divider;
+                }
+                // эта шкала может быть очень частой, например, если у нас скорость большая
+
+                int labelStep = maxInterruptYVal / (totalLabelsCount);
+
+                area.AxisY.CustomLabels.Clear();
+                area.AxisY.Interval = labelStep;
+
+                area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+                int startOffset = -labelStep / 2;
+                int endOffset = labelStep / 2;
+                int counter = 0;
+
+
+                for (int i = 0; i <= totalLabelsCount; i++)
+                {
+                    // у нас maxSpeed = 100%
+                    // maxInterruptYVal = 100% скорости
+                    // labelStep*i = x% макс скорости
+                    // x% = (labelStep*i*100)/maxInterruptYVal
+                    // maxSpeed = 100%
+                    // speedComputed = x
+                    // speedComputed = (x*maxSpeed)/100;
+                    float speedComputed = (((labelStep * i * 100) / maxInterruptYVal) * maxSpeed) / 100;
+
+                    string labelText = String.Format("{0:0.00} м/с", speedComputed / 1000);
+
+                    CustomLabel сLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisY.CustomLabels.Add(сLabel);
+
+                    startOffset = startOffset + labelStep;
+                    endOffset = endOffset + labelStep;
+                    counter++;
+                }
+
+
+
+            }
+        }
+
+        /// <summary>
+        /// Очищает таблицу
+        /// </summary>
+        /// <param name="targetGrid"></param>
+        private void ClearInterruptsList(DataGridView targetGrid)
+        {
+            // Тут очистка таблицы
+            targetGrid.RowCount = 0;
+            try
+            {
+                if (gridToListCollection.ContainsKey(targetGrid))
+                {
+                    gridToListCollection[targetGrid].list.Clear();
+                }
+            }
+            catch { }
+        }
+
+
+        /// <summary>
+        /// отображение графика прерывания
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="stationID"></param>
+        /// <param name="stationName"></param>
+        /// <param name="modal"></param>
+        public void ShowChart(InterruptRecord record, string stationID, string stationName, bool modal)
+        {
+            //  System.Diagnostics.Debug.Assert(record != null);
+            if (record == null)
+                return;
+
+            ViewChartForm vcf = new ViewChartForm(record, stationID, stationName);
+
+            vcf.setDefaultFileName(record.InterruptInfo.InterruptTime.ToString("yyyy-MM-dd HH.mm"));
+
+            vcf.lblCaption.Text = "Срабатывание от " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+
+            // добавляем кол-во импульсов на график
+            vcf.chart.Legends[1].CustomItems[0].Cells["PulsesCount"].Text = String.Format("Импульсов: {0}", record.InterruptData.Count * Convert.ToInt32(nudSkipCounter.Value));
+            vcf.chart.Legends[1].CustomItems[0].Cells["EthalonPulses"].Text = String.Format("Эталон: {0}", record.EthalonData.Count);
+            vcf.chart.Legends[1].CustomItems[0].Cells["TrigDate"].Text = "Дата: " + record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+            vcf.chart.Legends[1].CustomItems[0].Cells["Place"].Text = stationName;
+            vcf.chart.Legends[1].CustomItems[0].Cells["PreviewCount"].Text = String.Format("Превью тока: {0} записей", record.PreviewCount);
+            vcf.chart.Legends[1].CustomItems[0].Cells["tFact"].Text = String.Format("t факт: {0} ms", record.MoveTime / 1000);
+
+
+            System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
+            ethalonSerie.Points.Clear();
+
+            System.Windows.Forms.DataVisualization.Charting.Series interruptSerie = vcf.chart.Series[1];
+            interruptSerie.Points.Clear();
+
+            Series channel1Current = vcf.chart.Series[2];
+            channel1Current.Points.Clear();
+
+            Series channel2Current = vcf.chart.Series[3];
+            channel2Current.Points.Clear();
+
+            Series channel3Current = vcf.chart.Series[4];
+            channel3Current.Points.Clear();
+
+            // время наступления прерывания
+            DateTime interruptTime = record.InterruptInfo.InterruptTime;
+
+            // смещение в микросекундах от данных по току до начала списка прерываний
+            int pulsesOffset = record.DataArrivedTime;
+
+
+            // СПИСОК ПРИХОДИТ НОРМАЛИЗОВАННЫМ ОТНОСИТЕЛЬНО ПЕРВОЙ ЗАПИСИ!!!
+            List<int> timeList = record.InterruptData;
+
+            // получаем максимальное время импульса - это будет 100% по оси Y
+            int maxPulseTime = 0;
+            int minPulseTime = Int32.MaxValue;
+            int fullMoveTime = 0; // полное время перемещения
+            float avgPulseTime = 0; // средневзвешенная длительность импульса
+
+            if (timeList.Count > 1)
+            {
+                fullMoveTime = timeList[timeList.Count - 1];
+                float thisAvgPulseTime = 0;
+
+                for (int i = 1; i < timeList.Count; i++)
+                {
+                    int curPulseTime = (timeList[i] - timeList[i - 1]);
+                    thisAvgPulseTime += curPulseTime;
+
+                    maxPulseTime = Math.Max(maxPulseTime, curPulseTime);
+                    minPulseTime = Math.Min(minPulseTime, curPulseTime);
+                }
+
+                avgPulseTime = thisAvgPulseTime / (timeList.Count - 1);
+            }
+
+
+            if (record.EthalonData.Count > 1)
+            {
+                float thisAvgPulseTime = 0;
+
+                for (int i = 1; i < record.EthalonData.Count; i++)
+                {
+                    int curPulseTime = (record.EthalonData[i] - record.EthalonData[i - 1]);
+                    thisAvgPulseTime += curPulseTime;
+
+                    maxPulseTime = Math.Max(maxPulseTime, curPulseTime);
+                    minPulseTime = Math.Min(minPulseTime, curPulseTime);
+                }
+
+                fullMoveTime = Math.Max(fullMoveTime, record.EthalonData[record.EthalonData.Count - 1]);
+                float avgPulseTime2 = thisAvgPulseTime / (record.EthalonData.Count - 1);
+
+                avgPulseTime = (avgPulseTime + avgPulseTime2) / 2;
+            }
+
+
+            int xCoord = pulsesOffset;
+            List<int> XValuesInterrupt = new List<int>();
+            List<double> YValuesInterrupt = new List<double>();
+
+            //int interruptAddedPoints = 1;
+
+            if (record.CurrentTimes.Count > 0)
+            {
+                for (int z = 0; z < record.CurrentTimes.Count; z++)
+                {
+
+                    if (record.CurrentTimes[z] >= pulsesOffset)
+                        break;
+
+                    XValuesInterrupt.Add(record.CurrentTimes[z]);
+                    YValuesInterrupt.Add(0);
+                    //   interruptAddedPoints++;
+                }
+            }
+
+
+            XValuesInterrupt.Add(xCoord);
+            YValuesInterrupt.Add(0);
+
+            // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
+            int offsetLabelIndex = XValuesInterrupt.Count - 1;
+
+            int maxInterruptYVal = 0;
+
+
+            // теперь считаем все остальные точки
+
+            if (timeList.Count > 1)
+            {
+
+                for (int i = 1; i < timeList.Count; i++)
+                {
+                    int pulseTime = timeList[i] - timeList[i - 1];
+
+
+                    int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
+
+                    pulseTimePercents = 100 - pulseTimePercents;
+
+                    // абсолютное инвертированное значение от maxPulseTime
+                    // maxPulseTime = 100%
+                    // x = pulseTimePercents
+                    // x = (pulseTimePercents*maxPulseTime)/100;
+
+                    xCoord += pulseTime;
+                    XValuesInterrupt.Add(xCoord);
+
+                    int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
+                    maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
+                    YValuesInterrupt.Add(computedYVal);
+
+
+                } // for
+
+            }
+
+
+            // убираем последний пик вверх
+
+            if (YValuesInterrupt.Count > 1)
+            {
+                YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;
+            }
+
+            // вставляем метку окончания импульсов
+            int lastInterruptIdx = XValuesInterrupt.Count - 1;
+
+            bool canAddInterruptLabels = XValuesInterrupt.Count > 1;
+
+
+            // а вот тут - добавлять следующие точки от конца прерывания до конца информации по токам
+            if (record.CurrentTimes.Count > 0)
+            {
+                for (int z = 0; z < record.CurrentTimes.Count; z++)
+                {
+                    if (record.CurrentTimes[z] <= xCoord)
+                        continue;
+
+                    XValuesInterrupt.Add(record.CurrentTimes[z]);
+                    YValuesInterrupt.Add(0);
+                }
+            }
+
+
+            interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
+            if (offsetLabelIndex != -1 && canAddInterruptLabels)
+            {
+                interruptSerie.Points[offsetLabelIndex].Label = String.Format("НАЧАЛО ПРЕРЫВАНИЯ, {0} ms", pulsesOffset / 1000);
+                interruptSerie.Points[offsetLabelIndex].LabelBorderDashStyle = ChartDashStyle.Solid;
+                interruptSerie.Points[offsetLabelIndex].LabelBorderWidth = 1;
+                interruptSerie.Points[offsetLabelIndex].LabelBorderColor = Color.Black;
+                interruptSerie.Points[offsetLabelIndex].LabelBackColor = Color.Black;
+                interruptSerie.Points[offsetLabelIndex].LabelForeColor = Color.White;
+
+                interruptSerie.Points[offsetLabelIndex].MarkerColor = Color.Red;
+                interruptSerie.Points[offsetLabelIndex].MarkerStyle = MarkerStyle.Circle;
+                interruptSerie.Points[offsetLabelIndex].MarkerSize = 6;
+
+            }
+
+            // расчётная длительность импульсов прерывания
+            int computedInterruptLength = -1;
+
+
+            if (lastInterruptIdx != -1 && canAddInterruptLabels)
+            {
+                interruptSerie.Points[lastInterruptIdx].Label = String.Format("КОНЕЦ ПРЕРЫВАНИЯ, {0} ms", Convert.ToInt32(interruptSerie.Points[lastInterruptIdx].XValue / 1000));
+                interruptSerie.Points[lastInterruptIdx].LabelBorderDashStyle = ChartDashStyle.Solid;
+                interruptSerie.Points[lastInterruptIdx].LabelBorderWidth = 1;
+                interruptSerie.Points[lastInterruptIdx].LabelBorderColor = Color.Black;
+                interruptSerie.Points[lastInterruptIdx].LabelBackColor = Color.Black;
+                interruptSerie.Points[lastInterruptIdx].LabelForeColor = Color.White;
+
+                interruptSerie.Points[lastInterruptIdx].MarkerColor = Color.Red;
+                interruptSerie.Points[lastInterruptIdx].MarkerStyle = MarkerStyle.Circle;
+                interruptSerie.Points[lastInterruptIdx].MarkerSize = 6;
+
+                computedInterruptLength = Convert.ToInt32(interruptSerie.Points[lastInterruptIdx].XValue) - pulsesOffset;
+            }
+
+
+            if (computedInterruptLength != -1)
+            {
+                vcf.chart.Legends[1].CustomItems[0].Cells["tComputed"].Text = String.Format("t расчёт: {0} ms", computedInterruptLength / 1000);
+
+            }
+
+
+
+            xCoord = pulsesOffset;
+            List<int> XValuesEthalon = new List<int>();
+            List<double> YValuesEthalon = new List<double>();
+
+
+            XValuesEthalon.Add(xCoord);
+            YValuesEthalon.Add(0);
+
+            // считаем график эталона
+            if (record.EthalonData.Count > 0)
+            {
+                for (int i = 1; i < record.EthalonData.Count; i++)
+                {
+                    int pulseTime = record.EthalonData[i] - record.EthalonData[i - 1];
+
+                    int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
+                    pulseTimePercents = 100 - pulseTimePercents;
+
+                    xCoord += pulseTime;
+                    XValuesEthalon.Add(xCoord);
+
+                    int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
+                    maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
+                    YValuesEthalon.Add(computedYVal);
+
+                } // for
+            }
+
+            // убираем последний пик вверх
+
+            if (YValuesEthalon.Count > 1)
+            {
+                YValuesEthalon[YValuesEthalon.Count - 1] = 0;
+            }
+
+
+            ethalonSerie.Points.DataBindXY(XValuesEthalon, YValuesEthalon);
+
+            int maxCurrentValue = 0;
+
+            // теперь создаём графики по току
+            if (record.CurrentTimes.Count > 0)
+            {
+                // СПИСОК СОДЕРЖИТ ВРЕМЕНА micros(), И ЯВЛЯЕТСЯ НОРМАЛИЗОВАННЫМ !!!
+                List<int> XValuesOfCurrent1 = new List<int>();
+                List<int> XValuesOfCurrent2 = new List<int>();
+                List<int> XValuesOfCurrent3 = new List<int>();
+                List<double> YValuesChannel1 = new List<double>();
+                List<double> YValuesChannel2 = new List<double>();
+                List<double> YValuesChannel3 = new List<double>();
+
+                List<int> currentTimesList = record.CurrentTimes;
+                xCoord = 0;
+
+                for (int i = 1; i < currentTimesList.Count; i++)
+                {
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData1[i]);
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData2[i]);
+                    maxCurrentValue = Math.Max(maxCurrentValue, record.CurrentData3[i]);
+
+                }
+
+
+                //int phaseOffset = 10000; // пофазный сдвиг
+
+
+                // теперь считаем все остальные точки
+                for (int i = 1; i < currentTimesList.Count; i++)
+                {
+                    int pulseTime = currentTimesList[i] - currentTimesList[i - 1];
+                    //pulseTime *= 100;
+
+                    //int percents = map(record.CurrentData1[i], 0, maxCurrentValue, 0, 80);
+                    YValuesChannel1.Add(record.CurrentData1[i]);// percents);
+
+                    //percents = map(record.CurrentData2[i], 0, maxCurrentValue, 0, 78);
+                    YValuesChannel2.Add(record.CurrentData2[i]);// percents);
+
+                    //percents = map(record.CurrentData3[i], 0, maxCurrentValue, 0, 76);
+                    YValuesChannel3.Add(record.CurrentData3[i]);// percents);
+
+
+
+                    xCoord += pulseTime;
+
+                    XValuesOfCurrent1.Add(xCoord);
+
+                    if (i > 1)
+                    {
+                        XValuesOfCurrent2.Add(xCoord);// + phaseOffset);
+                        XValuesOfCurrent3.Add(xCoord);// + phaseOffset * 2);
+                    }
+                    else
+                    {
+                        XValuesOfCurrent2.Add(xCoord);
+                        XValuesOfCurrent3.Add(xCoord);
+                    }
+
+                } // for
+
+
+
+                // добавляем графики тока
+
+                channel1Current.Points.DataBindXY(XValuesOfCurrent1, YValuesChannel1);
+                channel2Current.Points.DataBindXY(XValuesOfCurrent2, YValuesChannel2);
+                channel3Current.Points.DataBindXY(XValuesOfCurrent3, YValuesChannel3);
+
+
+                // графики тока добавлены.
+
+            } // if(record.CurrentTimes.Count > 0)
+
+
+            // тут добавляем кастомные метки на ось X - времена
+            int maxTime = record.DataArrivedTime;
+            if (record.InterruptData.Count > 0)
+            {
+                maxTime += record.InterruptData[record.InterruptData.Count - 1];
+            }
+
+            if (record.EthalonData.Count > 0)
+            {
+                maxTime = Math.Max(maxTime, record.DataArrivedTime + record.EthalonData[record.EthalonData.Count - 1]);
+            }
+
+            if (record.CurrentTimes.Count > 0)
+            {
+                maxTime = Math.Max(maxTime, record.CurrentTimes[record.CurrentTimes.Count - 1]);
+            }
+
+
+
+            // получили максимальное время всего графика, в микросекундах. Теперь надо равномерно его распределить по графику в виде меток
+            //            int step = maxTime / customLabelsCount;
+            int neareastValue = 100000; // приближение к 100 мс
+            int maxTimeDivideLabels = maxTime / customLabelsCount;
+            while (maxTimeDivideLabels < neareastValue)
+            {
+                neareastValue /= 10;
+            }
+
+            int step = Convert.ToInt32(Math.Round(Convert.ToDouble(maxTimeDivideLabels) / neareastValue, 0)) * neareastValue;
+            if (step < 1)
+            {
+                step = 1;
+            }
+
+            int clCount = maxTime / step;
+            for (int kk = 0; kk < vcf.chart.ChartAreas.Count; kk++)
+            {
+                ChartArea area = vcf.chart.ChartAreas[kk];
+                area.AxisX.CustomLabels.Clear();
+
+                int startOffset = -step / 2;
+                int endOffset = step / 2;
+                int counter = 0;
+
+                for (int i = 0; i < /*customLabelsCount*/clCount; i++)
+                {
+                    string labelText = String.Format("{0}ms", counter / 1000);
+                    CustomLabel monthLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                    area.AxisX.CustomLabels.Add(monthLabel);
+                    startOffset = startOffset + step;
+                    endOffset = endOffset + step;
+                    counter += step;
+                }
+            }
+
+            // устанавливаем интервал для меток на графике
+            vcf.setInterval(step);
+
+
+            // теперь пробуем для графика прерываний - переназначить метки по оси Y
+            // у нас есть общее время перемещения штанги. У нас есть скорость перемещения.
+            // из всего этого надо правильно сформировать метки на графике.
+            // мы можем вычислить средневзвешенную скорость перемещения: v = S/t, где S - длина перемещения штанги, а t - общее время перемещения.
+            // также у нас чем больше время между импульсами - тем меньше скорость на конкретном участке графика, и наоборот.
+            // очевидно, что минимальная скорость - это 0. Максимальная скорость - это отношение средневзвешенной длительности импульса к минимальной длительности импульса,
+            // умноженное на средневзвешенную скорость.
+
+            int rodMoveLength = record.RodMoveLength > 0 ? record.RodMoveLength : Convert.ToInt32(nudRodMoveLength.Value); // величина перемещения штанги, мм
+            AddCustomSpeedLabels(vcf.chart.ChartAreas[0], timeList.Count, minPulseTime, avgPulseTime, fullMoveTime, maxInterruptYVal, rodMoveLength);
+
+
+            Color cwColor = Color.SteelBlue;
+            Color ccwColor = Color.LimeGreen;
+
+            /*
+            if(record.RodPosition == RodPosition.Up) // штанга двигалась вверх
+            {
+                interruptSerie.Color = cwColor;
+               
+            } // if
+            else // штанга двигалась вниз
+            {
+                interruptSerie.Color = ccwColor;
+            } // else
+            */
+
+            if (record.InterruptData.Count > 0)
+            {
+                // тут раскрашиваем график направлениями движения
+                RodPosition lastPos = RodPosition.Broken;
+
+              //  System.Diagnostics.Debug.Assert(record.InterruptData.Count == record.Directions.Count);
+
+                for (int i = 0; i < record.Directions.Count; i++)
+                {
+                    RodPosition pos = (RodPosition)record.Directions[i];
+                    Color curSerieColor = pos == RodPosition.Up ? cwColor : ccwColor;
+
+                    int curIdx = (i + offsetLabelIndex + 1);
+
+                    if (interruptSerie.Points.Count > curIdx)
+                    {
+                        interruptSerie.Points[curIdx].Color = curSerieColor;
+                        if (lastPos != pos && curIdx > 0)
+                        {
+                            lastPos = pos;
+                            interruptSerie.Points[curIdx - 1].MarkerColor = Color.Red;
+                            interruptSerie.Points[curIdx - 1].MarkerStyle = MarkerStyle.Circle;
+                            interruptSerie.Points[curIdx - 1].MarkerSize = 6;
+                        }
+                    }
+
+                } // for
+                /*
+                if (record.DirectionTimes.Count > 0)
+                {
+
+                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
+
+                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
+
+                    int pointsIterator = 0;
+
+                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
+
+                    for (int i = 0; i < record.DirectionTimes.Count; i++)
+                    {
+                        int changeTime = record.DirectionTimes[i];
+                        RodPosition changeTo = (RodPosition)record.Directions[i];
+
+                        // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
+                        for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
+                        {
+                            interruptSerie.Points[k].Color = curSerieColor;
+
+                            int changeDirectionIdx = k;
+
+                            if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
+                            {
+                                
+                                // тут была проверка скорости !!!
+
+                                interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
+                                interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
+                                interruptSerie.Points[changeDirectionIdx].MarkerSize = 6;
+
+                                pointsIterator++;
+                                break;
+                            }
+
+                        } // for
+
+                        if (changeTo == RodPosition.Up)//initialDirection)
+                        {
+                            curSerieColor = cwColor;
+                        }
+                        else
+                        {
+                            curSerieColor = ccwColor;
+                        }
+
+
+                    } // for
+
+                    // забиваем все остальные точки
+                    for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
+                    {
+                        interruptSerie.Points[k].Color = curSerieColor;
+                    } // for
+
+                } // record.DirectionTimes.Count > 0
+                else
+                {
+                    // нет смены направления движения
+                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
+
+                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
+                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
+                    for (int k = 0; k < interruptSerie.Points.Count; k++)
+                    {
+                        interruptSerie.Points[k].Color = curSerieColor;
+                    }
+                } // else 
+                */
+            } // if
+
+
+
+            // теперь рисуем свои метки на Y осях токов
+            if (record.CurrentTimes.Count > 0) // есть токи
+            {
+
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[1], maxCurrentValue);
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[2], maxCurrentValue);
+                AddCustomLabelsOfCurrent(vcf.chart.ChartAreas[3], maxCurrentValue);
+            }
+
+            vcf.SetChartOfCurrentAvailable(record.CurrentTimes.Count > 0);
+            vcf.SetEthalonAvailable(record.EthalonData.Count > 0);
+
+            if (modal)
+            {
+                vcf.ShowDialog();
+            }
+            else
+            {
+                vcf.Show();
+                vcf.BringToFront();
+            }
+
+        }
+
+        /// <summary>
+        /// добавление пользовательских меток значения тока на график
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="maxCurrentValue"></param>
+        private void AddCustomLabelsOfCurrent(ChartArea area, int maxCurrentValue)
+        {
+            int currentLabelsCount = 6;
+            int labelStep = (maxCurrentValue) / (currentLabelsCount);
+            int currentStep = (maxCurrentValue) / (currentLabelsCount);
+
+            area.AxisY.CustomLabels.Clear();
+            area.AxisY.Interval = labelStep;
+            area.AxisY.IntervalType = DateTimeIntervalType.Number; // тип интервала
+
+            float startOffset = -labelStep / 2;
+            float endOffset = labelStep / 2;
+            int counter = 0;
+
+            for (int i = 0; i <= currentLabelsCount; i++)
+            {
+                string labelText = String.Format("{0:0.000}A", GetCurrentFromADC(currentStep * counter));
+                CustomLabel cLabel = new CustomLabel(startOffset, endOffset, labelText, 0, LabelMarkStyle.None);
+                area.AxisY.CustomLabels.Add(cLabel);
+                startOffset = startOffset + labelStep;
+                endOffset = endOffset + labelStep;
+                counter++;
+            }
+        }
+
+        /// <summary>
+        /// получение значения тока из значения АЦП
+        /// </summary>
+        /// <param name="adcVAL"></param>
+        /// <returns></returns>
+        private float GetCurrentFromADC(float adcVAL)
+        {
+            float result = 0;
+            float CURRENT_DIVIDER = 1000.0f;
+            float COEFF_1 = 5.0f;
+            float currentCoeff = Convert.ToSingle(nudCurrentCoeff.Value) / 1000;
+
+            float intermediate = (COEFF_1 * adcVAL) / currentCoeff;
+
+            result = (intermediate / CURRENT_DIVIDER);
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// привязка DataGrid к лог-файлу
+        /// </summary>
+        public Dictionary<DataGridView, LogInfo> gridToListCollection = new Dictionary<DataGridView, LogInfo>();
+
+
+        /// <summary>
+        /// читает два байта
+        /// </summary>
+        /// <param name="content">байтовый массив</param>
+        /// <param name="idx">индекс чтения в массиве</param>
+        /// <returns>возвращает беззнаковое двухбайтовое целое</returns>
+        private UInt16 Read16(List<byte> content, int idx)
+        {
+            UInt16 result = content[idx + 1];
+            result <<= 8;
+            result |= content[idx];
+
+            return result;
+        }
+
+        /// <summary>
+        /// читает 4 байта
+        /// </summary>
+        /// <param name="content">байтовый массив</param>
+        /// <param name="idx">индекс чтения в массиве</param>
+        /// <returns>возвращает четырёхбайтовое целое</returns>
+        private int Read32(List<byte> content, int idx)
+        {
+            int result = (content[idx + 3] << 24) | (content[idx + 2] << 16) | (content[idx + 1] << 8) | content[idx];
+            return result;
+        }
+
+        /// <summary>
+        /// Добавляет запись по прерыванию в таблицу
+        /// </summary>
+        /// <param name="record"></param>
+        /// <param name="targetGrid"></param>
+        /// <param name="addToColumnName"></param>
+        /// <param name="computeMotoresurcePercents"></param>
+        private void AddInterruptRecordToList(InterruptRecord record, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents)
+        {
+            if (record == null)
+                return;
+
+            if (!gridToListCollection.ContainsKey(targetGrid))
+            {
+                LogInfo linf = new LogInfo();
+                linf.addToColumnName = addToColumnName;
+                linf.computeMotoresurcePercents = computeMotoresurcePercents;
+                gridToListCollection[targetGrid] = linf;
+            }
+
+            //Тут добавление в список в таблицу
+
+            gridToListCollection[targetGrid].list.Add(record);
+
+        }
+
+        /// <summary>
+        /// Показывает лог-файл
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="targetGrid"></param>
+        /// <param name="addToColumnName"></param>
+        /// <param name="computeMotoresurcePercents"></param>
+        /// <param name="callback"></param>
+        /// <param name="stopAfterFirstRecord"></param>
+        private void ShowLogFile(List<byte> content, DataGridView targetGrid, string addToColumnName, bool computeMotoresurcePercents, ShowInterruptInfo callback, bool stopAfterFirstRecord)
+        {
+
+            //            string myString = System.Text.Encoding.UTF8.GetString(content.ToArray());
+            //            System.Diagnostics.Debug.Print(myString);
+
+
+            if (targetGrid != null)
+            {
+                ClearInterruptsList(targetGrid);
+            }
+
+            // парсим лог-файл
+            int readed = 0;
+            InterruptInfo currentInterruptInfo = null;
+            InterruptRecord curRecord = null;
+
+            try
+            {
+                bool stopped = false;
+
+                while (readed < content.Count && !stopped) // читаем побайтово
+                {
+                        string message = "Загружаем лог: {0}% из {1} байт...";
+                        int percents = (readed * 100) / content.Count;
+                        this.sdFiles.toolStripStatusLabel1.Text = String.Format(message, percents, content.Count);
+
+                    Application.DoEvents();
+
+                    byte curByte = content[readed];
+                    readed++;
+
+                    LogRecordType recType = (LogRecordType)curByte;
+
+                    switch (recType) // смотрим тип записи
+                    {
+                        case LogRecordType.InterruptInfoBegin: // начало информации по прерыванию
+                            {
+                                currentInterruptInfo = new InterruptInfo();
+                            }
+                            break;
+
+                        case LogRecordType.InterruptTime: // время прерывания
+                            {
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идут 7 байт времени
+                                byte dayOfMonth = content[readed]; readed++;
+                                byte month = content[readed]; readed++;
+
+                                UInt16 year = Read16(content, readed); readed += 2;
+
+                                byte hour = content[readed]; readed++;
+                                byte minute = content[readed]; readed++;
+                                byte second = content[readed]; readed++;
+
+                                currentInterruptInfo.InterruptTime = new DateTime(year, month, dayOfMonth, hour, minute, second);
+
+                            }
+                            break;
+
+                        case LogRecordType.SystemTemperature: // температура системы
+                            {
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идут два байта температуры
+                                byte value = content[readed]; readed++;
+                                byte fract = content[readed]; readed++;
+
+                                float fVal = value * 100 + fract;
+                                fVal /= 100;
+
+                                currentInterruptInfo.SystemTemperature = fVal;
+                            }
+                            break;
+
+                        case LogRecordType.InterruptRecordBegin: // запись по прерыванию
+                            {
+                                //System.Diagnostics.Debug.Assert(currentInterruptInfo != null);
+                                if (currentInterruptInfo == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                curRecord = new InterruptRecord();
+                                curRecord.InterruptInfo = currentInterruptInfo;
+                            }
+                            break;
+
+                        case LogRecordType.ChannelNumber: // номер канала
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                curRecord.ChannelNumber = content[readed]; readed++;
+                            }
+                            break;
+
+                        case LogRecordType.PreviewCount: // кол-во записей превью по току
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                curRecord.PreviewCount = Read16(content, readed); readed += 2;
+                            }
+                            break;
+
+                        case LogRecordType.RodMoveLength: // величина перемещения привода
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                curRecord.RodMoveLength = Read32(content, readed); readed += 4;
+                            }
+                            break;
+
+
+                        case LogRecordType.ChannelInductiveSensorState: // состояние индуктивных датчиков
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт байт номера канала
+                                //DEPRECATED: curRecord.InductiveSensorState = (InductiveSensorState) content[readed]; readed++;
+                                readed++;
+                            }
+                            break;
+
+                        case LogRecordType.RodPosition: // позиция штанги
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт позиция штанги
+                                curRecord.RodPosition = (RodPosition)content[readed]; readed++;
+                            }
+                            break;
+
+                        case LogRecordType.MoveTime: // время перемещения штанги
+                            {
+                                // System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идут четыре байта времени движения штанги
+                                curRecord.MoveTime = Read32(content, readed); readed += 4;
+
+                            }
+                            break;
+
+                        case LogRecordType.RelayTriggeredTime: // время срабатывания защиты
+                            {
+                                // далее идут 7 байт времени
+                                byte dayOfMonth = content[readed]; readed++;
+                                byte month = content[readed]; readed++;
+
+                                UInt16 year = Read16(content, readed); readed += 2;
+
+                                byte hour = content[readed]; readed++;
+                                byte minute = content[readed]; readed++;
+                                byte second = content[readed]; readed++;
+                            }
+                            break;
+
+                        case LogRecordType.Motoresource: // информация по моторесурсу
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идут 4 байта моторесурса
+                                curRecord.Motoresource = Read32(content, readed); readed += 4;
+
+                            }
+                            break;
+
+                        case LogRecordType.EthalonNumber: // номер эталона
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // байт номера эталона
+                                curRecord.EthalonCompareNumber = (EthalonCompareNumber)content[readed]; readed++;
+
+                            }
+                            break;
+
+                        case LogRecordType.CompareResult: // результат сравнения с эталоном
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // байт результатов сравнения с эталоном
+                                curRecord.EthalonCompareResult = (EthalonCompareResult)content[readed]; readed++;
+                            }
+                            break;
+
+                        case LogRecordType.EthalonDataFollow: // данные эталона
+                            {
+                                // следом идут данные эталона, с которым сравнивали
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                curRecord.EthalonData.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по прерыванию
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curInterruptData = Read32(content, readed); readed += 4;
+                                    curRecord.EthalonData.Add(curInterruptData);
+
+                                } // for
+
+
+                            }
+                            break;
+
+                        case LogRecordType.DataArrivedTime: // смещение от начала данных по току до начала данных по прерываниям
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // далее идёт смещение, в миллисекундах, 4 байта
+                                curRecord.DataArrivedTime = Read32(content, readed); readed += 4;
+                            }
+                            break;
+
+                        case LogRecordType.OscDataFollow: // идут данные по току для канала
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                curRecord.CurrentTimes.Clear();
+                                curRecord.CurrentData1.Clear();
+                                curRecord.CurrentData2.Clear();
+                                curRecord.CurrentData3.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по времени сбора записей по току
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read32(content, readed); readed += 4;
+                                    curRecord.CurrentTimes.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 2 байта записей по току канала 1
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read16(content, readed); readed += 2;
+                                    curRecord.CurrentData1.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 2 байта записей по току канала 2
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read16(content, readed); readed += 2;
+                                    curRecord.CurrentData2.Add(curData);
+
+                                } // for
+
+                                // далее идут пачки по 2 байта записей по току канала 3
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = Read16(content, readed); readed += 2;
+                                    curRecord.CurrentData3.Add(curData);
+
+                                } // for
+
+                            }
+                            break;
+
+                        case LogRecordType.DirectionData: // идут данные по изменению направления вращения энкодера
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                //curRecord.DirectionTimes.Clear();
+                                curRecord.Directions.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 1 байту записей с изменившимся направлением движения энкодера
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curData = content[readed]; readed++;
+                                    curRecord.Directions.Add(curData);
+
+                                } // for
+
+                            }
+                            break;
+
+                        case LogRecordType.InterruptDataBegin: // данные импульсов прерывания
+                            {
+                                //System.Diagnostics.Debug.Assert(curRecord != null);
+                                if (curRecord == null)
+                                {
+                                    stopped = true;
+                                    break;
+                                }
+
+                                // начало данных по прерыванию
+                                curRecord.InterruptData.Clear();
+
+                                // следом идут 2 байта длины данных
+                                int dataLen = Read16(content, readed); readed += 2;
+
+                                // далее идут пачки по 4 байта записей по прерыванию
+                                for (int k = 0; k < dataLen; k++)
+                                {
+                                    int curInterruptData = Read32(content, readed); readed += 4;
+                                    curRecord.InterruptData.Add(curInterruptData);
+
+                                } // for
+
+                            }
+                            break;
+
+                        case LogRecordType.InterruptDataEnd: // конец данных импульсов прерывания
+                            {
+                                // конец данных
+                            }
+                            break;
+
+                        case LogRecordType.InterruptRecordEnd: // конец записи по прерыванию
+                            {
+                                if (targetGrid != null)
+                                {
+                                    AddInterruptRecordToList(curRecord, targetGrid, addToColumnName, computeMotoresurcePercents);
+                                }
+
+                                if (stopAfterFirstRecord)
+                                {
+                                    stopped = true;
+                                }
+
+                                if (callback != null)
+                                {
+                                    //System.Diagnostics.Debug.Assert(curRecord != null);
+                                    if (curRecord != null)
+                                    {
+                                        callback(curRecord);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Неправильный формат записи срабатывания защиты!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                }
+
+                            }
+                            break;
+
+                        case LogRecordType.InterruptInfoEnd: // конец информации по одной записи
+                            {
+                                currentInterruptInfo = null;
+                            }
+                            break;
+                    } // switch
+                } // while                
+            }
+
+            catch // ошибка разбора лог-файла
+            {
+                if (targetGrid != null)
+                {
+                    this.sdFiles.plEmptySDWorkspace.BringToFront();
+                }
+                MessageBox.Show("Ошибка разбора лог-файла!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // если попросили отобразить в таблице - отображаем
+            if (targetGrid != null && gridToListCollection.ContainsKey(targetGrid) && gridToListCollection[targetGrid].list != null)
+            {
+                if (gridToListCollection.ContainsKey(targetGrid))
+                {
+                    targetGrid.RowCount = gridToListCollection[targetGrid].list.Count;
+                }
+
+                targetGrid.BringToFront();
+            }
+        }
+
         private void tmFileContent_Tick(object sender, EventArgs e)
         {
             tmFileContent.Enabled = false; // выключаем таймер, чтоб не тикал
@@ -1406,6 +2854,8 @@ namespace UROVModbus
                                     {
                                         // закончили запрос
                                         ShowStatusInBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
+
+                                        ViewFile(fileContent);
 
                                         // MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

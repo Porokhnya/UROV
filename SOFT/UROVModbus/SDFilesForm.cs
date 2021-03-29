@@ -75,5 +75,131 @@ namespace UROVModbus
             tempSDParentNode = null;
             mainForm.GetFilesList("/");
         }
+
+        private void logDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var senderGrid = (DataGridView)sender;
+
+            if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
+            {
+                string stationID = "";
+                string stationName = "";
+
+                /*
+                TreeNode child = treeView.SelectedNode;
+                if (child != null && child.Tag is ArchiveTreeLogItemRecord)
+                {
+                    ArchiveTreeLogItemRecord ali = child.Tag as ArchiveTreeLogItemRecord;
+                    ArchiveTreeRootItem atri = ali.Parent.Parent;
+                    stationID = atri.GUID;
+                    stationName = atri.GUID;
+                    if (ControllerNames.Instance.Names.ContainsKey(stationID))
+                        stationName = ControllerNames.Instance.Names[stationID];
+
+                }
+                */
+
+                this.mainForm.ShowChart(senderGrid.Rows[e.RowIndex].Tag as InterruptRecord, stationID, stationName, true);
+            }
+        }
+
+        private void logDataGrid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        {
+            DataGridView targetGrid = sender as DataGridView;
+
+            int rowNumber = e.RowIndex;
+
+            if (rowNumber >= targetGrid.RowCount)
+                return;
+
+            if (!mainForm.gridToListCollection.ContainsKey(targetGrid))
+                return;
+
+            LogInfo linf = mainForm.gridToListCollection[targetGrid];
+
+            if (rowNumber >= linf.list.Count)
+                return;
+
+            InterruptRecord record = linf.list[rowNumber];
+
+            DataGridViewRow row = targetGrid.Rows[rowNumber];
+            row.Tag = record;
+
+            row.DefaultCellStyle.BackColor = rowNumber % 2 == 0 ? Color.LightGray : Color.White;
+
+            if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Num"))
+            {
+                e.Value = (rowNumber + 1).ToString();
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Time"))
+            {
+                e.Value = record.InterruptInfo.InterruptTime.ToString("dd.MM.yyyy HH:mm:ss");
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Temp"))
+            {
+                e.Value = record.InterruptInfo.SystemTemperature.ToString("0.00") + " °C";
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Channel"))
+            {
+                e.Value = (1 + record.ChannelNumber).ToString();
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Rod"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.RodPosition);
+
+                if (record.RodPosition == RodPosition.Broken)
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightSalmon;
+                else
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.White;
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Compare"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.EthalonCompareResult);
+
+                if (record.EthalonCompareResult == EthalonCompareResult.MatchEthalon)
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightGreen;
+                else
+                    row.Cells[e.ColumnIndex].Style.BackColor = Color.LightSalmon;
+
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Etl"))
+            {
+                e.Value = EnumHelpers.GetEnumDescription(record.EthalonCompareNumber);
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Motoresource"))
+            {
+                if (linf.computeMotoresurcePercents)
+                {
+                    int resMax = 1;
+                    switch (record.ChannelNumber)
+                    {
+                        //DEPRECATED: case 0:
+                        default:
+                            resMax = Convert.ToInt32(mainForm.nudMotoresourceMax1.Value);
+                            break;
+
+                    }
+
+                    if (resMax < 1)
+                        resMax = 1;
+
+                    float motoPercents = (record.Motoresource * 100.0f) / resMax;
+                    e.Value = record.Motoresource.ToString() + " (" + motoPercents.ToString("0.00") + "%)";
+                }
+                else
+                {
+                    e.Value = record.Motoresource.ToString(); ;
+                }
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Pulses"))
+            {
+                e.Value = record.InterruptData.Count.ToString();
+            }
+            else if (targetGrid.Columns[e.ColumnIndex].Name.StartsWith("Btn"))
+            {
+                e.Value = "Просмотр";
+            }
+        }
     }
 }

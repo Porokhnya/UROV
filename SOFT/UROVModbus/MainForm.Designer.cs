@@ -472,7 +472,6 @@
             "14400",
             "19200",
             "38400",
-            "56000",
             "57600",
             "115200",
             "125000",
@@ -1711,7 +1710,6 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label lblMotoresourcePercents1;
-        private System.Windows.Forms.NumericUpDown nudMotoresourceMax1;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.NumericUpDown nudMotoresourceCurrent1;
         private System.Windows.Forms.Label label18;
@@ -1784,6 +1782,7 @@
         private System.Windows.Forms.Button btnFileList;
         private System.Windows.Forms.Timer tmFileList;
         private System.Windows.Forms.Timer tmFileContent;
+        public System.Windows.Forms.NumericUpDown nudMotoresourceMax1;
     }
 }
 

@@ -4911,7 +4911,7 @@ namespace UROVConfig
                 // тут раскрашиваем график направлениями движения
                 RodPosition lastPos = RodPosition.Broken;
 
-                System.Diagnostics.Debug.Assert(record.InterruptData.Count == record.Directions.Count);
+                //System.Diagnostics.Debug.Assert(record.InterruptData.Count == record.Directions.Count);
 
                 for (int i = 0; i < record.Directions.Count; i++)
                 {

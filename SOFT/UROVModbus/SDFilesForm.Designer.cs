@@ -30,11 +30,17 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDFilesForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem5 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell5 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.plSDSettings = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -52,12 +58,12 @@
             this.Compare = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Btn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.plEmptySDWorkspace = new System.Windows.Forms.Panel();
-            this.plEthalonChart = new System.Windows.Forms.Panel();
             this.toolStripSD = new System.Windows.Forms.ToolStrip();
             this.btnListSDFiles = new System.Windows.Forms.ToolStripButton();
             this.btnViewSDFile = new System.Windows.Forms.ToolStripButton();
             this.btnDeleteSDFile = new System.Windows.Forms.ToolStripButton();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.plEthalonChart = new System.Windows.Forms.Panel();
+            this.ethalonChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.statusStrip.SuspendLayout();
             this.plSDSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
@@ -66,6 +72,8 @@
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).BeginInit();
             this.toolStripSD.SuspendLayout();
+            this.plEthalonChart.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -78,6 +86,12 @@
             this.statusStrip.Size = new System.Drawing.Size(851, 22);
             this.statusStrip.TabIndex = 0;
             this.statusStrip.Text = "statusStrip1";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar1.Visible = false;
             // 
             // toolStripStatusLabel1
             // 
@@ -98,7 +112,7 @@
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -108,11 +122,11 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.plEthalonChart);
             this.splitContainer3.Panel2.Controls.Add(this.logDataGrid);
             this.splitContainer3.Panel2.Controls.Add(this.plEmptySDWorkspace);
-            this.splitContainer3.Panel2.Controls.Add(this.plEthalonChart);
             this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(851, 464);
+            this.splitContainer3.Size = new System.Drawing.Size(851, 489);
             this.splitContainer3.SplitterDistance = 200;
             this.splitContainer3.TabIndex = 5;
             // 
@@ -126,7 +140,7 @@
             this.treeViewSD.Location = new System.Drawing.Point(0, 0);
             this.treeViewSD.Name = "treeViewSD";
             this.treeViewSD.SelectedImageIndex = 0;
-            this.treeViewSD.Size = new System.Drawing.Size(200, 464);
+            this.treeViewSD.Size = new System.Drawing.Size(200, 489);
             this.treeViewSD.TabIndex = 1;
             this.treeViewSD.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeExpand);
             this.treeViewSD.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewSD_MouseDoubleClick);
@@ -168,12 +182,14 @@
             this.logDataGrid.Size = new System.Drawing.Size(240, 150);
             this.logDataGrid.TabIndex = 3;
             this.logDataGrid.VirtualMode = true;
+            this.logDataGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.logDataGrid_CellContentClick);
+            this.logDataGrid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.logDataGrid_CellValueNeeded);
             // 
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle17;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -188,8 +204,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle18;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -204,8 +220,8 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle19;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
@@ -213,8 +229,8 @@
             // 
             // Pulses
             // 
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle20;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -252,13 +268,6 @@
             this.plEmptySDWorkspace.Size = new System.Drawing.Size(200, 100);
             this.plEmptySDWorkspace.TabIndex = 2;
             // 
-            // plEthalonChart
-            // 
-            this.plEthalonChart.Location = new System.Drawing.Point(248, 32);
-            this.plEthalonChart.Name = "plEthalonChart";
-            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
-            this.plEthalonChart.TabIndex = 1;
-            // 
             // toolStripSD
             // 
             this.toolStripSD.ImageScalingSize = new System.Drawing.Size(32, 32);
@@ -270,6 +279,7 @@
             this.toolStripSD.Name = "toolStripSD";
             this.toolStripSD.Size = new System.Drawing.Size(851, 25);
             this.toolStripSD.TabIndex = 4;
+            this.toolStripSD.Visible = false;
             // 
             // btnListSDFiles
             // 
@@ -300,11 +310,36 @@
             this.btnDeleteSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDeleteSDFile.ToolTipText = "Удалить выбранный файл";
             // 
-            // toolStripProgressBar1
+            // plEthalonChart
             // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
-            this.toolStripProgressBar1.Visible = false;
+            this.plEthalonChart.Controls.Add(this.ethalonChart);
+            this.plEthalonChart.Location = new System.Drawing.Point(331, 70);
+            this.plEthalonChart.Name = "plEthalonChart";
+            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
+            this.plEthalonChart.TabIndex = 4;
+            // 
+            // ethalonChart
+            // 
+            chartArea5.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea5);
+            this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legendCell5.Name = "PulsesCount";
+            legendItem5.Cells.Add(legendCell5);
+            legend5.CustomItems.Add(legendItem5);
+            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend5.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend5);
+            this.ethalonChart.Location = new System.Drawing.Point(0, 0);
+            this.ethalonChart.Name = "ethalonChart";
+            series5.ChartArea = "ethalonChartArea";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series5.IsVisibleInLegend = false;
+            series5.Legend = "Legend1";
+            series5.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series5);
+            this.ethalonChart.Size = new System.Drawing.Size(200, 193);
+            this.ethalonChart.TabIndex = 0;
+            this.ethalonChart.Text = "chart1";
             // 
             // SDFilesForm
             // 
@@ -313,7 +348,6 @@
             this.ClientSize = new System.Drawing.Size(851, 511);
             this.Controls.Add(this.plSDSettings);
             this.Controls.Add(this.statusStrip);
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SDFilesForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -331,6 +365,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).EndInit();
             this.toolStripSD.ResumeLayout(false);
             this.toolStripSD.PerformLayout();
+            this.plEthalonChart.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -341,7 +377,6 @@
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.Panel plSDSettings;
         private System.Windows.Forms.SplitContainer splitContainer3;
-        private System.Windows.Forms.DataGridView logDataGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn Num;
         private System.Windows.Forms.DataGridViewTextBoxColumn Time;
         private System.Windows.Forms.DataGridViewTextBoxColumn Temp;
@@ -352,8 +387,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Etl;
         private System.Windows.Forms.DataGridViewTextBoxColumn Compare;
         private System.Windows.Forms.DataGridViewButtonColumn Btn;
-        private System.Windows.Forms.Panel plEmptySDWorkspace;
-        private System.Windows.Forms.Panel plEthalonChart;
         private System.Windows.Forms.ToolStrip toolStripSD;
         private System.Windows.Forms.ToolStripButton btnListSDFiles;
         private System.Windows.Forms.ToolStripButton btnViewSDFile;
@@ -362,5 +395,9 @@
         public System.Windows.Forms.TreeView treeViewSD;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         public System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        public System.Windows.Forms.DataGridView logDataGrid;
+        public System.Windows.Forms.Panel plEmptySDWorkspace;
+        public System.Windows.Forms.Panel plEthalonChart;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ethalonChart;
     }
 }

@@ -97,6 +97,28 @@
             this.treeView = new System.Windows.Forms.TreeView();
             this.smallImages = new System.Windows.Forms.ImageList(this.components);
             this.plSection = new System.Windows.Forms.Panel();
+            this.plSDSettings = new System.Windows.Forms.Panel();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.treeViewSD = new System.Windows.Forms.TreeView();
+            this.sdImagesNormal = new System.Windows.Forms.ImageList(this.components);
+            this.logDataGrid = new System.Windows.Forms.DataGridView();
+            this.Num = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Temp = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Motoresource = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Channel = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Pulses = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Rod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Etl = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Compare = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Btn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.plEmptySDWorkspace = new System.Windows.Forms.Panel();
+            this.plEthalonChart = new System.Windows.Forms.Panel();
+            this.ethalonChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.toolStripSD = new System.Windows.Forms.ToolStrip();
+            this.btnListSDFiles = new System.Windows.Forms.ToolStripButton();
+            this.btnViewSDFile = new System.Windows.Forms.ToolStripButton();
+            this.btnDeleteSDFile = new System.Windows.Forms.ToolStripButton();
             this.plMainSettings = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.plInfo = new System.Windows.Forms.Panel();
@@ -158,28 +180,6 @@
             this.btnSetModbusSlaveID = new System.Windows.Forms.Button();
             this.panel15 = new System.Windows.Forms.Panel();
             this.label25 = new System.Windows.Forms.Label();
-            this.plSDSettings = new System.Windows.Forms.Panel();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.treeViewSD = new System.Windows.Forms.TreeView();
-            this.sdImagesNormal = new System.Windows.Forms.ImageList(this.components);
-            this.logDataGrid = new System.Windows.Forms.DataGridView();
-            this.Num = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Temp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Motoresource = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Channel = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Pulses = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Rod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Etl = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Compare = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Btn = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.plEmptySDWorkspace = new System.Windows.Forms.Panel();
-            this.plEthalonChart = new System.Windows.Forms.Panel();
-            this.ethalonChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.toolStripSD = new System.Windows.Forms.ToolStrip();
-            this.btnListSDFiles = new System.Windows.Forms.ToolStripButton();
-            this.btnViewSDFile = new System.Windows.Forms.ToolStripButton();
-            this.btnDeleteSDFile = new System.Windows.Forms.ToolStripButton();
             this.plStartPanel = new System.Windows.Forms.Panel();
             this.archiveLogDataGrid = new System.Windows.Forms.DataGridView();
             this.Num1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -287,6 +287,15 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.plSection.SuspendLayout();
+            this.plSDSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).BeginInit();
+            this.plEthalonChart.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
+            this.toolStripSD.SuspendLayout();
             this.plMainSettings.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.plInfo.SuspendLayout();
@@ -315,15 +324,6 @@
             this.panel14.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
             this.panel15.SuspendLayout();
-            this.plSDSettings.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.Panel1.SuspendLayout();
-            this.splitContainer3.Panel2.SuspendLayout();
-            this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).BeginInit();
-            this.plEthalonChart.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
-            this.toolStripSD.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.archiveLogDataGrid)).BeginInit();
             this.plArchiveEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).BeginInit();
@@ -786,6 +786,253 @@
             this.plSection.Name = "plSection";
             this.plSection.Size = new System.Drawing.Size(1071, 587);
             this.plSection.TabIndex = 1;
+            // 
+            // plSDSettings
+            // 
+            this.plSDSettings.Controls.Add(this.splitContainer3);
+            this.plSDSettings.Controls.Add(this.toolStripSD);
+            this.plSDSettings.Location = new System.Drawing.Point(16, 18);
+            this.plSDSettings.Name = "plSDSettings";
+            this.plSDSettings.Size = new System.Drawing.Size(573, 364);
+            this.plSDSettings.TabIndex = 6;
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 54);
+            this.splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.treeViewSD);
+            this.splitContainer3.Panel1MinSize = 100;
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.logDataGrid);
+            this.splitContainer3.Panel2.Controls.Add(this.plEmptySDWorkspace);
+            this.splitContainer3.Panel2.Controls.Add(this.plEthalonChart);
+            this.splitContainer3.Panel2MinSize = 100;
+            this.splitContainer3.Size = new System.Drawing.Size(573, 310);
+            this.splitContainer3.SplitterDistance = 100;
+            this.splitContainer3.TabIndex = 5;
+            // 
+            // treeViewSD
+            // 
+            this.treeViewSD.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.treeViewSD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewSD.HideSelection = false;
+            this.treeViewSD.ImageIndex = 2;
+            this.treeViewSD.ImageList = this.sdImagesNormal;
+            this.treeViewSD.Location = new System.Drawing.Point(0, 0);
+            this.treeViewSD.Name = "treeViewSD";
+            this.treeViewSD.SelectedImageIndex = 0;
+            this.treeViewSD.Size = new System.Drawing.Size(100, 310);
+            this.treeViewSD.TabIndex = 1;
+            this.treeViewSD.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeExpand);
+            this.treeViewSD.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeSelect);
+            this.treeViewSD.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewSD_AfterSelect);
+            this.treeViewSD.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewSD_MouseDoubleClick);
+            // 
+            // sdImagesNormal
+            // 
+            this.sdImagesNormal.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("sdImagesNormal.ImageStream")));
+            this.sdImagesNormal.TransparentColor = System.Drawing.Color.Transparent;
+            this.sdImagesNormal.Images.SetKeyName(0, "folder-blue.png");
+            this.sdImagesNormal.Images.SetKeyName(1, "document-open-folder.png");
+            this.sdImagesNormal.Images.SetKeyName(2, "list.png");
+            // 
+            // logDataGrid
+            // 
+            this.logDataGrid.AllowUserToAddRows = false;
+            this.logDataGrid.AllowUserToDeleteRows = false;
+            this.logDataGrid.AllowUserToResizeRows = false;
+            this.logDataGrid.BackgroundColor = System.Drawing.Color.White;
+            this.logDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.logDataGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Num,
+            this.Time,
+            this.Temp,
+            this.Motoresource,
+            this.Channel,
+            this.Pulses,
+            this.Rod,
+            this.Etl,
+            this.Compare,
+            this.Btn});
+            this.logDataGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.logDataGrid.Location = new System.Drawing.Point(17, 20);
+            this.logDataGrid.MultiSelect = false;
+            this.logDataGrid.Name = "logDataGrid";
+            this.logDataGrid.ReadOnly = true;
+            this.logDataGrid.RowHeadersVisible = false;
+            this.logDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.logDataGrid.ShowEditingIcon = false;
+            this.logDataGrid.Size = new System.Drawing.Size(240, 150);
+            this.logDataGrid.TabIndex = 3;
+            this.logDataGrid.VirtualMode = true;
+            this.logDataGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.logDataGrid_CellContentClick);
+            this.logDataGrid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.archiveLogDataGrid_CellValueNeeded);
+            // 
+            // Num
+            // 
+            this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Num.HeaderText = "№";
+            this.Num.Name = "Num";
+            this.Num.ReadOnly = true;
+            this.Num.Width = 43;
+            // 
+            // Time
+            // 
+            this.Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Time.HeaderText = "Время";
+            this.Time.Name = "Time";
+            this.Time.ReadOnly = true;
+            // 
+            // Temp
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Temp.HeaderText = "Температура";
+            this.Temp.Name = "Temp";
+            this.Temp.ReadOnly = true;
+            this.Temp.Width = 80;
+            // 
+            // Motoresource
+            // 
+            this.Motoresource.HeaderText = "Срабатываний";
+            this.Motoresource.Name = "Motoresource";
+            this.Motoresource.ReadOnly = true;
+            this.Motoresource.Width = 80;
+            // 
+            // Channel
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Channel.HeaderText = "Канал";
+            this.Channel.Name = "Channel";
+            this.Channel.ReadOnly = true;
+            this.Channel.Width = 80;
+            // 
+            // Pulses
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle4;
+            this.Pulses.HeaderText = "Импульсов";
+            this.Pulses.Name = "Pulses";
+            this.Pulses.ReadOnly = true;
+            this.Pulses.Width = 80;
+            // 
+            // Rod
+            // 
+            this.Rod.HeaderText = "Штанга";
+            this.Rod.Name = "Rod";
+            this.Rod.ReadOnly = true;
+            this.Rod.Width = 80;
+            // 
+            // Etl
+            // 
+            this.Etl.HeaderText = "Эталон";
+            this.Etl.Name = "Etl";
+            this.Etl.ReadOnly = true;
+            // 
+            // Compare
+            // 
+            this.Compare.HeaderText = "Сравнение";
+            this.Compare.Name = "Compare";
+            this.Compare.ReadOnly = true;
+            // 
+            // Btn
+            // 
+            this.Btn.HeaderText = "График";
+            this.Btn.Name = "Btn";
+            this.Btn.ReadOnly = true;
+            // 
+            // plEmptySDWorkspace
+            // 
+            this.plEmptySDWorkspace.Location = new System.Drawing.Point(81, 220);
+            this.plEmptySDWorkspace.Name = "plEmptySDWorkspace";
+            this.plEmptySDWorkspace.Size = new System.Drawing.Size(200, 100);
+            this.plEmptySDWorkspace.TabIndex = 2;
+            // 
+            // plEthalonChart
+            // 
+            this.plEthalonChart.Controls.Add(this.ethalonChart);
+            this.plEthalonChart.Location = new System.Drawing.Point(248, 32);
+            this.plEthalonChart.Name = "plEthalonChart";
+            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
+            this.plEthalonChart.TabIndex = 1;
+            // 
+            // ethalonChart
+            // 
+            chartArea1.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea1);
+            this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legendCell1.Name = "PulsesCount";
+            legendItem1.Cells.Add(legendCell1);
+            legend1.CustomItems.Add(legendItem1);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend1);
+            this.ethalonChart.Location = new System.Drawing.Point(0, 0);
+            this.ethalonChart.Name = "ethalonChart";
+            series1.ChartArea = "ethalonChartArea";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.IsVisibleInLegend = false;
+            series1.Legend = "Legend1";
+            series1.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series1);
+            this.ethalonChart.Size = new System.Drawing.Size(200, 193);
+            this.ethalonChart.TabIndex = 0;
+            this.ethalonChart.Text = "chart1";
+            // 
+            // toolStripSD
+            // 
+            this.toolStripSD.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.toolStripSD.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnListSDFiles,
+            this.btnViewSDFile,
+            this.btnDeleteSDFile});
+            this.toolStripSD.Location = new System.Drawing.Point(0, 0);
+            this.toolStripSD.Name = "toolStripSD";
+            this.toolStripSD.Size = new System.Drawing.Size(573, 54);
+            this.toolStripSD.TabIndex = 4;
+            // 
+            // btnListSDFiles
+            // 
+            this.btnListSDFiles.Image = global::UROVConfig.Properties.Resources.rescan;
+            this.btnListSDFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnListSDFiles.Name = "btnListSDFiles";
+            this.btnListSDFiles.Size = new System.Drawing.Size(75, 51);
+            this.btnListSDFiles.Text = "Перечитать";
+            this.btnListSDFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnListSDFiles.ToolTipText = "Перечитать содержимое SD";
+            this.btnListSDFiles.Click += new System.EventHandler(this.btnListSDFiles_Click);
+            // 
+            // btnViewSDFile
+            // 
+            this.btnViewSDFile.Enabled = false;
+            this.btnViewSDFile.Image = global::UROVConfig.Properties.Resources.view;
+            this.btnViewSDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnViewSDFile.Name = "btnViewSDFile";
+            this.btnViewSDFile.Size = new System.Drawing.Size(68, 51);
+            this.btnViewSDFile.Text = "Просмотр";
+            this.btnViewSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnViewSDFile.Click += new System.EventHandler(this.btnViewSDFile_Click);
+            // 
+            // btnDeleteSDFile
+            // 
+            this.btnDeleteSDFile.Enabled = false;
+            this.btnDeleteSDFile.Image = global::UROVConfig.Properties.Resources.delete;
+            this.btnDeleteSDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDeleteSDFile.Name = "btnDeleteSDFile";
+            this.btnDeleteSDFile.Size = new System.Drawing.Size(55, 51);
+            this.btnDeleteSDFile.Text = "Удалить";
+            this.btnDeleteSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDeleteSDFile.ToolTipText = "Удалить выбранный файл";
+            this.btnDeleteSDFile.Click += new System.EventHandler(this.btnDeleteSDFile_Click);
             // 
             // plMainSettings
             // 
@@ -1588,253 +1835,6 @@
             this.label25.Size = new System.Drawing.Size(90, 24);
             this.label25.TabIndex = 0;
             this.label25.Text = "MODBUS";
-            // 
-            // plSDSettings
-            // 
-            this.plSDSettings.Controls.Add(this.splitContainer3);
-            this.plSDSettings.Controls.Add(this.toolStripSD);
-            this.plSDSettings.Location = new System.Drawing.Point(16, 18);
-            this.plSDSettings.Name = "plSDSettings";
-            this.plSDSettings.Size = new System.Drawing.Size(573, 364);
-            this.plSDSettings.TabIndex = 6;
-            // 
-            // splitContainer3
-            // 
-            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 54);
-            this.splitContainer3.Name = "splitContainer3";
-            // 
-            // splitContainer3.Panel1
-            // 
-            this.splitContainer3.Panel1.Controls.Add(this.treeViewSD);
-            this.splitContainer3.Panel1MinSize = 100;
-            // 
-            // splitContainer3.Panel2
-            // 
-            this.splitContainer3.Panel2.Controls.Add(this.logDataGrid);
-            this.splitContainer3.Panel2.Controls.Add(this.plEmptySDWorkspace);
-            this.splitContainer3.Panel2.Controls.Add(this.plEthalonChart);
-            this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(573, 310);
-            this.splitContainer3.SplitterDistance = 100;
-            this.splitContainer3.TabIndex = 5;
-            // 
-            // treeViewSD
-            // 
-            this.treeViewSD.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.treeViewSD.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeViewSD.HideSelection = false;
-            this.treeViewSD.ImageIndex = 2;
-            this.treeViewSD.ImageList = this.sdImagesNormal;
-            this.treeViewSD.Location = new System.Drawing.Point(0, 0);
-            this.treeViewSD.Name = "treeViewSD";
-            this.treeViewSD.SelectedImageIndex = 0;
-            this.treeViewSD.Size = new System.Drawing.Size(100, 310);
-            this.treeViewSD.TabIndex = 1;
-            this.treeViewSD.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeExpand);
-            this.treeViewSD.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeSelect);
-            this.treeViewSD.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewSD_AfterSelect);
-            this.treeViewSD.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewSD_MouseDoubleClick);
-            // 
-            // sdImagesNormal
-            // 
-            this.sdImagesNormal.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("sdImagesNormal.ImageStream")));
-            this.sdImagesNormal.TransparentColor = System.Drawing.Color.Transparent;
-            this.sdImagesNormal.Images.SetKeyName(0, "folder-blue.png");
-            this.sdImagesNormal.Images.SetKeyName(1, "document-open-folder.png");
-            this.sdImagesNormal.Images.SetKeyName(2, "list.png");
-            // 
-            // logDataGrid
-            // 
-            this.logDataGrid.AllowUserToAddRows = false;
-            this.logDataGrid.AllowUserToDeleteRows = false;
-            this.logDataGrid.AllowUserToResizeRows = false;
-            this.logDataGrid.BackgroundColor = System.Drawing.Color.White;
-            this.logDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.logDataGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Num,
-            this.Time,
-            this.Temp,
-            this.Motoresource,
-            this.Channel,
-            this.Pulses,
-            this.Rod,
-            this.Etl,
-            this.Compare,
-            this.Btn});
-            this.logDataGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.logDataGrid.Location = new System.Drawing.Point(17, 20);
-            this.logDataGrid.MultiSelect = false;
-            this.logDataGrid.Name = "logDataGrid";
-            this.logDataGrid.ReadOnly = true;
-            this.logDataGrid.RowHeadersVisible = false;
-            this.logDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.logDataGrid.ShowEditingIcon = false;
-            this.logDataGrid.Size = new System.Drawing.Size(240, 150);
-            this.logDataGrid.TabIndex = 3;
-            this.logDataGrid.VirtualMode = true;
-            this.logDataGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.logDataGrid_CellContentClick);
-            this.logDataGrid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.archiveLogDataGrid_CellValueNeeded);
-            // 
-            // Num
-            // 
-            this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Num.HeaderText = "№";
-            this.Num.Name = "Num";
-            this.Num.ReadOnly = true;
-            this.Num.Width = 43;
-            // 
-            // Time
-            // 
-            this.Time.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Time.HeaderText = "Время";
-            this.Time.Name = "Time";
-            this.Time.ReadOnly = true;
-            // 
-            // Temp
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Temp.HeaderText = "Температура";
-            this.Temp.Name = "Temp";
-            this.Temp.ReadOnly = true;
-            this.Temp.Width = 80;
-            // 
-            // Motoresource
-            // 
-            this.Motoresource.HeaderText = "Срабатываний";
-            this.Motoresource.Name = "Motoresource";
-            this.Motoresource.ReadOnly = true;
-            this.Motoresource.Width = 80;
-            // 
-            // Channel
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Channel.HeaderText = "Канал";
-            this.Channel.Name = "Channel";
-            this.Channel.ReadOnly = true;
-            this.Channel.Width = 80;
-            // 
-            // Pulses
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Pulses.HeaderText = "Импульсов";
-            this.Pulses.Name = "Pulses";
-            this.Pulses.ReadOnly = true;
-            this.Pulses.Width = 80;
-            // 
-            // Rod
-            // 
-            this.Rod.HeaderText = "Штанга";
-            this.Rod.Name = "Rod";
-            this.Rod.ReadOnly = true;
-            this.Rod.Width = 80;
-            // 
-            // Etl
-            // 
-            this.Etl.HeaderText = "Эталон";
-            this.Etl.Name = "Etl";
-            this.Etl.ReadOnly = true;
-            // 
-            // Compare
-            // 
-            this.Compare.HeaderText = "Сравнение";
-            this.Compare.Name = "Compare";
-            this.Compare.ReadOnly = true;
-            // 
-            // Btn
-            // 
-            this.Btn.HeaderText = "График";
-            this.Btn.Name = "Btn";
-            this.Btn.ReadOnly = true;
-            // 
-            // plEmptySDWorkspace
-            // 
-            this.plEmptySDWorkspace.Location = new System.Drawing.Point(81, 220);
-            this.plEmptySDWorkspace.Name = "plEmptySDWorkspace";
-            this.plEmptySDWorkspace.Size = new System.Drawing.Size(200, 100);
-            this.plEmptySDWorkspace.TabIndex = 2;
-            // 
-            // plEthalonChart
-            // 
-            this.plEthalonChart.Controls.Add(this.ethalonChart);
-            this.plEthalonChart.Location = new System.Drawing.Point(248, 32);
-            this.plEthalonChart.Name = "plEthalonChart";
-            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
-            this.plEthalonChart.TabIndex = 1;
-            // 
-            // ethalonChart
-            // 
-            chartArea1.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea1);
-            this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell1.Name = "PulsesCount";
-            legendItem1.Cells.Add(legendCell1);
-            legend1.CustomItems.Add(legendItem1);
-            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend1.Name = "Legend1";
-            this.ethalonChart.Legends.Add(legend1);
-            this.ethalonChart.Location = new System.Drawing.Point(0, 0);
-            this.ethalonChart.Name = "ethalonChart";
-            series1.ChartArea = "ethalonChartArea";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.IsVisibleInLegend = false;
-            series1.Legend = "Legend1";
-            series1.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series1);
-            this.ethalonChart.Size = new System.Drawing.Size(200, 193);
-            this.ethalonChart.TabIndex = 0;
-            this.ethalonChart.Text = "chart1";
-            // 
-            // toolStripSD
-            // 
-            this.toolStripSD.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.toolStripSD.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnListSDFiles,
-            this.btnViewSDFile,
-            this.btnDeleteSDFile});
-            this.toolStripSD.Location = new System.Drawing.Point(0, 0);
-            this.toolStripSD.Name = "toolStripSD";
-            this.toolStripSD.Size = new System.Drawing.Size(573, 54);
-            this.toolStripSD.TabIndex = 4;
-            // 
-            // btnListSDFiles
-            // 
-            this.btnListSDFiles.Image = global::UROVConfig.Properties.Resources.rescan;
-            this.btnListSDFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnListSDFiles.Name = "btnListSDFiles";
-            this.btnListSDFiles.Size = new System.Drawing.Size(75, 51);
-            this.btnListSDFiles.Text = "Перечитать";
-            this.btnListSDFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnListSDFiles.ToolTipText = "Перечитать содержимое SD";
-            this.btnListSDFiles.Click += new System.EventHandler(this.btnListSDFiles_Click);
-            // 
-            // btnViewSDFile
-            // 
-            this.btnViewSDFile.Enabled = false;
-            this.btnViewSDFile.Image = global::UROVConfig.Properties.Resources.view;
-            this.btnViewSDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnViewSDFile.Name = "btnViewSDFile";
-            this.btnViewSDFile.Size = new System.Drawing.Size(68, 51);
-            this.btnViewSDFile.Text = "Просмотр";
-            this.btnViewSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnViewSDFile.Click += new System.EventHandler(this.btnViewSDFile_Click);
-            // 
-            // btnDeleteSDFile
-            // 
-            this.btnDeleteSDFile.Enabled = false;
-            this.btnDeleteSDFile.Image = global::UROVConfig.Properties.Resources.delete;
-            this.btnDeleteSDFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDeleteSDFile.Name = "btnDeleteSDFile";
-            this.btnDeleteSDFile.Size = new System.Drawing.Size(55, 51);
-            this.btnDeleteSDFile.Text = "Удалить";
-            this.btnDeleteSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnDeleteSDFile.ToolTipText = "Удалить выбранный файл";
-            this.btnDeleteSDFile.Click += new System.EventHandler(this.btnDeleteSDFile_Click);
             // 
             // plStartPanel
             // 
@@ -2858,6 +2858,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.plSection.ResumeLayout(false);
+            this.plSDSettings.ResumeLayout(false);
+            this.plSDSettings.PerformLayout();
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).EndInit();
+            this.plEthalonChart.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
+            this.toolStripSD.ResumeLayout(false);
+            this.toolStripSD.PerformLayout();
             this.plMainSettings.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.plInfo.ResumeLayout(false);
@@ -2904,17 +2915,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
             this.panel15.ResumeLayout(false);
             this.panel15.PerformLayout();
-            this.plSDSettings.ResumeLayout(false);
-            this.plSDSettings.PerformLayout();
-            this.splitContainer3.Panel1.ResumeLayout(false);
-            this.splitContainer3.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
-            this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).EndInit();
-            this.plEthalonChart.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
-            this.toolStripSD.ResumeLayout(false);
-            this.toolStripSD.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.archiveLogDataGrid)).EndInit();
             this.plArchiveEthalonChart.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.archiveAthalonChart)).EndInit();
