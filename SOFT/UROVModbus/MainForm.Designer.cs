@@ -1587,6 +1587,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UROV через MODBUS";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();

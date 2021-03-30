@@ -38,7 +38,11 @@ namespace UROVModbus
             if (tg.Tag != SDNodeTags.TagFolderUninitedNode) // уже проинициализировали
                 return;
 
+
             string folderName = tg.FileName;//getFileNameFromText(wantedExpand.Text);
+
+            
+
 
             TreeNode parent = wantedExpand.Parent;
             while (parent != null)
@@ -48,7 +52,15 @@ namespace UROVModbus
                 nt.FileName + "/" + folderName;
                 parent = parent.Parent;
             }
+
             tempSDParentNode = wantedExpand;
+
+            if(tg.Tag == SDNodeTags.TagFolderUninitedNode && folderName == "LOG")
+            {
+                // добавляем фейковый файл последнего срабатывания
+                mainForm.AddFileToList("LAST_3.LOG", 1);
+            }
+
             mainForm.GetFilesList(folderName);
 
             //TODO: ТУТ ЗАПРАШИВАЕМ СОДЕРЖИМОЕ ФАЙЛА !!!
@@ -59,7 +71,7 @@ namespace UROVModbus
         private void treeViewSD_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             //TODO: ТУТ ЗАПРАШИВАЕМ СОДЕРЖИМОЕ ФАЙЛА !!!
-
+            plEmptySDWorkspace.BringToFront();
             mainForm.RequestFile(treeViewSD.SelectedNode);
         }
 

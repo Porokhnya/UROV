@@ -893,6 +893,7 @@ namespace UROVModbus
                 sdFiles = new SDFilesForm(this);
             }
 
+            sdFiles.plEmptySDWorkspace.BringToFront();
             sdFiles.tempSDParentNode = null;
             sdFiles.treeViewSD.Nodes.Clear();
 
@@ -1126,7 +1127,7 @@ namespace UROVModbus
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="fileFlags"></param>
-        private void AddFileToList(string filename, int fileFlags)
+        public void AddFileToList(string filename, int fileFlags)
         {
             Debug.Write("File name: "); Debug.WriteLine(filename);
             Debug.Write("Flags: "); Debug.WriteLine(fileFlags);
@@ -3053,6 +3054,17 @@ namespace UROVModbus
                 tmFileContent.Enabled = false;
                 ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
+        }
+
+        /// <summary>
+        /// форма закрывается
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // сохраняем конфиг в файл
+            Config.Instance.Save();
         }
     }
 }
