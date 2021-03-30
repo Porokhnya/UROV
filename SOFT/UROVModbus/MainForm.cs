@@ -19,6 +19,10 @@ namespace UROVModbus
     {
         private MbusMasterFunctions myProtocol;
 
+        /// <summary>
+        /// показывает или скрывает курсор ожидания
+        /// </summary>
+        /// <param name="show"></param>
         private void ShowWaitCursor(bool show)
         {
             System.Windows.Forms.Cursor.Current = show ? Cursors.WaitCursor : Cursors.Default;
@@ -26,13 +30,22 @@ namespace UROVModbus
             Application.DoEvents();
         }
 
+        /// <summary>
+        /// текущий тип соединения
+        /// </summary>
         ConnectionMode currentConnectionMode = ConnectionMode.None;
 
+        /// <summary>
+        /// конструктор
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// загружает названия портов в список
+        /// </summary>
         private void LoadComPorts()
         {
             cmbComPort.Items.Clear();
@@ -51,11 +64,20 @@ namespace UROVModbus
             catch { }
         }
 
+        /// <summary>
+        /// Показывает информацию в поле на форме
+        /// </summary>
+        /// <param name="text"></param>
         private void ShowInfo(string text)
         {
             lblInfoText.Text = text;
         }
 
+        /// <summary>
+        /// Показывает или скрывает вкладку
+        /// </summary>
+        /// <param name="tp"></param>
+        /// <param name="bShow"></param>
         private void ShowTabPage(TabPage tp, bool bShow)
         {
             if (!bShow)
@@ -68,6 +90,11 @@ namespace UROVModbus
                 tabPages.TabPages.Add(tp);
         }
 
+        /// <summary>
+        /// Главная форма загружается
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainForm_Load(object sender, EventArgs e)
         {
             ShowTabPage(tpUROVSettings, false);
@@ -88,12 +115,21 @@ namespace UROVModbus
 
         }
 
+        /// <summary>
+        /// Клик на кнопку перезагрузки портов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnReloadPorts_Click(object sender, EventArgs e)
         {
             LoadComPorts();
         }
 
 
+        /// <summary>
+        /// Обновляем кнопки управления соединением, в зависимости от его статуса
+        /// </summary>
+        /// <param name="mode"></param>
         void UpdateControlButtons(ConnectionMode mode)
         {
             switch(mode)
@@ -127,6 +163,11 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Клик по кнопке "Открыть порт"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cmdOpenSerial_Click(object sender, EventArgs e)
         {
             if(cmbComPort.Items.Count < 1)
@@ -289,7 +330,11 @@ namespace UROVModbus
             }
         }
 
-
+        /// <summary>
+        /// Клик по кнопке "Закрыть порт"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCloseSerial_Click(object sender, EventArgs e)
         {
             if ((myProtocol != null))
@@ -312,6 +357,11 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Клик по кнопке "Открыть TCP-соединение"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnOpenTCP_Click(object sender, EventArgs e)
         {
             //
@@ -417,6 +467,11 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Таймер проверки соединения
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmCheckConnectTimer_Tick(object sender, EventArgs e)
         {
             if(currentConnectionMode == ConnectionMode.None)
@@ -437,6 +492,11 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Клик по кнопке "Закрыть TCP-соединение"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCloseTCP_Click(object sender, EventArgs e)
         {
             if ((myProtocol != null))
@@ -456,11 +516,21 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Клик по кнопке "Прочитать настройки"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnReadRegisters_Click(object sender, EventArgs e)
         {
             ReadRegisters();
         }
 
+        /// <summary>
+        /// Обновляем метку процента наработки прибора
+        /// </summary>
+        /// <param name="currentPercents"></param>
+        /// <param name="maxPercents"></param>
         private void UpdateMotoresourcePercents(int currentPercents, int maxPercents)
         {
             NumberFormatInfo nfi = new NumberFormatInfo();
@@ -481,6 +551,12 @@ namespace UROVModbus
 
         }
 
+        /// <summary>
+        /// Делает четырёхбайтовое целое из двух двухбайтовых
+        /// </summary>
+        /// <param name="reg1"></param>
+        /// <param name="reg2"></param>
+        /// <returns></returns>
         private UInt32 MakeUInt32(ushort reg1, ushort reg2)
         {
             UInt32 res = (UInt32) reg1;
@@ -492,6 +568,10 @@ namespace UROVModbus
 
         const int REGS_COUNT = 25; //TODO: КОЛИЧЕСТВО РЕГИСТРОВ К ЧТЕНИЮ
 
+
+        /// <summary>
+        /// Читаем регистры устройства
+        /// </summary>
         private void ReadRegisters()
         {
             if(myProtocol != null && myProtocol.isOpen())
@@ -615,12 +695,20 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// 32-х битное значение из двух слов
+        /// </summary>
         private struct Reg32
         {
             public ushort reg1;
             public ushort reg2;
         }
 
+        /// <summary>
+        /// Разбивает 32-х битное значение на два слова
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
         private Reg32 Make2Registers(Int32 val)
         {
             Reg32 result;
@@ -631,6 +719,9 @@ namespace UROVModbus
             return result;
         }
 
+        /// <summary>
+        /// Пишем регистры в прибор
+        /// </summary>
         private void WriteRegisters()
         {
             if (myProtocol != null && myProtocol.isOpen())
@@ -775,13 +866,26 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Клик по кнопке "Записать настройки"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCurrentCoeff_Click(object sender, EventArgs e)
         {
             WriteRegisters();
         }
 
+        /// <summary>
+        /// Форма просмотра содержимого SD
+        /// </summary>
         private SDFilesForm sdFiles = null;
 
+        /// <summary>
+        /// Клик по кнопке "Список файлов"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnFileList_Click(object sender, EventArgs e)
         {
             if(sdFiles == null)
@@ -795,10 +899,16 @@ namespace UROVModbus
             GetFilesList("/"); // получаем список файлов в корневой папке
         }
 
+        /// <summary>
+        /// Содержимое полученного файла
+        /// </summary>
         private List<byte> fileContent = new List<byte>();
         private string fileNameToRequest = "";
 
-        // запрашиваем содержимое файла
+        /// <summary>
+        /// запрашиваем содержимое файла
+        /// </summary>
+        /// <param name="fileName"></param>
         private void DoRequestFile(string fileName)
         {
             if (myProtocol != null && myProtocol.isOpen())
@@ -881,7 +991,10 @@ namespace UROVModbus
         }
 
 
-        private string dirToList = "/"; // папка, с которой запрашиваем список файлов
+        /// <summary>
+        /// папка, с которой запрашиваем список файлов
+        /// </summary>
+        private string dirToList = "/";
 
         /// <summary>
         /// Запрашиваем список файлов указанной папки через MODBUS
@@ -973,6 +1086,11 @@ namespace UROVModbus
 
         }
 
+        /// <summary>
+        /// Показывает статус в строке состояния
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="cl"></param>
         private void ShowStatusInBar(string message, Color cl)
         {
             toolStripStatusLabel1.Text = message;
@@ -988,6 +1106,11 @@ namespace UROVModbus
 
         }
 
+        /// <summary>
+        /// Показывает ошибку протокола
+        /// </summary>
+        /// <param name="res"></param>
+        /// <param name="message"></param>
         private void ShowProtocolError(int res, string message)
         {
             toolStripStatusLabel1.Text = " ОШИБКА ";
@@ -1012,6 +1135,12 @@ namespace UROVModbus
             AddRecordToSDList(filename, fileFlags, sdFiles.tempSDParentNode);
         }
 
+        /// <summary>
+        /// Добавляет запись в дерево файлов на SD
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="fileFlags"></param>
+        /// <param name="parent"></param>
         private void AddRecordToSDList(string filename, int fileFlags, TreeNode parent = null)
         {
             TreeNodeCollection nodes = sdFiles.treeViewSD.Nodes;
@@ -1054,6 +1183,10 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Запрашивает файл, связанный с переданным узлом дерева файлов на SD
+        /// </summary>
+        /// <param name="node"></param>
         public void RequestFile(TreeNode node)
         {
             if (node == null)
@@ -1152,6 +1285,11 @@ namespace UROVModbus
 
         }
 
+        /// <summary>
+        /// Таймер запроса списка файлов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmFileList_Tick(object sender, EventArgs e)
         {
             tmFileList.Enabled = false; // выключаем таймер, чтоб не тикал
@@ -2752,6 +2890,11 @@ namespace UROVModbus
             }
         }
 
+        /// <summary>
+        /// Таймер запроса содержимого файла
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tmFileContent_Tick(object sender, EventArgs e)
         {
             tmFileContent.Enabled = false; // выключаем таймер, чтоб не тикал
