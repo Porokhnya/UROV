@@ -3066,5 +3066,247 @@ namespace UROVModbus
             // сохраняем конфиг в файл
             Config.Instance.Save();
         }
+
+        private delegate void SafeCallDelegate(string str);
+        private delegate void SafeCallVoidDelegate();
+        private void OnTryToConnectToPort(string portName)
+        {
+            if(this.InvokeRequired)
+            {
+                Invoke(new SafeCallDelegate(OnTryToConnectToPort), new object[] { portName });
+                return;
+            }
+
+            ShowInfo("Ищем устройство на порту " + portName + "...");
+        }
+
+        private void OnFindDeviceConnectMessage(string msg)
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new SafeCallDelegate(OnFindDeviceConnectMessage), new object[] { msg });
+                return;
+            }
+
+            ShowInfo(msg);
+        }
+
+        private void OnSetSelectedPort(string portname)
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new SafeCallDelegate(OnSetSelectedPort), new object[] { portname });
+                return;
+            }
+
+            cmbComPort.SelectedIndex = cmbComPort.FindStringExact(portname);
+        }
+
+        private void OnSearchDone()
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new SafeCallVoidDelegate(OnSearchDone));
+                return;
+            }
+
+            FindSerial.Enabled = true;
+            btnReloadPorts.Enabled = true;
+            UpdateControlButtons(ConnectionMode.None);
+            MessageBox.Show("Поиск устройства завершён.");
+        }
+
+        private long answerTimer = 0;
+        private long waitAnswerTimeout = 20000;
+        private int speed = 57600;
+        private SerialPort port = null;
+        private List<byte> COMAnswer = new List<byte>();
+        private bool deviceFound = false;
+        private Thread openPortThread = null;
+
+
+        private void doClosePort()
+        {
+            if (this.port != null && this.port.IsOpen)
+            {
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: CLOSE PORT...");
+
+                this.port.DataReceived -= new SerialDataReceivedEventHandler(findDevice_DataReceived);
+
+                while (!(this.port.BytesToRead == 0 && this.port.BytesToWrite == 0))
+                {
+                    this.port.DiscardInBuffer();
+                    this.port.DiscardOutBuffer();
+                }
+
+                this.port.Close();
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: CLOSE PORT, BEFORE WHILE...");
+
+                while (this.port.IsOpen) { Application.DoEvents(); }
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: PORT CLOSED.");
+            }
+        }
+
+        /// <summary>
+        /// получили данные из порта в процессе поиска контроллера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void findDevice_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                SerialPort sp = (SerialPort)sender;
+                int cnt = sp.BytesToRead;
+                if (cnt > 0)
+                {
+                    byte[] bReceived = new byte[cnt];
+
+                    for (int i = 0; i < cnt; i++)
+                        bReceived[i] = (byte)sp.ReadByte();
+
+                    COMAnswer.AddRange(bReceived);
+
+                    while (true)
+                    {
+                        int idx = Array.IndexOf(COMAnswer.ToArray(), (byte)'\n');
+                        if (idx != -1)
+                        {
+                            string line = System.Text.Encoding.UTF8.GetString(COMAnswer.ToArray(), 0, idx);
+                            COMAnswer.RemoveRange(0, idx + 1);
+                            line = line.Trim();
+                            if (line.StartsWith("UROV "))
+                            {
+                                this.deviceFound = true;
+                                break;
+                            }
+
+                        }
+                        else
+                            break;
+                    }
+
+
+                    Thread.Sleep(10);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// начинаем искать подсоединённый контроллер
+        /// </summary>
+        /// <param name="o"></param>
+        private void TryFindDevice(object o)
+        {
+
+            string foundPortName = "";
+
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string portname in ports)
+            {
+                string pname = portname;
+
+                System.Diagnostics.Debug.WriteLine("TRANSPORT: TRY TO CONNECT TO " + pname + "...");
+
+                OnTryToConnectToPort(portname);
+
+
+                // надо искать порт
+                    port = new SerialPort(portname);
+                    port.BaudRate = speed;
+                    port.DataReceived += new SerialDataReceivedEventHandler(findDevice_DataReceived);
+
+                    //if (this.withHandshake) // пересбрасываем порт, если надо
+                    {
+                        port.DtrEnable = true;
+                    }
+
+                try
+                {
+                    port.Open();
+
+                    while (!port.IsOpen)
+                    {
+                        Thread.Sleep(100);
+                    }
+
+                    answerTimer = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
+                    while (true)
+                    {
+                        if (deviceFound)
+                        {
+                            foundPortName = portname;
+                            break;
+                        }
+
+                        if (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - answerTimer >= waitAnswerTimeout)
+                            break;
+                    }
+
+                    if (!deviceFound)
+                    {
+                        doClosePort();
+                        port = null;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch (Exception)
+                {
+                    doClosePort();
+                    this.port = null;
+                }
+
+            } // foreach
+
+            if (deviceFound)
+            {
+                doClosePort();
+                this.port = null;
+
+                OnFindDeviceConnectMessage("Устройство найдено на порту " + foundPortName);
+                OnSetSelectedPort(foundPortName);
+            }
+            else
+            {
+                doClosePort();
+                this.port = null;
+                //                DoOnConnect(false, "Can't find device!");
+                OnFindDeviceConnectMessage("Устройство не найдено!");
+            }
+
+            OnSearchDone();
+        }
+
+        private void FindSerial_Click(object sender, EventArgs e)
+        {
+            FindSerial.Enabled = false;
+            btnCloseSerial.Enabled = false;
+            btnOpenSerial.Enabled = false;
+            btnCloseTCP.Enabled = false;
+            btnOpenTCP.Enabled = false;
+            btnReloadPorts.Enabled = false;
+
+            try
+            {
+                speed = int.Parse(cmbBaudRate.Text, CultureInfo.CurrentCulture);
+            }
+            catch (Exception)
+            {
+                speed = 57600;
+            }
+
+            openPortThread = new Thread(TryFindDevice);
+            openPortThread.Start(null);
+        }
     }
 }

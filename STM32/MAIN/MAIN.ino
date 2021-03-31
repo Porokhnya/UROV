@@ -527,8 +527,9 @@ void setup() // настройка системы в работу
 
   DBGLN(F("Inited."));
 
-  // выподим в UART версию прошивки
+  // выводим в UART версию прошивки
   CommandHandler.getVER(&CONFIG_SERIAL);
+  CommandHandler.getVER(&MODBUS_SERIAL);
 
 
   // говорим, что настройка окончена

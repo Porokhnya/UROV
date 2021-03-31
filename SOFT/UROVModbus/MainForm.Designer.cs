@@ -370,14 +370,13 @@
             // 
             // FindSerial
             // 
-            this.FindSerial.Enabled = false;
             this.FindSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.FindSerial.Location = new System.Drawing.Point(19, 249);
             this.FindSerial.Name = "FindSerial";
             this.FindSerial.Size = new System.Drawing.Size(265, 40);
             this.FindSerial.TabIndex = 15;
             this.FindSerial.Text = "Поиск Serial";
-            this.FindSerial.Visible = false;
+            this.FindSerial.Click += new System.EventHandler(this.FindSerial_Click);
             // 
             // btnCloseSerial
             // 
