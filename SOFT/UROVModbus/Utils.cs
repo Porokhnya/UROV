@@ -372,6 +372,7 @@ namespace UROVModbus
         None = 0,     // нет функции
         ListFiles,    // запрошен список файлов в директории
         FileContent,  // запрошено содержимое файла
+        DeleteFile,   // запрошено удаление файла
     }
 
     /// <summary>

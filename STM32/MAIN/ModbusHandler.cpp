@@ -199,55 +199,6 @@ void ModbusHandler::checkForChanges()
 
     case mbusListFiles: // запрошен список файлов в директории, это может быть как первичный вызов, так и перезапрос на следующий пункт списка
     {
-      /*
-      // получаем имя директории
-      uint16_t dataLen = get(MODBUS_REG_DATA_LENGTH);
-      String dirName; // имя директории
-      uint16_t numRegs = dataLen/2; // количество регистров к чтению
-      bool hasLastByte = false;
-      
-      if(dataLen%2)
-      {
-        numRegs++; // есть один байт в конце, нечётный
-        hasLastByte = true;
-      }
-
-      // читаем регистры, содержащие имя директории, из которой надо вывести список файлов
-      uint16_t readedBytes = 0;
-      
-      for(uint16_t i=MODBUS_REG_DATA;i<(MODBUS_REG_DATA+numRegs);i++)
-      {
-        uint16_t reg = get(i);
-        char highVal = (char)((reg & 0xFF00) >> 8);
-        char lowVal = (char)(reg & 0x00FF);
-
-        // это последний регистр к чтению?
-        bool lastReg = i == (MODBUS_REG_DATA+numRegs)-1;
-
-        if(lastReg) // последний регистр к чтению
-        {
-          // тут может быть один байт
-          if(hasLastByte)
-          {
-            // есть всего один байт в регистре, младший
-            dirName += lowVal;
-          }
-          else
-          {
-            // надо прочитать его целиком
-            dirName += highVal;
-            dirName += lowVal;
-          }
-        }
-        else // регистр полностью из двух байт
-        {
-            dirName += highVal;
-            dirName += lowVal;          
-        }
-        
-        
-      } // for
-      */
 
       // получаем имя директории
       String dirName = getPassedFileName();
@@ -263,6 +214,13 @@ void ModbusHandler::checkForChanges()
       do_mbusFileContent(fileName);
     }
     break; // mbusFileContent
+
+    case mbusDeleteFile: // запрошего удаление файла
+    {
+      String fileName = getPassedFileName();
+      do_mbusDeleteFile(fileName);
+    }
+    break;
     
   } // switch
   
@@ -319,6 +277,34 @@ String ModbusHandler::getPassedFileName()
       } // for  
 
       return passedName;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::do_mbusDeleteFile(const String& fileName)
+{
+ if(!SDInit::sdInitResult)
+  {
+    // карта не инициализирована
+    
+        // устанавливаем флаг перезапроса мастером в 0
+        set(MODBUS_REG_CONTINUE_FLAG,0);
+
+        // устанавливаем длину данных в 0
+        set(MODBUS_REG_DATA_LENGTH,0);
+        
+        // устанавливаем флаг готовности данных
+        set(MODBUS_REG_READY_FLAG,1);
+
+        // всё, дальше мастер сам разберётся, что делать
+
+    return;
+  }  
+
+  // удаляем файл
+  FileUtils::deleteFile(fileName);
+
+  // устанавливаем флаг выполнения операции
+    set(MODBUS_REG_READY_FLAG,1);
+  
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::do_mbusFileContent(const String& fileName)

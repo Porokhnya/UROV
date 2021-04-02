@@ -68,11 +68,25 @@ namespace UROVModbus
             //PushCommandToQueue(GET_PREFIX + "LS" + PARAM_DELIMITER + folderName, DummyAnswerReceiver, SetSDFolderReadingFlag);
         }
 
-        private void treeViewSD_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void StartViewFile()
         {
             //TODO: ТУТ ЗАПРАШИВАЕМ СОДЕРЖИМОЕ ФАЙЛА !!!
             plEmptySDWorkspace.BringToFront();
             mainForm.RequestFile(treeViewSD.SelectedNode);
+
+        }
+
+        private void StartDeleteFile()
+        {
+            //TODO: ТУТ УДАЛЯЕМ ФАЙЛ !!!
+            plEmptySDWorkspace.BringToFront();
+            mainForm.DeleteFile(treeViewSD.SelectedNode);
+
+        }
+
+        private void treeViewSD_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            StartViewFile();
         }
 
         private void SDFilesForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -212,6 +226,34 @@ namespace UROVModbus
             {
                 e.Value = "Просмотр";
             }
+        }
+
+        private void treeViewSD_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            bool hasSelection = e.Node != null;
+            bool isSelectionIsFile = false;
+
+            if(hasSelection)
+            {
+                SDNodeTagHelper tg = (SDNodeTagHelper)e.Node.Tag;
+                if(tg != null && tg.Tag == SDNodeTags.TagFileNode)
+                {
+                    isSelectionIsFile = true;
+                }
+            }
+
+            btnDeleteSDFile.Enabled = hasSelection && isSelectionIsFile;
+            btnViewSDFile.Enabled = hasSelection && isSelectionIsFile;
+        }
+
+        private void btnViewSDFile_Click(object sender, EventArgs e)
+        {
+            StartViewFile();
+        }
+
+        private void btnDeleteSDFile_Click(object sender, EventArgs e)
+        {
+            StartDeleteFile();
         }
     }
 }

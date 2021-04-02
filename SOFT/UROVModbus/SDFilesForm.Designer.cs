@@ -30,15 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDFilesForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem5 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
-            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell5 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.LegendItem legendItem3 = new System.Windows.Forms.DataVisualization.Charting.LegendItem();
+            System.Windows.Forms.DataVisualization.Charting.LegendCell legendCell3 = new System.Windows.Forms.DataVisualization.Charting.LegendCell();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -46,6 +46,8 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.treeViewSD = new System.Windows.Forms.TreeView();
             this.sdImagesNormal = new System.Windows.Forms.ImageList(this.components);
+            this.plEthalonChart = new System.Windows.Forms.Panel();
+            this.ethalonChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.logDataGrid = new System.Windows.Forms.DataGridView();
             this.Num = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -59,21 +61,18 @@
             this.Btn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.plEmptySDWorkspace = new System.Windows.Forms.Panel();
             this.toolStripSD = new System.Windows.Forms.ToolStrip();
-            this.btnListSDFiles = new System.Windows.Forms.ToolStripButton();
             this.btnViewSDFile = new System.Windows.Forms.ToolStripButton();
             this.btnDeleteSDFile = new System.Windows.Forms.ToolStripButton();
-            this.plEthalonChart = new System.Windows.Forms.Panel();
-            this.ethalonChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.statusStrip.SuspendLayout();
             this.plSDSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).BeginInit();
-            this.toolStripSD.SuspendLayout();
             this.plEthalonChart.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).BeginInit();
+            this.toolStripSD.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -112,7 +111,7 @@
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Location = new System.Drawing.Point(0, 25);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -126,7 +125,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.logDataGrid);
             this.splitContainer3.Panel2.Controls.Add(this.plEmptySDWorkspace);
             this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(851, 489);
+            this.splitContainer3.Size = new System.Drawing.Size(851, 464);
             this.splitContainer3.SplitterDistance = 200;
             this.splitContainer3.TabIndex = 5;
             // 
@@ -140,9 +139,10 @@
             this.treeViewSD.Location = new System.Drawing.Point(0, 0);
             this.treeViewSD.Name = "treeViewSD";
             this.treeViewSD.SelectedImageIndex = 0;
-            this.treeViewSD.Size = new System.Drawing.Size(200, 489);
+            this.treeViewSD.Size = new System.Drawing.Size(200, 464);
             this.treeViewSD.TabIndex = 1;
             this.treeViewSD.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewSD_BeforeExpand);
+            this.treeViewSD.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewSD_AfterSelect);
             this.treeViewSD.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewSD_MouseDoubleClick);
             // 
             // sdImagesNormal
@@ -152,6 +152,37 @@
             this.sdImagesNormal.Images.SetKeyName(0, "folder-blue.png");
             this.sdImagesNormal.Images.SetKeyName(1, "document-open-folder.png");
             this.sdImagesNormal.Images.SetKeyName(2, "list.png");
+            // 
+            // plEthalonChart
+            // 
+            this.plEthalonChart.Controls.Add(this.ethalonChart);
+            this.plEthalonChart.Location = new System.Drawing.Point(331, 70);
+            this.plEthalonChart.Name = "plEthalonChart";
+            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
+            this.plEthalonChart.TabIndex = 4;
+            // 
+            // ethalonChart
+            // 
+            chartArea3.Name = "ethalonChartArea";
+            this.ethalonChart.ChartAreas.Add(chartArea3);
+            this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            legendCell3.Name = "PulsesCount";
+            legendItem3.Cells.Add(legendCell3);
+            legend3.CustomItems.Add(legendItem3);
+            legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend3.Name = "Legend1";
+            this.ethalonChart.Legends.Add(legend3);
+            this.ethalonChart.Location = new System.Drawing.Point(0, 0);
+            this.ethalonChart.Name = "ethalonChart";
+            series3.ChartArea = "ethalonChartArea";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series3.IsVisibleInLegend = false;
+            series3.Legend = "Legend1";
+            series3.Name = "ethalonChartSerie";
+            this.ethalonChart.Series.Add(series3);
+            this.ethalonChart.Size = new System.Drawing.Size(200, 193);
+            this.ethalonChart.TabIndex = 0;
+            this.ethalonChart.Text = "chart1";
             // 
             // logDataGrid
             // 
@@ -188,8 +219,8 @@
             // Num
             // 
             this.Num.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Num.DefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Num.DefaultCellStyle = dataGridViewCellStyle9;
             this.Num.HeaderText = "№";
             this.Num.Name = "Num";
             this.Num.ReadOnly = true;
@@ -204,8 +235,8 @@
             // 
             // Temp
             // 
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Temp.DefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Temp.DefaultCellStyle = dataGridViewCellStyle10;
             this.Temp.HeaderText = "Температура";
             this.Temp.Name = "Temp";
             this.Temp.ReadOnly = true;
@@ -220,8 +251,8 @@
             // 
             // Channel
             // 
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Channel.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Channel.DefaultCellStyle = dataGridViewCellStyle11;
             this.Channel.HeaderText = "Канал";
             this.Channel.Name = "Channel";
             this.Channel.ReadOnly = true;
@@ -229,8 +260,8 @@
             // 
             // Pulses
             // 
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Pulses.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Pulses.DefaultCellStyle = dataGridViewCellStyle12;
             this.Pulses.HeaderText = "Импульсов";
             this.Pulses.Name = "Pulses";
             this.Pulses.ReadOnly = true;
@@ -272,24 +303,12 @@
             // 
             this.toolStripSD.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStripSD.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnListSDFiles,
             this.btnViewSDFile,
             this.btnDeleteSDFile});
             this.toolStripSD.Location = new System.Drawing.Point(0, 0);
             this.toolStripSD.Name = "toolStripSD";
             this.toolStripSD.Size = new System.Drawing.Size(851, 25);
             this.toolStripSD.TabIndex = 4;
-            this.toolStripSD.Visible = false;
-            // 
-            // btnListSDFiles
-            // 
-            this.btnListSDFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnListSDFiles.Name = "btnListSDFiles";
-            this.btnListSDFiles.Size = new System.Drawing.Size(75, 22);
-            this.btnListSDFiles.Text = "Перечитать";
-            this.btnListSDFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnListSDFiles.ToolTipText = "Перечитать содержимое SD";
-            this.btnListSDFiles.Click += new System.EventHandler(this.btnListSDFiles_Click);
             // 
             // btnViewSDFile
             // 
@@ -299,6 +318,7 @@
             this.btnViewSDFile.Size = new System.Drawing.Size(68, 22);
             this.btnViewSDFile.Text = "Просмотр";
             this.btnViewSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnViewSDFile.Click += new System.EventHandler(this.btnViewSDFile_Click);
             // 
             // btnDeleteSDFile
             // 
@@ -309,37 +329,7 @@
             this.btnDeleteSDFile.Text = "Удалить";
             this.btnDeleteSDFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDeleteSDFile.ToolTipText = "Удалить выбранный файл";
-            // 
-            // plEthalonChart
-            // 
-            this.plEthalonChart.Controls.Add(this.ethalonChart);
-            this.plEthalonChart.Location = new System.Drawing.Point(331, 70);
-            this.plEthalonChart.Name = "plEthalonChart";
-            this.plEthalonChart.Size = new System.Drawing.Size(200, 193);
-            this.plEthalonChart.TabIndex = 4;
-            // 
-            // ethalonChart
-            // 
-            chartArea5.Name = "ethalonChartArea";
-            this.ethalonChart.ChartAreas.Add(chartArea5);
-            this.ethalonChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legendCell5.Name = "PulsesCount";
-            legendItem5.Cells.Add(legendCell5);
-            legend5.CustomItems.Add(legendItem5);
-            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend5.Name = "Legend1";
-            this.ethalonChart.Legends.Add(legend5);
-            this.ethalonChart.Location = new System.Drawing.Point(0, 0);
-            this.ethalonChart.Name = "ethalonChart";
-            series5.ChartArea = "ethalonChartArea";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series5.IsVisibleInLegend = false;
-            series5.Legend = "Legend1";
-            series5.Name = "ethalonChartSerie";
-            this.ethalonChart.Series.Add(series5);
-            this.ethalonChart.Size = new System.Drawing.Size(200, 193);
-            this.ethalonChart.TabIndex = 0;
-            this.ethalonChart.Text = "chart1";
+            this.btnDeleteSDFile.Click += new System.EventHandler(this.btnDeleteSDFile_Click);
             // 
             // SDFilesForm
             // 
@@ -362,11 +352,11 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.plEthalonChart.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.logDataGrid)).EndInit();
             this.toolStripSD.ResumeLayout(false);
             this.toolStripSD.PerformLayout();
-            this.plEthalonChart.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ethalonChart)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -388,7 +378,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Compare;
         private System.Windows.Forms.DataGridViewButtonColumn Btn;
         private System.Windows.Forms.ToolStrip toolStripSD;
-        private System.Windows.Forms.ToolStripButton btnListSDFiles;
         private System.Windows.Forms.ToolStripButton btnViewSDFile;
         private System.Windows.Forms.ToolStripButton btnDeleteSDFile;
         private System.Windows.Forms.ImageList sdImagesNormal;

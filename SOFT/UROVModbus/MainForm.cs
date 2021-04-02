@@ -901,6 +901,93 @@ namespace UROVModbus
         }
 
         /// <summary>
+        /// Удаляет файл с SD
+        /// </summary>
+        /// <param name="fileName"></param>
+        private void DoDeleteFile(string fileName)
+        {
+            if (myProtocol != null && myProtocol.isOpen())
+            {
+                // протокол открыт, можно удалять файд
+                int res; // результат запроса
+
+                ushort func = Convert.ToUInt16(MBusFunction.DeleteFile);
+                ushort dataLen = Convert.ToUInt16(fileName.Length);
+                int slave = Convert.ToInt32(nudModbusSlaveID.Value);
+
+                int numRegs = fileName.Length / 2;
+                if (fileName.Length % 2 > 0)
+                {
+                    numRegs++;
+                }
+
+                // выделяем память под данные имени файла
+                ushort[] data = new ushort[numRegs];
+
+                // теперь записываем туда данные имени файла
+                int iterator = 0;
+                for (int i = 0; i < numRegs; i++)
+                {
+                    byte highVal = Convert.ToByte(fileName[iterator]); iterator++;
+                    byte lowVal = 0;
+                    if (iterator < fileName.Length)
+                    {
+                        lowVal = Convert.ToByte(fileName[iterator]); iterator++;
+                    }
+                    else
+                    {
+                        // только последний байт остался, младший
+                        lowVal = highVal;
+                        highVal = 0;
+
+                    }
+
+                    // формируем данные регистра
+                    ushort reg = highVal; reg <<= 8; reg |= lowVal;
+                    data[i] = reg;
+
+                } // for
+
+                // данные сформированы, записываем их в регистры устройства, и ждём ответа
+                int errorsCount = 0;
+
+                // MODBUS_REG_DATA_LENGTH                    41004 // регистр длины выданных или переданных от мастера данных (например, длины имени файла)
+                res = myProtocol.writeSingleRegister(slave, 1004, dataLen);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                // MODBUS_REG_DATA                           41005 // регистр, начиная с которого идут данные (например, имя файла)
+                res = myProtocol.writeMultipleRegisters(slave, 1005, data, numRegs);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+
+                // MODBUS_REG_FUNCTION_NUMBER                41000 // регистр для номера запрошенной мастером функции (например, выдать список файлов в директории)
+                res = myProtocol.writeSingleRegister(slave, 1000, func);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                if (errorsCount < 1)
+                {
+                    // данные записаны, файл удалён
+                    if(nodeToDelete != null)
+                    {
+                        nodeToDelete.Remove();
+                        nodeToDelete = null;
+                    }
+                    ShowStatusInBar(" ФАЙЛ УДАЛЁН ", Color.Lime);
+
+                }
+                else
+                {
+                    nodeToDelete = null;
+                    ShowProtocolError(res, "Ошибка записи регистров: ");
+
+                }
+            }
+        }
+
+        /// <summary>
         /// Содержимое полученного файла
         /// </summary>
         private List<byte> fileContent = new List<byte>();
@@ -1182,6 +1269,41 @@ namespace UROVModbus
                 node.SelectedImageIndex = node.ImageIndex;
                 node.Tag = new SDNodeTagHelper(SDNodeTags.TagFileNode, filename, isDir);
             }
+        }
+
+        private TreeNode nodeToDelete = null;
+
+        /// <summary>
+        /// Удаляет файл на SD
+        /// </summary>
+        /// <param name="node"></param>
+        public void DeleteFile(TreeNode node)
+        {
+
+            if (node == null)
+                return;
+
+            if (node.Tag == null)
+                return;
+
+            SDNodeTagHelper tg = (SDNodeTagHelper)node.Tag;
+            if (tg.Tag != SDNodeTags.TagFileNode)
+                return;
+
+            string fullPathName = tg.FileName;
+
+            nodeToDelete = node;
+
+
+            TreeNode parent = node.Parent;
+            while (parent != null)
+            {
+                SDNodeTagHelper nt = (SDNodeTagHelper)parent.Tag;
+                fullPathName = nt.FileName + "/" + fullPathName;
+                parent = parent.Parent;
+            }
+
+            DoDeleteFile(fullPathName);
         }
 
         /// <summary>

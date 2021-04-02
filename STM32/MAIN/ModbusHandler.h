@@ -16,6 +16,7 @@ typedef enum
   mbusNone = 0,     // нет функции
   mbusListFiles,    // запрошен список файлов в директории
   mbusFileContent,  // запрошено содержимое файла
+  mbusDeleteFile,   // запрошено удаление файла
   
 } MBusFunction; // коды функций
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ private:
   MBusFunction request;
   void do_mbusListFiles(const String& dirName);
   void do_mbusFileContent(const String& fileName);
+  void do_mbusDeleteFile(const String& fileName);
   
 
   // для работы со списком файлов
