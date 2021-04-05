@@ -73,6 +73,7 @@ namespace UROVModbus
             lblInfoText.Text = text;
         }
 
+
         /// <summary>
         /// Показывает или скрывает вкладку
         /// </summary>
@@ -97,7 +98,14 @@ namespace UROVModbus
         /// <param name="e"></param>
         private void mainForm_Load(object sender, EventArgs e)
         {
-            ShowTabPage(tpUROVSettings, false);
+            tsConnectionTypeInfo.Text = "";
+            tsStatusMessage.Text = "";
+            tsLinkStatus.Text = "";
+
+            SetCurrentTabPageHint();
+
+            //ShowTabPage(tpUROVSettings, false);
+            ShowConnectionStatus(false);
 
             InitSubstitutions();
 
@@ -312,19 +320,24 @@ namespace UROVModbus
                             + (stopBits + (" stop bits, parity " + parity)))))))));
 
 
+                string connInfo = cmbComPort.Text + ", " + baudRate.ToString() + " baud | RS-232";
+                tsConnectionTypeInfo.Text = connInfo;
+
                 currentConnectionMode = ConnectionMode.Serial;
 
                 UpdateControlButtons(currentConnectionMode);
 
 
 
+                ShowConnectionStatus(true);
 
-                ShowTabPage(tpUROVSettings, true);
+                //ShowTabPage(tpUROVSettings, true);
                 //Polltimer1.Enabled = true;
                 tmCheckConnectTimer.Enabled = true;
             }
             else
             {
+                ShowConnectionStatus(false);
                 //lblResult.Text = (" ошибка была: " + BusProtocolErrors.getBusProtocolErrorText(res));
                 ShowInfo("Не удалось открыть протокол!  Ошибка: " + BusProtocolErrors.getBusProtocolErrorText(res));
             }
@@ -345,6 +358,8 @@ namespace UROVModbus
                 UpdateControlButtons(currentConnectionMode);
 
                 ShowInfo("Протокол закрыт");
+
+                ShowConnectionStatus(false);
 
 
                 /*
@@ -452,9 +467,15 @@ namespace UROVModbus
             {
                 ShowInfo("Modbus/TCP открыт с параметрами: " + (txtHostName.Text + (", TCP port " + tcpPort)));
 
+                string connInfo = txtHostName.Text + ":" + tcpPort.ToString() + " | Nodbus/TCP";
+                tsConnectionTypeInfo.Text = connInfo;
+
+
                 currentConnectionMode = ConnectionMode.TCP;
 
                 UpdateControlButtons(currentConnectionMode);
+
+                ShowConnectionStatus(true);
 
                 //Polltimer1.Enabled = true;
                 tmCheckConnectTimer.Enabled = true;
@@ -463,7 +484,7 @@ namespace UROVModbus
             {
                 ShowInfo("Не удалось открыть протокол, ошибка: " + BusProtocolErrors.getBusProtocolErrorText(res));
 
-                
+                ShowConnectionStatus(false);
             }
         }
 
@@ -477,7 +498,7 @@ namespace UROVModbus
             if(currentConnectionMode == ConnectionMode.None)
             {
                 tmCheckConnectTimer.Enabled = false;
-                ShowTabPage(tpUROVSettings, false);
+               // ShowTabPage(tpUROVSettings, false);
                 return;
             }
             if(myProtocol != null)
@@ -487,7 +508,8 @@ namespace UROVModbus
                     tmCheckConnectTimer.Enabled = false;
                     currentConnectionMode = ConnectionMode.None;
                     UpdateControlButtons(currentConnectionMode);
-                    ShowTabPage(tpUROVSettings, false);
+                    // ShowTabPage(tpUROVSettings, false);
+                    ShowConnectionStatus(false);
                 }
             }
         }
@@ -509,10 +531,11 @@ namespace UROVModbus
 
                 //    // Indicate result on status line
                 ShowInfo("Протокол закрыт");
+                ShowConnectionStatus(false);
 
-//                Polltimer1.Enabled = false;
-//                toolStripStatusLabel1.Text = "  MODBUS ЗАКРЫТ   ";
-//                toolStripStatusLabel1.BackColor = Color.Red;
+                //                Polltimer1.Enabled = false;
+                //                toolStripStatusLabel1.Text = "  MODBUS ЗАКРЫТ   ";
+                //                toolStripStatusLabel1.BackColor = Color.Red;
             }
         }
 
@@ -577,7 +600,7 @@ namespace UROVModbus
             if(myProtocol != null && myProtocol.isOpen())
             {
                 ShowWaitCursor(true);
-                ShowStatusInBar(" ЧИТАЕМ РЕГИСТРЫ ", Color.Lime);
+                ShowMessageInStatusBar(" ЧИТАЕМ РЕГИСТРЫ ", Color.Lime);
 
 
                 // читаем регистры прибора
@@ -601,7 +624,7 @@ namespace UROVModbus
                 if ((res == BusProtocolErrors.FTALK_SUCCESS))
                 {
                     // регистры прочитаны, надо заполнять данные формы!!!
-                    ShowStatusInBar(" ПРОЧИТАНО ", Color.Lime);
+                    ShowMessageInStatusBar(" ПРОЧИТАНО ", Color.Lime);
 
                     // MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
                     int pulses = readVals[0];
@@ -685,7 +708,7 @@ namespace UROVModbus
                 }
                 else
                 {
-                    ShowStatusInBar(" ОШИБКА! ", Color.Red);
+                    ShowMessageInStatusBar(" ОШИБКА! ", Color.Red);
 
                     ShowWaitCursor(false);
 
@@ -728,7 +751,7 @@ namespace UROVModbus
             {
                 ShowWaitCursor(true);
 
-                ShowStatusInBar(" ПИШЕМ РЕГИСТРЫ ", Color.Beige);
+                ShowMessageInStatusBar(" ПИШЕМ РЕГИСТРЫ ", Color.Beige);
 
                 // пишем регистры в прибор
                 ushort[] writeVals = new ushort[REGS_COUNT];
@@ -854,7 +877,7 @@ namespace UROVModbus
 
                     ShowWaitCursor(false);
 
-                    ShowStatusInBar(" ЗАПИСАНО ", Color.Lime);
+                    ShowMessageInStatusBar(" ЗАПИСАНО ", Color.Lime);
 
                     MessageBox.Show("Регистры успешно записаны в прибор!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -975,7 +998,7 @@ namespace UROVModbus
                         nodeToDelete.Remove();
                         nodeToDelete = null;
                     }
-                    ShowStatusInBar(" ФАЙЛ УДАЛЁН ", Color.Lime);
+                    ShowMessageInStatusBar(" ФАЙЛ УДАЛЁН ", Color.Lime);
 
                 }
                 else
@@ -1063,7 +1086,7 @@ namespace UROVModbus
                 if (errorsCount < 1)
                 {
                     // данные записаны, ждём готовности данных!
-                    ShowStatusInBar(" ЖДЁМ ДАННЫЕ ФАЙЛА ", Color.Yellow);
+                    ShowMessageInStatusBar(" ЖДЁМ ДАННЫЕ ФАЙЛА ", Color.Yellow);
 
                     tmFileContent.Enabled = true;
 
@@ -1156,7 +1179,7 @@ namespace UROVModbus
                 if(errorsCount < 1)
                 {
                     // данные записаны, ждём готовности данных!
-                    ShowStatusInBar(" ЖДЁМ СПИСКА ФАЙЛОВ ", Color.Yellow);
+                    ShowMessageInStatusBar(" ЖДЁМ СПИСКА ФАЙЛОВ ", Color.Yellow);
 
                     tmFileList.Enabled = true;
 
@@ -1174,15 +1197,38 @@ namespace UROVModbus
 
         }
 
+        private void ShowConnectionStatus(bool bConnected)
+        {
+            if (bConnected)
+            {
+                toolStripStatusLabel2.Text = " MODBUS ON ";
+                toolStripStatusLabel2.BackColor = Color.Lime;
+
+                tsLinkStatus.Text = "СВЯЗЬ С ПРИБОРОМ УРОВ УСТАНОВЛЕНА";
+                tsLinkStatus.BackColor = Color.Lime;
+            }
+            else
+            {
+                toolStripStatusLabel2.Text = " MODBUS OFF ";
+                toolStripStatusLabel2.BackColor = Color.Red;
+
+                tsLinkStatus.Text = "СВЯЗЬ С ПРИБОРОМ УРОВ НЕ УСТАНОВЛЕНА!";
+                tsLinkStatus.BackColor = Color.Red;
+
+                tsConnectionTypeInfo.Text = "";
+
+            }
+        }
+
         /// <summary>
         /// Показывает статус в строке состояния
         /// </summary>
         /// <param name="message"></param>
         /// <param name="cl"></param>
-        private void ShowStatusInBar(string message, Color cl)
+        private void ShowMessageInStatusBar(string message, Color cl)
         {
-            toolStripStatusLabel1.Text = message;
-            toolStripStatusLabel1.BackColor = cl;
+            tsStatusMessage.Text = message;
+            tsStatusMessage.BackColor = cl;
 
             if(sdFiles != null)
             {
@@ -1201,8 +1247,8 @@ namespace UROVModbus
         /// <param name="message"></param>
         private void ShowProtocolError(int res, string message)
         {
-            toolStripStatusLabel1.Text = " ОШИБКА ";
-            toolStripStatusLabel1.BackColor = Color.Red;
+            tsStatusMessage.Text = " ОШИБКА ";
+            tsStatusMessage.BackColor = Color.Red;
             Application.DoEvents();
 
             MessageBox.Show(message + BusProtocolErrors.getBusProtocolErrorText(res), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1505,7 +1551,7 @@ namespace UROVModbus
                                     else
                                     {
                                         // закончили запрос
-                                        ShowStatusInBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
+                                        ShowMessageInStatusBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
                                         // MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         sdFiles.Show();
@@ -1529,7 +1575,7 @@ namespace UROVModbus
                                 else
                                 {
                                     // закончили запрос
-                                    ShowStatusInBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
+                                    ShowMessageInStatusBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
                                     sdFiles.Show();
                                     sdFiles.BringToFront();
@@ -1562,7 +1608,7 @@ namespace UROVModbus
             else
             {
                 tmFileList.Enabled = false;
-                ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
+                ShowMessageInStatusBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
         }
 
@@ -3119,7 +3165,7 @@ namespace UROVModbus
                                     else
                                     {
                                         // закончили запрос
-                                        ShowStatusInBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
+                                        ShowMessageInStatusBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
 
                                         ViewFile(fileContent);
 
@@ -3143,7 +3189,7 @@ namespace UROVModbus
                                 else
                                 {
                                     // закончили запрос
-                                    ShowStatusInBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
+                                    ShowMessageInStatusBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
 
                                     //MessageBox.Show("Список файлов получен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -3174,7 +3220,7 @@ namespace UROVModbus
             else
             {
                 tmFileContent.Enabled = false;
-                ShowStatusInBar(" РАЗЪЕДИНЕНО ", Color.Red);
+                ShowMessageInStatusBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
         }
 
@@ -3429,6 +3475,44 @@ namespace UROVModbus
 
             openPortThread = new Thread(TryFindDevice);
             openPortThread.Start(null);
+        }
+
+        private DateTime controllerDateTime = DateTime.Now;
+
+        private void tmDateTime_Tick(object sender, EventArgs e)
+        {
+            this.controllerDateTime = this.controllerDateTime.AddMilliseconds(tmDateTime.Interval);
+            string dateTimeString = this.controllerDateTime.ToString("dd.MM.yyyy HH:mm:ss");
+
+            tsDateTime.Text = dateTimeString;
+        }
+
+        private void ё(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SetCurrentTabPageHint()
+        {
+            switch (tabPages.SelectedIndex)
+            {
+                case 0:
+                    {
+                        lblCurrentTabPageHint.Text = "Файл: Работа с параметрами прибора УРОВ";
+                    }
+                    break;
+
+                case 1:
+                    {
+                        lblCurrentTabPageHint.Text = "Файл: Установка параметров подключения к прибору УРОВ";
+                    }
+                    break;
+            }
+        }
+
+        private void tabPages_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetCurrentTabPageHint();
         }
     }
 }

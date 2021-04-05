@@ -31,43 +31,19 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
+            this.tmFileList = new System.Windows.Forms.Timer(this.components);
+            this.tmFileContent = new System.Windows.Forms.Timer(this.components);
+            this.tmDateTime = new System.Windows.Forms.Timer(this.components);
+            this.tsDateTime = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsLinkStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsConnectionTypeInfo = new System.Windows.Forms.ToolStripStatusLabel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.tabPages = new System.Windows.Forms.TabControl();
-            this.tpModbusSettings = new System.Windows.Forms.TabPage();
-            this.lblInfoText = new System.Windows.Forms.Label();
-            this.GroupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnCloseTCP = new System.Windows.Forms.Button();
-            this.btnOpenTCP = new System.Windows.Forms.Button();
-            this.Label12 = new System.Windows.Forms.Label();
-            this.cmbTcpProtocol = new System.Windows.Forms.ComboBox();
-            this.Label11 = new System.Windows.Forms.Label();
-            this.txtHostName = new System.Windows.Forms.TextBox();
-            this.Label10 = new System.Windows.Forms.Label();
-            this.txtTCPPort = new System.Windows.Forms.TextBox();
-            this.GroupBox2 = new System.Windows.Forms.GroupBox();
-            this.btnReloadPorts = new System.Windows.Forms.Button();
-            this.FindSerial = new System.Windows.Forms.Button();
-            this.btnCloseSerial = new System.Windows.Forms.Button();
-            this.cmbDataBits = new System.Windows.Forms.ComboBox();
-            this.cmbStopBits = new System.Windows.Forms.ComboBox();
-            this.Label8 = new System.Windows.Forms.Label();
-            this.Label7 = new System.Windows.Forms.Label();
-            this.Label6 = new System.Windows.Forms.Label();
-            this.cmbParity = new System.Windows.Forms.ComboBox();
-            this.Label3 = new System.Windows.Forms.Label();
-            this.Label2 = new System.Windows.Forms.Label();
-            this.cmbBaudRate = new System.Windows.Forms.ComboBox();
-            this.cmbComPort = new System.Windows.Forms.ComboBox();
-            this.Label1 = new System.Windows.Forms.Label();
-            this.btnOpenSerial = new System.Windows.Forms.Button();
-            this.cmbSerialProtocol = new System.Windows.Forms.ComboBox();
-            this.GroupBox1 = new System.Windows.Forms.GroupBox();
-            this.cmbRetry = new System.Windows.Forms.ComboBox();
-            this.Label4 = new System.Windows.Forms.Label();
-            this.Label5 = new System.Windows.Forms.Label();
-            this.txtTimeout = new System.Windows.Forms.TextBox();
-            this.txtPollDelay = new System.Windows.Forms.TextBox();
-            this.Label9 = new System.Windows.Forms.Label();
             this.tpUROVSettings = new System.Windows.Forms.TabPage();
             this.btnFileList = new System.Windows.Forms.Button();
             this.nudModbusSlaveID = new System.Windows.Forms.NumericUpDown();
@@ -143,15 +119,47 @@
             this.label15 = new System.Windows.Forms.Label();
             this.panel12 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
-            this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.tmFileList = new System.Windows.Forms.Timer(this.components);
-            this.tmFileContent = new System.Windows.Forms.Timer(this.components);
+            this.tpModbusSettings = new System.Windows.Forms.TabPage();
+            this.label30 = new System.Windows.Forms.Label();
+            this.lblInfoText = new System.Windows.Forms.Label();
+            this.GroupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnCloseTCP = new System.Windows.Forms.Button();
+            this.btnOpenTCP = new System.Windows.Forms.Button();
+            this.Label12 = new System.Windows.Forms.Label();
+            this.cmbTcpProtocol = new System.Windows.Forms.ComboBox();
+            this.Label11 = new System.Windows.Forms.Label();
+            this.txtHostName = new System.Windows.Forms.TextBox();
+            this.Label10 = new System.Windows.Forms.Label();
+            this.txtTCPPort = new System.Windows.Forms.TextBox();
+            this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnReloadPorts = new System.Windows.Forms.Button();
+            this.FindSerial = new System.Windows.Forms.Button();
+            this.btnCloseSerial = new System.Windows.Forms.Button();
+            this.cmbDataBits = new System.Windows.Forms.ComboBox();
+            this.cmbStopBits = new System.Windows.Forms.ComboBox();
+            this.Label8 = new System.Windows.Forms.Label();
+            this.Label7 = new System.Windows.Forms.Label();
+            this.Label6 = new System.Windows.Forms.Label();
+            this.cmbParity = new System.Windows.Forms.ComboBox();
+            this.Label3 = new System.Windows.Forms.Label();
+            this.Label2 = new System.Windows.Forms.Label();
+            this.cmbBaudRate = new System.Windows.Forms.ComboBox();
+            this.cmbComPort = new System.Windows.Forms.ComboBox();
+            this.Label1 = new System.Windows.Forms.Label();
+            this.btnOpenSerial = new System.Windows.Forms.Button();
+            this.cmbSerialProtocol = new System.Windows.Forms.ComboBox();
+            this.GroupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbRetry = new System.Windows.Forms.ComboBox();
+            this.Label4 = new System.Windows.Forms.Label();
+            this.Label5 = new System.Windows.Forms.Label();
+            this.txtTimeout = new System.Windows.Forms.TextBox();
+            this.txtPollDelay = new System.Windows.Forms.TextBox();
+            this.Label9 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.lblCurrentTabPageHint = new System.Windows.Forms.Label();
             this.statusBar.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.tabPages.SuspendLayout();
-            this.tpModbusSettings.SuspendLayout();
-            this.GroupBox3.SuspendLayout();
-            this.GroupBox2.SuspendLayout();
-            this.GroupBox1.SuspendLayout();
             this.tpUROVSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
             this.panel46.SuspendLayout();
@@ -190,402 +198,109 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
             this.panel12.SuspendLayout();
+            this.tpModbusSettings.SuspendLayout();
+            this.GroupBox3.SuspendLayout();
+            this.GroupBox2.SuspendLayout();
+            this.GroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // statusBar
             // 
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel3,
+            this.tsStatusMessage,
+            this.tsConnectionTypeInfo,
+            this.tsLinkStatus,
+            this.toolStripStatusLabel4,
+            this.tsDateTime});
             this.statusBar.Location = new System.Drawing.Point(0, 613);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(861, 22);
             this.statusBar.TabIndex = 0;
             this.statusBar.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // toolStripStatusLabel2
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(52, 17);
-            this.toolStripStatusLabel1.Text = "СТАТУС";
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(52, 17);
+            this.toolStripStatusLabel2.Text = "СТАТУС";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(22, 17);
+            this.toolStripStatusLabel3.Text = "  |  ";
+            // 
+            // tsStatusMessage
+            // 
+            this.tsStatusMessage.Name = "tsStatusMessage";
+            this.tsStatusMessage.Size = new System.Drawing.Size(87, 17);
+            this.tsStatusMessage.Text = "status message";
+            // 
+            // tmCheckConnectTimer
+            // 
+            this.tmCheckConnectTimer.Interval = 800;
+            this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
+            // 
+            // tmFileList
+            // 
+            this.tmFileList.Tick += new System.EventHandler(this.tmFileList_Tick);
+            // 
+            // tmFileContent
+            // 
+            this.tmFileContent.Tick += new System.EventHandler(this.tmFileContent_Tick);
+            // 
+            // tmDateTime
+            // 
+            this.tmDateTime.Enabled = true;
+            this.tmDateTime.Interval = 1000;
+            this.tmDateTime.Tick += new System.EventHandler(this.tmDateTime_Tick);
+            // 
+            // tsDateTime
+            // 
+            this.tsDateTime.Name = "tsDateTime";
+            this.tsDateTime.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(45, 17);
+            this.toolStripStatusLabel4.Text = "Время:";
+            // 
+            // tsLinkStatus
+            // 
+            this.tsLinkStatus.Name = "tsLinkStatus";
+            this.tsLinkStatus.Size = new System.Drawing.Size(60, 17);
+            this.tsLinkStatus.Text = "link status";
+            // 
+            // tsConnectionTypeInfo
+            // 
+            this.tsConnectionTypeInfo.Name = "tsConnectionTypeInfo";
+            this.tsConnectionTypeInfo.Size = new System.Drawing.Size(93, 17);
+            this.tsConnectionTypeInfo.Text = "connection type";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.lblCurrentTabPageHint);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 585);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(861, 28);
+            this.panel1.TabIndex = 2;
             // 
             // tabPages
             // 
-            this.tabPages.Controls.Add(this.tpModbusSettings);
             this.tabPages.Controls.Add(this.tpUROVSettings);
+            this.tabPages.Controls.Add(this.tpModbusSettings);
             this.tabPages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabPages.Location = new System.Drawing.Point(0, 0);
             this.tabPages.Name = "tabPages";
             this.tabPages.SelectedIndex = 0;
-            this.tabPages.Size = new System.Drawing.Size(861, 613);
-            this.tabPages.TabIndex = 1;
-            // 
-            // tpModbusSettings
-            // 
-            this.tpModbusSettings.Controls.Add(this.lblInfoText);
-            this.tpModbusSettings.Controls.Add(this.GroupBox3);
-            this.tpModbusSettings.Controls.Add(this.GroupBox2);
-            this.tpModbusSettings.Controls.Add(this.GroupBox1);
-            this.tpModbusSettings.Location = new System.Drawing.Point(4, 22);
-            this.tpModbusSettings.Name = "tpModbusSettings";
-            this.tpModbusSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tpModbusSettings.Size = new System.Drawing.Size(853, 587);
-            this.tpModbusSettings.TabIndex = 0;
-            this.tpModbusSettings.Text = "Соединение";
-            this.tpModbusSettings.UseVisualStyleBackColor = true;
-            // 
-            // lblInfoText
-            // 
-            this.lblInfoText.BackColor = System.Drawing.SystemColors.Info;
-            this.lblInfoText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblInfoText.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblInfoText.Location = new System.Drawing.Point(28, 434);
-            this.lblInfoText.Name = "lblInfoText";
-            this.lblInfoText.Padding = new System.Windows.Forms.Padding(6);
-            this.lblInfoText.Size = new System.Drawing.Size(798, 54);
-            this.lblInfoText.TabIndex = 17;
-            // 
-            // GroupBox3
-            // 
-            this.GroupBox3.Controls.Add(this.btnCloseTCP);
-            this.GroupBox3.Controls.Add(this.btnOpenTCP);
-            this.GroupBox3.Controls.Add(this.Label12);
-            this.GroupBox3.Controls.Add(this.cmbTcpProtocol);
-            this.GroupBox3.Controls.Add(this.Label11);
-            this.GroupBox3.Controls.Add(this.txtHostName);
-            this.GroupBox3.Controls.Add(this.Label10);
-            this.GroupBox3.Controls.Add(this.txtTCPPort);
-            this.GroupBox3.Location = new System.Drawing.Point(345, 22);
-            this.GroupBox3.Name = "GroupBox3";
-            this.GroupBox3.Size = new System.Drawing.Size(237, 400);
-            this.GroupBox3.TabIndex = 16;
-            this.GroupBox3.TabStop = false;
-            this.GroupBox3.Text = "MODBUS/TCP";
-            // 
-            // btnCloseTCP
-            // 
-            this.btnCloseTCP.Enabled = false;
-            this.btnCloseTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCloseTCP.Location = new System.Drawing.Point(15, 249);
-            this.btnCloseTCP.Name = "btnCloseTCP";
-            this.btnCloseTCP.Size = new System.Drawing.Size(207, 40);
-            this.btnCloseTCP.TabIndex = 16;
-            this.btnCloseTCP.Text = "Закрыть TCP";
-            this.btnCloseTCP.Click += new System.EventHandler(this.btnCloseTCP_Click);
-            // 
-            // btnOpenTCP
-            // 
-            this.btnOpenTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOpenTCP.Location = new System.Drawing.Point(15, 203);
-            this.btnOpenTCP.Name = "btnOpenTCP";
-            this.btnOpenTCP.Size = new System.Drawing.Size(207, 40);
-            this.btnOpenTCP.TabIndex = 15;
-            this.btnOpenTCP.Text = "Открыть TCP";
-            this.btnOpenTCP.Click += new System.EventHandler(this.btnOpenTCP_Click);
-            // 
-            // Label12
-            // 
-            this.Label12.Location = new System.Drawing.Point(12, 83);
-            this.Label12.Name = "Label12";
-            this.Label12.Size = new System.Drawing.Size(91, 18);
-            this.Label12.TabIndex = 14;
-            this.Label12.Text = "Протокол:";
-            // 
-            // cmbTcpProtocol
-            // 
-            this.cmbTcpProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbTcpProtocol.Items.AddRange(new object[] {
-            "Modbus/TCP",
-            "Encapsulated RTU"});
-            this.cmbTcpProtocol.Location = new System.Drawing.Point(109, 83);
-            this.cmbTcpProtocol.Name = "cmbTcpProtocol";
-            this.cmbTcpProtocol.Size = new System.Drawing.Size(115, 21);
-            this.cmbTcpProtocol.TabIndex = 13;
-            // 
-            // Label11
-            // 
-            this.Label11.Location = new System.Drawing.Point(12, 54);
-            this.Label11.Name = "Label11";
-            this.Label11.Size = new System.Drawing.Size(91, 20);
-            this.Label11.TabIndex = 12;
-            this.Label11.Text = "IP-адрес:";
-            // 
-            // txtHostName
-            // 
-            this.txtHostName.Location = new System.Drawing.Point(109, 54);
-            this.txtHostName.Name = "txtHostName";
-            this.txtHostName.Size = new System.Drawing.Size(113, 20);
-            this.txtHostName.TabIndex = 11;
-            this.txtHostName.Text = "127.0.0.1";
-            // 
-            // Label10
-            // 
-            this.Label10.Location = new System.Drawing.Point(12, 24);
-            this.Label10.Name = "Label10";
-            this.Label10.Size = new System.Drawing.Size(91, 20);
-            this.Label10.TabIndex = 10;
-            this.Label10.Text = "TCP-порт:";
-            // 
-            // txtTCPPort
-            // 
-            this.txtTCPPort.Location = new System.Drawing.Point(109, 24);
-            this.txtTCPPort.Name = "txtTCPPort";
-            this.txtTCPPort.Size = new System.Drawing.Size(113, 20);
-            this.txtTCPPort.TabIndex = 9;
-            this.txtTCPPort.Text = "502";
-            // 
-            // GroupBox2
-            // 
-            this.GroupBox2.Controls.Add(this.btnReloadPorts);
-            this.GroupBox2.Controls.Add(this.FindSerial);
-            this.GroupBox2.Controls.Add(this.btnCloseSerial);
-            this.GroupBox2.Controls.Add(this.cmbDataBits);
-            this.GroupBox2.Controls.Add(this.cmbStopBits);
-            this.GroupBox2.Controls.Add(this.Label8);
-            this.GroupBox2.Controls.Add(this.Label7);
-            this.GroupBox2.Controls.Add(this.Label6);
-            this.GroupBox2.Controls.Add(this.cmbParity);
-            this.GroupBox2.Controls.Add(this.Label3);
-            this.GroupBox2.Controls.Add(this.Label2);
-            this.GroupBox2.Controls.Add(this.cmbBaudRate);
-            this.GroupBox2.Controls.Add(this.cmbComPort);
-            this.GroupBox2.Controls.Add(this.Label1);
-            this.GroupBox2.Controls.Add(this.btnOpenSerial);
-            this.GroupBox2.Controls.Add(this.cmbSerialProtocol);
-            this.GroupBox2.Location = new System.Drawing.Point(31, 22);
-            this.GroupBox2.Name = "GroupBox2";
-            this.GroupBox2.Size = new System.Drawing.Size(300, 400);
-            this.GroupBox2.TabIndex = 15;
-            this.GroupBox2.TabStop = false;
-            this.GroupBox2.Text = "Serial Modbus";
-            // 
-            // btnReloadPorts
-            // 
-            this.btnReloadPorts.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnReloadPorts.Location = new System.Drawing.Point(19, 344);
-            this.btnReloadPorts.Name = "btnReloadPorts";
-            this.btnReloadPorts.Size = new System.Drawing.Size(265, 40);
-            this.btnReloadPorts.TabIndex = 16;
-            this.btnReloadPorts.Text = "Перечитать порты";
-            this.btnReloadPorts.Click += new System.EventHandler(this.btnReloadPorts_Click);
-            // 
-            // FindSerial
-            // 
-            this.FindSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.FindSerial.Location = new System.Drawing.Point(19, 249);
-            this.FindSerial.Name = "FindSerial";
-            this.FindSerial.Size = new System.Drawing.Size(265, 40);
-            this.FindSerial.TabIndex = 15;
-            this.FindSerial.Text = "Поиск Serial";
-            this.FindSerial.Click += new System.EventHandler(this.FindSerial_Click);
-            // 
-            // btnCloseSerial
-            // 
-            this.btnCloseSerial.Enabled = false;
-            this.btnCloseSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCloseSerial.Location = new System.Drawing.Point(154, 203);
-            this.btnCloseSerial.Name = "btnCloseSerial";
-            this.btnCloseSerial.Size = new System.Drawing.Size(130, 40);
-            this.btnCloseSerial.TabIndex = 14;
-            this.btnCloseSerial.Text = "Закрыть Serial";
-            this.btnCloseSerial.Click += new System.EventHandler(this.btnCloseSerial_Click);
-            // 
-            // cmbDataBits
-            // 
-            this.cmbDataBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDataBits.Items.AddRange(new object[] {
-            "8",
-            "7"});
-            this.cmbDataBits.Location = new System.Drawing.Point(135, 134);
-            this.cmbDataBits.Name = "cmbDataBits";
-            this.cmbDataBits.Size = new System.Drawing.Size(149, 21);
-            this.cmbDataBits.TabIndex = 13;
-            // 
-            // cmbStopBits
-            // 
-            this.cmbStopBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbStopBits.Items.AddRange(new object[] {
-            "1",
-            "2"});
-            this.cmbStopBits.Location = new System.Drawing.Point(135, 161);
-            this.cmbStopBits.Name = "cmbStopBits";
-            this.cmbStopBits.Size = new System.Drawing.Size(149, 21);
-            this.cmbStopBits.TabIndex = 12;
-            // 
-            // Label8
-            // 
-            this.Label8.Location = new System.Drawing.Point(16, 135);
-            this.Label8.Name = "Label8";
-            this.Label8.Size = new System.Drawing.Size(113, 18);
-            this.Label8.TabIndex = 11;
-            this.Label8.Text = "Биты данных:";
-            // 
-            // Label7
-            // 
-            this.Label7.Location = new System.Drawing.Point(16, 162);
-            this.Label7.Name = "Label7";
-            this.Label7.Size = new System.Drawing.Size(113, 18);
-            this.Label7.TabIndex = 10;
-            this.Label7.Text = "Стоп-биты:";
-            // 
-            // Label6
-            // 
-            this.Label6.Location = new System.Drawing.Point(16, 108);
-            this.Label6.Name = "Label6";
-            this.Label6.Size = new System.Drawing.Size(113, 18);
-            this.Label6.TabIndex = 9;
-            this.Label6.Text = "Чётность:";
-            // 
-            // cmbParity
-            // 
-            this.cmbParity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbParity.Items.AddRange(new object[] {
-            "None",
-            "Even",
-            "Odd"});
-            this.cmbParity.Location = new System.Drawing.Point(135, 107);
-            this.cmbParity.Name = "cmbParity";
-            this.cmbParity.Size = new System.Drawing.Size(149, 21);
-            this.cmbParity.TabIndex = 8;
-            // 
-            // Label3
-            // 
-            this.Label3.Location = new System.Drawing.Point(16, 81);
-            this.Label3.Name = "Label3";
-            this.Label3.Size = new System.Drawing.Size(113, 18);
-            this.Label3.TabIndex = 7;
-            this.Label3.Text = "Протокол:";
-            // 
-            // Label2
-            // 
-            this.Label2.Location = new System.Drawing.Point(16, 54);
-            this.Label2.Name = "Label2";
-            this.Label2.Size = new System.Drawing.Size(113, 18);
-            this.Label2.TabIndex = 5;
-            this.Label2.Text = "Скорость:";
-            // 
-            // cmbBaudRate
-            // 
-            this.cmbBaudRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbBaudRate.Items.AddRange(new object[] {
-            "9600",
-            "14400",
-            "19200",
-            "38400",
-            "57600",
-            "115200",
-            "125000",
-            "128000",
-            "256000"});
-            this.cmbBaudRate.Location = new System.Drawing.Point(135, 53);
-            this.cmbBaudRate.Name = "cmbBaudRate";
-            this.cmbBaudRate.Size = new System.Drawing.Size(149, 21);
-            this.cmbBaudRate.TabIndex = 4;
-            // 
-            // cmbComPort
-            // 
-            this.cmbComPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbComPort.Location = new System.Drawing.Point(135, 26);
-            this.cmbComPort.Name = "cmbComPort";
-            this.cmbComPort.Size = new System.Drawing.Size(149, 21);
-            this.cmbComPort.TabIndex = 3;
-            // 
-            // Label1
-            // 
-            this.Label1.Location = new System.Drawing.Point(16, 27);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(113, 18);
-            this.Label1.TabIndex = 1;
-            this.Label1.Text = "COM-порт:";
-            // 
-            // btnOpenSerial
-            // 
-            this.btnOpenSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOpenSerial.Location = new System.Drawing.Point(19, 203);
-            this.btnOpenSerial.Name = "btnOpenSerial";
-            this.btnOpenSerial.Size = new System.Drawing.Size(130, 40);
-            this.btnOpenSerial.TabIndex = 2;
-            this.btnOpenSerial.Text = "Открыть Serial";
-            this.btnOpenSerial.Click += new System.EventHandler(this.cmdOpenSerial_Click);
-            // 
-            // cmbSerialProtocol
-            // 
-            this.cmbSerialProtocol.DisplayMember = "1";
-            this.cmbSerialProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSerialProtocol.Items.AddRange(new object[] {
-            "RTU",
-            "ASCII"});
-            this.cmbSerialProtocol.Location = new System.Drawing.Point(135, 80);
-            this.cmbSerialProtocol.Name = "cmbSerialProtocol";
-            this.cmbSerialProtocol.Size = new System.Drawing.Size(149, 21);
-            this.cmbSerialProtocol.TabIndex = 6;
-            // 
-            // GroupBox1
-            // 
-            this.GroupBox1.Controls.Add(this.cmbRetry);
-            this.GroupBox1.Controls.Add(this.Label4);
-            this.GroupBox1.Controls.Add(this.Label5);
-            this.GroupBox1.Controls.Add(this.txtTimeout);
-            this.GroupBox1.Controls.Add(this.txtPollDelay);
-            this.GroupBox1.Controls.Add(this.Label9);
-            this.GroupBox1.Location = new System.Drawing.Point(598, 22);
-            this.GroupBox1.Name = "GroupBox1";
-            this.GroupBox1.Size = new System.Drawing.Size(228, 400);
-            this.GroupBox1.TabIndex = 14;
-            this.GroupBox1.TabStop = false;
-            this.GroupBox1.Text = "Опции MODBUS";
-            // 
-            // cmbRetry
-            // 
-            this.cmbRetry.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRetry.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2",
-            "3"});
-            this.cmbRetry.Location = new System.Drawing.Point(142, 56);
-            this.cmbRetry.Name = "cmbRetry";
-            this.cmbRetry.Size = new System.Drawing.Size(66, 21);
-            this.cmbRetry.TabIndex = 9;
-            // 
-            // Label4
-            // 
-            this.Label4.Location = new System.Drawing.Point(20, 27);
-            this.Label4.Name = "Label4";
-            this.Label4.Size = new System.Drawing.Size(116, 20);
-            this.Label4.TabIndex = 8;
-            this.Label4.Text = "Таймаут:";
-            // 
-            // Label5
-            // 
-            this.Label5.Location = new System.Drawing.Point(20, 61);
-            this.Label5.Name = "Label5";
-            this.Label5.Size = new System.Drawing.Size(116, 20);
-            this.Label5.TabIndex = 10;
-            this.Label5.Text = "Кол-во попыток:";
-            // 
-            // txtTimeout
-            // 
-            this.txtTimeout.Location = new System.Drawing.Point(142, 24);
-            this.txtTimeout.Name = "txtTimeout";
-            this.txtTimeout.Size = new System.Drawing.Size(66, 20);
-            this.txtTimeout.TabIndex = 0;
-            this.txtTimeout.Text = "1000";
-            // 
-            // txtPollDelay
-            // 
-            this.txtPollDelay.Location = new System.Drawing.Point(142, 90);
-            this.txtPollDelay.Name = "txtPollDelay";
-            this.txtPollDelay.Size = new System.Drawing.Size(66, 20);
-            this.txtPollDelay.TabIndex = 11;
-            this.txtPollDelay.Text = "0";
-            // 
-            // Label9
-            // 
-            this.Label9.Location = new System.Drawing.Point(20, 93);
-            this.Label9.Name = "Label9";
-            this.Label9.Size = new System.Drawing.Size(116, 20);
-            this.Label9.TabIndex = 12;
-            this.Label9.Text = "Задержка выборки:";
+            this.tabPages.Size = new System.Drawing.Size(861, 585);
+            this.tabPages.TabIndex = 3;
+            this.tabPages.SelectedIndexChanged += new System.EventHandler(this.tabPages_SelectedIndexChanged);
             // 
             // tpUROVSettings
             // 
@@ -605,7 +320,7 @@
             this.tpUROVSettings.Location = new System.Drawing.Point(4, 22);
             this.tpUROVSettings.Name = "tpUROVSettings";
             this.tpUROVSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tpUROVSettings.Size = new System.Drawing.Size(853, 587);
+            this.tpUROVSettings.Size = new System.Drawing.Size(853, 559);
             this.tpUROVSettings.TabIndex = 1;
             this.tpUROVSettings.Text = "Настройки UROV";
             this.tpUROVSettings.UseVisualStyleBackColor = true;
@@ -615,7 +330,7 @@
             this.btnFileList.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.btnFileList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFileList.ForeColor = System.Drawing.Color.Black;
-            this.btnFileList.Location = new System.Drawing.Point(221, 524);
+            this.btnFileList.Location = new System.Drawing.Point(221, 497);
             this.btnFileList.Name = "btnFileList";
             this.btnFileList.Size = new System.Drawing.Size(200, 46);
             this.btnFileList.TabIndex = 17;
@@ -625,7 +340,7 @@
             // 
             // nudModbusSlaveID
             // 
-            this.nudModbusSlaveID.Location = new System.Drawing.Point(12, 539);
+            this.nudModbusSlaveID.Location = new System.Drawing.Point(12, 512);
             this.nudModbusSlaveID.Maximum = new decimal(new int[] {
             247,
             0,
@@ -649,7 +364,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.ForeColor = System.Drawing.Color.Black;
-            this.label29.Location = new System.Drawing.Point(9, 524);
+            this.label29.Location = new System.Drawing.Point(9, 497);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(83, 13);
             this.label29.TabIndex = 15;
@@ -660,7 +375,7 @@
             this.btnReadRegisters.BackColor = System.Drawing.Color.LightSalmon;
             this.btnReadRegisters.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReadRegisters.ForeColor = System.Drawing.Color.Black;
-            this.btnReadRegisters.Location = new System.Drawing.Point(432, 524);
+            this.btnReadRegisters.Location = new System.Drawing.Point(432, 497);
             this.btnReadRegisters.Name = "btnReadRegisters";
             this.btnReadRegisters.Size = new System.Drawing.Size(200, 46);
             this.btnReadRegisters.TabIndex = 14;
@@ -677,7 +392,7 @@
             this.panel46.Margin = new System.Windows.Forms.Padding(10);
             this.panel46.Name = "panel46";
             this.panel46.Padding = new System.Windows.Forms.Padding(2);
-            this.panel46.Size = new System.Drawing.Size(200, 248);
+            this.panel46.Size = new System.Drawing.Size(200, 223);
             this.panel46.TabIndex = 13;
             // 
             // panel47
@@ -691,7 +406,7 @@
             this.panel47.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel47.Location = new System.Drawing.Point(2, 26);
             this.panel47.Name = "panel47";
-            this.panel47.Size = new System.Drawing.Size(196, 220);
+            this.panel47.Size = new System.Drawing.Size(196, 195);
             this.panel47.TabIndex = 2;
             // 
             // cbAsuTpLine4
@@ -740,7 +455,7 @@
             this.label73.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label73.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label73.ForeColor = System.Drawing.Color.Black;
-            this.label73.Location = new System.Drawing.Point(13, 120);
+            this.label73.Location = new System.Drawing.Point(16, 102);
             this.label73.Name = "label73";
             this.label73.Padding = new System.Windows.Forms.Padding(4);
             this.label73.Size = new System.Drawing.Size(170, 82);
@@ -779,7 +494,7 @@
             this.btnCurrentCoeff.BackColor = System.Drawing.Color.LightGreen;
             this.btnCurrentCoeff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCurrentCoeff.ForeColor = System.Drawing.Color.Black;
-            this.btnCurrentCoeff.Location = new System.Drawing.Point(640, 524);
+            this.btnCurrentCoeff.Location = new System.Drawing.Point(640, 497);
             this.btnCurrentCoeff.Name = "btnCurrentCoeff";
             this.btnCurrentCoeff.Size = new System.Drawing.Size(200, 46);
             this.btnCurrentCoeff.TabIndex = 12;
@@ -796,7 +511,7 @@
             this.panel43.Margin = new System.Windows.Forms.Padding(10);
             this.panel43.Name = "panel43";
             this.panel43.Padding = new System.Windows.Forms.Padding(2);
-            this.panel43.Size = new System.Drawing.Size(200, 246);
+            this.panel43.Size = new System.Drawing.Size(200, 223);
             this.panel43.TabIndex = 11;
             // 
             // panel44
@@ -808,7 +523,7 @@
             this.panel44.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel44.Location = new System.Drawing.Point(2, 26);
             this.panel44.Name = "panel44";
-            this.panel44.Size = new System.Drawing.Size(196, 218);
+            this.panel44.Size = new System.Drawing.Size(196, 195);
             this.panel44.TabIndex = 2;
             // 
             // label70
@@ -817,7 +532,7 @@
             this.label70.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label70.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label70.ForeColor = System.Drawing.Color.Black;
-            this.label70.Location = new System.Drawing.Point(13, 120);
+            this.label70.Location = new System.Drawing.Point(16, 102);
             this.label70.Name = "label70";
             this.label70.Padding = new System.Windows.Forms.Padding(4);
             this.label70.Size = new System.Drawing.Size(170, 82);
@@ -891,7 +606,7 @@
             this.panel31.Margin = new System.Windows.Forms.Padding(10);
             this.panel31.Name = "panel31";
             this.panel31.Padding = new System.Windows.Forms.Padding(2);
-            this.panel31.Size = new System.Drawing.Size(200, 248);
+            this.panel31.Size = new System.Drawing.Size(200, 223);
             this.panel31.TabIndex = 10;
             // 
             // panel32
@@ -905,7 +620,7 @@
             this.panel32.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel32.Location = new System.Drawing.Point(2, 26);
             this.panel32.Name = "panel32";
-            this.panel32.Size = new System.Drawing.Size(196, 220);
+            this.panel32.Size = new System.Drawing.Size(196, 195);
             this.panel32.TabIndex = 2;
             // 
             // nudMaxIdleTime
@@ -936,7 +651,7 @@
             this.label53.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label53.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label53.ForeColor = System.Drawing.Color.Black;
-            this.label53.Location = new System.Drawing.Point(13, 120);
+            this.label53.Location = new System.Drawing.Point(13, 102);
             this.label53.Name = "label53";
             this.label53.Padding = new System.Windows.Forms.Padding(4);
             this.label53.Size = new System.Drawing.Size(170, 82);
@@ -1001,7 +716,7 @@
             this.panel28.Margin = new System.Windows.Forms.Padding(10);
             this.panel28.Name = "panel28";
             this.panel28.Padding = new System.Windows.Forms.Padding(2);
-            this.panel28.Size = new System.Drawing.Size(200, 248);
+            this.panel28.Size = new System.Drawing.Size(200, 223);
             this.panel28.TabIndex = 9;
             // 
             // panel29
@@ -1015,7 +730,7 @@
             this.panel29.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel29.Location = new System.Drawing.Point(2, 26);
             this.panel29.Name = "panel29";
-            this.panel29.Size = new System.Drawing.Size(196, 220);
+            this.panel29.Size = new System.Drawing.Size(196, 195);
             this.panel29.TabIndex = 2;
             // 
             // label49
@@ -1024,7 +739,7 @@
             this.label49.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label49.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label49.ForeColor = System.Drawing.Color.Black;
-            this.label49.Location = new System.Drawing.Point(13, 119);
+            this.label49.Location = new System.Drawing.Point(16, 102);
             this.label49.Name = "label49";
             this.label49.Padding = new System.Windows.Forms.Padding(4);
             this.label49.Size = new System.Drawing.Size(170, 82);
@@ -1558,18 +1273,404 @@
             this.label20.TabIndex = 0;
             this.label20.Text = "Дельты импульсов";
             // 
-            // tmCheckConnectTimer
+            // tpModbusSettings
             // 
-            this.tmCheckConnectTimer.Interval = 800;
-            this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
+            this.tpModbusSettings.Controls.Add(this.label30);
+            this.tpModbusSettings.Controls.Add(this.pictureBox1);
+            this.tpModbusSettings.Controls.Add(this.lblInfoText);
+            this.tpModbusSettings.Controls.Add(this.GroupBox3);
+            this.tpModbusSettings.Controls.Add(this.GroupBox2);
+            this.tpModbusSettings.Controls.Add(this.GroupBox1);
+            this.tpModbusSettings.Location = new System.Drawing.Point(4, 22);
+            this.tpModbusSettings.Name = "tpModbusSettings";
+            this.tpModbusSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tpModbusSettings.Size = new System.Drawing.Size(853, 555);
+            this.tpModbusSettings.TabIndex = 0;
+            this.tpModbusSettings.Text = "Соединение";
+            this.tpModbusSettings.UseVisualStyleBackColor = true;
             // 
-            // tmFileList
+            // label30
             // 
-            this.tmFileList.Tick += new System.EventHandler(this.tmFileList_Tick);
+            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label30.Location = new System.Drawing.Point(122, 401);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(704, 64);
+            this.label30.TabIndex = 19;
+            this.label30.Text = "Все параметры должны быть выбраны ПРЕЖДЕ, чем открывать порт. После того, как пор" +
+    "т открыт - никаких изменений не может быть сделано.";
             // 
-            // tmFileContent
+            // lblInfoText
             // 
-            this.tmFileContent.Tick += new System.EventHandler(this.tmFileContent_Tick);
+            this.lblInfoText.BackColor = System.Drawing.SystemColors.Info;
+            this.lblInfoText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblInfoText.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblInfoText.Location = new System.Drawing.Point(28, 482);
+            this.lblInfoText.Name = "lblInfoText";
+            this.lblInfoText.Padding = new System.Windows.Forms.Padding(6);
+            this.lblInfoText.Size = new System.Drawing.Size(798, 54);
+            this.lblInfoText.TabIndex = 17;
+            // 
+            // GroupBox3
+            // 
+            this.GroupBox3.Controls.Add(this.btnCloseTCP);
+            this.GroupBox3.Controls.Add(this.btnOpenTCP);
+            this.GroupBox3.Controls.Add(this.Label12);
+            this.GroupBox3.Controls.Add(this.cmbTcpProtocol);
+            this.GroupBox3.Controls.Add(this.Label11);
+            this.GroupBox3.Controls.Add(this.txtHostName);
+            this.GroupBox3.Controls.Add(this.Label10);
+            this.GroupBox3.Controls.Add(this.txtTCPPort);
+            this.GroupBox3.Location = new System.Drawing.Point(345, 22);
+            this.GroupBox3.Name = "GroupBox3";
+            this.GroupBox3.Size = new System.Drawing.Size(237, 352);
+            this.GroupBox3.TabIndex = 16;
+            this.GroupBox3.TabStop = false;
+            this.GroupBox3.Text = "MODBUS/TCP";
+            // 
+            // btnCloseTCP
+            // 
+            this.btnCloseTCP.Enabled = false;
+            this.btnCloseTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnCloseTCP.Location = new System.Drawing.Point(15, 249);
+            this.btnCloseTCP.Name = "btnCloseTCP";
+            this.btnCloseTCP.Size = new System.Drawing.Size(207, 40);
+            this.btnCloseTCP.TabIndex = 16;
+            this.btnCloseTCP.Text = "Закрыть TCP";
+            this.btnCloseTCP.Click += new System.EventHandler(this.btnCloseTCP_Click);
+            // 
+            // btnOpenTCP
+            // 
+            this.btnOpenTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnOpenTCP.Location = new System.Drawing.Point(15, 203);
+            this.btnOpenTCP.Name = "btnOpenTCP";
+            this.btnOpenTCP.Size = new System.Drawing.Size(207, 40);
+            this.btnOpenTCP.TabIndex = 15;
+            this.btnOpenTCP.Text = "Открыть TCP";
+            this.btnOpenTCP.Click += new System.EventHandler(this.btnOpenTCP_Click);
+            // 
+            // Label12
+            // 
+            this.Label12.Location = new System.Drawing.Point(12, 83);
+            this.Label12.Name = "Label12";
+            this.Label12.Size = new System.Drawing.Size(91, 18);
+            this.Label12.TabIndex = 14;
+            this.Label12.Text = "Протокол:";
+            // 
+            // cmbTcpProtocol
+            // 
+            this.cmbTcpProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTcpProtocol.Items.AddRange(new object[] {
+            "Modbus/TCP",
+            "Encapsulated RTU"});
+            this.cmbTcpProtocol.Location = new System.Drawing.Point(109, 83);
+            this.cmbTcpProtocol.Name = "cmbTcpProtocol";
+            this.cmbTcpProtocol.Size = new System.Drawing.Size(115, 21);
+            this.cmbTcpProtocol.TabIndex = 13;
+            // 
+            // Label11
+            // 
+            this.Label11.Location = new System.Drawing.Point(12, 54);
+            this.Label11.Name = "Label11";
+            this.Label11.Size = new System.Drawing.Size(91, 20);
+            this.Label11.TabIndex = 12;
+            this.Label11.Text = "IP-адрес:";
+            // 
+            // txtHostName
+            // 
+            this.txtHostName.Location = new System.Drawing.Point(109, 54);
+            this.txtHostName.Name = "txtHostName";
+            this.txtHostName.Size = new System.Drawing.Size(113, 20);
+            this.txtHostName.TabIndex = 11;
+            this.txtHostName.Text = "127.0.0.1";
+            // 
+            // Label10
+            // 
+            this.Label10.Location = new System.Drawing.Point(12, 24);
+            this.Label10.Name = "Label10";
+            this.Label10.Size = new System.Drawing.Size(91, 20);
+            this.Label10.TabIndex = 10;
+            this.Label10.Text = "TCP-порт:";
+            // 
+            // txtTCPPort
+            // 
+            this.txtTCPPort.Location = new System.Drawing.Point(109, 24);
+            this.txtTCPPort.Name = "txtTCPPort";
+            this.txtTCPPort.Size = new System.Drawing.Size(113, 20);
+            this.txtTCPPort.TabIndex = 9;
+            this.txtTCPPort.Text = "502";
+            // 
+            // GroupBox2
+            // 
+            this.GroupBox2.Controls.Add(this.btnReloadPorts);
+            this.GroupBox2.Controls.Add(this.FindSerial);
+            this.GroupBox2.Controls.Add(this.btnCloseSerial);
+            this.GroupBox2.Controls.Add(this.cmbDataBits);
+            this.GroupBox2.Controls.Add(this.cmbStopBits);
+            this.GroupBox2.Controls.Add(this.Label8);
+            this.GroupBox2.Controls.Add(this.Label7);
+            this.GroupBox2.Controls.Add(this.Label6);
+            this.GroupBox2.Controls.Add(this.cmbParity);
+            this.GroupBox2.Controls.Add(this.Label3);
+            this.GroupBox2.Controls.Add(this.Label2);
+            this.GroupBox2.Controls.Add(this.cmbBaudRate);
+            this.GroupBox2.Controls.Add(this.cmbComPort);
+            this.GroupBox2.Controls.Add(this.Label1);
+            this.GroupBox2.Controls.Add(this.btnOpenSerial);
+            this.GroupBox2.Controls.Add(this.cmbSerialProtocol);
+            this.GroupBox2.Location = new System.Drawing.Point(31, 22);
+            this.GroupBox2.Name = "GroupBox2";
+            this.GroupBox2.Size = new System.Drawing.Size(300, 352);
+            this.GroupBox2.TabIndex = 15;
+            this.GroupBox2.TabStop = false;
+            this.GroupBox2.Text = "Serial Modbus";
+            // 
+            // btnReloadPorts
+            // 
+            this.btnReloadPorts.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnReloadPorts.Location = new System.Drawing.Point(19, 295);
+            this.btnReloadPorts.Name = "btnReloadPorts";
+            this.btnReloadPorts.Size = new System.Drawing.Size(265, 40);
+            this.btnReloadPorts.TabIndex = 16;
+            this.btnReloadPorts.Text = "Перечитать порты";
+            this.btnReloadPorts.Click += new System.EventHandler(this.btnReloadPorts_Click);
+            // 
+            // FindSerial
+            // 
+            this.FindSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.FindSerial.Location = new System.Drawing.Point(19, 249);
+            this.FindSerial.Name = "FindSerial";
+            this.FindSerial.Size = new System.Drawing.Size(265, 40);
+            this.FindSerial.TabIndex = 15;
+            this.FindSerial.Text = "Поиск Serial";
+            this.FindSerial.Click += new System.EventHandler(this.FindSerial_Click);
+            // 
+            // btnCloseSerial
+            // 
+            this.btnCloseSerial.Enabled = false;
+            this.btnCloseSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnCloseSerial.Location = new System.Drawing.Point(154, 203);
+            this.btnCloseSerial.Name = "btnCloseSerial";
+            this.btnCloseSerial.Size = new System.Drawing.Size(130, 40);
+            this.btnCloseSerial.TabIndex = 14;
+            this.btnCloseSerial.Text = "Закрыть Serial";
+            this.btnCloseSerial.Click += new System.EventHandler(this.btnCloseSerial_Click);
+            // 
+            // cmbDataBits
+            // 
+            this.cmbDataBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDataBits.Items.AddRange(new object[] {
+            "8",
+            "7"});
+            this.cmbDataBits.Location = new System.Drawing.Point(135, 134);
+            this.cmbDataBits.Name = "cmbDataBits";
+            this.cmbDataBits.Size = new System.Drawing.Size(149, 21);
+            this.cmbDataBits.TabIndex = 13;
+            // 
+            // cmbStopBits
+            // 
+            this.cmbStopBits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbStopBits.Items.AddRange(new object[] {
+            "1",
+            "2"});
+            this.cmbStopBits.Location = new System.Drawing.Point(135, 161);
+            this.cmbStopBits.Name = "cmbStopBits";
+            this.cmbStopBits.Size = new System.Drawing.Size(149, 21);
+            this.cmbStopBits.TabIndex = 12;
+            // 
+            // Label8
+            // 
+            this.Label8.Location = new System.Drawing.Point(16, 135);
+            this.Label8.Name = "Label8";
+            this.Label8.Size = new System.Drawing.Size(113, 18);
+            this.Label8.TabIndex = 11;
+            this.Label8.Text = "Биты данных:";
+            // 
+            // Label7
+            // 
+            this.Label7.Location = new System.Drawing.Point(16, 162);
+            this.Label7.Name = "Label7";
+            this.Label7.Size = new System.Drawing.Size(113, 18);
+            this.Label7.TabIndex = 10;
+            this.Label7.Text = "Стоп-биты:";
+            // 
+            // Label6
+            // 
+            this.Label6.Location = new System.Drawing.Point(16, 108);
+            this.Label6.Name = "Label6";
+            this.Label6.Size = new System.Drawing.Size(113, 18);
+            this.Label6.TabIndex = 9;
+            this.Label6.Text = "Чётность:";
+            // 
+            // cmbParity
+            // 
+            this.cmbParity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbParity.Items.AddRange(new object[] {
+            "None",
+            "Even",
+            "Odd"});
+            this.cmbParity.Location = new System.Drawing.Point(135, 107);
+            this.cmbParity.Name = "cmbParity";
+            this.cmbParity.Size = new System.Drawing.Size(149, 21);
+            this.cmbParity.TabIndex = 8;
+            // 
+            // Label3
+            // 
+            this.Label3.Location = new System.Drawing.Point(16, 81);
+            this.Label3.Name = "Label3";
+            this.Label3.Size = new System.Drawing.Size(113, 18);
+            this.Label3.TabIndex = 7;
+            this.Label3.Text = "Протокол:";
+            // 
+            // Label2
+            // 
+            this.Label2.Location = new System.Drawing.Point(16, 54);
+            this.Label2.Name = "Label2";
+            this.Label2.Size = new System.Drawing.Size(113, 18);
+            this.Label2.TabIndex = 5;
+            this.Label2.Text = "Скорость:";
+            // 
+            // cmbBaudRate
+            // 
+            this.cmbBaudRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBaudRate.Items.AddRange(new object[] {
+            "9600",
+            "14400",
+            "19200",
+            "38400",
+            "57600",
+            "115200",
+            "125000",
+            "128000",
+            "256000"});
+            this.cmbBaudRate.Location = new System.Drawing.Point(135, 53);
+            this.cmbBaudRate.Name = "cmbBaudRate";
+            this.cmbBaudRate.Size = new System.Drawing.Size(149, 21);
+            this.cmbBaudRate.TabIndex = 4;
+            // 
+            // cmbComPort
+            // 
+            this.cmbComPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbComPort.Location = new System.Drawing.Point(135, 26);
+            this.cmbComPort.Name = "cmbComPort";
+            this.cmbComPort.Size = new System.Drawing.Size(149, 21);
+            this.cmbComPort.TabIndex = 3;
+            // 
+            // Label1
+            // 
+            this.Label1.Location = new System.Drawing.Point(16, 27);
+            this.Label1.Name = "Label1";
+            this.Label1.Size = new System.Drawing.Size(113, 18);
+            this.Label1.TabIndex = 1;
+            this.Label1.Text = "COM-порт:";
+            // 
+            // btnOpenSerial
+            // 
+            this.btnOpenSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnOpenSerial.Location = new System.Drawing.Point(19, 203);
+            this.btnOpenSerial.Name = "btnOpenSerial";
+            this.btnOpenSerial.Size = new System.Drawing.Size(130, 40);
+            this.btnOpenSerial.TabIndex = 2;
+            this.btnOpenSerial.Text = "Открыть Serial";
+            this.btnOpenSerial.Click += new System.EventHandler(this.cmdOpenSerial_Click);
+            // 
+            // cmbSerialProtocol
+            // 
+            this.cmbSerialProtocol.DisplayMember = "1";
+            this.cmbSerialProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSerialProtocol.Items.AddRange(new object[] {
+            "RTU",
+            "ASCII"});
+            this.cmbSerialProtocol.Location = new System.Drawing.Point(135, 80);
+            this.cmbSerialProtocol.Name = "cmbSerialProtocol";
+            this.cmbSerialProtocol.Size = new System.Drawing.Size(149, 21);
+            this.cmbSerialProtocol.TabIndex = 6;
+            // 
+            // GroupBox1
+            // 
+            this.GroupBox1.Controls.Add(this.cmbRetry);
+            this.GroupBox1.Controls.Add(this.Label4);
+            this.GroupBox1.Controls.Add(this.Label5);
+            this.GroupBox1.Controls.Add(this.txtTimeout);
+            this.GroupBox1.Controls.Add(this.txtPollDelay);
+            this.GroupBox1.Controls.Add(this.Label9);
+            this.GroupBox1.Location = new System.Drawing.Point(598, 22);
+            this.GroupBox1.Name = "GroupBox1";
+            this.GroupBox1.Size = new System.Drawing.Size(228, 352);
+            this.GroupBox1.TabIndex = 14;
+            this.GroupBox1.TabStop = false;
+            this.GroupBox1.Text = "Опции MODBUS";
+            // 
+            // cmbRetry
+            // 
+            this.cmbRetry.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRetry.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2",
+            "3"});
+            this.cmbRetry.Location = new System.Drawing.Point(142, 56);
+            this.cmbRetry.Name = "cmbRetry";
+            this.cmbRetry.Size = new System.Drawing.Size(66, 21);
+            this.cmbRetry.TabIndex = 9;
+            // 
+            // Label4
+            // 
+            this.Label4.Location = new System.Drawing.Point(20, 27);
+            this.Label4.Name = "Label4";
+            this.Label4.Size = new System.Drawing.Size(116, 20);
+            this.Label4.TabIndex = 8;
+            this.Label4.Text = "Таймаут:";
+            // 
+            // Label5
+            // 
+            this.Label5.Location = new System.Drawing.Point(20, 61);
+            this.Label5.Name = "Label5";
+            this.Label5.Size = new System.Drawing.Size(116, 20);
+            this.Label5.TabIndex = 10;
+            this.Label5.Text = "Кол-во попыток:";
+            // 
+            // txtTimeout
+            // 
+            this.txtTimeout.Location = new System.Drawing.Point(142, 24);
+            this.txtTimeout.Name = "txtTimeout";
+            this.txtTimeout.Size = new System.Drawing.Size(66, 20);
+            this.txtTimeout.TabIndex = 0;
+            this.txtTimeout.Text = "1000";
+            // 
+            // txtPollDelay
+            // 
+            this.txtPollDelay.Location = new System.Drawing.Point(142, 90);
+            this.txtPollDelay.Name = "txtPollDelay";
+            this.txtPollDelay.Size = new System.Drawing.Size(66, 20);
+            this.txtPollDelay.TabIndex = 11;
+            this.txtPollDelay.Text = "0";
+            // 
+            // Label9
+            // 
+            this.Label9.Location = new System.Drawing.Point(20, 93);
+            this.Label9.Name = "Label9";
+            this.Label9.Size = new System.Drawing.Size(116, 20);
+            this.Label9.TabIndex = 12;
+            this.Label9.Text = "Задержка выборки:";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::UROVModbus.Properties.Resources.emblem_important;
+            this.pictureBox1.Location = new System.Drawing.Point(31, 401);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 18;
+            this.pictureBox1.TabStop = false;
+            // 
+            // lblCurrentTabPageHint
+            // 
+            this.lblCurrentTabPageHint.AutoSize = true;
+            this.lblCurrentTabPageHint.Location = new System.Drawing.Point(5, 7);
+            this.lblCurrentTabPageHint.Name = "lblCurrentTabPageHint";
+            this.lblCurrentTabPageHint.Size = new System.Drawing.Size(39, 13);
+            this.lblCurrentTabPageHint.TabIndex = 0;
+            this.lblCurrentTabPageHint.Text = "Файл:";
             // 
             // MainForm
             // 
@@ -1577,6 +1678,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(861, 635);
             this.Controls.Add(this.tabPages);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1590,13 +1692,9 @@
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.tabPages.ResumeLayout(false);
-            this.tpModbusSettings.ResumeLayout(false);
-            this.GroupBox3.ResumeLayout(false);
-            this.GroupBox3.PerformLayout();
-            this.GroupBox2.ResumeLayout(false);
-            this.GroupBox1.ResumeLayout(false);
-            this.GroupBox1.PerformLayout();
             this.tpUROVSettings.ResumeLayout(false);
             this.tpUROVSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
@@ -1660,6 +1758,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();
+            this.tpModbusSettings.ResumeLayout(false);
+            this.tpModbusSettings.PerformLayout();
+            this.GroupBox3.ResumeLayout(false);
+            this.GroupBox3.PerformLayout();
+            this.GroupBox2.ResumeLayout(false);
+            this.GroupBox1.ResumeLayout(false);
+            this.GroupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1668,9 +1774,98 @@
         #endregion
 
         private System.Windows.Forms.StatusStrip statusBar;
+        private System.Windows.Forms.Timer tmCheckConnectTimer;
+        private System.Windows.Forms.ToolStripStatusLabel tsStatusMessage;
+        private System.Windows.Forms.Timer tmFileList;
+        private System.Windows.Forms.Timer tmFileContent;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.Timer tmDateTime;
+        private System.Windows.Forms.ToolStripStatusLabel tsDateTime;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel tsLinkStatus;
+        private System.Windows.Forms.ToolStripStatusLabel tsConnectionTypeInfo;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabControl tabPages;
-        private System.Windows.Forms.TabPage tpModbusSettings;
         private System.Windows.Forms.TabPage tpUROVSettings;
+        private System.Windows.Forms.Button btnFileList;
+        private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Button btnReadRegisters;
+        private System.Windows.Forms.Panel panel46;
+        private System.Windows.Forms.Panel panel47;
+        private System.Windows.Forms.CheckBox cbAsuTpLine4;
+        private System.Windows.Forms.CheckBox cbAsuTpLine3;
+        private System.Windows.Forms.CheckBox cbAsuTpLine2;
+        private System.Windows.Forms.CheckBox cbAsuTpLine1;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Panel panel48;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.Button btnCurrentCoeff;
+        private System.Windows.Forms.Panel panel43;
+        private System.Windows.Forms.Panel panel44;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.NumericUpDown nudCurrentCoeff;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Panel panel45;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.Panel panel31;
+        private System.Windows.Forms.Panel panel32;
+        private System.Windows.Forms.NumericUpDown nudMaxIdleTime;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.NumericUpDown nudRelayDelay;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Panel panel33;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.Panel panel28;
+        private System.Windows.Forms.Panel panel29;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.NumericUpDown nudHighBorder;
+        private System.Windows.Forms.NumericUpDown nudLowBorder;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.Panel panel30;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.NumericUpDown nudRodMoveLength;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Panel plImpulses;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.NumericUpDown nudDelta1;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.NumericUpDown nudPulses1;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Panel plMotoresourceCurrent;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label lblMotoresourcePercents1;
+        public System.Windows.Forms.NumericUpDown nudMotoresourceMax1;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.NumericUpDown nudMotoresourceCurrent1;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Panel plDelta;
+        private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.NumericUpDown nudEthalonCompareDelta;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown nudSkipCounter;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Panel panel12;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TabPage tpModbusSettings;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label lblInfoText;
         private System.Windows.Forms.GroupBox GroupBox3;
         private System.Windows.Forms.Button btnCloseTCP;
         private System.Windows.Forms.Button btnOpenTCP;
@@ -1681,6 +1876,7 @@
         private System.Windows.Forms.Label Label10;
         private System.Windows.Forms.TextBox txtTCPPort;
         private System.Windows.Forms.GroupBox GroupBox2;
+        private System.Windows.Forms.Button btnReloadPorts;
         private System.Windows.Forms.Button FindSerial;
         private System.Windows.Forms.Button btnCloseSerial;
         private System.Windows.Forms.ComboBox cmbDataBits;
@@ -1703,86 +1899,7 @@
         private System.Windows.Forms.TextBox txtTimeout;
         private System.Windows.Forms.TextBox txtPollDelay;
         private System.Windows.Forms.Label Label9;
-        private System.Windows.Forms.Button btnReloadPorts;
-        private System.Windows.Forms.Label lblInfoText;
-        private System.Windows.Forms.Timer tmCheckConnectTimer;
-        private System.Windows.Forms.Panel plMotoresourceCurrent;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label lblMotoresourcePercents1;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.NumericUpDown nudMotoresourceCurrent1;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Panel plDelta;
-        private System.Windows.Forms.Panel panel11;
-        private System.Windows.Forms.NumericUpDown nudEthalonCompareDelta;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.NumericUpDown nudSkipCounter;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Panel panel12;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Panel plImpulses;
-        private System.Windows.Forms.Panel panel9;
-        private System.Windows.Forms.NumericUpDown nudDelta1;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.NumericUpDown nudPulses1;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Panel panel10;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.NumericUpDown nudRodMoveLength;
-        private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.Panel panel28;
-        private System.Windows.Forms.Panel panel29;
-        private System.Windows.Forms.Label label49;
-        private System.Windows.Forms.NumericUpDown nudHighBorder;
-        private System.Windows.Forms.NumericUpDown nudLowBorder;
-        private System.Windows.Forms.Label label50;
-        private System.Windows.Forms.Label label51;
-        private System.Windows.Forms.Panel panel30;
-        private System.Windows.Forms.Label label52;
-        private System.Windows.Forms.Panel panel31;
-        private System.Windows.Forms.Panel panel32;
-        private System.Windows.Forms.NumericUpDown nudMaxIdleTime;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.Label label53;
-        private System.Windows.Forms.NumericUpDown nudRelayDelay;
-        private System.Windows.Forms.Label label55;
-        private System.Windows.Forms.Panel panel33;
-        private System.Windows.Forms.Label label56;
-        private System.Windows.Forms.Button btnCurrentCoeff;
-        private System.Windows.Forms.Panel panel43;
-        private System.Windows.Forms.Panel panel44;
-        private System.Windows.Forms.Label label70;
-        private System.Windows.Forms.NumericUpDown nudCurrentCoeff;
-        private System.Windows.Forms.Label label71;
-        private System.Windows.Forms.Panel panel45;
-        private System.Windows.Forms.Label label72;
-        private System.Windows.Forms.Panel panel46;
-        private System.Windows.Forms.Panel panel47;
-        private System.Windows.Forms.CheckBox cbAsuTpLine4;
-        private System.Windows.Forms.CheckBox cbAsuTpLine3;
-        private System.Windows.Forms.CheckBox cbAsuTpLine2;
-        private System.Windows.Forms.CheckBox cbAsuTpLine1;
-        private System.Windows.Forms.Label label73;
-        private System.Windows.Forms.Panel panel48;
-        private System.Windows.Forms.Label label74;
-        private System.Windows.Forms.Button btnReadRegisters;
-        private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.Button btnFileList;
-        private System.Windows.Forms.Timer tmFileList;
-        private System.Windows.Forms.Timer tmFileContent;
-        public System.Windows.Forms.NumericUpDown nudMotoresourceMax1;
+        private System.Windows.Forms.Label lblCurrentTabPageHint;
     }
 }
 
