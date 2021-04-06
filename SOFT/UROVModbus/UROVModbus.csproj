@@ -121,6 +121,27 @@
   <ItemGroup>
     <None Include="images\emblem-important.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\im-user-away.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\preferences-system-time.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\applications-system.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\applications-system_big.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\network-wired.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\connect_established.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\connect_no.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

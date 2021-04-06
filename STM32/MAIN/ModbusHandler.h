@@ -17,6 +17,7 @@ typedef enum
   mbusListFiles,    // запрошен список файлов в директории
   mbusFileContent,  // запрошено содержимое файла
   mbusDeleteFile,   // запрошено удаление файла
+  mbusSetDeviceTime, // запрошена установка времени прибора
   
 } MBusFunction; // коды функций
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,6 +59,7 @@ private:
   void do_mbusListFiles(const String& dirName);
   void do_mbusFileContent(const String& fileName);
   void do_mbusDeleteFile(const String& fileName);
+  void do_mbusSetDeviceTime();
   
 
   // для работы со списком файлов

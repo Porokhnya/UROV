@@ -121,6 +121,8 @@ namespace UROVModbus
             cmbTcpProtocol.SelectedIndex = 0;
             cmbRetry.SelectedIndex = 2;
 
+
+            tmDateTime_Tick(tmDateTime, new EventArgs());
         }
 
         /// <summary>
@@ -329,7 +331,7 @@ namespace UROVModbus
 
 
 
-                ShowConnectionStatus(true);
+                //ShowConnectionStatus(true);
 
                 //ShowTabPage(tpUROVSettings, true);
                 //Polltimer1.Enabled = true;
@@ -475,7 +477,7 @@ namespace UROVModbus
 
                 UpdateControlButtons(currentConnectionMode);
 
-                ShowConnectionStatus(true);
+                //ShowConnectionStatus(true);
 
                 //Polltimer1.Enabled = true;
                 tmCheckConnectTimer.Enabled = true;
@@ -501,6 +503,7 @@ namespace UROVModbus
                // ShowTabPage(tpUROVSettings, false);
                 return;
             }
+
             if(myProtocol != null)
             {
                 if(!myProtocol.isOpen())
@@ -509,7 +512,84 @@ namespace UROVModbus
                     currentConnectionMode = ConnectionMode.None;
                     UpdateControlButtons(currentConnectionMode);
                     // ShowTabPage(tpUROVSettings, false);
+
+                    ShowInfo("Протокол закрыт");
                     ShowConnectionStatus(false);
+                }
+                else
+                {
+                    // протокол открыт, посылаем запрос времени с устройства
+                    RequestDeviceDateTime();
+                }
+            }
+        }
+
+        private int modbusErrorsCount = 0;
+        static bool hasModbusRequest = false;
+
+        /// <summary>
+        /// Запрашиваем дату и время с устройства
+        /// </summary>
+        private void RequestDeviceDateTime()
+        {
+            //запрашиваем только в том случае, когда соединение установлено, и нет других запросов по MODBUS.
+            if(hasModbusRequest)
+            {
+                return; // есть другие запросы по модбас
+            }
+
+            if(myProtocol == null || !myProtocol.isOpen()) // протокол не открыт
+            {
+                return;
+            }
+
+            // если запрос неудачный - увеличиваем счётчик ошибок. Если ошибок больше 10 - показываем статус "Соединение разорвано".
+            // читаем регистры прибора
+            ushort[] readVals = new ushort[6];
+            int slave;
+            int startRdReg;
+            int res;
+
+            slave = Convert.ToInt32(nudModbusSlaveID.Value);
+            startRdReg = 500; // 40500 регистр для года
+
+
+
+            res = myProtocol.readMultipleRegisters(slave, startRdReg, readVals, 6);
+
+
+            Debug.Write("res="); Debug.WriteLine(res);
+            Debug.WriteLine(BusProtocolErrors.getBusProtocolErrorText(res));
+
+
+            if ((res == BusProtocolErrors.FTALK_SUCCESS))
+            {
+                ShowConnectionStatus(true);
+
+                // читаем переменные времени
+                int year = readVals[0];
+                int month = readVals[1];
+                int day = readVals[2];
+                int hour = readVals[3];
+                int minute = readVals[4];
+                int second = readVals[5];
+
+                controllerDateTime = new DateTime(year, month, day, hour, minute, second);
+
+                tbUROVDateTime.Text = controllerDateTime.ToString("dd.MM.yyyy HH:mm:ss");
+            }
+            else
+            {
+                modbusErrorsCount++;
+                if (modbusErrorsCount >= 10)
+                {
+                    modbusErrorsCount = 0;
+
+                    // Close protocol and serial port
+                    myProtocol.closeProtocol();
+
+                    // дальнейшее произойдёт в обработчике события таймера проверки соединения
+
                 }
             }
         }
@@ -599,6 +679,8 @@ namespace UROVModbus
         {
             if(myProtocol != null && myProtocol.isOpen())
             {
+                hasModbusRequest = true;
+
                 ShowWaitCursor(true);
                 ShowMessageInStatusBar(" ЧИТАЕМ РЕГИСТРЫ ", Color.Lime);
 
@@ -705,6 +787,7 @@ namespace UROVModbus
                     nudRodMoveLength.Value = MakeUInt32(readVals[22], readVals[23]);
 
                     ShowWaitCursor(false);
+
                 }
                 else
                 {
@@ -715,6 +798,8 @@ namespace UROVModbus
                     // ошибка чтения регистров !!!
                     ShowProtocolError(res, "Ошибка чтения регистров: ");
                 }
+
+                hasModbusRequest = false;
             }
         }
 
@@ -749,6 +834,8 @@ namespace UROVModbus
         {
             if (myProtocol != null && myProtocol.isOpen())
             {
+                hasModbusRequest = true;
+
                 ShowWaitCursor(true);
 
                 ShowMessageInStatusBar(" ПИШЕМ РЕГИСТРЫ ", Color.Beige);
@@ -886,6 +973,8 @@ namespace UROVModbus
                     ShowWaitCursor(false);
                     ShowProtocolError(res, "Ошибка записи регистров: ");
                 }
+
+                hasModbusRequest = false;
             }
         }
 
@@ -931,6 +1020,8 @@ namespace UROVModbus
         {
             if (myProtocol != null && myProtocol.isOpen())
             {
+                hasModbusRequest = true;
+
                 // протокол открыт, можно удалять файд
                 int res; // результат запроса
 
@@ -1007,6 +1098,8 @@ namespace UROVModbus
                     ShowProtocolError(res, "Ошибка записи регистров: ");
 
                 }
+
+                hasModbusRequest = false;
             }
         }
 
@@ -1024,6 +1117,8 @@ namespace UROVModbus
         {
             if (myProtocol != null && myProtocol.isOpen())
             {
+                hasModbusRequest = true;
+
                 // протокол открыт, можно запрашивать содержимое файла
                 int res; // результат запроса
 
@@ -1093,6 +1188,7 @@ namespace UROVModbus
                 }
                 else
                 {
+                    hasModbusRequest = false;
                     tmFileContent.Enabled = false;
                     ShowProtocolError(res, "Ошибка записи регистров: ");
 
@@ -1117,6 +1213,8 @@ namespace UROVModbus
 
             if (myProtocol != null && myProtocol.isOpen())
             {
+                hasModbusRequest = true;
+
                 int res; // результат запроса
 
                 // формируем регистры
@@ -1186,6 +1284,7 @@ namespace UROVModbus
                 }
                 else
                 {
+                    hasModbusRequest = false;
                     tmFileList.Enabled = false;
                     ShowProtocolError(res, "Ошибка записи регистров: ");
 
@@ -1204,7 +1303,7 @@ namespace UROVModbus
                 toolStripStatusLabel2.Text = " MODBUS ON ";
                 toolStripStatusLabel2.BackColor = Color.Lime;
 
-                tsLinkStatus.Text = "СВЯЗЬ С ПРИБОРОМ УРОВ УСТАНОВЛЕНА";
+                tsLinkStatus.Text = " СВЯЗЬ С ПРИБОРОМ УРОВ УСТАНОВЛЕНА ";
                 tsLinkStatus.BackColor = Color.Lime;
             }
             else
@@ -1212,7 +1311,7 @@ namespace UROVModbus
                 toolStripStatusLabel2.Text = " MODBUS OFF ";
                 toolStripStatusLabel2.BackColor = Color.Red;
 
-                tsLinkStatus.Text = "СВЯЗЬ С ПРИБОРОМ УРОВ НЕ УСТАНОВЛЕНА!";
+                tsLinkStatus.Text = " СВЯЗЬ С ПРИБОРОМ УРОВ НЕ УСТАНОВЛЕНА! ";
                 tsLinkStatus.BackColor = Color.Red;
 
                 tsConnectionTypeInfo.Text = "";
@@ -1550,6 +1649,7 @@ namespace UROVModbus
                                     }
                                     else
                                     {
+                                        hasModbusRequest = false;
                                         // закончили запрос
                                         ShowMessageInStatusBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
@@ -1562,6 +1662,7 @@ namespace UROVModbus
                                 }
                                 else
                                 {
+                                    hasModbusRequest = false;
                                     ShowProtocolError(res, "Ошибка чтения регистров: ");
                                 }
                             } // if (dataLen > 0)
@@ -1574,6 +1675,8 @@ namespace UROVModbus
                                 }
                                 else
                                 {
+                                    hasModbusRequest = false;
+
                                     // закончили запрос
                                     ShowMessageInStatusBar(" СПИСОК ФАЙЛОВ ПОЛУЧЕН ", Color.Lime);
 
@@ -1587,6 +1690,7 @@ namespace UROVModbus
                         } // if ((res == BusProtocolErrors.FTALK_SUCCESS))
                         else
                         {
+                            hasModbusRequest = false;
                             ShowProtocolError(res, "Ошибка чтения регистров: ");
                         }
 
@@ -1599,6 +1703,7 @@ namespace UROVModbus
                 }
                 else
                 {
+                    hasModbusRequest = false;
                     // не прочитано
                     ShowProtocolError(res,"Ошибка чтения списка файлов: ");
 
@@ -1607,6 +1712,7 @@ namespace UROVModbus
             }
             else
             {
+                hasModbusRequest = false;
                 tmFileList.Enabled = false;
                 ShowMessageInStatusBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
@@ -3164,6 +3270,7 @@ namespace UROVModbus
                                     }
                                     else
                                     {
+                                        hasModbusRequest = false;
                                         // закончили запрос
                                         ShowMessageInStatusBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
 
@@ -3176,6 +3283,7 @@ namespace UROVModbus
                                 }
                                 else
                                 {
+                                    hasModbusRequest = false;
                                     ShowProtocolError(res, "Ошибка чтения регистров: ");
                                 }
                             } // if (dataLen > 0)
@@ -3188,6 +3296,7 @@ namespace UROVModbus
                                 }
                                 else
                                 {
+                                    hasModbusRequest = false;
                                     // закончили запрос
                                     ShowMessageInStatusBar(" ФАЙЛ ПОЛУЧЕН ", Color.Lime);
 
@@ -3199,6 +3308,7 @@ namespace UROVModbus
                         } // if ((res == BusProtocolErrors.FTALK_SUCCESS))
                         else
                         {
+                            hasModbusRequest = false;
                             ShowProtocolError(res, "Ошибка чтения регистров: ");
                         }
 
@@ -3211,6 +3321,7 @@ namespace UROVModbus
                 }
                 else
                 {
+                    hasModbusRequest = false;
                     // не прочитано
                     ShowProtocolError(res, "Ошибка чтения списка файлов: ");
 
@@ -3219,6 +3330,7 @@ namespace UROVModbus
             }
             else
             {
+                hasModbusRequest = false;
                 tmFileContent.Enabled = false;
                 ShowMessageInStatusBar(" РАЗЪЕДИНЕНО ", Color.Red);
             }
@@ -3485,12 +3597,10 @@ namespace UROVModbus
             string dateTimeString = this.controllerDateTime.ToString("dd.MM.yyyy HH:mm:ss");
 
             tsDateTime.Text = dateTimeString;
+
+            tbSystemTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
         }
 
-        private void ё(object sender, EventArgs e)
-        {
-
-        }
 
         private void SetCurrentTabPageHint()
         {
@@ -3504,6 +3614,12 @@ namespace UROVModbus
 
                 case 1:
                     {
+                        lblCurrentTabPageHint.Text = "Файл: Дополнительные настройки прибора УРОВ";
+                    }
+                    break;
+
+                case 2:
+                    {
                         lblCurrentTabPageHint.Text = "Файл: Установка параметров подключения к прибору УРОВ";
                     }
                     break;
@@ -3513,6 +3629,64 @@ namespace UROVModbus
         private void tabPages_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetCurrentTabPageHint();
+        }
+
+        private void btnSetDeviceTime_Click(object sender, EventArgs e)
+        {
+            SetDeviceTime();
+        }
+
+        /// <summary>
+        /// устанавливаем время прибора
+        /// </summary>
+        private void SetDeviceTime()
+        {
+            if(myProtocol != null && myProtocol.isOpen())
+            {
+                hasModbusRequest = true;
+
+                ushort func = Convert.ToUInt16(MBusFunction.SetDeviceTime);
+                int slave = Convert.ToInt32(nudModbusSlaveID.Value);
+                int numRegs = 6;
+                int res; // результат запроса
+
+                // выделяем память под данные
+                ushort[] data = new ushort[numRegs];
+
+                // формируем данные
+                DateTime userDate = dtpUserTime.Value;
+                data[0] = Convert.ToUInt16(userDate.Year);
+                data[1] = Convert.ToUInt16(userDate.Month);
+                data[2] = Convert.ToUInt16(userDate.Day);
+                data[3] = Convert.ToUInt16(userDate.Hour);
+                data[4] = Convert.ToUInt16(userDate.Minute);
+                data[5] = Convert.ToUInt16(userDate.Second);
+
+
+                // данные сформированы, записываем их в регистры устройства
+                int errorsCount = 0;
+
+                // MODBUS_REG_DATA                           41005 // регистр, начиная с которого идут данные (например, имя файла)
+                res = myProtocol.writeMultipleRegisters(slave, 1005, data, numRegs);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                // MODBUS_REG_FUNCTION_NUMBER                41000 // регистр для номера запрошенной мастером функции (например, выдать список файлов в директории)
+                res = myProtocol.writeSingleRegister(slave, 1000, func);
+                if (!(res == BusProtocolErrors.FTALK_SUCCESS))
+                    errorsCount++;
+
+                if (errorsCount < 1)
+                {
+                    MessageBox.Show("Время успешно записано в прибор!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    ShowProtocolError(res, "Ошибка установки времени прибора: ");
+                }
+
+                    hasModbusRequest = false;
+            }
         }
     }
 }

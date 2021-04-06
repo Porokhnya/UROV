@@ -34,20 +34,19 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsStatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsConnectionTypeInfo = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsLinkStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsDateTime = new System.Windows.Forms.ToolStripStatusLabel();
             this.tmCheckConnectTimer = new System.Windows.Forms.Timer(this.components);
             this.tmFileList = new System.Windows.Forms.Timer(this.components);
             this.tmFileContent = new System.Windows.Forms.Timer(this.components);
             this.tmDateTime = new System.Windows.Forms.Timer(this.components);
-            this.tsDateTime = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsLinkStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsConnectionTypeInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblCurrentTabPageHint = new System.Windows.Forms.Label();
             this.tabPages = new System.Windows.Forms.TabControl();
             this.tpUROVSettings = new System.Windows.Forms.TabPage();
             this.btnFileList = new System.Windows.Forms.Button();
-            this.nudModbusSlaveID = new System.Windows.Forms.NumericUpDown();
-            this.label29 = new System.Windows.Forms.Label();
             this.btnReadRegisters = new System.Windows.Forms.Button();
             this.panel46 = new System.Windows.Forms.Panel();
             this.panel47 = new System.Windows.Forms.Panel();
@@ -119,6 +118,18 @@
             this.label15 = new System.Windows.Forms.Label();
             this.panel12 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
+            this.tpAdditionalSettings = new System.Windows.Forms.TabPage();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.btnSetDeviceTime = new System.Windows.Forms.Button();
+            this.dtpUserTime = new System.Windows.Forms.DateTimePicker();
+            this.label31 = new System.Windows.Forms.Label();
+            this.tbUROVDateTime = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.tbSystemTime = new System.Windows.Forms.TextBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.panel13 = new System.Windows.Forms.Panel();
+            this.label34 = new System.Windows.Forms.Label();
             this.tpModbusSettings = new System.Windows.Forms.TabPage();
             this.label30 = new System.Windows.Forms.Label();
             this.lblInfoText = new System.Windows.Forms.Label();
@@ -149,19 +160,26 @@
             this.btnOpenSerial = new System.Windows.Forms.Button();
             this.cmbSerialProtocol = new System.Windows.Forms.ComboBox();
             this.GroupBox1 = new System.Windows.Forms.GroupBox();
+            this.nudModbusSlaveID = new System.Windows.Forms.NumericUpDown();
+            this.label29 = new System.Windows.Forms.Label();
             this.cmbRetry = new System.Windows.Forms.ComboBox();
             this.Label4 = new System.Windows.Forms.Label();
             this.Label5 = new System.Windows.Forms.Label();
             this.txtTimeout = new System.Windows.Forms.TextBox();
             this.txtPollDelay = new System.Windows.Forms.TextBox();
             this.Label9 = new System.Windows.Forms.Label();
+            this.tabsImages = new System.Windows.Forms.ImageList(this.components);
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox6 = new System.Windows.Forms.PictureBox();
+            this.pictureBox7 = new System.Windows.Forms.PictureBox();
+            this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblCurrentTabPageHint = new System.Windows.Forms.Label();
             this.statusBar.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPages.SuspendLayout();
             this.tpUROVSettings.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
             this.panel46.SuspendLayout();
             this.panel47.SuspendLayout();
             this.panel48.SuspendLayout();
@@ -198,10 +216,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudEthalonCompareDelta)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).BeginInit();
             this.panel12.SuspendLayout();
+            this.tpAdditionalSettings.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.panel13.SuspendLayout();
             this.tpModbusSettings.SuspendLayout();
             this.GroupBox3.SuspendLayout();
             this.GroupBox2.SuspendLayout();
             this.GroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -215,7 +244,7 @@
             this.tsLinkStatus,
             this.toolStripStatusLabel4,
             this.tsDateTime});
-            this.statusBar.Location = new System.Drawing.Point(0, 613);
+            this.statusBar.Location = new System.Drawing.Point(0, 640);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(861, 22);
             this.statusBar.TabIndex = 0;
@@ -239,9 +268,32 @@
             this.tsStatusMessage.Size = new System.Drawing.Size(87, 17);
             this.tsStatusMessage.Text = "status message";
             // 
+            // tsConnectionTypeInfo
+            // 
+            this.tsConnectionTypeInfo.Name = "tsConnectionTypeInfo";
+            this.tsConnectionTypeInfo.Size = new System.Drawing.Size(93, 17);
+            this.tsConnectionTypeInfo.Text = "connection type";
+            // 
+            // tsLinkStatus
+            // 
+            this.tsLinkStatus.Name = "tsLinkStatus";
+            this.tsLinkStatus.Size = new System.Drawing.Size(60, 17);
+            this.tsLinkStatus.Text = "link status";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(45, 17);
+            this.toolStripStatusLabel4.Text = "Время:";
+            // 
+            // tsDateTime
+            // 
+            this.tsDateTime.Name = "tsDateTime";
+            this.tsDateTime.Size = new System.Drawing.Size(0, 17);
+            // 
             // tmCheckConnectTimer
             // 
-            this.tmCheckConnectTimer.Interval = 800;
+            this.tmCheckConnectTimer.Interval = 1000;
             this.tmCheckConnectTimer.Tick += new System.EventHandler(this.tmCheckConnectTimer_Tick);
             // 
             // tmFileList
@@ -258,55 +310,41 @@
             this.tmDateTime.Interval = 1000;
             this.tmDateTime.Tick += new System.EventHandler(this.tmDateTime_Tick);
             // 
-            // tsDateTime
-            // 
-            this.tsDateTime.Name = "tsDateTime";
-            this.tsDateTime.Size = new System.Drawing.Size(0, 17);
-            // 
-            // toolStripStatusLabel4
-            // 
-            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(45, 17);
-            this.toolStripStatusLabel4.Text = "Время:";
-            // 
-            // tsLinkStatus
-            // 
-            this.tsLinkStatus.Name = "tsLinkStatus";
-            this.tsLinkStatus.Size = new System.Drawing.Size(60, 17);
-            this.tsLinkStatus.Text = "link status";
-            // 
-            // tsConnectionTypeInfo
-            // 
-            this.tsConnectionTypeInfo.Name = "tsConnectionTypeInfo";
-            this.tsConnectionTypeInfo.Size = new System.Drawing.Size(93, 17);
-            this.tsConnectionTypeInfo.Text = "connection type";
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.lblCurrentTabPageHint);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 585);
+            this.panel1.Location = new System.Drawing.Point(0, 612);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(861, 28);
             this.panel1.TabIndex = 2;
             // 
+            // lblCurrentTabPageHint
+            // 
+            this.lblCurrentTabPageHint.AutoSize = true;
+            this.lblCurrentTabPageHint.Location = new System.Drawing.Point(5, 7);
+            this.lblCurrentTabPageHint.Name = "lblCurrentTabPageHint";
+            this.lblCurrentTabPageHint.Size = new System.Drawing.Size(39, 13);
+            this.lblCurrentTabPageHint.TabIndex = 0;
+            this.lblCurrentTabPageHint.Text = "Файл:";
+            // 
             // tabPages
             // 
             this.tabPages.Controls.Add(this.tpUROVSettings);
+            this.tabPages.Controls.Add(this.tpAdditionalSettings);
             this.tabPages.Controls.Add(this.tpModbusSettings);
             this.tabPages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabPages.ImageList = this.tabsImages;
             this.tabPages.Location = new System.Drawing.Point(0, 0);
             this.tabPages.Name = "tabPages";
             this.tabPages.SelectedIndex = 0;
-            this.tabPages.Size = new System.Drawing.Size(861, 585);
+            this.tabPages.Size = new System.Drawing.Size(861, 612);
             this.tabPages.TabIndex = 3;
             this.tabPages.SelectedIndexChanged += new System.EventHandler(this.tabPages_SelectedIndexChanged);
             // 
             // tpUROVSettings
             // 
             this.tpUROVSettings.Controls.Add(this.btnFileList);
-            this.tpUROVSettings.Controls.Add(this.nudModbusSlaveID);
-            this.tpUROVSettings.Controls.Add(this.label29);
             this.tpUROVSettings.Controls.Add(this.btnReadRegisters);
             this.tpUROVSettings.Controls.Add(this.panel46);
             this.tpUROVSettings.Controls.Add(this.btnCurrentCoeff);
@@ -317,12 +355,13 @@
             this.tpUROVSettings.Controls.Add(this.plImpulses);
             this.tpUROVSettings.Controls.Add(this.plMotoresourceCurrent);
             this.tpUROVSettings.Controls.Add(this.plDelta);
-            this.tpUROVSettings.Location = new System.Drawing.Point(4, 22);
+            this.tpUROVSettings.ImageIndex = 0;
+            this.tpUROVSettings.Location = new System.Drawing.Point(4, 39);
             this.tpUROVSettings.Name = "tpUROVSettings";
             this.tpUROVSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tpUROVSettings.Size = new System.Drawing.Size(853, 559);
+            this.tpUROVSettings.Size = new System.Drawing.Size(853, 569);
             this.tpUROVSettings.TabIndex = 1;
-            this.tpUROVSettings.Text = "Настройки UROV";
+            this.tpUROVSettings.Text = "Настройки UROV   ";
             this.tpUROVSettings.UseVisualStyleBackColor = true;
             // 
             // btnFileList
@@ -337,38 +376,6 @@
             this.btnFileList.Text = "Список файлов";
             this.btnFileList.UseVisualStyleBackColor = false;
             this.btnFileList.Click += new System.EventHandler(this.btnFileList_Click);
-            // 
-            // nudModbusSlaveID
-            // 
-            this.nudModbusSlaveID.Location = new System.Drawing.Point(12, 512);
-            this.nudModbusSlaveID.Maximum = new decimal(new int[] {
-            247,
-            0,
-            0,
-            0});
-            this.nudModbusSlaveID.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudModbusSlaveID.Name = "nudModbusSlaveID";
-            this.nudModbusSlaveID.Size = new System.Drawing.Size(98, 20);
-            this.nudModbusSlaveID.TabIndex = 16;
-            this.nudModbusSlaveID.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.ForeColor = System.Drawing.Color.Black;
-            this.label29.Location = new System.Drawing.Point(9, 497);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(83, 13);
-            this.label29.TabIndex = 15;
-            this.label29.Text = "Номер слейва:";
             // 
             // btnReadRegisters
             // 
@@ -1273,20 +1280,158 @@
             this.label20.TabIndex = 0;
             this.label20.Text = "Дельты импульсов";
             // 
+            // tpAdditionalSettings
+            // 
+            this.tpAdditionalSettings.Controls.Add(this.panel3);
+            this.tpAdditionalSettings.ImageIndex = 1;
+            this.tpAdditionalSettings.Location = new System.Drawing.Point(4, 39);
+            this.tpAdditionalSettings.Name = "tpAdditionalSettings";
+            this.tpAdditionalSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tpAdditionalSettings.Size = new System.Drawing.Size(853, 569);
+            this.tpAdditionalSettings.TabIndex = 2;
+            this.tpAdditionalSettings.Text = "Дополнительные настройки   ";
+            this.tpAdditionalSettings.UseVisualStyleBackColor = true;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel3.Controls.Add(this.panel4);
+            this.panel3.Controls.Add(this.panel13);
+            this.panel3.Location = new System.Drawing.Point(10, 10);
+            this.panel3.Margin = new System.Windows.Forms.Padding(10);
+            this.panel3.Name = "panel3";
+            this.panel3.Padding = new System.Windows.Forms.Padding(2);
+            this.panel3.Size = new System.Drawing.Size(251, 266);
+            this.panel3.TabIndex = 6;
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.White;
+            this.panel4.Controls.Add(this.pictureBox4);
+            this.panel4.Controls.Add(this.pictureBox3);
+            this.panel4.Controls.Add(this.pictureBox2);
+            this.panel4.Controls.Add(this.btnSetDeviceTime);
+            this.panel4.Controls.Add(this.dtpUserTime);
+            this.panel4.Controls.Add(this.label31);
+            this.panel4.Controls.Add(this.tbUROVDateTime);
+            this.panel4.Controls.Add(this.label32);
+            this.panel4.Controls.Add(this.tbSystemTime);
+            this.panel4.Controls.Add(this.label33);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel4.Location = new System.Drawing.Point(2, 26);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(247, 238);
+            this.panel4.TabIndex = 2;
+            // 
+            // btnSetDeviceTime
+            // 
+            this.btnSetDeviceTime.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetDeviceTime.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetDeviceTime.ForeColor = System.Drawing.Color.Black;
+            this.btnSetDeviceTime.Location = new System.Drawing.Point(20, 185);
+            this.btnSetDeviceTime.Name = "btnSetDeviceTime";
+            this.btnSetDeviceTime.Size = new System.Drawing.Size(207, 35);
+            this.btnSetDeviceTime.TabIndex = 19;
+            this.btnSetDeviceTime.Text = "Установить время";
+            this.btnSetDeviceTime.UseVisualStyleBackColor = false;
+            this.btnSetDeviceTime.Click += new System.EventHandler(this.btnSetDeviceTime_Click);
+            // 
+            // dtpUserTime
+            // 
+            this.dtpUserTime.CustomFormat = "dd.MM.yyyy HH:mm:ss";
+            this.dtpUserTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpUserTime.Location = new System.Drawing.Point(60, 155);
+            this.dtpUserTime.Name = "dtpUserTime";
+            this.dtpUserTime.Size = new System.Drawing.Size(167, 20);
+            this.dtpUserTime.TabIndex = 18;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.ForeColor = System.Drawing.Color.Black;
+            this.label31.Location = new System.Drawing.Point(57, 139);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(117, 13);
+            this.label31.TabIndex = 17;
+            this.label31.Text = "Время пользователя:";
+            // 
+            // tbUROVDateTime
+            // 
+            this.tbUROVDateTime.Location = new System.Drawing.Point(60, 88);
+            this.tbUROVDateTime.Name = "tbUROVDateTime";
+            this.tbUROVDateTime.ReadOnly = true;
+            this.tbUROVDateTime.Size = new System.Drawing.Size(167, 20);
+            this.tbUROVDateTime.TabIndex = 16;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.ForeColor = System.Drawing.Color.Black;
+            this.label32.Location = new System.Drawing.Point(57, 72);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(88, 13);
+            this.label32.TabIndex = 15;
+            this.label32.Text = "Время прибора:";
+            // 
+            // tbSystemTime
+            // 
+            this.tbSystemTime.Location = new System.Drawing.Point(60, 34);
+            this.tbSystemTime.Name = "tbSystemTime";
+            this.tbSystemTime.ReadOnly = true;
+            this.tbSystemTime.Size = new System.Drawing.Size(167, 20);
+            this.tbSystemTime.TabIndex = 14;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.ForeColor = System.Drawing.Color.Black;
+            this.label33.Location = new System.Drawing.Point(57, 18);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(125, 13);
+            this.label33.TabIndex = 9;
+            this.label33.Text = "Системное время (ПК):";
+            // 
+            // panel13
+            // 
+            this.panel13.AutoSize = true;
+            this.panel13.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel13.Controls.Add(this.label34);
+            this.panel13.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel13.Location = new System.Drawing.Point(2, 2);
+            this.panel13.Margin = new System.Windows.Forms.Padding(0);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(247, 24);
+            this.panel13.TabIndex = 1;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label34.ForeColor = System.Drawing.Color.White;
+            this.label34.Location = new System.Drawing.Point(0, 0);
+            this.label34.Margin = new System.Windows.Forms.Padding(0);
+            this.label34.Name = "label34";
+            this.label34.Padding = new System.Windows.Forms.Padding(2);
+            this.label34.Size = new System.Drawing.Size(179, 24);
+            this.label34.TabIndex = 0;
+            this.label34.Text = "Установка времени";
+            // 
             // tpModbusSettings
             // 
             this.tpModbusSettings.Controls.Add(this.label30);
-            this.tpModbusSettings.Controls.Add(this.pictureBox1);
             this.tpModbusSettings.Controls.Add(this.lblInfoText);
             this.tpModbusSettings.Controls.Add(this.GroupBox3);
             this.tpModbusSettings.Controls.Add(this.GroupBox2);
             this.tpModbusSettings.Controls.Add(this.GroupBox1);
-            this.tpModbusSettings.Location = new System.Drawing.Point(4, 22);
+            this.tpModbusSettings.Controls.Add(this.pictureBox1);
+            this.tpModbusSettings.ImageIndex = 2;
+            this.tpModbusSettings.Location = new System.Drawing.Point(4, 39);
             this.tpModbusSettings.Name = "tpModbusSettings";
             this.tpModbusSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tpModbusSettings.Size = new System.Drawing.Size(853, 555);
+            this.tpModbusSettings.Size = new System.Drawing.Size(853, 569);
             this.tpModbusSettings.TabIndex = 0;
-            this.tpModbusSettings.Text = "Соединение";
+            this.tpModbusSettings.Text = "Соединение   ";
             this.tpModbusSettings.UseVisualStyleBackColor = true;
             // 
             // label30
@@ -1297,7 +1442,8 @@
             this.label30.Size = new System.Drawing.Size(704, 64);
             this.label30.TabIndex = 19;
             this.label30.Text = "Все параметры должны быть выбраны ПРЕЖДЕ, чем открывать порт. После того, как пор" +
-    "т открыт - никаких изменений не может быть сделано.";
+    "т открыт - никаких изменений не может быть сделано.\r\nНомер слейва устройства УРО" +
+    "В - можно менять в любое время.";
             // 
             // lblInfoText
             // 
@@ -1312,6 +1458,7 @@
             // 
             // GroupBox3
             // 
+            this.GroupBox3.Controls.Add(this.pictureBox6);
             this.GroupBox3.Controls.Add(this.btnCloseTCP);
             this.GroupBox3.Controls.Add(this.btnOpenTCP);
             this.GroupBox3.Controls.Add(this.Label12);
@@ -1331,9 +1478,9 @@
             // 
             this.btnCloseTCP.Enabled = false;
             this.btnCloseTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCloseTCP.Location = new System.Drawing.Point(15, 249);
+            this.btnCloseTCP.Location = new System.Drawing.Point(15, 306);
             this.btnCloseTCP.Name = "btnCloseTCP";
-            this.btnCloseTCP.Size = new System.Drawing.Size(207, 40);
+            this.btnCloseTCP.Size = new System.Drawing.Size(207, 30);
             this.btnCloseTCP.TabIndex = 16;
             this.btnCloseTCP.Text = "Закрыть TCP";
             this.btnCloseTCP.Click += new System.EventHandler(this.btnCloseTCP_Click);
@@ -1341,16 +1488,16 @@
             // btnOpenTCP
             // 
             this.btnOpenTCP.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOpenTCP.Location = new System.Drawing.Point(15, 203);
+            this.btnOpenTCP.Location = new System.Drawing.Point(15, 270);
             this.btnOpenTCP.Name = "btnOpenTCP";
-            this.btnOpenTCP.Size = new System.Drawing.Size(207, 40);
+            this.btnOpenTCP.Size = new System.Drawing.Size(207, 30);
             this.btnOpenTCP.TabIndex = 15;
             this.btnOpenTCP.Text = "Открыть TCP";
             this.btnOpenTCP.Click += new System.EventHandler(this.btnOpenTCP_Click);
             // 
             // Label12
             // 
-            this.Label12.Location = new System.Drawing.Point(12, 83);
+            this.Label12.Location = new System.Drawing.Point(12, 170);
             this.Label12.Name = "Label12";
             this.Label12.Size = new System.Drawing.Size(91, 18);
             this.Label12.TabIndex = 14;
@@ -1362,14 +1509,14 @@
             this.cmbTcpProtocol.Items.AddRange(new object[] {
             "Modbus/TCP",
             "Encapsulated RTU"});
-            this.cmbTcpProtocol.Location = new System.Drawing.Point(109, 83);
+            this.cmbTcpProtocol.Location = new System.Drawing.Point(107, 167);
             this.cmbTcpProtocol.Name = "cmbTcpProtocol";
             this.cmbTcpProtocol.Size = new System.Drawing.Size(115, 21);
             this.cmbTcpProtocol.TabIndex = 13;
             // 
             // Label11
             // 
-            this.Label11.Location = new System.Drawing.Point(12, 54);
+            this.Label11.Location = new System.Drawing.Point(12, 140);
             this.Label11.Name = "Label11";
             this.Label11.Size = new System.Drawing.Size(91, 20);
             this.Label11.TabIndex = 12;
@@ -1377,7 +1524,7 @@
             // 
             // txtHostName
             // 
-            this.txtHostName.Location = new System.Drawing.Point(109, 54);
+            this.txtHostName.Location = new System.Drawing.Point(109, 138);
             this.txtHostName.Name = "txtHostName";
             this.txtHostName.Size = new System.Drawing.Size(113, 20);
             this.txtHostName.TabIndex = 11;
@@ -1385,7 +1532,7 @@
             // 
             // Label10
             // 
-            this.Label10.Location = new System.Drawing.Point(12, 24);
+            this.Label10.Location = new System.Drawing.Point(12, 111);
             this.Label10.Name = "Label10";
             this.Label10.Size = new System.Drawing.Size(91, 20);
             this.Label10.TabIndex = 10;
@@ -1393,7 +1540,7 @@
             // 
             // txtTCPPort
             // 
-            this.txtTCPPort.Location = new System.Drawing.Point(109, 24);
+            this.txtTCPPort.Location = new System.Drawing.Point(109, 108);
             this.txtTCPPort.Name = "txtTCPPort";
             this.txtTCPPort.Size = new System.Drawing.Size(113, 20);
             this.txtTCPPort.TabIndex = 9;
@@ -1401,6 +1548,7 @@
             // 
             // GroupBox2
             // 
+            this.GroupBox2.Controls.Add(this.pictureBox7);
             this.GroupBox2.Controls.Add(this.btnReloadPorts);
             this.GroupBox2.Controls.Add(this.FindSerial);
             this.GroupBox2.Controls.Add(this.btnCloseSerial);
@@ -1427,9 +1575,9 @@
             // btnReloadPorts
             // 
             this.btnReloadPorts.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnReloadPorts.Location = new System.Drawing.Point(19, 295);
+            this.btnReloadPorts.Location = new System.Drawing.Point(154, 306);
             this.btnReloadPorts.Name = "btnReloadPorts";
-            this.btnReloadPorts.Size = new System.Drawing.Size(265, 40);
+            this.btnReloadPorts.Size = new System.Drawing.Size(130, 30);
             this.btnReloadPorts.TabIndex = 16;
             this.btnReloadPorts.Text = "Перечитать порты";
             this.btnReloadPorts.Click += new System.EventHandler(this.btnReloadPorts_Click);
@@ -1437,9 +1585,9 @@
             // FindSerial
             // 
             this.FindSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.FindSerial.Location = new System.Drawing.Point(19, 249);
+            this.FindSerial.Location = new System.Drawing.Point(19, 306);
             this.FindSerial.Name = "FindSerial";
-            this.FindSerial.Size = new System.Drawing.Size(265, 40);
+            this.FindSerial.Size = new System.Drawing.Size(130, 30);
             this.FindSerial.TabIndex = 15;
             this.FindSerial.Text = "Поиск Serial";
             this.FindSerial.Click += new System.EventHandler(this.FindSerial_Click);
@@ -1448,9 +1596,9 @@
             // 
             this.btnCloseSerial.Enabled = false;
             this.btnCloseSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCloseSerial.Location = new System.Drawing.Point(154, 203);
+            this.btnCloseSerial.Location = new System.Drawing.Point(154, 270);
             this.btnCloseSerial.Name = "btnCloseSerial";
-            this.btnCloseSerial.Size = new System.Drawing.Size(130, 40);
+            this.btnCloseSerial.Size = new System.Drawing.Size(130, 30);
             this.btnCloseSerial.TabIndex = 14;
             this.btnCloseSerial.Text = "Закрыть Serial";
             this.btnCloseSerial.Click += new System.EventHandler(this.btnCloseSerial_Click);
@@ -1461,9 +1609,9 @@
             this.cmbDataBits.Items.AddRange(new object[] {
             "8",
             "7"});
-            this.cmbDataBits.Location = new System.Drawing.Point(135, 134);
+            this.cmbDataBits.Location = new System.Drawing.Point(154, 213);
             this.cmbDataBits.Name = "cmbDataBits";
-            this.cmbDataBits.Size = new System.Drawing.Size(149, 21);
+            this.cmbDataBits.Size = new System.Drawing.Size(130, 21);
             this.cmbDataBits.TabIndex = 13;
             // 
             // cmbStopBits
@@ -1472,14 +1620,14 @@
             this.cmbStopBits.Items.AddRange(new object[] {
             "1",
             "2"});
-            this.cmbStopBits.Location = new System.Drawing.Point(135, 161);
+            this.cmbStopBits.Location = new System.Drawing.Point(154, 240);
             this.cmbStopBits.Name = "cmbStopBits";
-            this.cmbStopBits.Size = new System.Drawing.Size(149, 21);
+            this.cmbStopBits.Size = new System.Drawing.Size(130, 21);
             this.cmbStopBits.TabIndex = 12;
             // 
             // Label8
             // 
-            this.Label8.Location = new System.Drawing.Point(16, 135);
+            this.Label8.Location = new System.Drawing.Point(16, 216);
             this.Label8.Name = "Label8";
             this.Label8.Size = new System.Drawing.Size(113, 18);
             this.Label8.TabIndex = 11;
@@ -1487,7 +1635,7 @@
             // 
             // Label7
             // 
-            this.Label7.Location = new System.Drawing.Point(16, 162);
+            this.Label7.Location = new System.Drawing.Point(16, 243);
             this.Label7.Name = "Label7";
             this.Label7.Size = new System.Drawing.Size(113, 18);
             this.Label7.TabIndex = 10;
@@ -1495,7 +1643,7 @@
             // 
             // Label6
             // 
-            this.Label6.Location = new System.Drawing.Point(16, 108);
+            this.Label6.Location = new System.Drawing.Point(16, 189);
             this.Label6.Name = "Label6";
             this.Label6.Size = new System.Drawing.Size(113, 18);
             this.Label6.TabIndex = 9;
@@ -1508,14 +1656,14 @@
             "None",
             "Even",
             "Odd"});
-            this.cmbParity.Location = new System.Drawing.Point(135, 107);
+            this.cmbParity.Location = new System.Drawing.Point(154, 186);
             this.cmbParity.Name = "cmbParity";
-            this.cmbParity.Size = new System.Drawing.Size(149, 21);
+            this.cmbParity.Size = new System.Drawing.Size(130, 21);
             this.cmbParity.TabIndex = 8;
             // 
             // Label3
             // 
-            this.Label3.Location = new System.Drawing.Point(16, 81);
+            this.Label3.Location = new System.Drawing.Point(16, 162);
             this.Label3.Name = "Label3";
             this.Label3.Size = new System.Drawing.Size(113, 18);
             this.Label3.TabIndex = 7;
@@ -1523,7 +1671,7 @@
             // 
             // Label2
             // 
-            this.Label2.Location = new System.Drawing.Point(16, 54);
+            this.Label2.Location = new System.Drawing.Point(16, 135);
             this.Label2.Name = "Label2";
             this.Label2.Size = new System.Drawing.Size(113, 18);
             this.Label2.TabIndex = 5;
@@ -1542,22 +1690,22 @@
             "125000",
             "128000",
             "256000"});
-            this.cmbBaudRate.Location = new System.Drawing.Point(135, 53);
+            this.cmbBaudRate.Location = new System.Drawing.Point(154, 132);
             this.cmbBaudRate.Name = "cmbBaudRate";
-            this.cmbBaudRate.Size = new System.Drawing.Size(149, 21);
+            this.cmbBaudRate.Size = new System.Drawing.Size(130, 21);
             this.cmbBaudRate.TabIndex = 4;
             // 
             // cmbComPort
             // 
             this.cmbComPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbComPort.Location = new System.Drawing.Point(135, 26);
+            this.cmbComPort.Location = new System.Drawing.Point(154, 105);
             this.cmbComPort.Name = "cmbComPort";
-            this.cmbComPort.Size = new System.Drawing.Size(149, 21);
+            this.cmbComPort.Size = new System.Drawing.Size(130, 21);
             this.cmbComPort.TabIndex = 3;
             // 
             // Label1
             // 
-            this.Label1.Location = new System.Drawing.Point(16, 27);
+            this.Label1.Location = new System.Drawing.Point(16, 108);
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(113, 18);
             this.Label1.TabIndex = 1;
@@ -1566,9 +1714,9 @@
             // btnOpenSerial
             // 
             this.btnOpenSerial.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOpenSerial.Location = new System.Drawing.Point(19, 203);
+            this.btnOpenSerial.Location = new System.Drawing.Point(19, 270);
             this.btnOpenSerial.Name = "btnOpenSerial";
-            this.btnOpenSerial.Size = new System.Drawing.Size(130, 40);
+            this.btnOpenSerial.Size = new System.Drawing.Size(130, 30);
             this.btnOpenSerial.TabIndex = 2;
             this.btnOpenSerial.Text = "Открыть Serial";
             this.btnOpenSerial.Click += new System.EventHandler(this.cmdOpenSerial_Click);
@@ -1580,13 +1728,16 @@
             this.cmbSerialProtocol.Items.AddRange(new object[] {
             "RTU",
             "ASCII"});
-            this.cmbSerialProtocol.Location = new System.Drawing.Point(135, 80);
+            this.cmbSerialProtocol.Location = new System.Drawing.Point(154, 159);
             this.cmbSerialProtocol.Name = "cmbSerialProtocol";
-            this.cmbSerialProtocol.Size = new System.Drawing.Size(149, 21);
+            this.cmbSerialProtocol.Size = new System.Drawing.Size(130, 21);
             this.cmbSerialProtocol.TabIndex = 6;
             // 
             // GroupBox1
             // 
+            this.GroupBox1.Controls.Add(this.pictureBox5);
+            this.GroupBox1.Controls.Add(this.nudModbusSlaveID);
+            this.GroupBox1.Controls.Add(this.label29);
             this.GroupBox1.Controls.Add(this.cmbRetry);
             this.GroupBox1.Controls.Add(this.Label4);
             this.GroupBox1.Controls.Add(this.Label5);
@@ -1600,6 +1751,38 @@
             this.GroupBox1.TabStop = false;
             this.GroupBox1.Text = "Опции MODBUS";
             // 
+            // nudModbusSlaveID
+            // 
+            this.nudModbusSlaveID.Location = new System.Drawing.Point(142, 190);
+            this.nudModbusSlaveID.Maximum = new decimal(new int[] {
+            247,
+            0,
+            0,
+            0});
+            this.nudModbusSlaveID.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudModbusSlaveID.Name = "nudModbusSlaveID";
+            this.nudModbusSlaveID.Size = new System.Drawing.Size(66, 20);
+            this.nudModbusSlaveID.TabIndex = 18;
+            this.nudModbusSlaveID.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.ForeColor = System.Drawing.Color.Black;
+            this.label29.Location = new System.Drawing.Point(20, 192);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(83, 13);
+            this.label29.TabIndex = 17;
+            this.label29.Text = "Номер слейва:";
+            // 
             // cmbRetry
             // 
             this.cmbRetry.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1608,14 +1791,14 @@
             "1",
             "2",
             "3"});
-            this.cmbRetry.Location = new System.Drawing.Point(142, 56);
+            this.cmbRetry.Location = new System.Drawing.Point(142, 137);
             this.cmbRetry.Name = "cmbRetry";
             this.cmbRetry.Size = new System.Drawing.Size(66, 21);
             this.cmbRetry.TabIndex = 9;
             // 
             // Label4
             // 
-            this.Label4.Location = new System.Drawing.Point(20, 27);
+            this.Label4.Location = new System.Drawing.Point(20, 111);
             this.Label4.Name = "Label4";
             this.Label4.Size = new System.Drawing.Size(116, 20);
             this.Label4.TabIndex = 8;
@@ -1623,7 +1806,7 @@
             // 
             // Label5
             // 
-            this.Label5.Location = new System.Drawing.Point(20, 61);
+            this.Label5.Location = new System.Drawing.Point(20, 141);
             this.Label5.Name = "Label5";
             this.Label5.Size = new System.Drawing.Size(116, 20);
             this.Label5.TabIndex = 10;
@@ -1631,7 +1814,7 @@
             // 
             // txtTimeout
             // 
-            this.txtTimeout.Location = new System.Drawing.Point(142, 24);
+            this.txtTimeout.Location = new System.Drawing.Point(142, 108);
             this.txtTimeout.Name = "txtTimeout";
             this.txtTimeout.Size = new System.Drawing.Size(66, 20);
             this.txtTimeout.TabIndex = 0;
@@ -1639,7 +1822,7 @@
             // 
             // txtPollDelay
             // 
-            this.txtPollDelay.Location = new System.Drawing.Point(142, 90);
+            this.txtPollDelay.Location = new System.Drawing.Point(142, 164);
             this.txtPollDelay.Name = "txtPollDelay";
             this.txtPollDelay.Size = new System.Drawing.Size(66, 20);
             this.txtPollDelay.TabIndex = 11;
@@ -1647,11 +1830,79 @@
             // 
             // Label9
             // 
-            this.Label9.Location = new System.Drawing.Point(20, 93);
+            this.Label9.Location = new System.Drawing.Point(20, 167);
             this.Label9.Name = "Label9";
             this.Label9.Size = new System.Drawing.Size(116, 20);
             this.Label9.TabIndex = 12;
             this.Label9.Text = "Задержка выборки:";
+            // 
+            // tabsImages
+            // 
+            this.tabsImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabsImages.ImageStream")));
+            this.tabsImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.tabsImages.Images.SetKeyName(0, "applications-system.png");
+            this.tabsImages.Images.SetKeyName(1, "preferences-other.png");
+            this.tabsImages.Images.SetKeyName(2, "network-disconnect.png");
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
+            this.pictureBox4.Location = new System.Drawing.Point(20, 76);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox4.TabIndex = 22;
+            this.pictureBox4.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = global::UROVModbus.Properties.Resources.im_user_away;
+            this.pictureBox3.Location = new System.Drawing.Point(19, 143);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox3.TabIndex = 21;
+            this.pictureBox3.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
+            this.pictureBox2.Location = new System.Drawing.Point(19, 22);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox2.TabIndex = 20;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox6
+            // 
+            this.pictureBox6.Image = global::UROVModbus.Properties.Resources.network_wired;
+            this.pictureBox6.Location = new System.Drawing.Point(15, 27);
+            this.pictureBox6.Name = "pictureBox6";
+            this.pictureBox6.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox6.TabIndex = 22;
+            this.pictureBox6.TabStop = false;
+            // 
+            // pictureBox7
+            // 
+            this.pictureBox7.Image = global::UROVModbus.Properties.Resources.connect_established;
+            this.pictureBox7.Location = new System.Drawing.Point(19, 27);
+            this.pictureBox7.Name = "pictureBox7";
+            this.pictureBox7.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox7.TabIndex = 23;
+            this.pictureBox7.TabStop = false;
+            // 
+            // pictureBox5
+            // 
+            this.pictureBox5.Image = global::UROVModbus.Properties.Resources.applications_system_big;
+            this.pictureBox5.Location = new System.Drawing.Point(23, 27);
+            this.pictureBox5.Name = "pictureBox5";
+            this.pictureBox5.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox5.TabIndex = 21;
+            this.pictureBox5.TabStop = false;
             // 
             // pictureBox1
             // 
@@ -1663,20 +1914,11 @@
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
             // 
-            // lblCurrentTabPageHint
-            // 
-            this.lblCurrentTabPageHint.AutoSize = true;
-            this.lblCurrentTabPageHint.Location = new System.Drawing.Point(5, 7);
-            this.lblCurrentTabPageHint.Name = "lblCurrentTabPageHint";
-            this.lblCurrentTabPageHint.Size = new System.Drawing.Size(39, 13);
-            this.lblCurrentTabPageHint.TabIndex = 0;
-            this.lblCurrentTabPageHint.Text = "Файл:";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(861, 635);
+            this.ClientSize = new System.Drawing.Size(861, 662);
             this.Controls.Add(this.tabPages);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusBar);
@@ -1687,7 +1929,7 @@
             this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "UROV через MODBUS";
+            this.Text = "Конфигуратор UROV MODBUS";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.statusBar.ResumeLayout(false);
@@ -1696,8 +1938,6 @@
             this.panel1.PerformLayout();
             this.tabPages.ResumeLayout(false);
             this.tpUROVSettings.ResumeLayout(false);
-            this.tpUROVSettings.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
             this.panel46.ResumeLayout(false);
             this.panel46.PerformLayout();
             this.panel47.ResumeLayout(false);
@@ -1758,13 +1998,28 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudSkipCounter)).EndInit();
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();
+            this.tpAdditionalSettings.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            this.panel13.ResumeLayout(false);
+            this.panel13.PerformLayout();
             this.tpModbusSettings.ResumeLayout(false);
             this.tpModbusSettings.PerformLayout();
             this.GroupBox3.ResumeLayout(false);
             this.GroupBox3.PerformLayout();
             this.GroupBox2.ResumeLayout(false);
+            this.GroupBox2.PerformLayout();
             this.GroupBox1.ResumeLayout(false);
             this.GroupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1789,8 +2044,6 @@
         private System.Windows.Forms.TabControl tabPages;
         private System.Windows.Forms.TabPage tpUROVSettings;
         private System.Windows.Forms.Button btnFileList;
-        private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
-        private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Button btnReadRegisters;
         private System.Windows.Forms.Panel panel46;
         private System.Windows.Forms.Panel panel47;
@@ -1900,6 +2153,27 @@
         private System.Windows.Forms.TextBox txtPollDelay;
         private System.Windows.Forms.Label Label9;
         private System.Windows.Forms.Label lblCurrentTabPageHint;
+        private System.Windows.Forms.NumericUpDown nudModbusSlaveID;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TabPage tpAdditionalSettings;
+        private System.Windows.Forms.ImageList tabsImages;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.TextBox tbSystemTime;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Panel panel13;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.TextBox tbUROVDateTime;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.DateTimePicker dtpUserTime;
+        private System.Windows.Forms.Button btnSetDeviceTime;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.PictureBox pictureBox5;
+        private System.Windows.Forms.PictureBox pictureBox6;
+        private System.Windows.Forms.PictureBox pictureBox7;
     }
 }
 

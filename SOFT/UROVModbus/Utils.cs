@@ -373,6 +373,7 @@ namespace UROVModbus
         ListFiles,    // запрошен список файлов в директории
         FileContent,  // запрошено содержимое файла
         DeleteFile,   // запрошено удаление файла
+        SetDeviceTime, // запрошена установка времени прибора
     }
 
     /// <summary>

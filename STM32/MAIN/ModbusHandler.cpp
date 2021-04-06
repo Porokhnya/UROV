@@ -2,6 +2,7 @@
 #include "ModbusHandler.h"
 #include "Settings.h"
 #include "ADCSampler.h"
+#include "DS3231.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ModbusHandler Modbus;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -62,6 +63,15 @@ void ModbusHandler::setup()
   
   mbusRegBank.add(MODBUS_REG_SAVECHANGES);  // регистр флага сохранения настроек, ПОСЛЕДНИЙ ИЗ РЕГИСТРОВ НАСТРОЕК
 
+
+  // регистры времени
+  mbusRegBank.add(MODBUS_REG_YEAR);
+  mbusRegBank.add(MODBUS_REG_MONTH);
+  mbusRegBank.add(MODBUS_REG_DAY);
+  mbusRegBank.add(MODBUS_REG_HOUR);
+  mbusRegBank.add(MODBUS_REG_MINUTE);
+  mbusRegBank.add(MODBUS_REG_SECOND);
+
   // теперь идут служебные настройки
   mbusRegBank.add(MODBUS_REG_FILE_SIZE1);
   mbusRegBank.add(MODBUS_REG_FILE_SIZE2);
@@ -96,6 +106,23 @@ void ModbusHandler::begin()
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void ModbusHandler::checkForChanges()
 {
+  // устанавливаем в регистры время контроллера
+  static uint32_t setTimeTimer = 0;
+  if(millis() - setTimeTimer >= 1000ul)
+  {
+    DS3231Time tm = RealtimeClock.getTime();
+
+    set(MODBUS_REG_YEAR,tm.year);
+    set(MODBUS_REG_MONTH,tm.month);
+    set(MODBUS_REG_DAY,tm.dayOfMonth);
+    set(MODBUS_REG_HOUR,tm.hour);
+    set(MODBUS_REG_MINUTE,tm.minute);
+    set(MODBUS_REG_SECOND,tm.second);
+
+    setTimeTimer = millis();
+  }
+
+  
   if(mbusRegBank.get(MODBUS_REG_SAVECHANGES) == 1) // попросили сохранить все настройки, пришедшие с modbus
   {
     set(MODBUS_REG_SAVECHANGES,0); // сбрасываем флаг
@@ -221,10 +248,43 @@ void ModbusHandler::checkForChanges()
       do_mbusDeleteFile(fileName);
     }
     break;
+
+    case mbusSetDeviceTime: // запрошена установка времени прибора
+    {
+      do_mbusSetDeviceTime();
+    }
+    break;
     
   } // switch
   
 
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void ModbusHandler::do_mbusSetDeviceTime()
+{
+    uint16_t year = get(MODBUS_REG_DATA);
+    uint8_t month = get(MODBUS_REG_DATA+1);
+    uint8_t day = get(MODBUS_REG_DATA+2);
+
+    uint8_t hour = get(MODBUS_REG_DATA+3);
+    uint8_t minute = get(MODBUS_REG_DATA+4);
+    uint8_t second = get(MODBUS_REG_DATA+5);
+    
+     // вычисляем день недели
+    int16_t dow;
+    uint8_t mArr[12] = {6,2,2,5,0,3,5,1,4,6,2,4};
+    dow = (year % 100);
+    dow = dow*1.25;
+    dow += day;
+    dow += mArr[month-1];
+    
+    if (((year % 4)==0) && (month<3))
+     dow -= 1;
+     
+    while (dow>7)
+     dow -= 7; 
+
+    RealtimeClock.setTime(second, minute, hour, dow, day, month, year);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 String ModbusHandler::getPassedFileName()
