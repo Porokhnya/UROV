@@ -121,6 +121,9 @@
             this.tpAdditionalSettings = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnSetDeviceTime = new System.Windows.Forms.Button();
             this.dtpUserTime = new System.Windows.Forms.DateTimePicker();
             this.label31 = new System.Windows.Forms.Label();
@@ -134,6 +137,7 @@
             this.label30 = new System.Windows.Forms.Label();
             this.lblInfoText = new System.Windows.Forms.Label();
             this.GroupBox3 = new System.Windows.Forms.GroupBox();
+            this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.btnCloseTCP = new System.Windows.Forms.Button();
             this.btnOpenTCP = new System.Windows.Forms.Button();
             this.Label12 = new System.Windows.Forms.Label();
@@ -143,6 +147,7 @@
             this.Label10 = new System.Windows.Forms.Label();
             this.txtTCPPort = new System.Windows.Forms.TextBox();
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.pictureBox7 = new System.Windows.Forms.PictureBox();
             this.btnReloadPorts = new System.Windows.Forms.Button();
             this.FindSerial = new System.Windows.Forms.Button();
             this.btnCloseSerial = new System.Windows.Forms.Button();
@@ -160,6 +165,7 @@
             this.btnOpenSerial = new System.Windows.Forms.Button();
             this.cmbSerialProtocol = new System.Windows.Forms.ComboBox();
             this.GroupBox1 = new System.Windows.Forms.GroupBox();
+            this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.nudModbusSlaveID = new System.Windows.Forms.NumericUpDown();
             this.label29 = new System.Windows.Forms.Label();
             this.cmbRetry = new System.Windows.Forms.ComboBox();
@@ -168,14 +174,8 @@
             this.txtTimeout = new System.Windows.Forms.TextBox();
             this.txtPollDelay = new System.Windows.Forms.TextBox();
             this.Label9 = new System.Windows.Forms.Label();
-            this.tabsImages = new System.Windows.Forms.ImageList(this.components);
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.pictureBox7 = new System.Windows.Forms.PictureBox();
-            this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.tabsImages = new System.Windows.Forms.ImageList(this.components);
             this.statusBar.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPages.SuspendLayout();
@@ -219,18 +219,18 @@
             this.tpAdditionalSettings.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel13.SuspendLayout();
-            this.tpModbusSettings.SuspendLayout();
-            this.GroupBox3.SuspendLayout();
-            this.GroupBox2.SuspendLayout();
-            this.GroupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.panel13.SuspendLayout();
+            this.tpModbusSettings.SuspendLayout();
+            this.GroupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
+            this.GroupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
+            this.GroupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -1323,6 +1323,36 @@
             this.panel4.Size = new System.Drawing.Size(247, 238);
             this.panel4.TabIndex = 2;
             // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
+            this.pictureBox4.Location = new System.Drawing.Point(20, 76);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox4.TabIndex = 22;
+            this.pictureBox4.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = global::UROVModbus.Properties.Resources.im_user_away;
+            this.pictureBox3.Location = new System.Drawing.Point(19, 143);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox3.TabIndex = 21;
+            this.pictureBox3.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
+            this.pictureBox2.Location = new System.Drawing.Point(19, 22);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox2.TabIndex = 20;
+            this.pictureBox2.TabStop = false;
+            // 
             // btnSetDeviceTime
             // 
             this.btnSetDeviceTime.BackColor = System.Drawing.Color.LightGreen;
@@ -1474,6 +1504,16 @@
             this.GroupBox3.TabStop = false;
             this.GroupBox3.Text = "MODBUS/TCP";
             // 
+            // pictureBox6
+            // 
+            this.pictureBox6.Image = global::UROVModbus.Properties.Resources.network_wired;
+            this.pictureBox6.Location = new System.Drawing.Point(15, 27);
+            this.pictureBox6.Name = "pictureBox6";
+            this.pictureBox6.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox6.TabIndex = 22;
+            this.pictureBox6.TabStop = false;
+            // 
             // btnCloseTCP
             // 
             this.btnCloseTCP.Enabled = false;
@@ -1507,7 +1547,7 @@
             // 
             this.cmbTcpProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTcpProtocol.Items.AddRange(new object[] {
-            "Modbus/TCP",
+            "MODBUS/TCP",
             "Encapsulated RTU"});
             this.cmbTcpProtocol.Location = new System.Drawing.Point(107, 167);
             this.cmbTcpProtocol.Name = "cmbTcpProtocol";
@@ -1570,7 +1610,17 @@
             this.GroupBox2.Size = new System.Drawing.Size(300, 352);
             this.GroupBox2.TabIndex = 15;
             this.GroupBox2.TabStop = false;
-            this.GroupBox2.Text = "Serial Modbus";
+            this.GroupBox2.Text = "Serial MODBUS";
+            // 
+            // pictureBox7
+            // 
+            this.pictureBox7.Image = global::UROVModbus.Properties.Resources.connect_established;
+            this.pictureBox7.Location = new System.Drawing.Point(19, 27);
+            this.pictureBox7.Name = "pictureBox7";
+            this.pictureBox7.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox7.TabIndex = 23;
+            this.pictureBox7.TabStop = false;
             // 
             // btnReloadPorts
             // 
@@ -1751,6 +1801,16 @@
             this.GroupBox1.TabStop = false;
             this.GroupBox1.Text = "Опции MODBUS";
             // 
+            // pictureBox5
+            // 
+            this.pictureBox5.Image = global::UROVModbus.Properties.Resources.applications_system_big;
+            this.pictureBox5.Location = new System.Drawing.Point(23, 27);
+            this.pictureBox5.Name = "pictureBox5";
+            this.pictureBox5.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox5.TabIndex = 21;
+            this.pictureBox5.TabStop = false;
+            // 
             // nudModbusSlaveID
             // 
             this.nudModbusSlaveID.Location = new System.Drawing.Point(142, 190);
@@ -1836,74 +1896,6 @@
             this.Label9.TabIndex = 12;
             this.Label9.Text = "Задержка выборки:";
             // 
-            // tabsImages
-            // 
-            this.tabsImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabsImages.ImageStream")));
-            this.tabsImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.tabsImages.Images.SetKeyName(0, "applications-system.png");
-            this.tabsImages.Images.SetKeyName(1, "preferences-other.png");
-            this.tabsImages.Images.SetKeyName(2, "network-disconnect.png");
-            // 
-            // pictureBox4
-            // 
-            this.pictureBox4.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
-            this.pictureBox4.Location = new System.Drawing.Point(20, 76);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox4.TabIndex = 22;
-            this.pictureBox4.TabStop = false;
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.Image = global::UROVModbus.Properties.Resources.im_user_away;
-            this.pictureBox3.Location = new System.Drawing.Point(19, 143);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox3.TabIndex = 21;
-            this.pictureBox3.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
-            this.pictureBox2.Location = new System.Drawing.Point(19, 22);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox2.TabIndex = 20;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox6
-            // 
-            this.pictureBox6.Image = global::UROVModbus.Properties.Resources.network_wired;
-            this.pictureBox6.Location = new System.Drawing.Point(15, 27);
-            this.pictureBox6.Name = "pictureBox6";
-            this.pictureBox6.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox6.TabIndex = 22;
-            this.pictureBox6.TabStop = false;
-            // 
-            // pictureBox7
-            // 
-            this.pictureBox7.Image = global::UROVModbus.Properties.Resources.connect_established;
-            this.pictureBox7.Location = new System.Drawing.Point(19, 27);
-            this.pictureBox7.Name = "pictureBox7";
-            this.pictureBox7.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox7.TabIndex = 23;
-            this.pictureBox7.TabStop = false;
-            // 
-            // pictureBox5
-            // 
-            this.pictureBox5.Image = global::UROVModbus.Properties.Resources.applications_system_big;
-            this.pictureBox5.Location = new System.Drawing.Point(23, 27);
-            this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox5.TabIndex = 21;
-            this.pictureBox5.TabStop = false;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::UROVModbus.Properties.Resources.emblem_important;
@@ -1913,6 +1905,14 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
+            // 
+            // tabsImages
+            // 
+            this.tabsImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabsImages.ImageStream")));
+            this.tabsImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.tabsImages.Images.SetKeyName(0, "applications-system.png");
+            this.tabsImages.Images.SetKeyName(1, "preferences-other.png");
+            this.tabsImages.Images.SetKeyName(2, "network-disconnect.png");
             // 
             // MainForm
             // 
@@ -2003,23 +2003,23 @@
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.panel13.ResumeLayout(false);
             this.panel13.PerformLayout();
             this.tpModbusSettings.ResumeLayout(false);
             this.tpModbusSettings.PerformLayout();
             this.GroupBox3.ResumeLayout(false);
             this.GroupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
             this.GroupBox2.ResumeLayout(false);
             this.GroupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
             this.GroupBox1.ResumeLayout(false);
             this.GroupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudModbusSlaveID)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -9,3 +9,4 @@ D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.ViewChartForm.resource
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.csproj.GenerateResource.Cache
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.exe
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.pdb
+D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.csprojResolveAssemblyReference.cache
