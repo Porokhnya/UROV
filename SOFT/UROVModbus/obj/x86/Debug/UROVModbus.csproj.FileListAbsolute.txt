@@ -10,3 +10,8 @@ D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.csproj.GenerateResourc
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.exe
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.pdb
 D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.csprojResolveAssemblyReference.cache
+D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.TrustInfo.xml
+D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\x86\Debug\UROVModbus.exe.manifest
+D:\JOB\UROV\UROV\SOFT\UROVModbus\bin\x86\Debug\UROVModbus.application
+D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.exe.manifest
+D:\JOB\UROV\UROV\SOFT\UROVModbus\obj\x86\Debug\UROVModbus.application
