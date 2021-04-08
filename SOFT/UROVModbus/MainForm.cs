@@ -2453,21 +2453,12 @@ namespace UROVModbus
             Color cwColor = Color.SteelBlue;
             Color ccwColor = Color.LimeGreen;
 
-            /*
-            if(record.RodPosition == RodPosition.Up) // штанга двигалась вверх
-            {
-                interruptSerie.Color = cwColor;
-               
-            } // if
-            else // штанга двигалась вниз
-            {
-                interruptSerie.Color = ccwColor;
-            } // else
-            */
 
+            //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+            /*
+            // тут раскрашиваем график направлениями движения
             if (record.InterruptData.Count > 0)
             {
-                // тут раскрашиваем график направлениями движения
                 RodPosition lastPos = RodPosition.Broken;
 
               //  System.Diagnostics.Debug.Assert(record.InterruptData.Count == record.Directions.Count);
@@ -2492,78 +2483,8 @@ namespace UROVModbus
                     }
 
                 } // for
-                /*
-                if (record.DirectionTimes.Count > 0)
-                {
-
-                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
-
-                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
-
-                    int pointsIterator = 0;
-
-                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
-
-                    for (int i = 0; i < record.DirectionTimes.Count; i++)
-                    {
-                        int changeTime = record.DirectionTimes[i];
-                        RodPosition changeTo = (RodPosition)record.Directions[i];
-
-                        // теперь заменяем все точки, время которых меньше, чем время изменения вращения, на нужный цвет.
-                        for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
-                        {
-                            interruptSerie.Points[k].Color = curSerieColor;
-
-                            int changeDirectionIdx = k;
-
-                            if (Convert.ToInt32(interruptSerie.Points[k].XValue) >= (changeTime + record.DataArrivedTime))
-                            {
-                                
-                                // тут была проверка скорости !!!
-
-                                interruptSerie.Points[changeDirectionIdx].MarkerColor = Color.Red;
-                                interruptSerie.Points[changeDirectionIdx].MarkerStyle = MarkerStyle.Circle;
-                                interruptSerie.Points[changeDirectionIdx].MarkerSize = 6;
-
-                                pointsIterator++;
-                                break;
-                            }
-
-                        } // for
-
-                        if (changeTo == RodPosition.Up)//initialDirection)
-                        {
-                            curSerieColor = cwColor;
-                        }
-                        else
-                        {
-                            curSerieColor = ccwColor;
-                        }
-
-
-                    } // for
-
-                    // забиваем все остальные точки
-                    for (int k = pointsIterator; k < interruptSerie.Points.Count; k++, pointsIterator++)
-                    {
-                        interruptSerie.Points[k].Color = curSerieColor;
-                    } // for
-
-                } // record.DirectionTimes.Count > 0
-                else
-                {
-                    // нет смены направления движения
-                    RodPosition initialDirection = record.RodPosition; // первоначальное движение штанги
-
-                    // проходим по всем точкам графика, и меняем им цвет, в зависимости от направления движения штанги
-                    Color curSerieColor = initialDirection == RodPosition.Up ? cwColor : ccwColor;
-                    for (int k = 0; k < interruptSerie.Points.Count; k++)
-                    {
-                        interruptSerie.Points[k].Color = curSerieColor;
-                    }
-                } // else 
-                */
             } // if
+            */
 
 
 
@@ -3056,7 +2977,6 @@ namespace UROVModbus
                                     break;
                                 }
 
-                                //curRecord.DirectionTimes.Clear();
                                 curRecord.Directions.Clear();
 
                                 // следом идут 2 байта длины данных

@@ -7,7 +7,7 @@
     <framework targetVersion="4.0" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="Application Files\UROVModbus_1_0_0_0\UROVModbus.exe.manifest" size="5208">
+    <dependentAssembly dependencyType="install" codebase="UROVModbus.exe.manifest" size="5208">
       <assemblyIdentity name="UROVModbus.exe" version="1.0.0.0" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>

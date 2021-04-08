@@ -34,9 +34,12 @@ volatile bool relayTrigCatched = false; // флаг, что было зафик�
 
 volatile uint32_t lastPeakDetectedTimer = 0; // таймер последнего превышения по току
 //--------------------------------------------------------------------------------------------------------------------------------------
+//TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+/*
 volatile bool canCatchInitialRotationDirection = false; // флаг, что мы должны засечь и сохранить первоначальное направление движения штанги
 volatile uint8_t lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
 DirectionInfoData DirectionInfo;  // список изменений направления вращения энкодера
+*/
 //--------------------------------------------------------------------------------------------------------------------------------------
 bool hasRelayTriggered() // проверка срабатывания внешней защиты
 {
@@ -59,7 +62,10 @@ bool hasRelayTriggered() // проверка срабатывания внешн
 //--------------------------------------------------------------------------------------------------------------------------------------
 volatile bool predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
 InterruptTimeList predictList; // список для предсказаний
+//TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+/*
 DirectionInfoData predictDirections; // список для направления вращения предсказаний
+*/
 volatile bool predictTriggeredFlag = false; // флаг срабатывания предсказания
 //--------------------------------------------------------------------------------------------------------------------------------------
 void predictOff() // выключаем предсказание
@@ -68,7 +74,11 @@ void predictOff() // выключаем предсказание
   {
     predictEnabledFlag = false; // отключаем сбор предсказаний
     predictList.empty(); // очищаем список предсказаний
+
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     predictDirections.empty();
+    */
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -78,7 +88,11 @@ void predictOn() // включаем предсказание
   {
     predictEnabledFlag = true; // включаем сбор предсказаний
     predictList.empty(); // очищаем список предсказаний
+
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     predictDirections.empty();
+    */
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -96,7 +110,11 @@ void copyPredictToList() // копируем предсказания в спи�
   noInterrupts();
 
     InterruptData.empty(); // очищаем список прерываний
+
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     DirectionInfo.empty();
+    */
 
     #ifdef PREDICT_ENABLED
     // тут копируем полученные в предсказании импульсы в список
@@ -105,10 +123,13 @@ void copyPredictToList() // копируем предсказания в спи�
       InterruptData.push_back(predictList[k]);
     }  
 
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     for(size_t k=0;k<predictDirections.size();k++)
     {
       DirectionInfo.push_back(predictDirections[k]);
     }
+    */
     #endif // PREDICT_ENABLED
             
   interrupts();
@@ -155,7 +176,11 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
     if(predictList.size() < PREDICT_PULSES)
     {
       predictList.push_back(micros()); // сохраняем время импульса в нашем списке
+
+      //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+      /*
       predictDirections.push_back( HAL_GPIO_ReadPin(ENCODER_PORT,ENCODER_PIN_B) ? rpUp : rpDown ); // сохраняем направление вращения списка предсказаний
+      */
     }
 
     if(predictList.size() >= PREDICT_PULSES) // накопили достаточное количество импульсов
@@ -173,7 +198,11 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
       {
         // предсказание не сработало, просто чистим список
         predictList.empty();
+
+        //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+        /*
         predictDirections.empty();        
+        */
       }
     }
   } // predictEnabledFlag
@@ -190,6 +219,8 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
     InterruptData.push_back(now);
 
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     #ifndef DISABLE_CATCH_ENCODER_DIRECTION
 
       // читаем состояние пина В, Сашин метод
@@ -210,6 +241,7 @@ void EncoderPulsesHandler() // обработчик импульсов энко�
 
 
     #endif // #ifndef DISABLE_CATCH_ENCODER_DIRECTION
+    */
     
     encoderTimer = now; // обновляем значение времени, когда было последнее срабатывание энкодера  
 
@@ -226,11 +258,19 @@ void InterruptHandlerClass::begin() // начинаем работу
 
 // резервируем память
   InterruptData.reserve(MAX_PULSES_TO_CATCH);
+
+  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+  /*
   DirectionInfo.reserve(MAX_PULSES_TO_CATCH);
+  */
 
   #ifdef PREDICT_ENABLED
     predictList.reserve(PREDICT_PULSES*2);
+
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     predictDirections.reserve(PREDICT_PULSES*2);
+    */
   #endif
 
 
@@ -293,7 +333,8 @@ void InterruptHandlerClass::normalizeList(InterruptTimeList& list, uint32_t dirO
 */
 //--------------------------------------------------------------------------------------------------------------------------------------
 // запись информации по прерыванию в лог
-uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData, uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
+//TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+uint32_t InterruptHandlerClass::writeLogRecord(/*DirectionInfoData& directionData, */uint16_t previewCount, int32_t dataArrivedTime, CurrentOscillData* oscData, InterruptTimeList& _list, EthalonCompareResult compareResult
 , EthalonCompareNumber num, /*InterruptTimeList& ethalonData*/const String& ethalonFileName, bool toEEPROM, uint32_t curEEPROMWriteAddress)
 {
 
@@ -629,8 +670,9 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
   }
 
 
+  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+  /*
   // пишем данные по изменения направления вращения энкодера
-  //if (directionData.times.size() > 0)
   if (directionData.size() > 0)
   {
     workBuff[0] = recordDirectionData;
@@ -640,19 +682,6 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
 
     if(toEEPROM)
     {
-    /*
-    eeprom->write(curEEPROMWriteAddress,workBuff,3);
-    written += 3;
-    curEEPROMWriteAddress += 3;
- 
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.times.pData(), directionData.times.size()*sizeof(uint32_t));
-    written += directionData.times.size()*sizeof(uint32_t);
-    curEEPROMWriteAddress += directionData.times.size()*sizeof(uint32_t);
-
-    eeprom->write(curEEPROMWriteAddress,(uint8_t*) directionData.directions.pData(), directionData.directions.size()*sizeof(uint8_t));
-    written += directionData.directions.size()*sizeof(uint8_t);
-    curEEPROMWriteAddress += directionData.directions.size()*sizeof(uint8_t);
-    */
     eeprom->write(curEEPROMWriteAddress,workBuff,3);
     written += 3;
     curEEPROMWriteAddress += 3;
@@ -665,17 +694,13 @@ uint32_t InterruptHandlerClass::writeLogRecord(DirectionInfoData& directionData,
     else
     {
       #ifndef _SD_OFF
-      /*
-      Logger.write(workBuff, 3);
-      Logger.write((uint8_t*)directionData.times.pData(), directionData.times.size() * sizeof(uint32_t));
-      Logger.write((uint8_t*)directionData.directions.pData(), directionData.directions.size() * sizeof(uint8_t));
-      */
       Logger.write(workBuff, 3);
       Logger.write((uint8_t*)directionData.pData(), directionData.size() * sizeof(uint8_t));
       
      #endif
     }
   }
+  */
 
   // заканчиваем запись
   workBuff[0] = recordInterruptRecordEnd;
@@ -700,7 +725,10 @@ return written;
 //--------------------------------------------------------------------------------------------------------------------------------------
 // запись переданных данных в лог
 void InterruptHandlerClass::writeToLog(
+  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+  /*
   DirectionInfoData& directionData, // информация по направлению движения энкодера
+  */
   uint16_t previewCount, // кол-во записей превью тока
   int32_t dataArrivedTime,  // время прихода данных по прерыванию
   DS3231Time& tm, // время фиксации данных прерывания
@@ -857,7 +885,8 @@ void InterruptHandlerClass::writeToLog(
   // теперь смотрим, в каких списках есть данные, и пишем записи в лог
   //if(lst1.size() > 1)
   {
-    uint32_t written = writeLogRecord(directionData, previewCount, dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    uint32_t written = writeLogRecord(/*directionData, */previewCount, dataArrivedTime,oscData,lst1,res1,num1, /*ethalonData1*/ ethalonFileName,toEEPROM,eepromAddress);
     eepromAddress += written;
     recordTotalLength += written;
   } // if
@@ -918,13 +947,20 @@ void InterruptHandlerClass::resume() // возобновление работы
   #ifdef PREDICT_ENABLED
     predictEnabledFlag = true; // флаг, что мы можем собирать информацию о предсказаниях срабатывания защиты
     predictList.empty(); // список для предсказаний
+
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    /*
     predictDirections.empty();
+    */
     predictTriggeredFlag = false; // флаг срабатывания предсказания
   #endif
 
   paused = false;
   InterruptData.empty();
-  DirectionInfo.empty();//clear(); // очищаем список направлений движений
+  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+  /*
+  DirectionInfo.empty(); // очищаем список направлений движений
+  */
   machineState = msIdle; // состояние конечного автомата
   canHandleEncoder = false; // флаг, что мы можем собирать прерывания с энкодера
   downEndstopTriggered = false; // состояние нижнего концевика на момент срабатывания защиты  
@@ -1005,10 +1041,12 @@ void InterruptHandlerClass::update() // обновление внутренне�
                 trigReasonTimer = micros(); // запоминаем время срабатывания причины
                 
                 encoderTimer = micros();
-                //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+                //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+                /*
                 lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
-                canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
                 canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+                */
+                canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
 
                 machineState = msHandlePeakReason; // переключаемся на ветку обработки причины срабатывания "превышение по току"
                 relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
@@ -1041,10 +1079,12 @@ void InterruptHandlerClass::update() // обновление внутренне�
         trigReasonTimer = micros(); // запоминаем время срабатывания причины
         
         encoderTimer = micros();
-        //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+        /*
         lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
-        canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
         canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+        */
+        canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
 
         machineState = msHandleRelayReason; // переключаемся на ветку обработки причины срабатывания "срабатывание внешней защиты"
         relayTrigCatched = true; // сохраняем флаг срабатывание внешней защиты
@@ -1081,10 +1121,12 @@ void InterruptHandlerClass::update() // обновление внутренне�
         trigReasonTimer = micros(); // запоминаем время срабатывания причины
         
         encoderTimer = micros();
-        //resetTransitionState(); // обнуляем таблицу переходов состояний энкодера
+        //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+        /*
         lastKnownDirection = 0xFF;     // последнее известное направление движения штанги
-        canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
         canCatchInitialRotationDirection = true; // говорим, чтобы засекли первоначальное направление движения штанги
+        */
+        canHandleEncoder = true; // разрешаем обработчику прерываний энкодера собирать информацию
 
         machineState = msWaitForCollectEncoderPulses; // переключаемся на ветку ожидания окончания импульсов с энкодера
         relayTrigCatched = hasRelayTriggered(); // сохраняем флаг срабатывание внешней защиты
@@ -1354,12 +1396,14 @@ void InterruptHandlerClass::update() // обновление внутренне�
             { 
               
               // записываем последнее срабатывание в EEPROM
-              writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
+              //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+              writeToLog(/*DirectionInfo, */previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName,true);
               
               #ifndef _SD_OFF
                   //  DBGLN(F("Надо сохранить в лог, пишем на SD!"));
                   // надо записать в лог дату срабатывания системы
-                  writeToLog(DirectionInfo, previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);
+                  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+                  writeToLog(/*DirectionInfo, */previewCount, datArrivTm, relayTriggeredTime, &OscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);
               #endif // !_SD_OFF
               
             } // needToLog

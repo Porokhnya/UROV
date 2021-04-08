@@ -351,7 +351,6 @@ namespace UROVModbus
         public List<int> CurrentData2 = new List<int>();
         public List<int> CurrentData3 = new List<int>();
 
-        //public List<int> DirectionTimes = new List<int>();
         public List<int> Directions = new List<int>(); // список направлений движения привода
 
         public int PreviewCount = 0; // кол-во превью по току

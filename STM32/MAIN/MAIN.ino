@@ -154,19 +154,24 @@ void processInterruptFromModule(int32_t dataArrivedTime, DS3231Time& tm, bool en
    Screen.update();
 	}
 
+  //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+  /*
   // пустой список направлений движения энкодера
   DirectionInfoData emptyDirectionInfo;
+  */
 
   if (needToLog) // если надо сохранить лог, то
   {
     // записываем в EEPROM
-    InterruptHandlerClass::writeToLog(emptyDirectionInfo, previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    InterruptHandlerClass::writeToLog(/*emptyDirectionInfo, */previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, /*ethalonData1*/ethalonFileName,true);
     
 #ifndef _SD_OFF
   //  DBGLN(F("processInterruptFromModule: WANT TO LOG ON SD!"));
 
     // надо записать в лог на SD дату срабатывания системы
-    InterruptHandlerClass::writeToLog(emptyDirectionInfo, previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
+    //TODO: УБРАНА РАБОТА С НАПРАВЛЕНИЕМ ДВИЖЕНИЯ ШТАНГИ
+    InterruptHandlerClass::writeToLog(/*emptyDirectionInfo, */previewCount, dataArrivedTime, tm, &oscillData,InterruptData, compareRes1, compareNumber1, ethalonFileName);//ethalonData1);
 
 #endif // !_SD_OFF
   } // needToLog
