@@ -176,6 +176,7 @@
             this.Label9 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabsImages = new System.Windows.Forms.ImageList(this.components);
+            this.btnSetSystemTime = new System.Windows.Forms.Button();
             this.statusBar.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPages.SuspendLayout();
@@ -1301,12 +1302,13 @@
             this.panel3.Margin = new System.Windows.Forms.Padding(10);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(2);
-            this.panel3.Size = new System.Drawing.Size(251, 266);
+            this.panel3.Size = new System.Drawing.Size(251, 302);
             this.panel3.TabIndex = 6;
             // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.White;
+            this.panel4.Controls.Add(this.btnSetSystemTime);
             this.panel4.Controls.Add(this.pictureBox4);
             this.panel4.Controls.Add(this.pictureBox3);
             this.panel4.Controls.Add(this.pictureBox2);
@@ -1320,13 +1322,13 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(2, 26);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(247, 238);
+            this.panel4.Size = new System.Drawing.Size(247, 274);
             this.panel4.TabIndex = 2;
             // 
             // pictureBox4
             // 
             this.pictureBox4.Image = global::UROVModbus.Properties.Resources.preferences_system_time;
-            this.pictureBox4.Location = new System.Drawing.Point(20, 76);
+            this.pictureBox4.Location = new System.Drawing.Point(20, 219);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(32, 32);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -1336,7 +1338,7 @@
             // pictureBox3
             // 
             this.pictureBox3.Image = global::UROVModbus.Properties.Resources.im_user_away;
-            this.pictureBox3.Location = new System.Drawing.Point(19, 143);
+            this.pictureBox3.Location = new System.Drawing.Point(19, 119);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(32, 32);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -1358,11 +1360,11 @@
             this.btnSetDeviceTime.BackColor = System.Drawing.Color.LightGreen;
             this.btnSetDeviceTime.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSetDeviceTime.ForeColor = System.Drawing.Color.Black;
-            this.btnSetDeviceTime.Location = new System.Drawing.Point(20, 185);
+            this.btnSetDeviceTime.Location = new System.Drawing.Point(19, 157);
             this.btnSetDeviceTime.Name = "btnSetDeviceTime";
             this.btnSetDeviceTime.Size = new System.Drawing.Size(207, 35);
             this.btnSetDeviceTime.TabIndex = 19;
-            this.btnSetDeviceTime.Text = "Установить время";
+            this.btnSetDeviceTime.Text = "Установить время пользователя";
             this.btnSetDeviceTime.UseVisualStyleBackColor = false;
             this.btnSetDeviceTime.Click += new System.EventHandler(this.btnSetDeviceTime_Click);
             // 
@@ -1370,7 +1372,7 @@
             // 
             this.dtpUserTime.CustomFormat = "dd.MM.yyyy HH:mm:ss";
             this.dtpUserTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpUserTime.Location = new System.Drawing.Point(60, 155);
+            this.dtpUserTime.Location = new System.Drawing.Point(60, 131);
             this.dtpUserTime.Name = "dtpUserTime";
             this.dtpUserTime.Size = new System.Drawing.Size(167, 20);
             this.dtpUserTime.TabIndex = 18;
@@ -1379,7 +1381,7 @@
             // 
             this.label31.AutoSize = true;
             this.label31.ForeColor = System.Drawing.Color.Black;
-            this.label31.Location = new System.Drawing.Point(57, 139);
+            this.label31.Location = new System.Drawing.Point(57, 115);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(117, 13);
             this.label31.TabIndex = 17;
@@ -1387,7 +1389,7 @@
             // 
             // tbUROVDateTime
             // 
-            this.tbUROVDateTime.Location = new System.Drawing.Point(60, 88);
+            this.tbUROVDateTime.Location = new System.Drawing.Point(60, 231);
             this.tbUROVDateTime.Name = "tbUROVDateTime";
             this.tbUROVDateTime.ReadOnly = true;
             this.tbUROVDateTime.Size = new System.Drawing.Size(167, 20);
@@ -1397,7 +1399,7 @@
             // 
             this.label32.AutoSize = true;
             this.label32.ForeColor = System.Drawing.Color.Black;
-            this.label32.Location = new System.Drawing.Point(57, 72);
+            this.label32.Location = new System.Drawing.Point(57, 215);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(88, 13);
             this.label32.TabIndex = 15;
@@ -1914,6 +1916,19 @@
             this.tabsImages.Images.SetKeyName(1, "preferences-other.png");
             this.tabsImages.Images.SetKeyName(2, "network-disconnect.png");
             // 
+            // btnSetSystemTime
+            // 
+            this.btnSetSystemTime.BackColor = System.Drawing.Color.LightGreen;
+            this.btnSetSystemTime.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSetSystemTime.ForeColor = System.Drawing.Color.Black;
+            this.btnSetSystemTime.Location = new System.Drawing.Point(20, 60);
+            this.btnSetSystemTime.Name = "btnSetSystemTime";
+            this.btnSetSystemTime.Size = new System.Drawing.Size(207, 35);
+            this.btnSetSystemTime.TabIndex = 23;
+            this.btnSetSystemTime.Text = "Установить системное время";
+            this.btnSetSystemTime.UseVisualStyleBackColor = false;
+            this.btnSetSystemTime.Click += new System.EventHandler(this.btnSetSystemTime_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2174,6 +2189,7 @@
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.PictureBox pictureBox6;
         private System.Windows.Forms.PictureBox pictureBox7;
+        private System.Windows.Forms.Button btnSetSystemTime;
     }
 }
 

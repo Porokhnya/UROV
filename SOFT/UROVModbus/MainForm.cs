@@ -626,7 +626,9 @@ namespace UROVModbus
         /// <param name="e"></param>
         private void btnReadRegisters_Click(object sender, EventArgs e)
         {
+            btnReadRegisters.Enabled = false;
             ReadRegisters();
+            btnReadRegisters.Enabled = true;
         }
 
         /// <summary>
@@ -710,49 +712,121 @@ namespace UROVModbus
 
                     // MODBUS_REG_PULSES                         40001 // регистр для количества импульсов
                     int pulses = readVals[0];
-                    nudPulses1.Value = pulses;
+
+                    try
+                    {
+                        nudPulses1.Value = pulses;
+                    }
+                    catch
+                    {
+                        nudPulses1.Value = nudPulses1.Minimum;
+                    }
 
                     // MODBUS_REG_PULSES_DELTA                   40002 // регистр для дельты импульсов
                     int pulsesDelta = readVals[1];
-                    nudDelta1.Value = pulsesDelta;
+
+                    try
+                    {
+                        nudDelta1.Value = pulsesDelta;
+                    }
+                    catch
+                    {
+                        nudDelta1.Value = nudDelta1.Minimum;
+                    }
 
                     // MODBUS_REG_ETHALON_PULSES_DELTA1          40003 // регистр 1 для дельты времени сравнения импульсов с  эталоном
                     // MODBUS_REG_ETHALON_PULSES_DELTA2          40004 // регистр 2 для дельты времени сравнения импульсов с  эталоном
-                    nudEthalonCompareDelta.Value = MakeUInt32(readVals[2], readVals[3]);
+                    try
+                    {
+                        nudEthalonCompareDelta.Value = MakeUInt32(readVals[2], readVals[3]);
+                    }
+                    catch
+                    {
+                        nudEthalonCompareDelta.Value = nudEthalonCompareDelta.Minimum;
+                    }
 
                     // MODBUS_REG_MOTORESOURCE1                  40005 // регистр 1 для моторесурса
                     // MODBUS_REG_MOTORESOURCE2                  40006 // регистр 2 для моторесурса
-                    nudMotoresourceCurrent1.Value = MakeUInt32(readVals[4], readVals[5]);
+                    try
+                    {
+                        nudMotoresourceCurrent1.Value = MakeUInt32(readVals[4], readVals[5]);
+                    }
+                    catch
+                    {
+                        nudMotoresourceCurrent1.Value = nudMotoresourceCurrent1.Minimum;
+                    }
 
                     // MODBUS_REG_MOTORESOURCE_MAX1              40007 // регистр 1 для максимального моторесурса
                     // MODBUS_REG_MOTORESOURCE_MAX2              40008 // регистр 2 для максимального моторесурса
-                    nudMotoresourceMax1.Value = MakeUInt32(readVals[6], readVals[7]);
+                    try
+                    {
+                        nudMotoresourceMax1.Value = MakeUInt32(readVals[6], readVals[7]);
+                    }
+                    catch
+                    {
+                        nudMotoresourceMax1.Value = nudMotoresourceMax1.Minimum;
+                    }
 
                     // обновляем метку процентов моторесурса
                     UpdateMotoresourcePercents(Convert.ToInt32(nudMotoresourceCurrent1.Value), Convert.ToInt32(nudMotoresourceMax1.Value));
 
                     // MODBUS_REG_TLOW_BORDER1                   40009 // регистр 1 для нижнего порога трансформатора
                     // MODBUS_REG_TLOW_BORDER2                   40010 // регистр 2 для нижнего порога трансформатора
-                    nudLowBorder.Value = MakeUInt32(readVals[8], readVals[9]);
+                    try
+                    {
+                        nudLowBorder.Value = MakeUInt32(readVals[8], readVals[9]);
+                    }
+                    catch
+                    {
+                        nudLowBorder.Value = nudLowBorder.Minimum;
+                    }
 
                     // MODBUS_REG_THIGH_BORDER1                  40011 // регистр 1 для верхнего порога трансформатора
                     // MODBUS_REG_THIGH_BORDER2                  40012 // регистр 2 для верхнего порога трансформатора
-                    nudHighBorder.Value = MakeUInt32(readVals[10], readVals[11]);
+                    try
+                    {
+                        nudHighBorder.Value = MakeUInt32(readVals[10], readVals[11]);
+                    }
+                    catch
+                    {
+                        nudHighBorder.Value = nudHighBorder.Minimum;
+                    }
 
                     // MODBUS_REG_RDELAY1                        40013 // регистр 1 для задержки реле
                     // MODBUS_REG_RDELAY2                        40014 // регистр 2 для задержки реле
-                    nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13])/1000;
+                    try
+                    {
+                        nudRelayDelay.Value = MakeUInt32(readVals[12], readVals[13]) / 1000;
+                    }
+                    catch
+                    {
+                        nudRelayDelay.Value = nudRelayDelay.Minimum;
+                    }
 
                     // MODBUS_REG_ACSDELAY                       40015 // регистр 1 для задержки ACS
                     // не используется
 
                     // MODBUS_REG_SKIPC1                         40016 // регистр 1 для пропуска импульсов
                     // MODBUS_REG_SKIPC2                         40017 // регистр 2 для пропуска импульсов
-                    nudSkipCounter.Value = MakeUInt32(readVals[15], readVals[16]);
+                    try
+                    {
+                        nudSkipCounter.Value = MakeUInt32(readVals[15], readVals[16]);
+                    }
+                    catch
+                    {
+                        nudSkipCounter.Value = nudSkipCounter.Minimum;
+                    }
 
                     // MODBUS_REG_CCOEFF1                        40018 // регистр 1 для коэффициента тока
                     // MODBUS_REG_CCOEFF2                        40019 // регистр 2 для коэффициента тока
-                    nudCurrentCoeff.Value = MakeUInt32(readVals[17], readVals[18]);
+                    try
+                    {
+                        nudCurrentCoeff.Value = MakeUInt32(readVals[17], readVals[18]);
+                    }
+                    catch
+                    {
+                        nudCurrentCoeff.Value = nudCurrentCoeff.Minimum;
+                    }
 
                     // MODBUS_REG_ASUTPFLAGS                     40020 // регистр для флагов АСУ ТП
                     int asutpFlags = readVals[19];
@@ -780,11 +854,25 @@ namespace UROVModbus
 
                     // MODBUS_REG_MAXIDLETIME1                   40021 // регистр 1 для времени ожидания окончания импульсов
                     // MODBUS_REG_MAXIDLETIME2                   40022 // регистр 2 для времени ожидания окончания импульсов
-                    nudMaxIdleTime.Value = MakeUInt32(readVals[20], readVals[21]);
+                    try
+                    {
+                        nudMaxIdleTime.Value = MakeUInt32(readVals[20], readVals[21]);
+                    }
+                    catch
+                    {
+                        nudMaxIdleTime.Value = nudMaxIdleTime.Minimum;
+                    }
 
                     // MODBUS_REG_RODMOVELEN1                    40023 // регистр 1 для величины перемещения штанги
                     // MODBUS_REG_RODMOVELEN2                    40024 // регистр 2 для величины перемещения штанги
-                    nudRodMoveLength.Value = MakeUInt32(readVals[22], readVals[23]);
+                    try
+                    {
+                        nudRodMoveLength.Value = MakeUInt32(readVals[22], readVals[23]);
+                    }
+                    catch
+                    {
+                        nudRodMoveLength.Value = nudRodMoveLength.Minimum;
+                    }
 
                     ShowWaitCursor(false);
 
@@ -3553,13 +3641,13 @@ namespace UROVModbus
 
         private void btnSetDeviceTime_Click(object sender, EventArgs e)
         {
-            SetDeviceTime();
+            SetDeviceTime(dtpUserTime.Value);
         }
 
         /// <summary>
         /// устанавливаем время прибора
         /// </summary>
-        private void SetDeviceTime()
+        private void SetDeviceTime(DateTime userDate)
         {
             if(myProtocol != null && myProtocol.isOpen())
             {
@@ -3574,7 +3662,6 @@ namespace UROVModbus
                 ushort[] data = new ushort[numRegs];
 
                 // формируем данные
-                DateTime userDate = dtpUserTime.Value;
                 data[0] = Convert.ToUInt16(userDate.Year);
                 data[1] = Convert.ToUInt16(userDate.Month);
                 data[2] = Convert.ToUInt16(userDate.Day);
@@ -3607,6 +3694,11 @@ namespace UROVModbus
 
                     hasModbusRequest = false;
             }
+        }
+
+        private void btnSetSystemTime_Click(object sender, EventArgs e)
+        {
+            SetDeviceTime(DateTime.Now);
         }
     }
 }
