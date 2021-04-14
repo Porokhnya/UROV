@@ -257,6 +257,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
        relayDelay = RELAY_WANT_DATA_AFTER;
      }  
 
+     relayDelay = constrain(relayDelay,DIA_RELAY_DELAY_A,DIA_RELAY_DELAY_B);
+
       Modbus.set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
       Modbus.set(MODBUS_REG_RDELAY2,(word)(relayDelay & 0xffff));
 
@@ -274,6 +276,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         currentCoeff = CURRENT_COEFF_DEFAULT;
       }
 
+      currentCoeff = constrain(currentCoeff,DIA_CURRENT_COEFF_A,DIA_CURRENT_COEFF_B);
+
       Modbus.set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
       Modbus.set(MODBUS_REG_CCOEFF2,(word)(currentCoeff & 0xffff));
       
@@ -282,6 +286,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       {
         skipCounter = INTERRUPT_SKIP_COUNTER;
       }
+
+      skipCounter = constrain(skipCounter,DIA_SKIP_PULSES_A,DIA_SKIP_PULSES_B);
 
       Modbus.set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
       Modbus.set(MODBUS_REG_SKIPC2,(word)(skipCounter & 0xffff));
@@ -293,6 +299,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         channelPulses = 0;
       }
 
+      channelPulses = constrain(channelPulses,DIA_PULSES_A,DIA_PULSES_B);
+
       Modbus.set(MODBUS_REG_PULSES,channelPulses);
 
       // читаем моторесурс
@@ -300,6 +308,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       {
         motoresource = 0;
       }
+
+      motoresource = constrain(motoresource,DIA_MOTORESOURCE_A,DIA_MOTORESOURCE_B);
 
       Modbus.set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
       Modbus.set(MODBUS_REG_MOTORESOURCE2,(word)(motoresource & 0xffff));
@@ -310,6 +320,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         motoresourceMax = 0;
       }
 
+      motoresourceMax = constrain(motoresourceMax,DIA_MOTORESOURCE_MAX_A,DIA_MOTORESOURCE_MAX_B);
+
       Modbus.set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
       Modbus.set(MODBUS_REG_MOTORESOURCE_MAX2,(word)(motoresourceMax & 0xffff));
 
@@ -319,6 +331,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       channelDelta = 0;
      }
 
+     channelDelta = constrain(channelDelta,DIA_PULSES_DELTA_A,DIA_PULSES_DELTA_B);
+
       Modbus.set(MODBUS_REG_PULSES_DELTA,channelDelta);
      
       // читаем верхнюю границу трансформатора
@@ -326,6 +340,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       {
         transformerHighBorder = TRANSFORMER_HIGH_DEFAULT_BORDER;
       }
+
+      transformerHighBorder = constrain(transformerHighBorder,DIA_TRANS_H_BORDER_A,DIA_TRANS_H_BORDER_B);
 
       Modbus.set(MODBUS_REG_THIGH_BORDER1,(word)(transformerHighBorder >> 16));
       Modbus.set(MODBUS_REG_THIGH_BORDER2,(word)(transformerHighBorder & 0xffff));
@@ -336,6 +352,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         transformerLowBorder = TRANSFORMER_LOW_DEFAULT_BORDER;
       }
 
+      transformerLowBorder = constrain(transformerLowBorder,DIA_TRANS_L_BORDER_A,DIA_TRANS_L_BORDER_B);
+
       Modbus.set(MODBUS_REG_TLOW_BORDER1,(word)(transformerLowBorder >> 16));
       Modbus.set(MODBUS_REG_TLOW_BORDER2,(word)(transformerLowBorder & 0xffff));
 
@@ -344,6 +362,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       {
         ethalonPulseDelta = 50;
       }
+
+      ethalonPulseDelta = constrain(ethalonPulseDelta,DIA_ETL_COMPARE_A,DIA_ETL_COMPARE_B);
 
       Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
       Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA2,(word)(ethalonPulseDelta & 0xffff));
@@ -362,6 +382,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
         maxIdleTime = INTERRUPT_MAX_IDLE_TIME;
       }
 
+      maxIdleTime = constrain(maxIdleTime,DIA_MAX_IDLE_TIME_A,DIA_MAX_IDLE_TIME_B);
+
       Modbus.set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
       Modbus.set(MODBUS_REG_MAXIDLETIME2,(word)(maxIdleTime & 0xffff));
 
@@ -370,6 +392,8 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
       {
         rodMoveLength = DEFAULT_ROD_MOVE_LENGTH;
       }
+
+      rodMoveLength = constrain(rodMoveLength,DIA_ROD_MOVE_LENGTH_A,DIA_ROD_MOVE_LENGTH_B);
       
       Modbus.set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
       Modbus.set(MODBUS_REG_RODMOVELEN2,(word)(rodMoveLength & 0xffff));
@@ -379,6 +403,11 @@ void SettingsClass::reloadSettings() // перезагружаем настро�
      if(!read8(MODBUS_SLAVE_ADDRESS,modbus_slave_id))
      {
       modbus_slave_id = 1;
+     }
+
+     if(modbus_slave_id > 247)
+     {
+        modbus_slave_id = 1;
      }
 
       Modbus.setID(modbus_slave_id);
@@ -429,6 +458,8 @@ void SettingsClass::update() // обновляемся
 void SettingsClass::setRodMoveLength(uint32_t val)
 {
   rodMoveLength = val;
+  rodMoveLength = constrain(rodMoveLength,DIA_ROD_MOVE_LENGTH_A,DIA_ROD_MOVE_LENGTH_B);
+  
   write32(ROD_MOVE_LENGTH_STORE_ADDRESS,rodMoveLength);
 
   Modbus.set(MODBUS_REG_RODMOVELEN1,(word)(rodMoveLength >> 16));
@@ -444,6 +475,11 @@ uint8_t SettingsClass::getAsuTpFlags()
 void SettingsClass::setModbusSlaveID(uint8_t val)
 {
   modbus_slave_id = val;
+  if(modbus_slave_id > 247)
+  {
+    modbus_slave_id = 247;
+  }
+  
   write8(MODBUS_SLAVE_ADDRESS,modbus_slave_id);
 
   Modbus.setID(modbus_slave_id);
@@ -466,6 +502,8 @@ uint32_t SettingsClass::getEthalonPulseDelta()
 void SettingsClass::setEthalonPulseDelta(uint32_t val)
 {
   ethalonPulseDelta = val;
+  ethalonPulseDelta = constrain(ethalonPulseDelta,DIA_ETL_COMPARE_A,DIA_ETL_COMPARE_B);
+  
   write32(ETHALON_DELTA_STORE_ADDRESS,ethalonPulseDelta);
 
   Modbus.set(MODBUS_REG_ETHALON_PULSES_DELTA1,(word)(ethalonPulseDelta >> 16));
@@ -476,6 +514,8 @@ void SettingsClass::setEthalonPulseDelta(uint32_t val)
 void SettingsClass::setMaxIdleTime(uint32_t val)
 {
   maxIdleTime = val;
+  maxIdleTime = constrain(maxIdleTime,DIA_MAX_IDLE_TIME_A,DIA_MAX_IDLE_TIME_B);
+  
   write32(MAX_IDLE_TIME_STORE_ADDRESS,maxIdleTime);  
 
   Modbus.set(MODBUS_REG_MAXIDLETIME1,(word)(maxIdleTime >> 16));
@@ -491,6 +531,8 @@ uint32_t SettingsClass::getCurrentCoeff()
 void SettingsClass::setCurrentCoeff(uint32_t val)
 {
   currentCoeff = val;
+  currentCoeff = constrain(currentCoeff,DIA_CURRENT_COEFF_A,DIA_CURRENT_COEFF_B);
+  
   write32(CURRENT_COEFF_STORE_ADDRESS,currentCoeff);
 
   Modbus.set(MODBUS_REG_CCOEFF1,(word)(currentCoeff >> 16));
@@ -506,6 +548,8 @@ uint32_t SettingsClass::getRelayDelay()
 void SettingsClass::setRelayDelay(uint32_t val)
 {
   relayDelay = val;
+  relayDelay = constrain(relayDelay,DIA_RELAY_DELAY_A,DIA_RELAY_DELAY_B);
+  
   write32(RELAY_DELAY_STORE_ADDRESS,relayDelay);
 
   Modbus.set(MODBUS_REG_RDELAY1,(word)(relayDelay >> 16));
@@ -530,6 +574,8 @@ void SettingsClass::setACSDelay(uint16_t val)
 void SettingsClass::setSkipCounter(uint32_t val)
 {
   skipCounter = val;
+  skipCounter = constrain(skipCounter,DIA_SKIP_PULSES_A,DIA_SKIP_PULSES_B);
+  
   write32(SKIP_COUNTER_STORE_ADDRESS,skipCounter);
 
   Modbus.set(MODBUS_REG_SKIPC1,(word)(skipCounter >> 16));
@@ -550,6 +596,8 @@ uint32_t SettingsClass::getTransformerHighBorder()
 void SettingsClass::setTransformerLowBorder(uint32_t val)
 {
   transformerLowBorder = val;
+  transformerLowBorder = constrain(transformerLowBorder,DIA_TRANS_L_BORDER_A,DIA_TRANS_L_BORDER_B);
+  
   adcSampler.setLowBorder(val);
   
   write32(TRANSFORMER_LOW_BORDER_STORE_ADDRESS,transformerLowBorder);
@@ -562,6 +610,8 @@ void SettingsClass::setTransformerLowBorder(uint32_t val)
 void SettingsClass::setTransformerHighBorder(uint32_t val)
 {
   transformerHighBorder = val;
+  transformerHighBorder = constrain(transformerHighBorder,DIA_TRANS_H_BORDER_A,DIA_TRANS_H_BORDER_B);
+  
   adcSampler.setHighBorder(val);
 
   write32(TRANSFORMER_HIGH_BORDER_STORE_ADDRESS,transformerHighBorder);
@@ -579,6 +629,8 @@ uint32_t SettingsClass::getMotoresource()
 void SettingsClass::setMotoresource(uint32_t val)
 {
   motoresource = val;
+  motoresource = constrain(motoresource,DIA_MOTORESOURCE_A,DIA_MOTORESOURCE_B);
+  
   write32(MOTORESOURCE_STORE_ADDRESS,motoresource);  
 
   Modbus.set(MODBUS_REG_MOTORESOURCE1,(word)(motoresource >> 16));
@@ -594,6 +646,8 @@ uint32_t SettingsClass::getMotoresourceMax()
 void SettingsClass::setMotoresourceMax(uint32_t val)
 {
   motoresourceMax = val;
+  motoresourceMax = constrain(motoresourceMax,DIA_MOTORESOURCE_MAX_A,DIA_MOTORESOURCE_MAX_B);
+  
   write32(MOTORESOURCE_MAX_STORE_ADDRESS,motoresourceMax);
 
   Modbus.set(MODBUS_REG_MOTORESOURCE_MAX1,(word)(motoresourceMax >> 16));
@@ -609,6 +663,8 @@ uint16_t SettingsClass::getPulses()
 void SettingsClass::setPulses(uint16_t val)
 {  
   channelPulses = val;
+  channelPulses = constrain(channelPulses,DIA_PULSES_A,DIA_PULSES_B);
+  
   write16(COUNT_PULSES_STORE_ADDRESS,channelPulses);
 
   Modbus.set(MODBUS_REG_PULSES,channelPulses);
@@ -621,8 +677,9 @@ uint8_t SettingsClass::getPulsesDelta()
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void SettingsClass::setPulsesDelta(uint8_t val)
-{
+{  
   channelDelta = val;
+  channelDelta = constrain(channelDelta,DIA_PULSES_DELTA_A,DIA_PULSES_DELTA_B);
   write8(CHANNEL_PULSES_DELTA_ADDRESS,channelDelta);
 
   Modbus.set(MODBUS_REG_PULSES_DELTA,channelDelta);
