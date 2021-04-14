@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
  Плата:                 BLACK F407VG/VE/ZE/XG boards
- Specific board:        UROV board (LACK F407VG, vector table=0xC000)
+ Specific board:        UROV board (BLACK F407VG, vector table=0xC000)
  USB:                   Serial [Virtual COM port, PA11/PA12 pins]
  Serial commanication:  SerialUART1
  Upload method:         STLink [Automatic serial=SerialUSB, address=0x800C000]
