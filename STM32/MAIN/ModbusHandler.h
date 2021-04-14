@@ -1,10 +1,10 @@
 #pragma once
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#include <modbus.h>
-#include <modbusDevice.h>
-#include <modbusRegBank.h>
-#include <modbusSlave.h>
+#include "modbus.h"
+#include "modbusDevice.h"
+#include "modbusRegBank.h"
+#include "modbusSlave.h"
 
 #include "CONFIG.h"
 #include "FileUtils.h"
