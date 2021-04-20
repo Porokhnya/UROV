@@ -70,11 +70,11 @@ namespace UROVConfig
             {
                 if (this.chart.Series.Count > 1)
                 {
-                    serieToExport = this.chart.Series[1]; // прерывание
+                    serieToExport = this.chart.Series["serieInterrupt"]; // прерывание
                 }
                 else
                 {
-                    serieToExport = this.chart.Series[0]; // эталон
+                    serieToExport = this.chart.Series["serieEthalon"]; // эталон
                 }
             }
 
@@ -587,6 +587,7 @@ namespace UROVConfig
 
         private bool ethalonVisible = true;
         private bool interruptVisible = true;
+        private bool approximateVisible = true;
 
         /// <summary>
         /// установка флага доступности графика эталона
@@ -598,11 +599,11 @@ namespace UROVConfig
 
             if (avail)
             {
-                chart.Series[0].Enabled = true;
+                chart.Series["serieEthalon"].Enabled = true;
             }
             else
             {
-                chart.Series[0].Enabled = false;
+                chart.Series["serieEthalon"].Enabled = false;
             }
         }
 
@@ -657,16 +658,10 @@ namespace UROVConfig
 
                 }
 
-                /*
-                chart.ChartAreas[0].Position.Height = 80;// 26;
-                chart.ChartAreas[1].Visible = false;
-                chart.ChartAreas[2].Visible = false;
-                chart.ChartAreas[3].Visible = false;
-                */
 
-                chart.Series[2].Enabled = true;
-                chart.Series[3].Enabled = true;
-                chart.Series[4].Enabled = true;
+                chart.Series["seriePhase1"].Enabled = true;
+                chart.Series["seriePhase2"].Enabled = true;
+                chart.Series["seriePhase3"].Enabled = true;
 
             }
             else
@@ -678,9 +673,9 @@ namespace UROVConfig
                 chart.ChartAreas[2].Visible = false;
                 chart.ChartAreas[3].Visible = false;
 
-                chart.Series[2].Enabled = false;
-                chart.Series[3].Enabled = false;
-                chart.Series[4].Enabled = false;
+                chart.Series["seriePhase1"].Enabled = false;
+                chart.Series["seriePhase2"].Enabled = false;
+                chart.Series["seriePhase3"].Enabled = false;
 
             }
         }
@@ -742,6 +737,7 @@ namespace UROVConfig
             chart.Series["seriePhase1"].SetCustomProperty("CHECK", conf.ChartPhase1Visible ? "☑" : "☐");
             chart.Series["seriePhase2"].SetCustomProperty("CHECK", conf.ChartPhase2Visible ? "☑" : "☐");
             chart.Series["seriePhase3"].SetCustomProperty("CHECK", conf.ChartPhase3Visible ? "☑" : "☐");
+            chart.Series["serieInterruptApproximated"].SetCustomProperty("CHECK", "☑");
 
             chart.Legends[0].CellColumns.Clear();
 
@@ -784,7 +780,7 @@ namespace UROVConfig
         /// <param name="area"></param>
         private void dealWithEthalonAndInterrupt(string area)
         {
-            if (!ethalonVisible && !interruptVisible)
+            if (!ethalonVisible && !interruptVisible && !approximateVisible)
             {
                 chart.ChartAreas[area].Visible = false;
             }
@@ -808,6 +804,16 @@ namespace UROVConfig
                 else
                 {
                     chart.Series["serieInterrupt"].Color = ColorTranslator.FromHtml(chart.Series["serieInterrupt"].GetCustomProperty("COLOR"));
+                }
+
+
+                if (!approximateVisible)
+                {
+                    chart.Series["serieInterruptApproximated"].Color = Color.FromArgb(0, chart.Series["serieInterruptApproximated"].Color);
+                }
+                else
+                {
+                    chart.Series["serieInterruptApproximated"].Color = ColorTranslator.FromHtml(chart.Series["serieInterruptApproximated"].GetCustomProperty("COLOR"));
                 }
             }
         }
@@ -884,6 +890,11 @@ namespace UROVConfig
                         interruptVisible = false;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
+                    else if (legendItem.SeriesName == "serieInterruptApproximated")
+                    {
+                        approximateVisible = false;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
                     else
                     {
                         chart.ChartAreas[series.ChartArea].Visible = false;
@@ -917,6 +928,11 @@ namespace UROVConfig
                     else if (legendItem.SeriesName == "serieInterrupt")
                     {
                         interruptVisible = true;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    else if (legendItem.SeriesName == "serieInterruptApproximated")
+                    {
+                        approximateVisible = true;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
                     else

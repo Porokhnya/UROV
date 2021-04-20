@@ -256,6 +256,59 @@ namespace UROVConfig
 
         public int PreviewCount = 0; // кол-во превью по току
         public int RodMoveLength = 50; // величина перемещения штанги
+
+
+        public List<int> ApproximatedInterruptData = new List<int>(); // аппроксимированные данные прерывания
+        public void Approximate()
+        {
+            ApproximatedInterruptData.Clear();
+
+            if (InterruptData.Count < 4) // нечего аппроксимировать
+            {
+                ApproximatedInterruptData = InterruptData.ToList(); // копируем исходный, и выходим
+                return;
+            }
+
+
+            // аппроксимируем график. После аппроксимации в нём должно остаться столько же записей, сколько в InterruptData !!!
+
+            // копируем данные в список
+            ApproximatedInterruptData = InterruptData.ToList();
+
+            // аппроксимируем за 4 прохода
+            doApproximate(4);
+
+            // если вдруг списки не одинаковы - копируем исходный
+            if (ApproximatedInterruptData.Count < InterruptData.Count)
+            {
+                ApproximatedInterruptData = InterruptData.ToList();
+            }
+
+        }
+
+        private void doApproximate(int countPasses)
+        {
+            /*
+             // ещё один вариант аппроксимации:
+             a=[40,40,40,40,37,40,36,39,36,39,34,39,35,38,33,37,35,34,36,35,34,33,33,33,32,33,32,33,32,33,31,32,29,31,29,31,28,33,27,30,25,29,24,28,28];
+for (var i=n, l=a.length; i<l; i++) {
+ s=0; for (var j=i, m=i-n; j>=m; j--) s += a[j];
+ r[i] = s/n
+}
+             */
+
+
+            for (int pass = 0; pass < countPasses; pass++)
+            {
+                for (int j = 0, m = 4; j < m; j++)
+                {
+                    for (int i = 1, l = ApproximatedInterruptData.Count - 1; i < l; i++)
+                    {
+                        ApproximatedInterruptData[i] = Convert.ToInt32(0.5 * (0.5 * (ApproximatedInterruptData[i - 1] + ApproximatedInterruptData[i + 1]) + ApproximatedInterruptData[i]));
+                    }
+                }
+            }
+        }
     }
 
     public class SDNodeTagHelper

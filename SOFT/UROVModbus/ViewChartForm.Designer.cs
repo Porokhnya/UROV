@@ -56,6 +56,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblCaption = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -234,11 +235,19 @@
             series5.Legend = "Legend1";
             series5.LegendText = "Фаза 3";
             series5.Name = "seriePhase3";
+            series6.BorderWidth = 2;
+            series6.ChartArea = "ethalonChartArea";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series6.Legend = "Legend1";
+            series6.LegendText = "Аппроксимация";
+            series6.Name = "serieInterruptApproximated";
             this.chart.Series.Add(series1);
             this.chart.Series.Add(series2);
             this.chart.Series.Add(series3);
             this.chart.Series.Add(series4);
             this.chart.Series.Add(series5);
+            this.chart.Series.Add(series6);
             this.chart.Size = new System.Drawing.Size(1026, 575);
             this.chart.TabIndex = 3;
             this.chart.Text = "chart1";

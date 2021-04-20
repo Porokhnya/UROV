@@ -2135,6 +2135,9 @@ namespace UROVModbus
             if (record == null)
                 return;
 
+            //DONE: АППРОКСИМАЦИЯ !!!
+            record.Approximate();
+
             ViewChartForm vcf = new ViewChartForm(record, stationID, stationName);
 
             vcf.setDefaultFileName(record.InterruptInfo.InterruptTime.ToString("yyyy-MM-dd HH.mm"));
@@ -2150,19 +2153,24 @@ namespace UROVModbus
             vcf.chart.Legends[1].CustomItems[0].Cells["tFact"].Text = String.Format("t факт: {0} ms", record.MoveTime / 1000);
 
 
-            System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series[0];
+            //DONE: АППРОКСИМАЦИЯ !!!
+            System.Windows.Forms.DataVisualization.Charting.Series ethalonSerie = vcf.chart.Series["serieEthalon"];
             ethalonSerie.Points.Clear();
 
-            System.Windows.Forms.DataVisualization.Charting.Series interruptSerie = vcf.chart.Series[1];
+            System.Windows.Forms.DataVisualization.Charting.Series interruptSerie = vcf.chart.Series["serieInterrupt"];
             interruptSerie.Points.Clear();
 
-            Series channel1Current = vcf.chart.Series[2];
+            System.Windows.Forms.DataVisualization.Charting.Series approximateSerie = vcf.chart.Series["serieInterruptApproximated"];
+            approximateSerie.Points.Clear();
+
+
+            Series channel1Current = vcf.chart.Series["seriePhase1"];
             channel1Current.Points.Clear();
 
-            Series channel2Current = vcf.chart.Series[3];
+            Series channel2Current = vcf.chart.Series["seriePhase2"];
             channel2Current.Points.Clear();
 
-            Series channel3Current = vcf.chart.Series[4];
+            Series channel3Current = vcf.chart.Series["seriePhase3"];
             channel3Current.Points.Clear();
 
             // время наступления прерывания
@@ -2174,6 +2182,9 @@ namespace UROVModbus
 
             // СПИСОК ПРИХОДИТ НОРМАЛИЗОВАННЫМ ОТНОСИТЕЛЬНО ПЕРВОЙ ЗАПИСИ!!!
             List<int> timeList = record.InterruptData;
+
+            //DONE: АППРОКСИМАЦИЯ !!!
+            List<int> approximatedList = record.ApproximatedInterruptData;
 
             // получаем максимальное время импульса - это будет 100% по оси Y
             int maxPulseTime = 0;
@@ -2223,7 +2234,10 @@ namespace UROVModbus
             List<int> XValuesInterrupt = new List<int>();
             List<double> YValuesInterrupt = new List<double>();
 
-            //int interruptAddedPoints = 1;
+            //DONE: АППРОКСИМАЦИЯ !!!
+            List<int> XValuesInterruptApprox = new List<int>();
+            List<double> YValuesInterruptApprox = new List<double>();
+
 
             if (record.CurrentTimes.Count > 0)
             {
@@ -2235,13 +2249,20 @@ namespace UROVModbus
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
-                    //   interruptAddedPoints++;
+
+                    //DONE: АППРОКСИМАЦИЯ !!!
+                    XValuesInterruptApprox.Add(record.CurrentTimes[z]);
+                    YValuesInterruptApprox.Add(0);
                 }
             }
 
 
             XValuesInterrupt.Add(xCoord);
             YValuesInterrupt.Add(0);
+
+            //DONE: АППРОКСИМАЦИЯ !!!
+            XValuesInterruptApprox.Add(xCoord);
+            YValuesInterruptApprox.Add(0);
 
             // вот тут нам надо добавлять недостающие времена, от начала времени токов, до срабатывания защиты
             int offsetLabelIndex = XValuesInterrupt.Count - 1;
@@ -2280,14 +2301,51 @@ namespace UROVModbus
 
             }
 
+            //DONE: АППРОКСИМАЦИЯ !!!
+            if (approximatedList.Count > 1)
+            {
+                int thisXCoord = pulsesOffset;
+
+                for (int i = 1; i < approximatedList.Count; i++)
+                {
+                    int pulseTime = approximatedList[i] - approximatedList[i - 1];
+
+
+                    int pulseTimePercents = (pulseTime * 100) / maxPulseTime;
+
+                    pulseTimePercents = 100 - pulseTimePercents;
+
+                    // абсолютное инвертированное значение от maxPulseTime
+                    // maxPulseTime = 100%
+                    // x = pulseTimePercents
+                    // x = (pulseTimePercents*maxPulseTime)/100;
+
+                    thisXCoord += pulseTime;
+                    XValuesInterruptApprox.Add(thisXCoord);
+
+                    int computedYVal = (pulseTimePercents * maxPulseTime) / 100;
+                    maxInterruptYVal = Math.Max(maxInterruptYVal, computedYVal);
+                    YValuesInterruptApprox.Add(computedYVal);
+
+
+                } // for
+
+            }
+
 
             // убираем последний пик вверх
-
+            
             if (YValuesInterrupt.Count > 1)
             {
                 YValuesInterrupt[YValuesInterrupt.Count - 1] = 0;
             }
 
+            //DONE: АППРОКСИМАЦИЯ !!!
+            if (YValuesInterruptApprox.Count > 1)
+            {
+                YValuesInterruptApprox[YValuesInterruptApprox.Count - 1] = 0;
+            }
+            
             // вставляем метку окончания импульсов
             int lastInterruptIdx = XValuesInterrupt.Count - 1;
 
@@ -2304,11 +2362,19 @@ namespace UROVModbus
 
                     XValuesInterrupt.Add(record.CurrentTimes[z]);
                     YValuesInterrupt.Add(0);
+
+                    //DONE: АППРОКСИМАЦИЯ !!!
+                    XValuesInterruptApprox.Add(record.CurrentTimes[z]);
+                    YValuesInterruptApprox.Add(0);
                 }
             }
 
 
             interruptSerie.Points.DataBindXY(XValuesInterrupt, YValuesInterrupt);
+
+            //DONE: АППРОКСИМАЦИЯ !!!
+            approximateSerie.Points.DataBindXY(XValuesInterruptApprox, YValuesInterruptApprox);
+
             if (offsetLabelIndex != -1 && canAddInterruptLabels)
             {
                 interruptSerie.Points[offsetLabelIndex].Label = String.Format("НАЧАЛО ПРЕРЫВАНИЯ, {0} ms", pulsesOffset / 1000);

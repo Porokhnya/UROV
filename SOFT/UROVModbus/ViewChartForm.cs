@@ -68,13 +68,14 @@ namespace UROVModbus
             }
             else
             {
+                //DONE: АППРОКСИМАЦИЯ !!!
                 if (this.chart.Series.Count > 1)
                 {
-                    serieToExport = this.chart.Series[1]; // прерывание
+                    serieToExport = this.chart.Series["serieInterrupt"]; // прерывание
                 }
                 else
                 {
-                    serieToExport = this.chart.Series[0]; // эталон
+                    serieToExport = this.chart.Series["serieEthalon"]; // эталон
                 }
             }
 
@@ -587,6 +588,8 @@ namespace UROVModbus
 
         private bool ethalonVisible = true;
         private bool interruptVisible = true;
+        //DONE: АППРОКСИМАЦИЯ !!!
+        private bool approximateVisible = true;
 
         /// <summary>
         /// установка флага доступности графика эталона
@@ -596,13 +599,14 @@ namespace UROVModbus
         {
             ethalonVisible = avail;
 
+            //DONE: АППРОКСИМАЦИЯ !!!
             if (avail)
             {
-                chart.Series[0].Enabled = true;
+                chart.Series["serieEthalon"].Enabled = true;
             }
             else
             {
-                chart.Series[0].Enabled = false;
+                chart.Series["serieEthalon"].Enabled = false;
             }
         }
 
@@ -657,16 +661,11 @@ namespace UROVModbus
 
                 }
 
-                /*
-                chart.ChartAreas[0].Position.Height = 80;// 26;
-                chart.ChartAreas[1].Visible = false;
-                chart.ChartAreas[2].Visible = false;
-                chart.ChartAreas[3].Visible = false;
-                */
 
-                chart.Series[2].Enabled = true;
-                chart.Series[3].Enabled = true;
-                chart.Series[4].Enabled = true;
+                //DONE: АППРОКСИМАЦИЯ !!!
+                chart.Series["seriePhase1"].Enabled = true;
+                chart.Series["seriePhase2"].Enabled = true;
+                chart.Series["seriePhase3"].Enabled = true;
 
             }
             else
@@ -678,9 +677,10 @@ namespace UROVModbus
                 chart.ChartAreas[2].Visible = false;
                 chart.ChartAreas[3].Visible = false;
 
-                chart.Series[2].Enabled = false;
-                chart.Series[3].Enabled = false;
-                chart.Series[4].Enabled = false;
+                //DONE: АППРОКСИМАЦИЯ !!!
+                chart.Series["seriePhase1"].Enabled = false;
+                chart.Series["seriePhase2"].Enabled = false;
+                chart.Series["seriePhase3"].Enabled = false;
 
             }
         }
@@ -742,6 +742,8 @@ namespace UROVModbus
             chart.Series["seriePhase1"].SetCustomProperty("CHECK", conf.ChartPhase1Visible ? "☑" : "☐");
             chart.Series["seriePhase2"].SetCustomProperty("CHECK", conf.ChartPhase2Visible ? "☑" : "☐");
             chart.Series["seriePhase3"].SetCustomProperty("CHECK", conf.ChartPhase3Visible ? "☑" : "☐");
+            //DONE: АППРОКСИМАЦИЯ !!!
+            chart.Series["serieInterruptApproximated"].SetCustomProperty("CHECK", "☑");
 
             chart.Legends[0].CellColumns.Clear();
 
@@ -784,7 +786,8 @@ namespace UROVModbus
         /// <param name="area"></param>
         private void dealWithEthalonAndInterrupt(string area)
         {
-            if (!ethalonVisible && !interruptVisible)
+            //DONE: АППРОКСИМАЦИЯ !!!
+            if (!ethalonVisible && !interruptVisible && !approximateVisible)
             {
                 chart.ChartAreas[area].Visible = false;
             }
@@ -808,6 +811,16 @@ namespace UROVModbus
                 else
                 {
                     chart.Series["serieInterrupt"].Color = ColorTranslator.FromHtml(chart.Series["serieInterrupt"].GetCustomProperty("COLOR"));
+                }
+
+                //DONE: АППРОКСИМАЦИЯ !!!
+                if (!approximateVisible)
+                {
+                    chart.Series["serieInterruptApproximated"].Color = Color.FromArgb(0, chart.Series["serieInterruptApproximated"].Color);
+                }
+                else
+                {
+                    chart.Series["serieInterruptApproximated"].Color = ColorTranslator.FromHtml(chart.Series["serieInterruptApproximated"].GetCustomProperty("COLOR"));
                 }
             }
         }
@@ -873,7 +886,7 @@ namespace UROVModbus
                 if (series.GetCustomProperty("CHECK").Equals("☑"))
                 {
                     series.SetCustomProperty("CHECK", "☐");
-                    // series.Color = Color.FromArgb(0, series.Color);
+
                     if (legendItem.SeriesName == "serieEthalon")
                     {
                         ethalonVisible = false;
@@ -882,6 +895,12 @@ namespace UROVModbus
                     else if (legendItem.SeriesName == "serieInterrupt")
                     {
                         interruptVisible = false;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    //DONE: АППРОКСИМАЦИЯ !!!
+                    else if (legendItem.SeriesName == "serieInterruptApproximated")
+                    {
+                        approximateVisible = false;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
                     else
@@ -907,8 +926,7 @@ namespace UROVModbus
                 else
                 {
                     series.SetCustomProperty("CHECK", "☑");
-                    //    series.Color = ColorTranslator.FromHtml(
-                    //             series.GetCustomProperty("COLOR"));
+
                     if (legendItem.SeriesName == "serieEthalon")
                     {
                         ethalonVisible = true;
@@ -917,6 +935,12 @@ namespace UROVModbus
                     else if (legendItem.SeriesName == "serieInterrupt")
                     {
                         interruptVisible = true;
+                        dealWithEthalonAndInterrupt(series.ChartArea);
+                    }
+                    //DONE: АППРОКСИМАЦИЯ !!!
+                    else if (legendItem.SeriesName == "serieInterruptApproximated")
+                    {
+                        approximateVisible = true;
                         dealWithEthalonAndInterrupt(series.ChartArea);
                     }
                     else
