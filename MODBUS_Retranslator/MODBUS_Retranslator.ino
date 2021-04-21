@@ -1,8 +1,8 @@
 //--------------------------------------------------------------------------------------------------------------------------------------
 // настройки прошивки
 //--------------------------------------------------------------------------------------------------------------------------------------
-#define SERIAL_FROM   Serial    // UART, с которого принимаем запросы мастера (USB с ПК, например)
-#define SERIAL_TO     Serial3   // UART, куда ретранслируем запросы мастера, и откуда принимаем ответы, передавая их мастеру
+#define MASTER_SERIAL   Serial    // UART, с которого принимаем запросы мастера (USB с ПК, например)
+#define SLAVE_SERIAL     Serial3   // UART, куда ретранслируем запросы мастера, и откуда принимаем ответы, передавая их мастеру
 #define SERIAL_SPEED  57600     // скорость работы обеих UART
 #define SWITCH_PIN    PE1         // номер пина управления приёмом/передачей по RS-485
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ void setup()
     switchToSend(); // в режим мастера
 
     // поднимаем UART
-    SERIAL_FROM.begin(SERIAL_SPEED);
-    SERIAL_TO.begin(SERIAL_SPEED);
+    MASTER_SERIAL.begin(SERIAL_SPEED);
+    SLAVE_SERIAL.begin(SERIAL_SPEED);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 void loop()
@@ -100,16 +100,16 @@ void loop()
 
   // от мастера к слейву
   switchToSend();  
-  while(SERIAL_FROM.available())
+  while(MASTER_SERIAL.available())
   {
-    SERIAL_TO.write(SERIAL_FROM.read());
+    SLAVE_SERIAL.write(MASTER_SERIAL.read());
   }
 
   // от слейва к мастеру
   switchToReceive();
-  while(SERIAL_TO.available())
+  while(SLAVE_SERIAL.available())
   {
-    SERIAL_FROM.write(SERIAL_TO.read());
+    MASTER_SERIAL.write(SLAVE_SERIAL.read());
   }
   
   
