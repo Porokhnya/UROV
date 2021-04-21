@@ -98,20 +98,23 @@ void setup()
 void loop()
 {
 
-  // от мастера к слейву
-  switchToSend();  
-  while(MASTER_SERIAL.available())
-  {
-    SLAVE_SERIAL.write(MASTER_SERIAL.read());
-  }
-
   // от слейва к мастеру
+  
   switchToReceive();
   while(SLAVE_SERIAL.available())
   {
     MASTER_SERIAL.write(SLAVE_SERIAL.read());
   }
   
+
+  // от мастера к слейву
+  while(MASTER_SERIAL.available())
+  {
+    switchToSend();  
+    SLAVE_SERIAL.write(MASTER_SERIAL.read());
+  }
+
+
   
   
   /*
