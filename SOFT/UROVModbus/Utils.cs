@@ -374,8 +374,8 @@ namespace UROVModbus
             // копируем данные в список
             ApproximatedInterruptData = InterruptData.ToList();
 
-            // аппроксимируем за 2 прохода
-            doApproximate(2);
+            // аппроксимируем за 1 проход
+            doApproximate(1);
 
             // если вдруг списки не одинаковы - копируем исходный
             if(ApproximatedInterruptData.Count < InterruptData.Count)
