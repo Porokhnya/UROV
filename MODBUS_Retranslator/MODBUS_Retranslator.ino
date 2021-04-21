@@ -107,6 +107,9 @@ void loop()
                 switchToReceive(); // переключаемся на приём
     
                 machineState = msWaitSlaveResponse; // ждём ответа от слейва
+
+                delay(10); // дадим слейву 10 миллисекунд на подготовку ответа
+                
                 u32time = micros();
                 
             } // if(_len > 0)
